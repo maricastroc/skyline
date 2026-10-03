@@ -68,8 +68,23 @@ const CTA_RE = /^(get started|start( (building|now|free|for free|today|your))?|s
 const pct = (v: number) => `${Math.round(v * 100)}%`;
 const q = (s?: string, n = 42) => (s ? `“${s.length > n ? `${s.slice(0, n - 1)}…` : s}”` : "");
 
-export function analyzeSemantics(doc: NormalizedDocument): Semantics {
+export interface AnalyzeOptions {
+  /**
+   * Count only content media (snapshot/media.ts) when deciding image-driven kinds (gallery,
+   * showcase, logos) and image evidence. Off by default: the original behaviour.
+   */
+  contentMedia?: boolean;
+  /**
+   * An explicit footer (<footer> / role=contentinfo) that runs to the end of the page is the
+   * footer at any size. Off by default: footers over 35% of the page are then only partly recognised
+   * (a column or a list inside them is picked instead).
+   */
+  explicitFooter?: boolean;
+}
+
+export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions = {}): Semantics {
   const nodes = doc.nodes;
+  const imgs = (n: NNode) => (opts.contentMedia ? n.images - (n.incidentalImages ?? 0) : n.images);
   const N = nodes.length;
   const total = nodes[0]?.weight || 1;
   const pos = (i: number) => i / Math.max(N - 1, 1);
@@ -151,7 +166,9 @@ export function analyzeSemantics(doc: NormalizedDocument): Semantics {
     let best: { i: number; score: number; ev: string[] } | null = null;
     for (let i = 1; i < N; i++) {
       const n = nodes[i];
-      if (pos(i) < 0.55 || n.level > 5 || share(n) > 0.35) continue;
+      // An explicit footer that runs to the end of the page qualifies whatever its size or start.
+      const explicitEnd = !!opts.explicitFooter && n.role === "footer" && n.end >= N - 1;
+      if ((pos(i) < 0.55 && !explicitEnd) || n.level > 5 || (share(n) > 0.35 && !explicitEnd)) continue;
       const ev: string[] = [];
       let score = 0;
       if (n.role === "footer") {
@@ -292,7 +309,7 @@ export function analyzeSemantics(doc: NormalizedDocument): Semantics {
         score += 1.5;
         ev.push(`${ctas.length} call-to-action${ctas.length > 1 ? "s" : ""}: ${ctas.map((c) => q(c.label, 22)).join(", ")}`);
       }
-      if (n.images > 0) score += 0.5;
+      if (imgs(n) > 0) score += 0.5;
       if (score >= 3) {
         ev.push(`starts in the first ${pct(pos(i) || 0.01)} of the page`);
         // Prefer the smallest container that still has the h1 and something else.
@@ -344,7 +361,7 @@ export function analyzeSemantics(doc: NormalizedDocument): Semantics {
 
     // infobox (Wikipedia-style summary box)
     if (/(^|[\s_-])(infobox|vcard|summary-?box|sidebar-?box|factbox)([\s_-]|$)/.test(nm)) {
-      add(i, "infobox", [`class ${q(nm.split(" ").find((x) => /infobox|vcard|summary|sidebar|fact/.test(x)))}`, n.images ? `with ${n.images} image${n.images > 1 ? "s" : ""}` : "a summary table"], { title: n.label ?? "Infobox" });
+      add(i, "infobox", [`class ${q(nm.split(" ").find((x) => /infobox|vcard|summary|sidebar|fact/.test(x)))}`, imgs(n) ? `with ${imgs(n)} image${imgs(n) > 1 ? "s" : ""}` : "a summary table"], { title: n.label ?? "Infobox" });
       i = n.end - 1;
       continue;
     }
@@ -367,12 +384,12 @@ export function analyzeSemantics(doc: NormalizedDocument): Semantics {
       }
     }
     // gallery (explicit, or an image grid) vs showcase (product sections rich in images)
-    if (!containsHero && n.images >= 4 && n.chars / Math.max(n.images, 1) < 140) {
+    if (!containsHero && imgs(n) >= 4 && n.chars / Math.max(imgs(n), 1) < 140) {
       const logo = /(^|[\s_-])(logos?|customers|clients|partners|brands|trusted|companies|integrations)([\s_-]|$)/.test(nm) || /trusted|customers|used by|companies|integrations/i.test(ht);
       const explicit = /(^|[\s_-])(gallery|carousel|slider|photos|images|media)([\s_-]|$)/.test(nm) || /gallery|photos|images|screenshots/i.test(ht);
-      const grid = items.length >= 4 && items.filter((c) => nodes[c].images > 0).length >= items.length * 0.8 && n.chars / n.images < 80;
+      const grid = items.length >= 4 && items.filter((c) => imgs(nodes[c]) > 0).length >= items.length * 0.8 && n.chars / imgs(n) < 80;
       const kind: RegionKind = logo ? "logos" : explicit || grid ? "gallery" : "showcase";
-      add(i, kind, [`${n.images} images, ${Math.round(n.chars / n.images)} characters of text per image`, ht ? `heading ${q(ht)}` : nm ? `class ${q(nm.split(" ")[0])}` : ""].filter(Boolean), {
+      add(i, kind, [`${imgs(n)} images, ${Math.round(n.chars / imgs(n))} characters of text per image`, ht ? `heading ${q(ht)}` : nm ? `class ${q(nm.split(" ")[0])}` : ""].filter(Boolean), {
         title: ht || (logo ? "Customers" : kind === "gallery" ? "Gallery" : "Showcase"),
         items: collectIn(i, (m) => !!m.image, 16).map((m) => m.id),
       });

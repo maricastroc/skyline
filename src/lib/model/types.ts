@@ -1,3 +1,4 @@
+import type { MediaReport } from "../snapshot/media";
 import type { StyleSignals } from "../snapshot/style-signals";
 import type { CaptureWarning, DomSnapshot } from "../snapshot/types";
 
@@ -74,6 +75,8 @@ export interface NNode {
   chars: number;
   links: number;
   images: number;
+  /** Of `images`, those judged incidental imagery (see snapshot/media.ts). */
+  incidentalImages?: number;
   controls: number;
   childCount: number;
   descendants: number;
@@ -114,4 +117,6 @@ export interface NormalizedDocument {
     pruned: number;
   };
   warnings: CaptureWarning[];
+  /** Image census: content media vs incidental imagery, by reason. */
+  media?: MediaReport;
 }

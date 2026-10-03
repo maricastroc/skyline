@@ -1,3 +1,4 @@
+import { countSources, emptyReport, imageVerdict, type MediaReport } from "../snapshot/media";
 import type { DomSnapshot, SnapshotNode } from "../snapshot/types";
 import { classify, STRUCTURAL } from "./classify";
 import { NodeFlag, type NNode, type NodeRole, type NormalizedDocument } from "./types";
@@ -34,6 +35,8 @@ interface W {
   oChars: number;
   oLinks: number;
   oImages: number;
+  /** Images in the original subtree judged incidental (spacer, icon, repeated, interface). */
+  oIncidental: number;
   oControls: number;
   oChildCount: number;
   oDescendants: number;
@@ -54,6 +57,9 @@ interface W {
 
 interface Counters {
   images: number;
+  /** Image sources on the page and their counts (for the content-media verdict). */
+  sources: Map<string, number>;
+  media: MediaReport;
   headings: number;
   forms: number;
   buttons: number;
@@ -61,7 +67,7 @@ interface Counters {
 }
 
 export function normalize(snapshot: DomSnapshot): NormalizedDocument {
-  const counters: Counters = { images: 0, headings: 0, forms: 0, buttons: 0, idMap: new Map() };
+  const counters: Counters = { images: 0, sources: countSources(snapshot.root), media: emptyReport(), headings: 0, forms: 0, buttons: 0, idMap: new Map() };
   const big = snapshot.stats.elementCount > 4000;
   CLUSTER_MIN = big ? 12 : 32;
   CLUSTER_KEEP = big ? 8 : 20;
@@ -93,6 +99,7 @@ export function normalize(snapshot: DomSnapshot): NormalizedDocument {
       pruned,
     },
     warnings: snapshot.warnings,
+    media: counters.media,
   };
 }
 
@@ -130,6 +137,7 @@ function build(s: SnapshotNode, depth: number, insideContent: boolean, c: Counte
     oChars: s.text,
     oLinks: isLink ? 1 : 0,
     oImages: s.image || role === "image" ? 1 : 0,
+    oIncidental: 0,
     oControls: isControl ? 1 : 0,
     oChildCount: s.children.length,
     oDescendants: 0,
@@ -142,6 +150,16 @@ function build(s: SnapshotNode, depth: number, insideContent: boolean, c: Counte
     children: [],
   };
 
+  if (s.image || role === "image") {
+    const v = imageVerdict(s, c.sources);
+    c.media.total++;
+    c.media.byReason[v]++;
+    if (v === "content") c.media.content++;
+    else {
+      c.media.incidental++;
+      w.oIncidental = 1;
+    }
+  }
   if (s.image) {
     // Earlier images are usually more prominent (hero, header); alt text and declared size help.
     const area = Number(s.attrs?.width ?? 0) * Number(s.attrs?.height ?? 0);
@@ -160,6 +178,7 @@ function build(s: SnapshotNode, depth: number, insideContent: boolean, c: Counte
     w.oChars += cw.oChars;
     w.oLinks += cw.oLinks;
     w.oImages += cw.oImages;
+    w.oIncidental += cw.oIncidental;
     w.oControls += cw.oControls;
     w.oDescendants += 1 + cw.oDescendants;
   }
@@ -296,7 +315,7 @@ function clusterRepeats(w: W): void {
         image: undefined,
         label: undefined,
         cluster: { tag: c.tag, count: 0 },
-        oChars: 0, oLinks: 0, oImages: 0, oControls: 0, oChildCount: 0, oDescendants: 0,
+        oChars: 0, oLinks: 0, oImages: 0, oIncidental: 0, oControls: 0, oChildCount: 0, oDescendants: 0,
         text: 0, ownLinks: 0, ownImages: 0, ownControls: 0, absorbed: -1, wrappers: 0,
         children: [],
         mergedInto: undefined,
@@ -308,6 +327,7 @@ function clusterRepeats(w: W): void {
     cl.oChars += c.oChars;
     cl.oLinks += c.oLinks;
     cl.oImages += c.oImages;
+    cl.oIncidental += c.oIncidental;
     cl.oControls += c.oControls;
     cl.oChildCount++;
     cl.oDescendants += 1 + c.oDescendants;
@@ -489,6 +509,7 @@ function flatten(root: W, finalUrl: string, idMap: Map<string, W>): NNode[] {
       chars: w.oChars,
       links: w.oLinks,
       images: w.oImages,
+      incidentalImages: w.oIncidental,
       controls: w.oControls,
       childCount: w.oChildCount,
       descendants: w.oDescendants,
