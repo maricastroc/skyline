@@ -1,0 +1,2515 @@
+{
+ "fidelity": [
+  {
+   "id": "reference",
+   "before": {
+    "faithful": 0.6848760780357149,
+    "rho": 0.2230378317334839,
+    "over": 15.475436786262202
+   },
+   "after": {
+    "faithful": 0.9878502930972417,
+    "rho": 0.9796725014116319,
+    "over": 1.1590987569060769
+   },
+   "contiguity": {
+    "before": 0.7541692055989031,
+    "after": 1,
+    "split5Before": 1,
+    "split5After": 0
+   }
+  },
+  {
+   "id": "docs",
+   "before": {
+    "faithful": 0.23974424599232846,
+    "rho": -0.4761904761904763,
+    "over": 24.461820875090783
+   },
+   "after": {
+    "faithful": 0.9939608117082386,
+    "rho": 1,
+    "over": 1.0700678591131223
+   },
+   "contiguity": {
+    "before": 0.9745289782058945,
+    "after": 1,
+    "split5Before": 0,
+    "split5After": 0
+   }
+  },
+  {
+   "id": "app",
+   "before": {
+    "faithful": 0.37787498024319216,
+    "rho": 0.6155844155844156,
+    "over": 12.24660022236484
+   },
+   "after": {
+    "faithful": 0.9839132765155093,
+    "rho": 0.9857142857142858,
+    "over": 1.3672477285242288
+   },
+   "contiguity": {
+    "before": 0.9294133994292615,
+    "after": 1,
+    "split5Before": 0,
+    "split5After": 0
+   }
+  },
+  {
+   "id": "saas",
+   "before": {
+    "faithful": 0.4560422529451583,
+    "rho": -0.26363636363636367,
+    "over": 12.906615581778793
+   },
+   "after": {
+    "faithful": 0.9921692462042074,
+    "rho": 1,
+    "over": 1.1570157956894007
+   },
+   "contiguity": {
+    "before": 0.9021267290281563,
+    "after": 1,
+    "split5Before": 1,
+    "split5After": 0
+   }
+  },
+  {
+   "id": "shop",
+   "before": {
+    "faithful": 0.26484329373165666,
+    "rho": 0.19999999999999996,
+    "over": 21.834572864547667
+   },
+   "after": {
+    "faithful": 0.9956826632048195,
+    "rho": 1,
+    "over": 1.2339275486827035
+   },
+   "contiguity": {
+    "before": 0.9197789088181207,
+    "after": 1,
+    "split5Before": 1,
+    "split5After": 0
+   }
+  },
+  {
+   "id": "news",
+   "before": {
+    "faithful": 0.7972912038302938,
+    "rho": 0.49425287356321834,
+    "over": 1.812192934941981
+   },
+   "after": {
+    "faithful": 0.9851956730641342,
+    "rho": 0.9490968801313628,
+    "over": 1.103426346274264
+   },
+   "contiguity": {
+    "before": 0.5546707487140365,
+    "after": 1,
+    "split5Before": 0,
+    "split5After": 0
+   }
+  },
+  {
+   "id": "portfolio",
+   "before": {
+    "faithful": 0.3645041488069288,
+    "rho": 0.8043478260869565,
+    "over": 26.721575462820244
+   },
+   "after": {
+    "faithful": 0.9815165835290569,
+    "rho": 0.9733201581027668,
+    "over": 1.3329790900735308
+   },
+   "contiguity": {
+    "before": 1,
+    "after": 1,
+    "split5Before": 0,
+    "split5After": 0
+   }
+  },
+  {
+   "id": "forum",
+   "before": {
+    "faithful": 0.10191607287237296,
+    "rho": -0.5,
+    "over": 93.55983480727816
+   },
+   "after": {
+    "faithful": 0.9977456619780415,
+    "rho": 1,
+    "over": 1.0011959712550629
+   },
+   "contiguity": {
+    "before": 1,
+    "after": 1,
+    "split5Before": 0,
+    "split5After": 0
+   }
+  },
+  {
+   "id": "institution",
+   "before": {
+    "faithful": 0.5156258609094206,
+    "rho": 0.4545454545454546,
+    "over": 9.364611735910744
+   },
+   "after": {
+    "faithful": 0.9923025239541949,
+    "rho": 1,
+    "over": 1.0210655925473426
+   },
+   "contiguity": {
+    "before": 0.6315087409007131,
+    "after": 1,
+    "split5Before": 1,
+    "split5After": 0
+   }
+  },
+  {
+   "id": "oldweb",
+   "before": {
+    "faithful": 0.9276147432828481,
+    "rho": null,
+    "over": 0.9275472563932922
+   },
+   "after": {
+    "faithful": 0.9990685392133348,
+    "rho": null,
+    "over": 1.000932329214769
+   },
+   "contiguity": {
+    "before": 1,
+    "after": 1,
+    "split5Before": 0,
+    "split5After": 0
+   }
+  },
+  {
+   "id": "media",
+   "before": {
+    "faithful": 0.5852521233660587,
+    "rho": 0.21775025799793601,
+    "over": 9.882055521037021
+   },
+   "after": {
+    "faithful": 0.9852818417302678,
+    "rho": 0.9793601651186791,
+    "over": 1.2130078125000001
+   },
+   "contiguity": {
+    "before": 0.6789132720953013,
+    "after": 1,
+    "split5Before": 1,
+    "split5After": 0
+   }
+  },
+  {
+   "id": "directory",
+   "before": {
+    "faithful": 0.4452797078513063,
+    "rho": -0.5476190476190477,
+    "over": 34.87444121972782
+   },
+   "after": {
+    "faithful": 0.9938536167931377,
+    "rho": 1,
+    "over": 1.3093034162717219
+   },
+   "contiguity": {
+    "before": 0.7719610985686448,
+    "after": 1,
+    "split5Before": 1,
+    "split5After": 0
+   }
+  },
+  {
+   "id": "reference-2",
+   "before": {
+    "faithful": 0.555777878614478,
+    "rho": 0.15164835164835166,
+    "over": 4.622935861020169
+   },
+   "after": {
+    "faithful": 0.9915651961859563,
+    "rho": 0.9912087912087912,
+    "over": 1.1845835013102197
+   },
+   "contiguity": {
+    "before": 0.8767308351348502,
+    "after": 1,
+    "split5Before": 1,
+    "split5After": 0
+   }
+  },
+  {
+   "id": "saas-2",
+   "before": {
+    "faithful": 0.673732091728107,
+    "rho": 0.7166666666666667,
+    "over": 5.623020934346796
+   },
+   "after": {
+    "faithful": 0.9961262578276273,
+    "rho": 1,
+    "over": 1.0134416260609893
+   },
+   "contiguity": {
+    "before": 0.5056885469818454,
+    "after": 1,
+    "split5Before": 2,
+    "split5After": 0
+   }
+  }
+ ],
+ "stability": {
+  "reference": {
+   "text-10": {
+    "before": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "own text of every element ×0.9"
+    },
+    "after": {
+     "block": 0.028075865083567887,
+     "decision": 0.054236012234351115,
+     "owner": 0.015625,
+     "shift": 0.19739472694622429
+    }
+   },
+   "text+10": {
+    "before": {
+     "block": 0.004119363592525808,
+     "decision": 0,
+     "owner": 0.03669724770642202,
+     "shift": 0,
+     "note": "own text of every element ×1.1"
+    },
+    "after": {
+     "block": 0.04992828283914869,
+     "decision": 0.05186665481618023,
+     "owner": 0.01953125,
+     "shift": 0.1329844871199327
+    }
+   },
+   "links-10": {
+    "before": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0.03669724770642202,
+     "shift": 0,
+     "note": "70 of 700 links removed (every tenth)"
+    },
+    "after": {
+     "block": 0.06371641419216624,
+     "decision": 0.08444841769907642,
+     "owner": 0.05859375,
+     "shift": 0.5643506139790372
+    }
+   },
+   "drop-secondary": {
+    "before": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "removed <section#mwAZY> (1.2% of the text)"
+    },
+    "after": {
+     "block": 0.01439674910933313,
+     "decision": 0.05307749782899695,
+     "owner": 0.0234375,
+     "shift": 0.2856296790444491
+    }
+   }
+  },
+  "docs": {
+   "text-10": {
+    "before": {
+     "block": 0.0015673926737793929,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "own text of every element ×0.9"
+    },
+    "after": {
+     "block": 0,
+     "decision": 0.006249999999999999,
+     "owner": 0,
+     "shift": 0
+    }
+   },
+   "text+10": {
+    "before": {
+     "block": 0.0006065949510152798,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "own text of every element ×1.1"
+    },
+    "after": {
+     "block": 0.0002663675044369783,
+     "decision": 0.0062500000000000056,
+     "owner": 0,
+     "shift": 0
+    }
+   },
+   "links-10": {
+    "before": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "12 of 125 links removed (every tenth)"
+    },
+    "after": {
+     "block": 0.0002663675044369783,
+     "decision": 0.0062500000000000056,
+     "owner": 0,
+     "shift": 0
+    }
+   },
+   "drop-secondary": {
+    "before": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "no section-like element with 1–6% of the text: unchanged"
+    },
+    "after": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0
+    }
+   }
+  },
+  "app": {
+   "text-10": {
+    "before": {
+     "block": 0.10540325407515952,
+     "decision": 0.18129770992366415,
+     "owner": 0.3125,
+     "shift": 0.14340260754686132,
+     "note": "own text of every element ×0.9"
+    },
+    "after": {
+     "block": 0.1612092583913529,
+     "decision": 0.12706616859842668,
+     "owner": 0.26953125,
+     "shift": 0.1154386799193738
+    }
+   },
+   "text+10": {
+    "before": {
+     "block": 0.0014514064420525956,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "own text of every element ×1.1"
+    },
+    "after": {
+     "block": 0.0009538182556077307,
+     "decision": 0.0025252525252525263,
+     "owner": 0.00390625,
+     "shift": 0.03479815200467174
+    }
+   },
+   "links-10": {
+    "before": {
+     "block": 0.03018963207066405,
+     "decision": 0.021174031121550207,
+     "owner": 0,
+     "shift": 0,
+     "note": "18 of 187 links removed (every tenth)"
+    },
+    "after": {
+     "block": 0.040289874550320834,
+     "decision": 0.059296909505306604,
+     "owner": 0.078125,
+     "shift": 0.8352183845133819
+    }
+   },
+   "drop-secondary": {
+    "before": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "no section-like element with 1–6% of the text: unchanged"
+    },
+    "after": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0
+    }
+   }
+  },
+  "saas": {
+   "text-10": {
+    "before": {
+     "block": 0.0007395161169114735,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "own text of every element ×0.9"
+    },
+    "after": {
+     "block": 0.017317216749006225,
+     "decision": 0.019517543859649128,
+     "owner": 0.00390625,
+     "shift": 0.10537698979140675
+    }
+   },
+   "text+10": {
+    "before": {
+     "block": 0.0007167663962544734,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "own text of every element ×1.1"
+    },
+    "after": {
+     "block": 0.009852491105361037,
+     "decision": 0.031850282485875715,
+     "owner": 0,
+     "shift": 0
+    }
+   },
+   "links-10": {
+    "before": {
+     "block": 0.02238883978194785,
+     "decision": 0.021317829457364337,
+     "owner": 0.5447154471544715,
+     "shift": 2.429639375512091,
+     "note": "7 of 74 links removed (every tenth)"
+    },
+    "after": {
+     "block": 0.07772377636739686,
+     "decision": 0.09650997150997151,
+     "owner": 0.11328125,
+     "shift": 2.893678825020065
+    }
+   },
+   "drop-secondary": {
+    "before": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "removed <section#customers.hide-laptop> (3.8% of the text)"
+    },
+    "after": {
+     "block": 0.04205033615163464,
+     "decision": 0.09105342741935485,
+     "owner": 0.02734375,
+     "shift": 0.6675297743128445
+    }
+   }
+  },
+  "shop": {
+   "text-10": {
+    "before": {
+     "block": 0.0006649536817765278,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "own text of every element ×0.9"
+    },
+    "after": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0
+    }
+   },
+   "text+10": {
+    "before": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "own text of every element ×1.1"
+    },
+    "after": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0
+    }
+   },
+   "links-10": {
+    "before": {
+     "block": 0.0006649536817765278,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "14 of 149 links removed (every tenth)"
+    },
+    "after": {
+     "block": 0.0032091946260218553,
+     "decision": 0.01658558160106148,
+     "owner": 0.01171875,
+     "shift": 0.1630398367900653
+    }
+   },
+   "drop-secondary": {
+    "before": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "removed <section.vbpjg77> (1.6% of the text)"
+    },
+    "after": {
+     "block": 0.0014678519066904433,
+     "decision": 0.0203449800973021,
+     "owner": 0.0078125,
+     "shift": 0.1796268801744235
+    }
+   }
+  },
+  "news": {
+   "text-10": {
+    "before": {
+     "block": 0.004756395036479878,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "own text of every element ×0.9"
+    },
+    "after": {
+     "block": 0.0048827049127608425,
+     "decision": 0.02324540235724447,
+     "owner": 0,
+     "shift": 0
+    }
+   },
+   "text+10": {
+    "before": {
+     "block": 0.0015991841871100185,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "own text of every element ×1.1"
+    },
+    "after": {
+     "block": 0.001513817086679076,
+     "decision": 0.02479174022315613,
+     "owner": 0.0078125,
+     "shift": 0.08904662764570576
+    }
+   },
+   "links-10": {
+    "before": {
+     "block": 0.022863047822811094,
+     "decision": 0.00390625,
+     "owner": 0.5630630630630631,
+     "shift": 5.603258623482671,
+     "note": "34 of 342 links removed (every tenth)"
+    },
+    "after": {
+     "block": 0.046657509629026594,
+     "decision": 0.06042873230373231,
+     "owner": 0.33984375,
+     "shift": 3.408957236541379
+    }
+   },
+   "drop-secondary": {
+    "before": {
+     "block": 0.00045128443513841546,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "removed <section#in-pictures.dcr-cavc6m> (1.4% of the text)"
+    },
+    "after": {
+     "block": 0.049105491504451614,
+     "decision": 0.07162778073104159,
+     "owner": 0.1171875,
+     "shift": 1.2100483534239956
+    }
+   }
+  },
+  "portfolio": {
+   "text-10": {
+    "before": {
+     "block": 0.000814466767810846,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "own text of every element ×0.9"
+    },
+    "after": {
+     "block": 0.0012496905498582721,
+     "decision": 0.014084507042253516,
+     "owner": 0.0078125,
+     "shift": 0.08965233495509149
+    }
+   },
+   "text+10": {
+    "before": {
+     "block": 0.0001277355294800656,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "own text of every element ×1.1"
+    },
+    "after": {
+     "block": 0.0005628082167343212,
+     "decision": 0.0035211267605633825,
+     "owner": 0.01171875,
+     "shift": 0.1149357839316803
+    }
+   },
+   "links-10": {
+    "before": {
+     "block": 0.06568447945315045,
+     "decision": 0.18897637795275593,
+     "owner": 0.6875,
+     "shift": 0,
+     "note": "4 of 40 links removed (every tenth)"
+    },
+    "after": {
+     "block": 0.0732952126728952,
+     "decision": 0.07991156817447898,
+     "owner": 0.49609375,
+     "shift": 8.439261483099346
+    }
+   },
+   "drop-secondary": {
+    "before": {
+     "block": 0.041140801522741584,
+     "decision": 0.02576926116443476,
+     "owner": 0.0625,
+     "shift": 1.4757295747452424,
+     "note": "removed <section#writing.scroll-mt-16> (4.7% of the text)"
+    },
+    "after": {
+     "block": 0.11156522589481499,
+     "decision": 0.09958804228578803,
+     "owner": 0.6875,
+     "shift": 12.508274333835057
+    }
+   }
+  },
+  "forum": {
+   "text-10": {
+    "before": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "own text of every element ×0.9"
+    },
+    "after": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0
+    }
+   },
+   "text+10": {
+    "before": {
+     "block": 0.027441295646901318,
+     "decision": 0.02046370967741936,
+     "owner": 0,
+     "shift": 0,
+     "note": "own text of every element ×1.1"
+    },
+    "after": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0
+    }
+   },
+   "links-10": {
+    "before": {
+     "block": 0.026499743642919325,
+     "decision": 0.022076612903225813,
+     "owner": 0,
+     "shift": 0,
+     "note": "25 of 254 links removed (every tenth)"
+    },
+    "after": {
+     "block": 0.001788761825502581,
+     "decision": 0.02024291497975708,
+     "owner": 0.00390625,
+     "shift": 0.025575940919115282
+    }
+   },
+   "drop-secondary": {
+    "before": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "no section-like element with 1–6% of the text: unchanged"
+    },
+    "after": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0
+    }
+   }
+  },
+  "institution": {
+   "text-10": {
+    "before": {
+     "block": 0.02686271391696304,
+     "decision": 0.026323789678008674,
+     "owner": 0,
+     "shift": 0,
+     "note": "own text of every element ×0.9"
+    },
+    "after": {
+     "block": 0.0017526168119511446,
+     "decision": 0.013790485829959502,
+     "owner": 0,
+     "shift": 0
+    }
+   },
+   "text+10": {
+    "before": {
+     "block": 0.022453324577435308,
+     "decision": 0.027334253287025555,
+     "owner": 0,
+     "shift": 0,
+     "note": "own text of every element ×1.1"
+    },
+    "after": {
+     "block": 0.013575740870246017,
+     "decision": 0.008982793522267205,
+     "owner": 0,
+     "shift": 0
+    }
+   },
+   "links-10": {
+    "before": {
+     "block": 0.0014049880875107888,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "8 of 81 links removed (every tenth)"
+    },
+    "after": {
+     "block": 0.014059865089424077,
+     "decision": 0.04883603238866395,
+     "owner": 0.046875,
+     "shift": 0.7640371260382377
+    }
+   },
+   "drop-secondary": {
+    "before": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "no section-like element with 1–6% of the text: unchanged"
+    },
+    "after": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0
+    }
+   }
+  },
+  "oldweb": {
+   "text-10": {
+    "before": {
+     "block": 0.004250769337354764,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "own text of every element ×0.9"
+    },
+    "after": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0
+    }
+   },
+   "text+10": {
+    "before": {
+     "block": 0.0012963621968442819,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "own text of every element ×1.1"
+    },
+    "after": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0
+    }
+   },
+   "links-10": {
+    "before": {
+     "block": 0.003484362655570914,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "24 of 240 links removed (every tenth)"
+    },
+    "after": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0
+    }
+   },
+   "drop-secondary": {
+    "before": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "no section-like element with 1–6% of the text: unchanged"
+    },
+    "after": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0
+    }
+   }
+  },
+  "media": {
+   "text-10": {
+    "before": {
+     "block": 0.0005720342864184366,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "own text of every element ×0.9"
+    },
+    "after": {
+     "block": 0.0013613648286366874,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0
+    }
+   },
+   "text+10": {
+    "before": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "own text of every element ×1.1"
+    },
+    "after": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0
+    }
+   },
+   "links-10": {
+    "before": {
+     "block": 0.009504967372049944,
+     "decision": 0.006,
+     "owner": 0,
+     "shift": 0,
+     "note": "6 of 67 links removed (every tenth)"
+    },
+    "after": {
+     "block": 0.016435883772341068,
+     "decision": 0.03495363031071655,
+     "owner": 0.03515625,
+     "shift": 0.4181757526784855
+    }
+   },
+   "drop-secondary": {
+    "before": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "no section-like element with 1–6% of the text: unchanged"
+    },
+    "after": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0
+    }
+   }
+  },
+  "directory": {
+   "text-10": {
+    "before": {
+     "block": 0.002187924848159304,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "own text of every element ×0.9"
+    },
+    "after": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0
+    }
+   },
+   "text+10": {
+    "before": {
+     "block": 0.0026861553732696075,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "own text of every element ×1.1"
+    },
+    "after": {
+     "block": 0.0007469788904614374,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0
+    }
+   },
+   "links-10": {
+    "before": {
+     "block": 0.0014879452164985605,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "73 of 734 links removed (every tenth)"
+    },
+    "after": {
+     "block": 0.0040922361589622695,
+     "decision": 0.02794797794797796,
+     "owner": 0.01171875,
+     "shift": 0.13189895582914402
+    }
+   },
+   "drop-secondary": {
+    "before": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "no section-like element with 1–6% of the text: unchanged"
+    },
+    "after": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0
+    }
+   }
+  },
+  "reference-2": {
+   "text-10": {
+    "before": {
+     "block": 0.004241086000595671,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "own text of every element ×0.9"
+    },
+    "after": {
+     "block": 0.005957491521711739,
+     "decision": 0.035474098348848515,
+     "owner": 0.0078125,
+     "shift": 0.1257569909408393
+    }
+   },
+   "text+10": {
+    "before": {
+     "block": 0.0007161694150527136,
+     "decision": 0,
+     "owner": 0.09803921568627451,
+     "shift": 0,
+     "note": "own text of every element ×1.1"
+    },
+    "after": {
+     "block": 0.024064582692337116,
+     "decision": 0.059339142903866875,
+     "owner": 0.015625,
+     "shift": 0.053045332165656635
+    }
+   },
+   "links-10": {
+    "before": {
+     "block": 0.0020819300230695836,
+     "decision": 0,
+     "owner": 0.1024390243902439,
+     "shift": 0.08881903283712457,
+     "note": "86 of 865 links removed (every tenth)"
+    },
+    "after": {
+     "block": 0.04805770641304423,
+     "decision": 0.10036072232108208,
+     "owner": 0.046875,
+     "shift": 0.6563515222707594
+    }
+   },
+   "drop-secondary": {
+    "before": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "removed <section#mwBL4> (1.2% of the text)"
+    },
+    "after": {
+     "block": 0.010795164436035098,
+     "decision": 0.054098131275846145,
+     "owner": 0.02734375,
+     "shift": 0.5375963261216778
+    }
+   }
+  },
+  "saas-2": {
+   "text-10": {
+    "before": {
+     "block": 0.002890680457744198,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "own text of every element ×0.9"
+    },
+    "after": {
+     "block": 0.0003305688529169643,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0
+    }
+   },
+   "text+10": {
+    "before": {
+     "block": 0.0028978996512291216,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "own text of every element ×1.1"
+    },
+    "after": {
+     "block": 0.005890600234575981,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0
+    }
+   },
+   "links-10": {
+    "before": {
+     "block": 0.0015318347985158465,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "16 of 166 links removed (every tenth)"
+    },
+    "after": {
+     "block": 0.031191704712510093,
+     "decision": 0.08994500948054643,
+     "owner": 0.0390625,
+     "shift": 0.6410363990474172
+    }
+   },
+   "drop-secondary": {
+    "before": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0,
+     "note": "removed <section.flex> (1.2% of the text)"
+    },
+    "after": {
+     "block": 0,
+     "decision": 0,
+     "owner": 0,
+     "shift": 0
+    }
+   }
+  }
+ },
+ "seed": [
+  {
+   "id": "reference",
+   "vs": [
+    {
+     "a": {
+      "block": 0.030410123208457502,
+      "dec": 0.026162790697674417
+     },
+     "b": {
+      "block": 0.02949870078037914,
+      "dec": 0.03289768723172528
+     }
+    },
+    {
+     "a": {
+      "block": 0.02363263752299083,
+      "dec": 0.03197674418604651
+     },
+     "b": {
+      "block": 0.0388625483618302,
+      "dec": 0.015503875968992243
+     }
+    },
+    {
+     "a": {
+      "block": 0.028737314592310936,
+      "dec": 0.037790697674418616
+     },
+     "b": {
+      "block": 0.04871712185666977,
+      "dec": 0.02283720930232558
+     }
+    }
+   ]
+  },
+  {
+   "id": "docs",
+   "vs": [
+    {
+     "a": {
+      "block": 0.026368334749258482,
+      "dec": 0.04285714285714285
+     },
+     "b": {
+      "block": 0.04065378544883824,
+      "dec": 0.035558724397199905
+     }
+    },
+    {
+     "a": {
+      "block": 0.027334146713660388,
+      "dec": 0.07142857142857142
+     },
+     "b": {
+      "block": 0.02852927909178629,
+      "dec": 0.010344827586206891
+     }
+    },
+    {
+     "a": {
+      "block": 0.02382178306667838,
+      "dec": 0.035714285714285726
+     },
+     "b": {
+      "block": 0.03651161867186221,
+      "dec": 0.03363903154805577
+     }
+    }
+   ]
+  },
+  {
+   "id": "app",
+   "vs": [
+    {
+     "a": {
+      "block": 0.03406108593308018,
+      "dec": 0.050403225806451624
+     },
+     "b": {
+      "block": 0.030545302220682236,
+      "dec": 0.015422329795817055
+     }
+    },
+    {
+     "a": {
+      "block": 0.03628362149659544,
+      "dec": 0.03830645161290322
+     },
+     "b": {
+      "block": 0.03153637424204397,
+      "dec": 0.02099236641221374
+     }
+    },
+    {
+     "a": {
+      "block": 0.03992784185161529,
+      "dec": 0.02217741935483871
+     },
+     "b": {
+      "block": 0.026926283304743767,
+      "dec": 0.025094668509947713
+     }
+    }
+   ]
+  },
+  {
+   "id": "saas",
+   "vs": [
+    {
+     "a": {
+      "block": 0.011725291638888505,
+      "dec": 0.024999999999999994
+     },
+     "b": {
+      "block": 0.02466520596160951,
+      "dec": 0.031584342366583376
+     }
+    },
+    {
+     "a": {
+      "block": 0.014384290360726306,
+      "dec": 0.05833333333333334
+     },
+     "b": {
+      "block": 0.01960707845366233,
+      "dec": 0.021317829457364337
+     }
+    },
+    {
+     "a": {
+      "block": 0.011782885085413027,
+      "dec": 0.03333333333333334
+     },
+     "b": {
+      "block": 0.021341864316838287,
+      "dec": 0.04403100775193799
+     }
+    }
+   ]
+  },
+  {
+   "id": "shop",
+   "vs": [
+    {
+     "a": {
+      "block": 0.016747477816403854,
+      "dec": 0.026315789473684223
+     },
+     "b": {
+      "block": 0.029638487822293953,
+      "dec": 0.02117076471915183
+     }
+    },
+    {
+     "a": {
+      "block": 0.016899193570051364,
+      "dec": 0.030075187969924817
+     },
+     "b": {
+      "block": 0.03197465337121424,
+      "dec": 0.014516129032258072
+     }
+    },
+    {
+     "a": {
+      "block": 0.015967299063871634,
+      "dec": 0.04511278195488722
+     },
+     "b": {
+      "block": 0.029672722227717385,
+      "dec": 0.022367015594958337
+     }
+    }
+   ]
+  },
+  {
+   "id": "news",
+   "vs": [
+    {
+     "a": {
+      "block": 0.027960461719901644,
+      "dec": 0.0625
+     },
+     "b": {
+      "block": 0.02932450667850028,
+      "dec": 0.03190104166666668
+     }
+    },
+    {
+     "a": {
+      "block": 0.021696079980693766,
+      "dec": 0.06919642857142858
+     },
+     "b": {
+      "block": 0.04111874593362333,
+      "dec": 0.0390625
+     }
+    },
+    {
+     "a": {
+      "block": 0.028935279470335782,
+      "dec": 0.029017857142857123
+     },
+     "b": {
+      "block": 0.03854286329921919,
+      "dec": 0.03181703629032259
+     }
+    }
+   ]
+  },
+  {
+   "id": "portfolio",
+   "vs": [
+    {
+     "a": {
+      "block": 0.015132716638594166,
+      "dec": 0.05633802816901408
+     },
+     "b": {
+      "block": 0.01809127794621461,
+      "dec": 0.010603453980017198
+     }
+    },
+    {
+     "a": {
+      "block": 0.019067141434537496,
+      "dec": 0.01408450704225353
+     },
+     "b": {
+      "block": 0.018169599526910087,
+      "dec": 0.009842519685039366
+     }
+    },
+    {
+     "a": {
+      "block": 0.020191733488715446,
+      "dec": 0.024647887323943657
+     },
+     "b": {
+      "block": 0.01644963858349625,
+      "dec": 0.022405735868382293
+     }
+    }
+   ]
+  },
+  {
+   "id": "forum",
+   "vs": [
+    {
+     "a": {
+      "block": 0.016215223093897176,
+      "dec": 0.05128205128205127
+     },
+     "b": {
+      "block": 0.01693180556059036,
+      "dec": 0.015971125648545005
+     }
+    },
+    {
+     "a": {
+      "block": 0.009972248103062761,
+      "dec": 0.07051282051282051
+     },
+     "b": {
+      "block": 0.017234052509240136,
+      "dec": 0.003225806451612908
+     }
+    },
+    {
+     "a": {
+      "block": 0.012968917154539553,
+      "dec": 0.05128205128205127
+     },
+     "b": {
+      "block": 0.019422681028595325,
+      "dec": 0.019942320017090356
+     }
+    }
+   ]
+  },
+  {
+   "id": "institution",
+   "vs": [
+    {
+     "a": {
+      "block": 0.026490191809719503,
+      "dec": 0.021634615384615388
+     },
+     "b": {
+      "block": 0.03829904368380329,
+      "dec": 0.03759398496240603
+     }
+    },
+    {
+     "a": {
+      "block": 0.02726620169319441,
+      "dec": 0.0528846153846154
+     },
+     "b": {
+      "block": 0.03052301360362149,
+      "dec": 0.020689655172413793
+     }
+    },
+    {
+     "a": {
+      "block": 0.024391964594723155,
+      "dec": 0.04086538461538461
+     },
+     "b": {
+      "block": 0.03928079588322089,
+      "dec": 0.03778429933969185
+     }
+    }
+   ]
+  },
+  {
+   "id": "oldweb",
+   "vs": [
+    {
+     "a": {
+      "block": 0.018555970630795053,
+      "dec": 0.03125
+     },
+     "b": {
+      "block": 0.024554829932710433,
+      "dec": 0.026084373143196678
+     }
+    },
+    {
+     "a": {
+      "block": 0.018098129394080724,
+      "dec": 0.046875
+     },
+     "b": {
+      "block": 0.02685562980021808,
+      "dec": 0.009090909090909085
+     }
+    },
+    {
+     "a": {
+      "block": 0.01963667262799859,
+      "dec": 0.03125
+     },
+     "b": {
+      "block": 0.030494764763756493,
+      "dec": 0.018008106543138384
+     }
+    }
+   ]
+  },
+  {
+   "id": "media",
+   "vs": [
+    {
+     "a": {
+      "block": 0.023874912302417013,
+      "dec": 0.07105263157894737
+     },
+     "b": {
+      "block": 0.02952803453260438,
+      "dec": 0.012820512820512829
+     }
+    },
+    {
+     "a": {
+      "block": 0.02394846001567897,
+      "dec": 0.04736842105263158
+     },
+     "b": {
+      "block": 0.030121081168783693,
+      "dec": 0.031999999999999994
+     }
+    },
+    {
+     "a": {
+      "block": 0.016020193805868766,
+      "dec": 0.05000000000000001
+     },
+     "b": {
+      "block": 0.033663897609554905,
+      "dec": 0.028231404958677674
+     }
+    }
+   ]
+  },
+  {
+   "id": "directory",
+   "vs": [
+    {
+     "a": {
+      "block": 0.04207601271116146,
+      "dec": 0.09545454545454546
+     },
+     "b": {
+      "block": 0.04110071848102991,
+      "dec": 0.03011043497858915
+     }
+    },
+    {
+     "a": {
+      "block": 0.036784983360183085,
+      "dec": 0.024999999999999998
+     },
+     "b": {
+      "block": 0.04149983291524147,
+      "dec": 0.008169934640522878
+     }
+    },
+    {
+     "a": {
+      "block": 0.04632908169531862,
+      "dec": 0.05681818181818181
+     },
+     "b": {
+      "block": 0.038930585647199326,
+      "dec": 0.013751809448611652
+     }
+    }
+   ]
+  },
+  {
+   "id": "reference-2",
+   "vs": [
+    {
+     "a": {
+      "block": 0.031720125748231465,
+      "dec": 0.02960526315789473
+     },
+     "b": {
+      "block": 0.04963509136221193,
+      "dec": 0.036915819498281294
+     }
+    },
+    {
+     "a": {
+      "block": 0.029165122103204794,
+      "dec": 0.019736842105263143
+     },
+     "b": {
+      "block": 0.05209872650809675,
+      "dec": 0.018595041322314043
+     }
+    },
+    {
+     "a": {
+      "block": 0.04334041030511128,
+      "dec": 0.026315789473684213
+     },
+     "b": {
+      "block": 0.04807237861242902,
+      "dec": 0.02571166207529844
+     }
+    }
+   ]
+  },
+  {
+   "id": "saas-2",
+   "vs": [
+    {
+     "a": {
+      "block": 0.04205097729885358,
+      "dec": 0.13953488372093023
+     },
+     "b": {
+      "block": 0.04771477826407743,
+      "dec": 0.027871402644542406
+     }
+    },
+    {
+     "a": {
+      "block": 0.036530531050567014,
+      "dec": 0.0377906976744186
+     },
+     "b": {
+      "block": 0.056718401256846324,
+      "dec": 0.022413793103448286
+     }
+    },
+    {
+     "a": {
+      "block": 0.050861020601562584,
+      "dec": 0.037790697674418616
+     },
+     "b": {
+      "block": 0.037047147404061835,
+      "dec": 0.04102470041574957
+     }
+    }
+   ]
+  }
+ ],
+ "landmark": {
+  "before": [
+   [
+    "stepped @1,1 full ≥20f",
+    [
+     "docs",
+     "app",
+     "saas",
+     "shop",
+     "portfolio",
+     "forum",
+     "institution",
+     "media"
+    ]
+   ],
+   [
+    "civic @1,1 full ≤4f",
+    [
+     "reference",
+     "news",
+     "directory"
+    ]
+   ],
+   [
+    "clocktower @1,1 full 10–14f",
+    [
+     "oldweb"
+    ]
+   ]
+  ],
+  "after": [
+   [
+    "none",
+    [
+     "docs",
+     "app",
+     "news",
+     "oldweb",
+     "directory"
+    ]
+   ],
+   [
+    "clocktower @1,1 full 10–14f",
+    [
+     "reference",
+     "portfolio"
+    ]
+   ],
+   [
+    "civic @1,1 half ≤4f",
+    [
+     "institution",
+     "media"
+    ]
+   ],
+   [
+    "podiumTower @1,1 full ≥20f",
+    [
+     "saas"
+    ]
+   ],
+   [
+    "podiumTower @1,1 full 15–19f",
+    [
+     "shop"
+    ]
+   ],
+   [
+    "clocktower @1,1 quad 5–9f",
+    [
+     "forum"
+    ]
+   ]
+  ],
+  "style": [
+   {
+    "id": "reference",
+    "after": [
+     "serif:clocktower",
+     "mono:clocktower",
+     "legacy:clocktower",
+     "rounded:clocktower"
+    ],
+    "before": [
+     "serif:civic",
+     "mono:narrowTower",
+     "legacy:clocktower",
+     "rounded:stepped"
+    ],
+    "styles": [
+     "serif:classic",
+     "mono:tech",
+     "legacy:retro",
+     "rounded:soft"
+    ]
+   },
+   {
+    "id": "docs",
+    "after": [
+     "serif:none",
+     "mono:none",
+     "legacy:none",
+     "rounded:none"
+    ],
+    "before": [
+     "serif:civic",
+     "mono:narrowTower",
+     "legacy:clocktower",
+     "rounded:stepped"
+    ],
+    "styles": [
+     "serif:classic",
+     "mono:tech",
+     "legacy:retro",
+     "rounded:soft"
+    ]
+   },
+   {
+    "id": "app",
+    "after": [
+     "serif:none",
+     "mono:none",
+     "legacy:none",
+     "rounded:none"
+    ],
+    "before": [
+     "serif:civic",
+     "mono:narrowTower",
+     "legacy:clocktower",
+     "rounded:stepped"
+    ],
+    "styles": [
+     "serif:classic",
+     "mono:tech",
+     "legacy:retro",
+     "rounded:soft"
+    ]
+   },
+   {
+    "id": "saas",
+    "after": [
+     "serif:podiumTower",
+     "mono:podiumTower",
+     "legacy:podiumTower",
+     "rounded:podiumTower"
+    ],
+    "before": [
+     "serif:civic",
+     "mono:narrowTower",
+     "legacy:clocktower",
+     "rounded:stepped"
+    ],
+    "styles": [
+     "serif:classic",
+     "mono:tech",
+     "legacy:retro",
+     "rounded:soft"
+    ]
+   },
+   {
+    "id": "shop",
+    "after": [
+     "serif:podiumTower",
+     "mono:podiumTower",
+     "legacy:podiumTower",
+     "rounded:podiumTower"
+    ],
+    "before": [
+     "serif:civic",
+     "mono:narrowTower",
+     "legacy:clocktower",
+     "rounded:stepped"
+    ],
+    "styles": [
+     "serif:classic",
+     "mono:tech",
+     "legacy:retro",
+     "rounded:soft"
+    ]
+   },
+   {
+    "id": "news",
+    "after": [
+     "serif:none",
+     "mono:none",
+     "legacy:none",
+     "rounded:none"
+    ],
+    "before": [
+     "serif:civic",
+     "mono:narrowTower",
+     "legacy:clocktower",
+     "rounded:stepped"
+    ],
+    "styles": [
+     "serif:classic",
+     "mono:tech",
+     "legacy:retro",
+     "rounded:soft"
+    ]
+   },
+   {
+    "id": "portfolio",
+    "after": [
+     "serif:clocktower",
+     "mono:clocktower",
+     "legacy:clocktower",
+     "rounded:clocktower"
+    ],
+    "before": [
+     "serif:civic",
+     "mono:narrowTower",
+     "legacy:clocktower",
+     "rounded:stepped"
+    ],
+    "styles": [
+     "serif:classic",
+     "mono:tech",
+     "legacy:retro",
+     "rounded:soft"
+    ]
+   },
+   {
+    "id": "forum",
+    "after": [
+     "serif:clocktower",
+     "mono:clocktower",
+     "legacy:clocktower",
+     "rounded:clocktower"
+    ],
+    "before": [
+     "serif:civic",
+     "mono:narrowTower",
+     "legacy:clocktower",
+     "rounded:stepped"
+    ],
+    "styles": [
+     "serif:classic",
+     "mono:tech",
+     "legacy:retro",
+     "rounded:soft"
+    ]
+   },
+   {
+    "id": "institution",
+    "after": [
+     "serif:civic",
+     "mono:civic",
+     "legacy:civic",
+     "rounded:civic"
+    ],
+    "before": [
+     "serif:civic",
+     "mono:narrowTower",
+     "legacy:clocktower",
+     "rounded:stepped"
+    ],
+    "styles": [
+     "serif:classic",
+     "mono:tech",
+     "legacy:retro",
+     "rounded:soft"
+    ]
+   },
+   {
+    "id": "oldweb",
+    "after": [
+     "serif:none",
+     "mono:none",
+     "legacy:none",
+     "rounded:none"
+    ],
+    "before": [
+     "serif:clocktower",
+     "mono:clocktower",
+     "legacy:clocktower",
+     "rounded:clocktower"
+    ],
+    "styles": [
+     "serif:retro",
+     "mono:retro",
+     "legacy:retro",
+     "rounded:retro"
+    ]
+   },
+   {
+    "id": "media",
+    "after": [
+     "serif:civic",
+     "mono:civic",
+     "legacy:civic",
+     "rounded:civic"
+    ],
+    "before": [
+     "serif:civic",
+     "mono:narrowTower",
+     "legacy:clocktower",
+     "rounded:stepped"
+    ],
+    "styles": [
+     "serif:classic",
+     "mono:tech",
+     "legacy:retro",
+     "rounded:soft"
+    ]
+   },
+   {
+    "id": "directory",
+    "after": [
+     "serif:none",
+     "mono:none",
+     "legacy:none",
+     "rounded:none"
+    ],
+    "before": [
+     "serif:civic",
+     "mono:narrowTower",
+     "legacy:clocktower",
+     "rounded:stepped"
+    ],
+    "styles": [
+     "serif:classic",
+     "mono:tech",
+     "legacy:retro",
+     "rounded:soft"
+    ]
+   }
+  ]
+ },
+ "mono": [
+  {
+   "page": "shop",
+   "label": "pricing “Living on a student budget”",
+   "w0": 0.747478556854554,
+   "levels": [
+    {
+     "w": 0.05,
+     "afterLots": 13,
+     "afterArea": 0.05078125,
+     "afterBuildings": 13,
+     "afterComps": 1,
+     "beforeArea": 0.0723179848504144,
+     "beforeBuildings": 2
+    },
+    {
+     "w": 0.1,
+     "afterLots": 26,
+     "afterArea": 0.1015625,
+     "afterBuildings": 16,
+     "afterComps": 1,
+     "beforeArea": 0.0723179848504144,
+     "beforeBuildings": 2
+    },
+    {
+     "w": 0.2,
+     "afterLots": 51,
+     "afterArea": 0.19921875,
+     "afterBuildings": 30,
+     "afterComps": 1,
+     "beforeArea": 0.0723179848504144,
+     "beforeBuildings": 2
+    },
+    {
+     "w": 0.4,
+     "afterLots": 102,
+     "afterArea": 0.3984375,
+     "afterBuildings": 60,
+     "afterComps": 1,
+     "beforeArea": 0.0723179848504144,
+     "beforeBuildings": 2
+    },
+    {
+     "w": 0.7,
+     "afterLots": 180,
+     "afterArea": 0.703125,
+     "afterBuildings": 104,
+     "afterComps": 1,
+     "beforeArea": 0.0723179848504144,
+     "beforeBuildings": 2
+    }
+   ]
+  },
+  {
+   "page": "institution",
+   "label": "feed “Benefits”",
+   "w0": 0.22241177845290958,
+   "levels": [
+    {
+     "w": 0.05,
+     "afterLots": 13,
+     "afterArea": 0.05078125,
+     "afterBuildings": 4,
+     "afterComps": 1,
+     "beforeArea": 0.0436188475941306,
+     "beforeBuildings": 1
+    },
+    {
+     "w": 0.1,
+     "afterLots": 26,
+     "afterArea": 0.1015625,
+     "afterBuildings": 10,
+     "afterComps": 1,
+     "beforeArea": 0.0436188475941306,
+     "beforeBuildings": 1
+    },
+    {
+     "w": 0.2,
+     "afterLots": 51,
+     "afterArea": 0.19921875,
+     "afterBuildings": 22,
+     "afterComps": 1,
+     "beforeArea": 0.0436188475941306,
+     "beforeBuildings": 1
+    },
+    {
+     "w": 0.4,
+     "afterLots": 103,
+     "afterArea": 0.40234375,
+     "afterBuildings": 52,
+     "afterComps": 1,
+     "beforeArea": 0.0436188475941306,
+     "beforeBuildings": 1
+    },
+    {
+     "w": 0.7,
+     "afterLots": 179,
+     "afterArea": 0.69921875,
+     "afterBuildings": 90,
+     "afterComps": 1,
+     "beforeArea": 0.0436188475941306,
+     "beforeBuildings": 1
+    }
+   ]
+  },
+  {
+   "page": "reference",
+   "label": "features “History”",
+   "w0": 0.1017601350512649,
+   "levels": [
+    {
+     "w": 0.05,
+     "afterLots": 13,
+     "afterArea": 0.05078125,
+     "afterBuildings": 4,
+     "afterComps": 1,
+     "beforeArea": 0.06915031130557087,
+     "beforeBuildings": 1
+    },
+    {
+     "w": 0.1,
+     "afterLots": 26,
+     "afterArea": 0.1015625,
+     "afterBuildings": 7,
+     "afterComps": 1,
+     "beforeArea": 0.06915031130557087,
+     "beforeBuildings": 1
+    },
+    {
+     "w": 0.2,
+     "afterLots": 51,
+     "afterArea": 0.19921875,
+     "afterBuildings": 10,
+     "afterComps": 1,
+     "beforeArea": 0.06915031130557087,
+     "beforeBuildings": 1
+    },
+    {
+     "w": 0.4,
+     "afterLots": 102,
+     "afterArea": 0.3984375,
+     "afterBuildings": 12,
+     "afterComps": 1,
+     "beforeArea": 0.06915031130557087,
+     "beforeBuildings": 1
+    },
+    {
+     "w": 0.7,
+     "afterLots": 179,
+     "afterArea": 0.69921875,
+     "afterBuildings": 21,
+     "afterComps": 1,
+     "beforeArea": 0.06915031130557087,
+     "beforeBuildings": 1
+    }
+   ]
+  },
+  {
+   "page": "forum",
+   "label": "footer “”",
+   "w0": 0.009142427752903973,
+   "levels": [
+    {
+     "w": 0.002,
+     "afterLots": 0,
+     "afterArea": 0,
+     "afterBuildings": 0,
+     "afterComps": 0,
+     "beforeArea": 0.8553640302991711,
+     "beforeBuildings": 152
+    },
+    {
+     "w": 0.005,
+     "afterLots": 1,
+     "afterArea": 0.00390625,
+     "afterBuildings": 1,
+     "afterComps": 1,
+     "beforeArea": 0.8553640302991711,
+     "beforeBuildings": 152
+    },
+    {
+     "w": 0.01,
+     "afterLots": 2,
+     "afterArea": 0.0078125,
+     "afterBuildings": 2,
+     "afterComps": 1,
+     "beforeArea": 0.8553640302991711,
+     "beforeBuildings": 152
+    },
+    {
+     "w": 0.02,
+     "afterLots": 5,
+     "afterArea": 0.01953125,
+     "afterBuildings": 5,
+     "afterComps": 1,
+     "beforeArea": 0.8553640302991711,
+     "beforeBuildings": 152
+    },
+    {
+     "w": 0.05,
+     "afterLots": 13,
+     "afterArea": 0.05078125,
+     "afterBuildings": 7,
+     "afterComps": 1,
+     "beforeArea": 0.8553640302991711,
+     "beforeBuildings": 152
+    }
+   ]
+  },
+  {
+   "page": "saas",
+   "label": "section “Changelog”",
+   "w0": 0.022168705443294367,
+   "levels": [
+    {
+     "w": 0.002,
+     "afterLots": 1,
+     "afterArea": 0.00390625,
+     "afterBuildings": 0,
+     "afterComps": 1,
+     "beforeArea": 0.12874167633651604,
+     "beforeBuildings": 24
+    },
+    {
+     "w": 0.005,
+     "afterLots": 2,
+     "afterArea": 0.0078125,
+     "afterBuildings": 0,
+     "afterComps": 1,
+     "beforeArea": 0.12874167633651604,
+     "beforeBuildings": 24
+    },
+    {
+     "w": 0.01,
+     "afterLots": 3,
+     "afterArea": 0.01171875,
+     "afterBuildings": 1,
+     "afterComps": 1,
+     "beforeArea": 0.12874167633651604,
+     "beforeBuildings": 24
+    },
+    {
+     "w": 0.02,
+     "afterLots": 5,
+     "afterArea": 0.01953125,
+     "afterBuildings": 1,
+     "afterComps": 1,
+     "beforeArea": 0.12874167633651604,
+     "beforeBuildings": 24
+    },
+    {
+     "w": 0.05,
+     "afterLots": 13,
+     "afterArea": 0.05078125,
+     "afterBuildings": 4,
+     "afterComps": 1,
+     "beforeArea": 0.12874167633651604,
+     "beforeBuildings": 24
+    }
+   ]
+  },
+  {
+   "page": "news",
+   "label": "nav “”",
+   "w0": 0.0789774692096933,
+   "levels": [
+    {
+     "w": 0.002,
+     "afterLots": 0,
+     "afterArea": 0,
+     "afterBuildings": 0,
+     "afterComps": 0,
+     "beforeArea": 0.13328215961559664,
+     "beforeBuildings": 13
+    },
+    {
+     "w": 0.005,
+     "afterLots": 1,
+     "afterArea": 0.00390625,
+     "afterBuildings": 0,
+     "afterComps": 1,
+     "beforeArea": 0.13328215961559664,
+     "beforeBuildings": 13
+    },
+    {
+     "w": 0.01,
+     "afterLots": 2,
+     "afterArea": 0.0078125,
+     "afterBuildings": 1,
+     "afterComps": 1,
+     "beforeArea": 0.13328215961559664,
+     "beforeBuildings": 13
+    },
+    {
+     "w": 0.02,
+     "afterLots": 5,
+     "afterArea": 0.01953125,
+     "afterBuildings": 4,
+     "afterComps": 1,
+     "beforeArea": 0.13328215961559664,
+     "beforeBuildings": 13
+    },
+    {
+     "w": 0.05,
+     "afterLots": 13,
+     "afterArea": 0.05078125,
+     "afterBuildings": 2,
+     "afterComps": 1,
+     "beforeArea": 0.13328215961559664,
+     "beforeBuildings": 13
+    }
+   ]
+  }
+ ],
+ "coverage": [
+  {
+   "id": "reference",
+   "before": {
+    "major": 1176,
+    "minor": 1658.4051718565433,
+    "fallback": 0
+   },
+   "after": {
+    "region": 2523.5,
+    "remainder": 477.75,
+    "page": 134.75
+   },
+   "speaking": {
+    "before": 6,
+    "after": 4
+   }
+  },
+  {
+   "id": "docs",
+   "before": {
+    "major": 784,
+    "minor": 1981.5925549762126,
+    "fallback": 0
+   },
+   "after": {
+    "region": 2976.75,
+    "remainder": 122.5,
+    "page": 36.75
+   },
+   "speaking": {
+    "before": 4,
+    "after": 12
+   }
+  },
+  {
+   "id": "app",
+   "before": {
+    "major": 1176,
+    "minor": 1658.4051718565433,
+    "fallback": 0
+   },
+   "after": {
+    "region": 2523.5,
+    "remainder": 600.25,
+    "page": 12.25
+   },
+   "speaking": {
+    "before": 6,
+    "after": 6
+   }
+  },
+  {
+   "id": "saas",
+   "before": {
+    "major": 980,
+    "minor": 1820.4842480167679,
+    "fallback": 0
+   },
+   "after": {
+    "region": 2878.75,
+    "remainder": 245,
+    "page": 12.25
+   },
+   "speaking": {
+    "before": 5,
+    "after": 10
+   }
+  },
+  {
+   "id": "shop",
+   "before": {
+    "major": 392,
+    "minor": 2318.252510567249,
+    "fallback": 0
+   },
+   "after": {
+    "region": 2952.25,
+    "remainder": 12.25,
+    "page": 171.5
+   },
+   "speaking": {
+    "before": 2,
+    "after": 13
+   }
+  },
+  {
+   "id": "news",
+   "before": {
+    "major": 980,
+    "minor": 1820.4842480167679,
+    "fallback": 0
+   },
+   "after": {
+    "region": 2364.25,
+    "remainder": 698.25,
+    "page": 73.5
+   },
+   "speaking": {
+    "before": 5,
+    "after": 1
+   }
+  },
+  {
+   "id": "portfolio",
+   "before": {
+    "major": 980,
+    "minor": 1820.4842480167679,
+    "fallback": 0
+   },
+   "after": {
+    "region": 2523.5,
+    "remainder": 502.25,
+    "page": 110.25
+   },
+   "speaking": {
+    "before": 5,
+    "after": 5
+   }
+  },
+  {
+   "id": "forum",
+   "before": {
+    "major": 392,
+    "minor": 2318.252510567249,
+    "fallback": 0
+   },
+   "after": {
+    "region": 3111.5,
+    "remainder": 12.25,
+    "page": 12.25
+   },
+   "speaking": {
+    "before": 2,
+    "after": 14
+   }
+  },
+  {
+   "id": "institution",
+   "before": {
+    "major": 784,
+    "minor": 1981.5925549762126,
+    "fallback": 0
+   },
+   "after": {
+    "region": 2964.5,
+    "remainder": 147,
+    "page": 24.5
+   },
+   "speaking": {
+    "before": 4,
+    "after": 7
+   }
+  },
+  {
+   "id": "oldweb",
+   "before": {
+    "major": 196,
+    "minor": 0,
+    "fallback": 2477.3329951630167
+   },
+   "after": {
+    "region": 0,
+    "remainder": 0,
+    "page": 3136
+   },
+   "speaking": {
+    "before": 1,
+    "after": 0
+   }
+  },
+  {
+   "id": "media",
+   "before": {
+    "major": 1176,
+    "minor": 1658.4051718565433,
+    "fallback": 0
+   },
+   "after": {
+    "region": 2744,
+    "remainder": 171.5,
+    "page": 220.5
+   },
+   "speaking": {
+    "before": 6,
+    "after": 6
+   }
+  },
+  {
+   "id": "directory",
+   "before": {
+    "major": 980,
+    "minor": 1820.4842480167679,
+    "fallback": 0
+   },
+   "after": {
+    "region": 1764,
+    "remainder": 0,
+    "page": 1372
+   },
+   "speaking": {
+    "before": 5,
+    "after": 4
+   }
+  },
+  {
+   "id": "reference-2",
+   "before": {
+    "major": 1176,
+    "minor": 1658.4051718565433,
+    "fallback": 0
+   },
+   "after": {
+    "region": 2474.5,
+    "remainder": 551.25,
+    "page": 110.25
+   },
+   "speaking": {
+    "before": 6,
+    "after": 4
+   }
+  },
+  {
+   "id": "saas-2",
+   "before": {
+    "major": 784,
+    "minor": 1981.5925549762126,
+    "fallback": 0
+   },
+   "after": {
+    "region": 2866.5,
+    "remainder": 61.25,
+    "page": 208.25
+   },
+   "speaking": {
+    "before": 4,
+    "after": 8
+   }
+  }
+ ]
+}
