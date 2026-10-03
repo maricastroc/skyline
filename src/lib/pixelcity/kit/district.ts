@@ -1,34 +1,33 @@
 /**
- * Detail-kit prototype: a district generated from a *page profile* — briefs in reading order
- * plus a site identity (the fingerprint the page's CSS would produce). Nothing is placed by hand.
+ * Detail-kit district, semantic allocation: a page (or a synthetic profile) → territories →
+ * land in proportion to weight → organisations by region type → buildings.
  *
- *   grid      road centre lines every P tiles; a central intersection at the origin
- *   blocks    the landmark and each major brief take a whole block (civic, court, market,
- *             towers, slabs, works, plaza — see brief.blockFor); the rest are lots around a
- *             courtyard, filled by minor briefs (brief.programFor)
- *   streets   surfaces, a furniture pattern along every curb, signals, a bus stop, traffic,
- *             people
+ *   plan.ts       page → ordered territories with weights and composition mixes
+ *   territory.ts  territories → contiguous runs of a 256-lot path (land ∝ weight)
+ *   compose.ts    each territory's pieces → buildings; the hero's largest piece → landmark
+ *   here          grid, streets, furniture, traffic, the trace and the provenance view
  *
- * Four profiles stand in for structurally different sites; they are synthetic (no capture),
- * so the comparison shows the grammar, not a particular page.
+ * The four synthetic profiles of the massing pass still render here (their briefs become
+ * territories); the cycle-based generator they were designed for is frozen in kit-v2.
  */
-import { mix } from "../../city/palette";
 import type { RGB } from "../../city/types";
 import type { SiteFingerprint } from "../../fingerprint/fingerprint";
-import type { Semantics } from "../../semantics/analyze";
+import type { RegionKind, Semantics } from "../../semantics/analyze";
 import { deriveGrammar, type CityGrammar, type TimeOfDay } from "../grammar";
 import { buildGamePalette } from "../palette";
 import { Surf, type Part, type PixelCity } from "../types";
-import { blockFor, landmarkFamily, programFor, type Brief, type BlockKind } from "./brief";
-import { building, type Program } from "./buildings";
+import type { Brief } from "./brief";
+import type { Program } from "./buildings";
+import { composeLandmark, composePiece, piecesOfBlock, type LandmarkInfo, type Piece, type PieceType } from "./compose";
 import { Kit, type PeopleMode } from "./core";
-import { plaza } from "./massing";
-import { bench, bin, bollards, busShelter, hydrant, mailbox, meter, newsBoxes, SIDEWALK_H, streetLamp, streetSurfaces, streetTree, trafficSignal, tree, type Grid } from "./street";
+import type { Comp, Plan, Territory } from "./plan";
+import { bench, bin, bollards, busShelter, hydrant, mailbox, meter, newsBoxes, SIDEWALK_H, streetLamp, streetSurfaces, streetTree, trafficSignal, type Grid } from "./street";
+import { allocate, BLOCKS, LOTS, N, type Allocation } from "./territory";
 import { vehicle, type VehicleType } from "./vehicles";
 
 export type ProfileName = "mixed" | "portal" | "product" | "reference";
 
-interface Profile {
+export interface Profile {
   /** Site identity: what the page's CSS/markup would give the fingerprint. */
   identity: Partial<SiteFingerprint>;
   /** Landmark + majors in reading order (each takes a block). */
@@ -92,62 +91,202 @@ export const PROFILES: Record<ProfileName, Profile> = {
 };
 
 export interface KitOptions {
-  profile?: ProfileName;
+  /** A named synthetic profile, or a plan built from a real page (plan.planFromPage). */
+  profile?: ProfileName | Plan;
   time?: TimeOfDay;
   people?: PeopleMode;
   seed?: number;
   /** Silhouette test: every building the same colour, no surface patterns, no signs or people. */
   flat?: boolean;
+  /** Provenance view: every territory in its own debug colour, labelled (dev only). */
+  provenance?: boolean;
+  /** Validation: filled with every allocation and building decision (no effect on the output). */
+  trace?: KitTrace;
 }
 
-export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): PixelCity {
-  const prof = PROFILES[o.profile ?? "mixed"];
+export interface TraceBuilding {
+  territory: number;
+  comp: Comp;
+  piece: PieceType;
+  block: [number, number];
+  P: Program;
+  w: number;
+  d: number;
+  /** Index range of this building's parts in the city's part list. */
+  parts: [number, number];
+}
+export interface TracePiece {
+  territory: number;
+  comp: Comp;
+  piece: Piece;
+  block: [number, number];
+  /** Part index range of everything the piece produced (buildings, plazas, yards). */
+  parts: [number, number];
+}
+export interface KitTrace {
+  grammar?: CityGrammar;
+  plan?: Plan;
+  alloc?: Allocation;
+  pieces: TracePiece[];
+  buildings: TraceBuilding[];
+  landmark: LandmarkInfo | null;
+  /** Part index range covered by the blocks (street surfaces, furniture and traffic excluded). */
+  range: [number, number];
+}
+
+export const newTrace = (): KitTrace => ({ pieces: [], buildings: [], landmark: null, range: [0, 0] });
+
+/** Synthetic profile → plan: each brief once, weights normalised, landmark first. */
+export function planFromProfile(prof: Profile, base: SiteFingerprint): Plan {
   const fp: SiteFingerprint = { ...base, ...prof.identity, type: { ...base.type, ...(prof.identity.type ?? {}) } };
+  const KIND: Record<Brief["content"], RegionKind> = { text: "section", links: "feed", media: "showcase", action: "form", structured: "pricing" };
+  const COMP: Record<Brief["content"], Comp> = { text: "continuous", links: "parcelled", media: "media", action: "interactive", structured: "structured" };
+  const all = [...prof.majors, ...prof.minors];
+  const sum = all.reduce((s, b) => s + b.weight, 0) || 1;
+  const territories: Territory[] = all.map((b, i) => {
+    const hero = b.role === "landmark";
+    return {
+      key: `${b.content}|profile-${i}|${b.label ?? ""}`,
+      region: i,
+      kind: hero ? "hero" : KIND[b.content],
+      source: "region",
+      label: b.label,
+      weight: b.weight / sum,
+      repeat: b.repeat,
+      metrics: { chars: hero ? 400 : 0, links: 0, images: 0, controls: 0, descendants: 0, inTables: 0, items: b.repeat },
+      tier: hero ? 0 : b.role === "support" ? 3 : 1,
+      order: i,
+      mix: [{ comp: hero ? "landmark" : COMP[b.content], share: 1 }],
+      content: b.content,
+      why: ["synthetic profile brief"],
+    };
+  });
+  return { identity: fp, territories, hero: territories.findIndex((t) => t.kind === "hero") };
+}
+
+/** Stable debug colour per territory identity (hash of its key). */
+export function debugColor(key: string): RGB {
+  let h = 2166136261;
+  for (let i = 0; i < key.length; i++) h = Math.imul(h ^ key.charCodeAt(i), 16777619);
+  h >>>= 0;
+  const hue = (h % 360) / 360;
+  const sat = 0.55 + ((h >> 9) % 4) * 0.1;
+  const lit = 0.42 + ((h >> 13) % 3) * 0.1;
+  const f = (n: number) => {
+    const k = (n + hue * 12) % 12;
+    const a = sat * Math.min(lit, 1 - lit);
+    return lit - a * Math.max(-1, Math.min(k - 3, 9 - k, 1));
+  };
+  return [f(0), f(8), f(4)];
+}
+
+const B = 14;
+const S = 1.1;
+const R = 2.6;
+const P_ = B + 2 * S + R;
+export const LINES = [-2, -1, 0, 1, 2].map((k) => k * P_);
+export const blockCentre = (i: number, j: number): [number, number] => [(LINES[i] + LINES[i + 1]) / 2, (LINES[j] + LINES[j + 1]) / 2];
+
+export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): PixelCity {
+  const plan = typeof o.profile === "object" ? o.profile : planFromProfile(PROFILES[o.profile ?? "mixed"], base);
+  const fp = plan.identity;
   const g0 = deriveGrammar(fp);
   const grammar: CityGrammar = { ...g0, time: o.time ?? g0.time };
   const palette = buildGamePalette(fp, grammar);
   const kit = new Kit(palette, o.seed ?? 7, o.people ?? "sprite");
+  const trace = o.trace ?? (o.provenance ? newTrace() : undefined);
 
-  const B = 14;
-  const S = 1.1;
-  const R = 2.6;
-  const P = B + 2 * S + R;
-  const lines = [-2, -1, 0, 1, 2].map((k) => k * P);
-  const grid: Grid = { lines, road: R, side: S, block: B, ext: 14 };
+  const grid: Grid = { lines: LINES, road: R, side: S, block: B, ext: 14 };
   const ground: Part[] = [{ mesh: "box", node: -1, x: 0, y: -0.3, z: 0, w: 3000, h: 0.3, d: 3000, rotY: 0, color: palette.sidewalk.map((v) => v * 0.9) as RGB, surf: Surf.PAVING, lit: 0, delay: 0 }];
   streetSurfaces(kit, grid);
+  const blocksFrom = kit.parts.length;
 
-  // Blocks in priority order: the four around the central intersection (back first, so tall
-  // landmarks stand behind the crossing), then the outer ring by distance.
-  const blocks: Array<{ x: number; z: number; i: number; j: number }> = [];
-  for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) blocks.push({ x: (lines[i] + lines[i + 1]) / 2, z: (lines[j] + lines[j + 1]) / 2, i, j });
-  const prio = (b: { x: number; z: number }) => Math.hypot(b.x, b.z) * 10 + (b.z + b.x) * 0.1;
-  blocks.sort((a, b) => prio(a) - prio(b));
+  const alloc = allocate(plan);
+  // The hero's landmark goes on its largest piece (earliest along the path on ties).
+  const pieceRank: Record<PieceType, number> = { full: 3, half: 2, quad: 1, lot: 0 };
+  const pathIndex = new Map(alloc.path.map(([x, y], k) => [x * N + y, k]));
+  let lmPiece: { i: number; j: number; k: number } | null = null;
+  const blockPieces: Piece[][][] = [];
+  for (let i = 0; i < BLOCKS; i++) {
+    blockPieces.push([]);
+    for (let j = 0; j < BLOCKS; j++) {
+      const ps = piecesOfBlock(alloc, i, j);
+      blockPieces[i].push(ps);
+      ps.forEach((pc, k) => {
+        if (pc.seg < 0 || alloc.segments[pc.seg].territory !== plan.hero || alloc.segments[pc.seg].comp !== "landmark" || pc.interior) return;
+        const at = pathIndex.get((i * LOTS + Math.floor((pc.x + 7) / 3.5)) * N + (j * LOTS + Math.floor((pc.z + 7) / 3.5))) ?? 0;
+        if (!lmPiece) return void (lmPiece = { i, j, k });
+        const cur = blockPieces[lmPiece.i]?.[lmPiece.j]?.[lmPiece.k] ?? ps[k];
+        const curAt = pathIndex.get((lmPiece.i * LOTS + Math.floor((cur.x + 7) / 3.5)) * N + (lmPiece.j * LOTS + Math.floor((cur.z + 7) / 3.5))) ?? 0;
+        if (pieceRank[pc.type] > pieceRank[cur.type] || (pieceRank[pc.type] === pieceRank[cur.type] && at < curAt)) lmPiece = { i, j, k };
+      });
+    }
+  }
 
-  let minorIdx = 0;
-  const nextMinor = () => prof.minors[minorIdx++ % prof.minors.length];
-  blocks.forEach((blk, bi) => {
-    const brief = bi < prof.majors.length ? prof.majors[bi] : null;
-    const kind: BlockKind = brief ? blockFor(brief, grammar) : "lots";
-    kit.frame(blk.x, blk.z, 0, () => {
-      kit.span(-B / 2, B / 2, 0, SIDEWALK_H, -B / 2, B / 2, palette.sidewalk.map((v) => v * 0.94) as RGB, Surf.PAVING);
-      kit.frame(0, 0, 0, () => composeBlock(kit, kind, brief, B, grammar, bi, nextMinor), SIDEWALK_H);
-    });
-  });
+  let current: { territory: number; comp: Comp; piece: PieceType; block: [number, number] } | null = null;
+  const record = (P: Program, w: number, d: number, fn: () => number) => {
+    const from = kit.parts.length;
+    const top = fn();
+    if (trace && current) trace.buildings.push({ ...current, P, w, d, parts: [from, kit.parts.length] });
+    return top;
+  };
+  const ctx = { kit, g: grammar, p: palette, plan, vf: 0.7 + 0.6 * grammar.verticality, record };
 
-  furniture(kit, lines, B, S, palette);
-  intersections(kit, lines, R, P);
-  traffic(kit, lines, R, P, palette);
+  for (let i = 0; i < BLOCKS; i++)
+    for (let j = 0; j < BLOCKS; j++) {
+      const [bx, bz] = blockCentre(i, j);
+      kit.frame(bx, bz, 0, () => {
+        kit.span(-B / 2, B / 2, 0, SIDEWALK_H, -B / 2, B / 2, palette.sidewalk.map((v) => v * 0.94) as RGB, Surf.PAVING);
+        kit.frame(
+          0,
+          0,
+          0,
+          () =>
+            blockPieces[i][j].forEach((pc, k) => {
+              if (pc.seg < 0) return;
+              const seg = alloc.segments[pc.seg];
+              const t = plan.territories[seg.territory];
+              const from = kit.parts.length;
+              current = { territory: seg.territory, comp: seg.comp, piece: pc.type, block: [i, j] };
+              const salt = 1000 + seg.territory * 131 + (i * 4 + j) * 17 + k;
+              const isLm = lmPiece && lmPiece.i === i && lmPiece.j === j && lmPiece.k === k;
+              if (isLm) {
+                const info = composeLandmark(ctx, pc, t, salt);
+                if (trace) trace.landmark = { ...info, x: bx + pc.x, z: bz + pc.z, block: [i, j] };
+              } else composePiece(ctx, pc, t, seg.comp, salt);
+              current = null;
+              trace?.pieces.push({ territory: seg.territory, comp: seg.comp, piece: pc, block: [i, j], parts: [from, kit.parts.length] });
+            }),
+          SIDEWALK_H,
+        );
+      });
+    }
+  if (trace) {
+    trace.grammar = grammar;
+    trace.plan = plan;
+    trace.alloc = alloc;
+    trace.range = [blocksFrom, kit.parts.length];
+  }
+
+  furniture(kit, LINES, B, S, palette);
+  intersections(kit, LINES, R, P_);
+  traffic(kit, LINES, R, P_, palette);
 
   let parts = kit.parts;
-  if (o.flat) {
+  let signs = kit.signs;
+  if (o.provenance && trace) {
+    const r = provenance(kit, plan, alloc, trace);
+    parts = r.parts;
+    signs = r.signs;
+  } else if (o.flat) {
     const grey: RGB = [0.62, 0.62, 0.66];
     parts = parts.filter((q) => q.mesh !== "sign" && q.mesh !== "sprite" && q.mesh !== "glow").map((q) => ({ ...q, color: q.y + q.h > SIDEWALK_H + 0.3 ? grey : q.color, surf: Surf.PLAIN, variant: 0, lit: 0 }));
+    signs = [];
   }
   let maxHeight = 1;
   for (const q of parts) maxHeight = Math.max(maxHeight, q.y + q.h);
   const semantics: Semantics = { siteName: "", regions: [], regionOf: new Int32Array(0), hero: -1, nav: -1, brand: -1, footer: -1, main: -1, districts: [], sidebars: [], ctas: [] };
-  const extent = lines[lines.length - 1] * 2 + R;
+  const extent = LINES[LINES.length - 1] * 2 + R;
   return {
     frame: "world",
     scenery: ground,
@@ -167,129 +306,66 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
     roads: [],
     buildings: [],
     images: [],
-    signs: o.flat ? [] : kit.signs,
+    signs,
     signAtlas: kit.signAtlas,
     maxHeight,
-    smokestacks: o.flat ? [] : kit.smoke,
+    smokestacks: o.flat || o.provenance ? [] : kit.smoke,
     buildDuration: 0,
   };
 }
 
-/* ───────────────────────── block compositions ───────────────────────── */
-
-interface Lot {
-  x: number;
-  z: number;
-  w: number;
-  d: number;
-  rot: number;
-  corner: boolean;
-}
-
-/** Corner lots L×L and one or two lots along each edge between them (front = outward). */
-function perimeterLots(B: number, Ld: number, split: number): Lot[] {
-  const c = B / 2 - Ld / 2;
-  const lots: Lot[] = [
-    { x: c, z: c, w: Ld, d: Ld, rot: 0, corner: true },
-    { x: -c, z: c, w: Ld, d: Ld, rot: -Math.PI / 2, corner: true },
-    { x: -c, z: -c, w: Ld, d: Ld, rot: Math.PI, corner: true },
-    { x: c, z: -c, w: Ld, d: Ld, rot: Math.PI / 2, corner: true },
-  ];
-  const mid = B - 2 * Ld;
-  for (let k = 0; k < split; k++) {
-    const off = -mid / 2 + (mid / split) * (k + 0.5);
-    const w = mid / split;
-    lots.push({ x: off, z: c, w, d: Ld, rot: 0, corner: false }, { x: c, z: -off, w, d: Ld, rot: Math.PI / 2, corner: false }, { x: -off, z: -c, w, d: Ld, rot: Math.PI, corner: false }, { x: -c, z: off, w, d: Ld, rot: -Math.PI / 2, corner: false });
-  }
-  return lots;
-}
-
-function place(kit: Kit, lot: Lot, P: Program) {
-  kit.frame(lot.x, lot.z, lot.rot, () => building(kit, lot.w - 0.08, lot.d - 0.08, P));
-}
-
-function courtyardGarden(kit: Kit, B: number, Ld: number, seed: number) {
-  kit.span(-B / 2 + Ld, B / 2 - Ld, 0, 0.02, -B / 2 + Ld, B / 2 - Ld, kit.palette.grass[1], Surf.GRASS);
-  for (let t = 0; t < 3; t++) tree(kit, (kit.rand(seed, t) - 0.5) * (B - 2 * Ld - 1), (kit.rand(seed, t + 9) - 0.5) * (B - 2 * Ld - 1), seed * 7 + t, 0.9, 0.02);
-}
-
-function composeBlock(kit: Kit, kind: BlockKind, brief: Brief | null, B: number, g: CityGrammar, bi: number, nextMinor: () => Brief) {
-  const p = kit.palette;
-  const seed = 1000 + bi * 37;
-  switch (kind) {
-    case "lots": {
-      // Lot depth and edge split vary per block, so blocks don't share one rhythm.
-      const Ld = 4.2 + kit.rand(seed, 1) * 0.8;
-      courtyardGarden(kit, B, Ld, seed);
-      perimeterLots(B, Ld, kit.rand(seed, 2) < 0.6 ? 2 : 1).forEach((lot, k) => place(kit, lot, programFor(nextMinor(), g, p, kit, bi * 50 + k, lot.corner)));
-      return;
+/**
+ * Provenance view: territory parts in the territory's debug colour (no textures, no light),
+ * a tint on every lot it owns (so plazas and yards show their owner too), a label over each
+ * territory with at least 4 lots; streets, cars and furniture greyed out, people hidden.
+ */
+function provenance(kit: Kit, plan: Plan, alloc: Allocation, trace: KitTrace) {
+  const owner = new Int32Array(kit.parts.length).fill(-1);
+  for (const pc of trace.pieces) for (let k = pc.parts[0]; k < pc.parts[1]; k++) owner[k] = pc.territory;
+  const cols = plan.territories.map((t) => debugColor(t.key));
+  const grey: RGB = [0.5, 0.5, 0.53];
+  const parts: Part[] = [];
+  kit.parts.forEach((q, k) => {
+    if (q.mesh === "sprite" || q.mesh === "glow" || q.mesh === "sign") return;
+    const t = owner[k];
+    const c = t >= 0 ? cols[t] : grey;
+    const shade = t >= 0 && q.y + q.h <= SIDEWALK_H + 0.12 ? 0.75 : 1;
+    parts.push({ ...q, color: c.map((v) => v * shade) as RGB, surf: Surf.PLAIN, variant: 0, lit: 0 });
+  });
+  // Lot tints.
+  for (let X = 0; X < N; X++)
+    for (let Y = 0; Y < N; Y++) {
+      const si = alloc.owner[X * N + Y];
+      if (si < 0) continue;
+      const t = alloc.segments[si].territory;
+      const [bx, bz] = blockCentre(X >> 2, Y >> 2);
+      const x = bx - 7 + 3.5 * (X & 3) + 1.75;
+      const z = bz - 7 + 3.5 * (Y & 3) + 1.75;
+      parts.push({ mesh: "box", node: -1, x, y: SIDEWALK_H + 0.005, z, w: 3.42, h: 0.03, d: 3.42, rotY: 0, color: cols[t].map((v) => v * 0.6) as RGB, surf: Surf.PLAIN, lit: 0, delay: 0 });
     }
-    case "market": {
-      courtyardGarden(kit, B, 4.0, seed);
-      perimeterLots(B, 4.0, 1).forEach((lot, k) => place(kit, lot, programFor({ role: "minor", content: "links", weight: 0.03, repeat: lot.corner ? 0 : brief?.repeat ?? 6, label: k === 0 ? brief?.label : undefined }, g, p, kit, bi * 50 + k, lot.corner)));
-      return;
+  // Labels: index and kind over the centroid of each territory's lots.
+  const signKit = new Kit(kit.palette, kit.seed);
+  plan.territories.forEach((t, ti) => {
+    if (alloc.lots[ti] < 4) return;
+    let sx = 0;
+    let sz = 0;
+    let n = 0;
+    let top = 1;
+    for (const s of alloc.segments) {
+      if (s.territory !== ti) continue;
+      for (let k = s.from; k < s.from + s.count; k++) {
+        const [X, Y] = alloc.path[k];
+        const [bx, bz] = blockCentre(X >> 2, Y >> 2);
+        sx += bx - 7 + 3.5 * (X & 3) + 1.75;
+        sz += bz - 7 + 3.5 * (Y & 3) + 1.75;
+        n++;
+      }
     }
-    case "court": {
-      const P0 = programFor({ ...(brief as Brief), role: "minor", content: "text", weight: 0.04 }, g, p, kit, bi * 50);
-      // Classic courts are palaces (mansards, a turret); others are streets of buildings.
-      building(kit, B - 0.2, B - 0.2, { ...P0, family: "courtyard", floors: Math.max(3, P0.floors + 1), corner: g.style === "classic" ? "turret" : undefined, ground: "shop", ground2: "cafe", roof: g.style === "classic" ? "mansard" : P0.roof === "mansard" ? "flat" : P0.roof, topside: g.style === "soft" ? "garden" : P0.topside === "garden" ? "hvac" : P0.topside });
-      return;
-    }
-    case "towers": {
-      const P0 = programFor({ ...(brief as Brief), role: "minor", content: "media", weight: 0.1 }, g, p, kit, bi * 50);
-      plaza(kit, -B / 2, B / 2, -B / 2, B / 2, seed, false, [-B / 2, -B / 2 + 8.4, -B / 2, -B / 2 + 8.4]);
-      kit.frame(-B / 2 + 4.2, -B / 2 + 4.2, 0, () => building(kit, 8, 8, { ...P0, family: "podiumTower", floors: 9 + Math.round(g.verticality * 8), brand: brief?.label?.toUpperCase(), roof: g.style === "tech" ? "crown" : "flat" }));
-      const lot: Lot = { x: B / 2 - 2.6, z: B / 2 - 2.6, w: 5, d: 5, rot: 0, corner: true };
-      place(kit, lot, programFor({ role: "minor", content: "media", weight: 0.08, repeat: 0, label: brief?.label }, g, p, kit, bi * 50 + 1, true));
-      for (let t = 0; t < 4; t++) tree(kit, -B / 2 + 1 + t * 1.6, B / 2 - 0.9, seed + t, 0.9, 0.02);
-      return;
-    }
-    case "slabs": {
-      const P0 = programFor({ ...(brief as Brief), role: "minor", content: "structured", weight: 0.04 }, g, p, kit, bi * 50);
-      plaza(kit, -B / 2, B / 2, -B / 2, B / 2, seed, false, [-B / 2, B / 2, B / 2 - 4.4, B / 2]);
-      const lotA: Lot = { x: 0, z: B / 2 - 2.2, w: B - 0.4, d: 4.2, rot: 0, corner: false };
-      const lotB: Lot = { x: B / 2 - 2.2, z: -1.6, w: B - 3.6, d: 4.2, rot: Math.PI / 2, corner: false };
-      place(kit, lotA, { ...P0, family: "slab", floors: 5 + Math.round(g.verticality * 3), ground: g.style === "modern" ? "arcade" : "shop" });
-      place(kit, lotB, { ...P0, family: "slab", floors: 7 + Math.round(g.verticality * 3), ground: "arcade", seed: P0.seed + 3 });
-      for (let t = 0; t < 5; t++) tree(kit, -B / 2 + 1.2 + t * 2, -B / 2 + 1.5 + kit.rand(seed, t) * 4, seed + t, 1, 0.02);
-      return;
-    }
-    case "works": {
-      const P0 = programFor({ ...(brief as Brief), role: "minor", content: "structured", weight: 0.1 }, g, p, kit, bi * 50);
-      kit.span(-B / 2, B / 2, 0, 0.02, -B / 2, B / 2, mix(p.road, p.sidewalk, 0.5), Surf.PAVING);
-      place(kit, { x: -1.5, z: B / 2 - 3.2, w: B - 3.4, d: 6.2, rot: 0, corner: false }, { ...P0, family: "shed", label: brief?.label?.toUpperCase() });
-      place(kit, { x: B / 2 - 2.6, z: -2.4, w: 7.5, d: 5, rot: Math.PI / 2, corner: false }, { ...P0, family: "shed", roof: "gable", seed: P0.seed + 5, label: undefined });
-      // Yard: containers and pallets.
-      const cs: RGB[] = [p.accents[0], p.accents[1], [0.55, 0.3, 0.2], [0.3, 0.45, 0.55]];
-      for (let k = 0; k < 6; k++) kit.box(-B / 2 + 1.5 + (k % 3) * 1.6, (k >= 3 ? 0.42 : 0), -B / 2 + 1.6, 1.4, 0.42, 0.55, cs[k % cs.length], Surf.STRIPES);
-      return;
-    }
-    case "plaza": {
-      plaza(kit, -B / 2, B / 2, -B / 2, B / 2, seed, true);
-      const P0 = programFor({ ...(brief as Brief), role: "minor", content: "action", weight: 0.01 }, g, p, kit, bi * 50);
-      for (const [x, z] of [
-        [-3.5, 2.5],
-        [3.5, -2.5],
-      ])
-        kit.frame(x, z, 0, () => building(kit, 1.6, 1.1, { ...P0, family: "kiosk" }));
-      for (let k = 0; k < 14; k++)
-        kit.person((kit.rand(seed, k) - 0.5) * (B - 2), (kit.rand(seed, k + 50) - 0.5) * (B - 2), { variant: Math.floor(kit.rand(seed, k + 99) * 48), pose: kit.rand(seed, k + 70) < 0.5 ? "walkA" : "stand", flip: k % 2 === 0, y: 0.02 });
-      for (let k = 0; k < 4; k++) bench(kit, -2 + k * 1.3, -0.2 + (k % 2) * 0.4, k % 2 ? Math.PI : 0);
-      return;
-    }
-    case "civic": {
-      const lm = landmarkFamily(g.style);
-      plaza(kit, -B / 2, B / 2, -B / 2, B / 2, seed, lm.family !== "narrowTower", [-1.2 - 5, -1.2 + 5, -1.6 - 4.2, -1.6 + 4.2]);
-      const P0 = programFor({ ...(brief as Brief), role: "major", content: "text", weight: 0.2 }, g, p, kit, bi * 50);
-      const big = lm.family === "civic" || lm.family === "clocktower";
-      const w = big ? 9 : 6.5;
-      const floors = lm.family === "civic" ? 3 : lm.family === "clocktower" ? 12 : 16 + Math.round(g.verticality * 8);
-      kit.frame(-1.2, -1.6, 0, () => building(kit, w, big ? 7 : 6.5, { ...P0, family: lm.family, roof: lm.roof, floors, brand: brief?.label?.toUpperCase(), facade: lm.family === "narrowTower" ? "curtain" : P0.facade, ground: "lobby" }));
-      for (let t = 0; t < 4; t++) tree(kit, B / 2 - 1, -B / 2 + 1.5 + t * 3.3, seed + t, 1, 0.02);
-      for (let k = 0; k < 8; k++) kit.person(2 + kit.rand(seed, k) * 4, 3 + kit.rand(seed, k + 9) * 3, { variant: Math.floor(kit.rand(seed, k + 19) * 48), pose: k % 3 === 0 ? "walkB" : "stand", flip: k % 2 === 1, y: 0.02 });
-      return;
-    }
-  }
+    for (const b of trace.buildings) if (b.territory === ti) for (let k = b.parts[0]; k < b.parts[1]; k++) top = Math.max(top, kit.parts[k].y + kit.parts[k].h);
+    const kind = t.kind === "remainder" ? (t.source === "page" ? "PAGE" : "REST") : t.kind.toUpperCase();
+    signKit.sign(`${ti} ${kind}`, sx / n, Math.min(top, 14) + 0.6, sz / n, { bg: cols[ti].map((v) => v * 0.55) as RGB, texel: 0.16, rotY: Math.PI / 4 });
+  });
+  return { parts: [...parts, ...signKit.parts], signs: signKit.signs };
 }
 
 /* ───────────────────────── streets: furniture, signals, traffic ───────────────────────── */

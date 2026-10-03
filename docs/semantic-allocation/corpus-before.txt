@@ -1,0 +1,49 @@
+# Corpus fingerprint (2026-10-03)
+seeds: 7 (base), 8 9 10 (seed control) · time: day · viewport 1440×900 @2x · camera: KitView CITY (azimuth 45, zoom 0.9)
+perturbations: text-10, text+10, links-10, drop-secondary
+
+## snapshots (sha1 of the frozen file)
+reference    b40f1ca88972e05a39262a6b0089c028b64ce19a
+docs         b02b95e23be4c21d5f8b48abe3cbf433c751c61e
+app          2ab69c1bc595745b9e7fbf4e5240edfd715a9baf
+saas         7dea4b59a074e4637d8a0f62bbabf1d484bd919e
+shop         087cb3de3e0e5d8314d39e8d92712ac89f963b4a
+news         a80feedfe8caf4db0ed8315aa6a544dfaaac304c
+portfolio    ed484a6ad7776623d5d9753b660e31799ba57e8b
+forum        c0bfd7d3e0ffb0b76a775fb4bb50dc899094c5c9
+institution  51e6fa52f1c6a573d690162b71efedfb51349f85
+oldweb       b1082e8aa54f153a8fa20045cc2064120d5637bf
+media        6ac8c2db69deb502de6e2e109e973ef7905af5e8
+directory    6e4dc1f2f7effa904642dda5fd10f7d95c8c04c6
+reference-2  017f0a931d4b7b2be239c485da40b393dc45b755
+saas-2       55d59ce7e138dff0470e8c441d6fe7390ff4f856
+
+## BEFORE cities (kit-v2, seed 7, day): sha1 of parts+signs
+reference    fca1c9ebf937358c83341034a9c3b56730393417
+docs         95420a7d52eda46f9b50f4783a69cc81b6a90174
+app          5b52e1fe430df2de409485b35116bda17e499ceb
+saas         a7e7cf552b05c4c8c637326e9a2d33dd9262be3b
+shop         1443d3194051e81771a11c685cc7a8719f68734a
+news         d72cae4aa6ddd2d07d0c1e1f17ba9627bea969b1
+portfolio    e91b473d85eed96f4f81796ded5cccba032982bf
+forum        453f690b92a892598d91f9ba183ab9a984c48c65
+institution  039edc61f4f8566d5a72f13342f75cee3d5c1191
+oldweb       34d7c6afe30430475b42a8f84943ec02981aeeca
+media        86d757199685ea78655fe52b756723d9a34d7b82
+directory    0d4adbedf059543f867a954fe315ce8f771a55ca
+reference-2  634d6a6035d8634529b7a13245222a47f33bc4a0
+saas-2       dfe18b1d1237995c54b792cc254651c27521fd97
+
+## massing-pass profiles (kit-v2): sha1 of parts+signs+smoke+time
+mixed full a15c2756126cce4059af57067d38bbc784f0c5bf
+mixed flat 384accbe870b79aa9663da933afb62f77b8df7cb
+portal full bd269161448e1fe9018ceecf29d148c5aa358a09
+portal flat aaed0e1167e040db3d79cfba968fb12d07d1ecad
+product full 75bb0bfc6f2973b56344b119386b95e9a2e54827
+product flat c2f4ae2bd6f988e1b75f001d763868eb327cc32d
+reference full aced01ac32e0a7ab63369e89f81c95e26a82790d
+reference flat 5cb4cb8bb286d58f52aeb88e9f48fc1a7140ea6a
+
+## baseline tables (docs/real-pages/tables.md, report.json)
+tables.md   cbdc4f4a08795d47207116eecfaaa506b4063082
+report.json 17ccf79df94602e3a2a8d91c73dc2cd714b31125

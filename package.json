@@ -10,7 +10,8 @@
     "probe": "tsx scripts/probe.ts",
     "shoot": "node scripts/shoot.mjs",
     "typecheck": "tsc --noEmit",
-    "fingerprint": "tsx scripts/fingerprint.ts"
+    "fingerprint": "tsx scripts/fingerprint.ts",
+    "test:allocation": "tsx scripts/semantic-allocation/check.ts"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",

@@ -506,7 +506,7 @@ export function building(kit: Kit, w: number, d: number, P: Program): number {
       volume(kit, { x0: tx0, x1: tx0 + tw, z0: tz0, z1: tz0 + td, y0: pod, y1: H1, wall: darkOf(P.wall, 0.15), surf: Surf.GLASS, lit: litOf(kit), roof: "none", roofColor: P.roofColor });
       for (let u = tx0; u <= tx0 + tw + 0.01; u += 0.8) kit.box(u, pod, tz0 + td + 0.03, 0.05, H1 - pod, 0.06, trimOf(P.wall));
       const ins = 0.35;
-      const crown = volume(kit, { x0: tx0 + ins, x1: tx0 + tw - ins, z0: tz0 + ins, z1: tz0 + td - ins, y0: H1, y1: H2, wall: darkOf(P.wall, 0.15), surf: Surf.GLASS, lit: litOf(kit), roof: P.roof === "spire" || P.roof === "crown" ? P.roof : "flat", roofColor: P.roofColor, cornice: "none" });
+      const crown = volume(kit, { x0: tx0 + ins, x1: tx0 + tw - ins, z0: tz0 + ins, z1: tz0 + td - ins, y0: H1, y1: H2, wall: darkOf(P.wall, 0.15), surf: Surf.GLASS, lit: litOf(kit), roof: P.roof === "spire" || P.roof === "crown" || P.roof === "mansard" || P.roof === "terrace" ? P.roof : "flat", roofColor: P.roofColor, cornice: "none" });
       if (crown.deck !== null) rooftop(kit, tx0 + ins, tx0 + tw - ins, tz0 + ins, tz0 + td - ins, crown.deck, { ...P, topside: "hvac" });
       if (P.brand) kit.sign(P.brand, tx0 + tw / 2, H1 - 0.5, tz0 + td + 0.07, { bg: darkOf(P.accent, 0.25), texel: 0.05, maxW: tw - 0.3 });
       if (pt.deck !== null) rooftop(kit, left ? tx0 + tw + 0.1 : x0, left ? x1 : tx0 - 0.1, z0, z1, pt.deck, { ...P, topside: "terrace" });
@@ -524,7 +524,7 @@ export function building(kit: Kit, w: number, d: number, P: Program): number {
         const f = Math.max(2, Math.round((P.floors / tiers) * (t === 0 ? 1.2 : t === 1 ? 1 : 0.8)));
         const last = t === tiers - 1;
         const v = volume(kit, { x0: x0 + inset, x1: x1 - inset, z0: z0 + inset, z1: z1 - inset, y0: y, y1: y + f * FLOOR, wall: P.wall, surf: surfOf(P), variant: P.rhythm, lit: litOf(kit), roof: last ? P.roof : "terrace", roofColor: P.roofColor, cornice: P.style === "classic" ? "heavy" : "light" });
-        if (!last && v.deck !== null) for (let x = x0 + inset + 0.3; x < x1 - inset - 0.2; x += 0.7) kit.box(x, v.deck, z1 - inset - 0.25, 0.2, 0.16, 0.2, kit.palette.leaves[(t + Math.round(x)) % 2]);
+        if (!last && v.deck !== null) for (let x = x0 + inset + 0.3; x < x1 - inset - 0.2; x += 0.7) kit.box(x, v.deck, z1 - inset - 0.25, 0.2, 0.16, 0.2, kit.palette.leaves[(((t + Math.round(x)) % 2) + 2) % 2]);
         y += f * FLOOR + 0.12;
         inset += Math.min(w, d) * 0.14;
         top = v.top;
@@ -576,9 +576,10 @@ export function building(kit: Kit, w: number, d: number, P: Program): number {
       const H = 0.6 + P.floors * FLOOR;
       const hz1 = z1 - 0.9;
       volume(kit, { x0: x0 + 0.3, x1: x1 - 0.3, z0: z0 + 0.3, z1: hz1, y0: g, y1: H, wall: P.wall, surf: Surf.FRAMED, variant: rhythm({ bay: 1, tall: true }), lit: litOf(kit), roof: "flat", roofColor: P.roofColor, cornice: "heavy" });
-      face(kit, x0 + 0.3, x1 - 0.3, z0 + 0.3, hz1, "front", (span) => colonnade(kit, span * 0.25, span * 0.75, 0.45, H - 0.02, P.wall, true));
+      face(kit, x0 + 0.3, x1 - 0.3, z0 + 0.3, hz1, "front", (span) => colonnade(kit, span * 0.25, span * 0.75, 0.45, H - 0.02, P.wall, P.style === "classic" || P.style === "retro"));
       const r = Math.min(w, d) * 0.5;
-      volume(kit, { x0: -r / 2, x1: r / 2, z0: (z0 + hz1) / 2 - r / 2, z1: (z0 + hz1) / 2 + r / 2, y0: H + 0.12, y1: H + 0.9, wall: P.wall, surf: Surf.FRAMED, variant: rhythm({ tall: true }), lit: litOf(kit), roof: "dome", roofColor: P.roofColor });
+      const drum: RoofFamily = P.roof === "spire" || P.roof === "crown" || P.roof === "flat" || P.roof === "terrace" || P.roof === "gable" ? P.roof : "dome";
+      volume(kit, { x0: -r / 2, x1: r / 2, z0: (z0 + hz1) / 2 - r / 2, z1: (z0 + hz1) / 2 + r / 2, y0: H + 0.12, y1: H + 0.9, wall: P.wall, surf: Surf.FRAMED, variant: rhythm({ tall: true }), lit: litOf(kit), roof: drum, roofColor: P.roofColor });
       for (const s of [-1, 1]) {
         kit.box(s * (w / 2 - 0.5), 0, z1 - 0.3, 0.04, 1.6, 0.04, [0.8, 0.8, 0.82]);
         kit.box(s * (w / 2 - 0.5) + 0.17, 1.38, z1 - 0.3, 0.3, 0.2, 0.02, P.accent);
@@ -590,7 +591,8 @@ export function building(kit: Kit, w: number, d: number, P: Program): number {
       // A hall with a gable roof and a tall square tower: clock faces, belfry, spire.
       const H = 0.62 + P.floors * FLOOR;
       const hallW = w * 0.62;
-      block(kit, x0, x0 + hallW, z0, z1, Math.max(2, Math.round(P.floors / 3)), { ...P, ground: "arcade" }, ["front"], { roof: "gable", label: "" });
+      const hallRoof: RoofFamily = P.roof === "flat" || P.roof === "terrace" || P.roof === "crown" ? (P.roof === "crown" ? "flat" : P.roof) : "gable";
+      block(kit, x0, x0 + hallW, z0, z1, Math.max(2, Math.round(P.floors / 3)), { ...P, ground: "arcade" }, ["front"], { roof: hallRoof, label: "" });
       const ts = Math.min(1.8, w - hallW - 0.2);
       const tx = x0 + hallW + ts / 2 + 0.1;
       const tz = z1 - ts / 2 - 0.2;
@@ -608,7 +610,7 @@ export function building(kit: Kit, w: number, d: number, P: Program): number {
       ])
         kit.box(tx + sx * (ts / 2 - 0.12), yb + 0.1, tz + sz * (ts / 2 - 0.12), 0.2, 0.6, 0.2, P.wall);
       kit.glow(tx, yb + 0.15, tz, ts * 0.4, 0.4, ts * 0.4, kit.palette.lamp, kit.night ? 1.4 : 0.2);
-      volume(kit, { x0: tx - ts / 2, x1: tx + ts / 2, z0: tz - ts / 2, z1: tz + ts / 2, y0: yb + 0.7, y1: yb + 0.8, wall: trimOf(P.wall), surf: Surf.PLAIN, roof: "spire", roofColor: P.roofColor });
+      volume(kit, { x0: tx - ts / 2, x1: tx + ts / 2, z0: tz - ts / 2, z1: tz + ts / 2, y0: yb + 0.7, y1: yb + 0.8, wall: trimOf(P.wall), surf: Surf.PLAIN, roof: P.roof === "flat" || P.roof === "terrace" || P.roof === "crown" ? P.roof : "spire", roofColor: P.roofColor });
       return yb + 0.8 + ts * 1.6;
     }
     case "courtyard":
