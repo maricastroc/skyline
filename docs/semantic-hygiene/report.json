@@ -1,0 +1,1519 @@
+{
+ "pages": [
+  {
+   "id": "reference",
+   "territories": [
+    24,
+    25
+   ],
+   "regions": [
+    19,
+    19
+   ],
+   "remainders": [
+    4,
+    5
+   ],
+   "observed": 0,
+   "zeroLot": [
+    1,
+    1
+   ],
+   "images": 50,
+   "contentImages": 38,
+   "incidental": {
+    "content": 38,
+    "spacer": 0,
+    "icon": 12,
+    "repeated": 0,
+    "named-ui": 0
+   },
+   "chromeRaw": 0.0462345770959013,
+   "chromeLandB": 0.046875,
+   "chromeLandA": 0.046875,
+   "footerRaw": 0.015391872098507982,
+   "footerLandB": 0.015625,
+   "footerLandA": 0.015625,
+   "largestB": 0.1171875,
+   "largestA": 0.1171875,
+   "coverageB": 0.8046875,
+   "coverageA": 0.80078125,
+   "observedLand": 0,
+   "mediaLandB": 0.04397485686031159,
+   "mediaLandA": 0.03579786101137866,
+   "morph": 0.05253308657817737,
+   "decision": 0.0814205523109752,
+   "landmark": [
+    "clocktower 13f full",
+    "clocktower 13f full"
+   ],
+   "merges": [],
+   "fallback": false,
+   "semCoverage": 0.8005216602404175
+  },
+  {
+   "id": "docs",
+   "territories": [
+    12,
+    10
+   ],
+   "regions": [
+    8,
+    8
+   ],
+   "remainders": [
+    3,
+    1
+   ],
+   "observed": 0,
+   "zeroLot": [
+    3,
+    1
+   ],
+   "images": 3,
+   "contentImages": 3,
+   "incidental": {
+    "content": 3,
+    "spacer": 0,
+    "icon": 0,
+    "repeated": 0,
+    "named-ui": 0
+   },
+   "chromeRaw": 0.011521236706080917,
+   "chromeLandB": 0.01171875,
+   "chromeLandA": 0.01171875,
+   "footerRaw": 0.0019908512903133,
+   "footerLandB": 0.00390625,
+   "footerLandA": 0.00390625,
+   "largestB": 0.50390625,
+   "largestA": 0.50390625,
+   "coverageB": 0.94921875,
+   "coverageA": 0.953125,
+   "observedLand": 0,
+   "mediaLandB": 0,
+   "mediaLandA": 0,
+   "morph": 0.03430781756841274,
+   "decision": 0.08482142857142856,
+   "landmark": [
+    "none",
+    "none"
+   ],
+   "merges": [
+    {
+     "key": "div.body|#rest",
+     "label": "main “”",
+     "reason": "empty wrapper: no own text, content images or controls",
+     "weight": 0.0007671873951110983
+    },
+    {
+     "key": "div.document|itertools — Functions creating iterators#rest",
+     "label": "section “itertools — Functions creating”",
+     "reason": "only its own heading (“itertools — Functions creating”)",
+     "weight": 0.000960902212376518
+    }
+   ],
+   "fallback": false,
+   "semCoverage": 0.9507155501926884
+  },
+  {
+   "id": "app",
+   "territories": [
+    30,
+    19
+   ],
+   "regions": [
+    13,
+    13
+   ],
+   "remainders": [
+    16,
+    5
+   ],
+   "observed": 0,
+   "zeroLot": [
+    6,
+    0
+   ],
+   "images": 13,
+   "contentImages": 3,
+   "incidental": {
+    "content": 3,
+    "spacer": 0,
+    "icon": 10,
+    "repeated": 0,
+    "named-ui": 0
+   },
+   "chromeRaw": 0.06019873259201923,
+   "chromeLandB": 0.05859375,
+   "chromeLandA": 0.05859375,
+   "footerRaw": 0.023888186171786015,
+   "footerLandB": 0.0234375,
+   "footerLandA": 0.0234375,
+   "largestB": 0.3984375,
+   "largestA": 0.421875,
+   "coverageB": 0.8046875,
+   "coverageA": 0.84765625,
+   "observedLand": 0,
+   "mediaLandB": 0.15565112069047918,
+   "mediaLandA": 0.03692303193420367,
+   "morph": 0.12222199892446946,
+   "decision": 0.17638617356359293,
+   "landmark": [
+    "none",
+    "none"
+   ],
+   "merges": [
+    {
+     "key": "div.MarketingHeader-module__menu__GIy3y|#rest",
+     "label": "section “”",
+     "reason": "empty wrapper: no own text, content images or controls",
+     "weight": 0.0006455486194942772
+    },
+    {
+     "key": "div.MarketingHeader-module__bar__mBSyE|#rest",
+     "label": "section “”",
+     "reason": "single-child wrapper: own text under 10% of the region",
+     "weight": 0.015460889436887932
+    },
+    {
+     "key": "header.HeaderMktg|Navigation Menu#rest",
+     "label": "section “Navigation Menu”",
+     "reason": "single-child wrapper: own text under 10% of the region",
+     "weight": 0.005861581465008027
+    },
+    {
+     "key": "div.position-relative|Navigation Menu#rest",
+     "label": "section “Navigation Menu”",
+     "reason": "only its own heading (“Navigation Menu”)",
+     "weight": 0.0054742522933114825
+    },
+    {
+     "key": "div.OverviewContent-module__Box_1__MPS0U|#rest",
+     "label": "section “”",
+     "reason": "empty wrapper: no own text, content images or controls",
+     "weight": 0.0006455486194942772
+    },
+    {
+     "key": "div.js-snippet-clipboard-copy-unpositioned|What is Svelte?#rest",
+     "label": "section “What is Svelte?”",
+     "reason": "empty wrapper: no own text, content images or controls",
+     "weight": 0.0006455486194942772
+    },
+    {
+     "key": "div.OverviewRepoFiles-module__Box_2__zsLGk|Repository files navigation#rest",
+     "label": "section “Repository files navigation”",
+     "reason": "empty wrapper: no own text, content images or controls",
+     "weight": 0.0006455486194942864
+    },
+    {
+     "key": "div.OverviewRepoFiles-module__Box_1__OXeac|Repository files navigation#rest",
+     "label": "section “Repository files navigation”",
+     "reason": "empty wrapper: no own text, content images or controls",
+     "weight": 0.0006455486194942772
+    },
+    {
+     "key": "div.OverviewContent-module__Box_11__F19kY|Latest commit#rest",
+     "label": "section “Latest commit”",
+     "reason": "empty wrapper: no own text, content images or controls",
+     "weight": 0.0006455486194942772
+    },
+    {
+     "key": "div.tmp-pl-lg-3|Latest commit#rest",
+     "label": "section “Latest commit”",
+     "reason": "empty wrapper: no own text, content images or controls",
+     "weight": 0.0025821944779771087
+    },
+    {
+     "key": "div#repos-split-pane-content.SharedPageLayout-module__content__IwGAp|Latest commit#rest",
+     "label": "section “Latest commit”",
+     "reason": "empty wrapper: no own text, content images or controls",
+     "weight": 0.013556521009379822
+    }
+   ],
+   "fallback": false,
+   "semCoverage": 0.8425440550848599
+  },
+  {
+   "id": "saas",
+   "territories": [
+    11,
+    17
+   ],
+   "regions": [
+    9,
+    11
+   ],
+   "remainders": [
+    1,
+    5
+   ],
+   "observed": 0,
+   "zeroLot": [
+    0,
+    0
+   ],
+   "images": 180,
+   "contentImages": 19,
+   "incidental": {
+    "content": 19,
+    "spacer": 0,
+    "icon": 161,
+    "repeated": 0,
+    "named-ui": 0
+   },
+   "chromeRaw": 0.07042949873207764,
+   "chromeLandB": 0.0703125,
+   "chromeLandA": 0.0859375,
+   "footerRaw": 0.05050557407377873,
+   "footerLandB": 0.05078125,
+   "footerLandA": 0.0625,
+   "largestB": 0.26171875,
+   "largestA": 0.17578125,
+   "coverageB": 0.91796875,
+   "coverageA": 0.703125,
+   "observedLand": 0,
+   "mediaLandB": 0.7202096809867603,
+   "mediaLandA": 0.1730378799046673,
+   "morph": 0.3671196515412871,
+   "decision": 0.256849593495935,
+   "landmark": [
+    "podiumTower 25f full",
+    "podiumTower 22f full"
+   ],
+   "merges": [
+    {
+     "key": "div.MwJdiW_panel|~2#rest",
+     "label": "section “”",
+     "reason": "empty wrapper: no own text, content images or controls",
+     "weight": 0.0021458766979249523
+    }
+   ],
+   "fallback": false,
+   "semCoverage": 0.7064387030321237
+  },
+  {
+   "id": "shop",
+   "territories": [
+    7,
+    7
+   ],
+   "regions": [
+    5,
+    5
+   ],
+   "remainders": [
+    1,
+    1
+   ],
+   "observed": 0,
+   "zeroLot": [
+    1,
+    1
+   ],
+   "images": 73,
+   "contentImages": 73,
+   "incidental": {
+    "content": 73,
+    "spacer": 0,
+    "icon": 0,
+    "repeated": 0,
+    "named-ui": 0
+   },
+   "chromeRaw": 0.12020732403082784,
+   "chromeLandB": 0.12109375,
+   "chromeLandA": 0.109375,
+   "footerRaw": 0.10590061210872907,
+   "footerLandB": 0.10546875,
+   "footerLandA": 0.09765625,
+   "largestB": 0.74609375,
+   "largestA": 0.7578125,
+   "coverageB": 0.94140625,
+   "coverageA": 0.94140625,
+   "observedLand": 0,
+   "mediaLandB": 0,
+   "mediaLandA": 0,
+   "morph": 0.006393700586579036,
+   "decision": 0.03575386676409695,
+   "landmark": [
+    "podiumTower 19f full",
+    "podiumTower 19f full"
+   ],
+   "merges": [],
+   "fallback": false,
+   "semCoverage": 0.9407714697378472
+  },
+  {
+   "id": "news",
+   "territories": [
+    30,
+    28
+   ],
+   "regions": [
+    25,
+    25
+   ],
+   "remainders": [
+    4,
+    2
+   ],
+   "observed": 0,
+   "zeroLot": [
+    1,
+    0
+   ],
+   "images": 107,
+   "contentImages": 107,
+   "incidental": {
+    "content": 107,
+    "spacer": 0,
+    "icon": 0,
+    "repeated": 0,
+    "named-ui": 0
+   },
+   "chromeRaw": 0.10229076335133314,
+   "chromeLandB": 0.1015625,
+   "chromeLandA": 0.09375,
+   "footerRaw": 0.023313294141639844,
+   "footerLandB": 0.0234375,
+   "footerLandA": 0.01953125,
+   "largestB": 0.16796875,
+   "largestA": 0.16796875,
+   "coverageB": 0.75390625,
+   "coverageA": 0.7578125,
+   "observedLand": 0,
+   "mediaLandB": 0.7416277577499866,
+   "mediaLandA": 0.7416277577499866,
+   "morph": 0.03178739873315944,
+   "decision": 0.06312478647037471,
+   "landmark": [
+    "none",
+    "none"
+   ],
+   "merges": [
+    {
+     "key": "section#news.dcr-cavc6m|News#rest",
+     "label": "section “News”",
+     "reason": "single-child wrapper: own text under 10% of the region",
+     "weight": 0.00266893659280539
+    },
+    {
+     "key": "section#most-viewed.dcr-cavc6m|Most popular#rest",
+     "label": "section “Most popular”",
+     "reason": "single-child wrapper: own text under 10% of the region",
+     "weight": 0.002901692691015172
+    }
+   ],
+   "fallback": false,
+   "semCoverage": 0.7586008920100371
+  },
+  {
+   "id": "portfolio",
+   "territories": [
+    25,
+    13
+   ],
+   "regions": [
+    11,
+    11
+   ],
+   "remainders": [
+    13,
+    1
+   ],
+   "observed": 0,
+   "zeroLot": [
+    1,
+    0
+   ],
+   "images": 9,
+   "contentImages": 9,
+   "incidental": {
+    "content": 9,
+    "spacer": 0,
+    "icon": 0,
+    "repeated": 0,
+    "named-ui": 0
+   },
+   "chromeRaw": 0.024327177918076235,
+   "chromeLandB": 0.0234375,
+   "chromeLandA": 0.0234375,
+   "footerRaw": 0.024327177918076235,
+   "footerLandB": 0.0234375,
+   "footerLandA": 0.0234375,
+   "largestB": 0.18359375,
+   "largestA": 0.2109375,
+   "coverageB": 0.8046875,
+   "coverageA": 0.8984375,
+   "observedLand": 0,
+   "mediaLandB": 0.33203125,
+   "mediaLandA": 0.359375,
+   "morph": 0.03629411448301677,
+   "decision": 0.0948642768276417,
+   "landmark": [
+    "clocktower 13f full",
+    "clocktower 13f full"
+   ],
+   "merges": [
+    {
+     "key": "div.group|Senior Frontend Engineer, Accessibility #rest",
+     "label": "section “Senior Frontend Engineer, Acce”",
+     "reason": "only its own heading (“Senior Frontend Engineer, Acce”)",
+     "weight": 0.008791398220172808
+    },
+    {
+     "key": "div.group|Lead Engineer · Upstatement Senior Engin#rest",
+     "label": "section “Lead Engineer · Upstatement Se”",
+     "reason": "only its own heading (“Lead Engineer · Upstatement Se”)",
+     "weight": 0.008748303130858243
+    },
+    {
+     "key": "div.group|UI Engineer Co-op · Apple#rest",
+     "label": "section “UI Engineer Co-op · Apple”",
+     "reason": "only its own heading (“UI Engineer Co-op · Apple”)",
+     "weight": 0.008791398220172808
+    },
+    {
+     "key": "div.group|Developer · Scout Studio#rest",
+     "label": "section “Developer · Scout Studio”",
+     "reason": "only its own heading (“Developer · Scout Studio”)",
+     "weight": 0.008748303130858236
+    },
+    {
+     "key": "div.group|Software Engineer Co-op · Starry#rest",
+     "label": "section “Software Engineer Co-op · Star”",
+     "reason": "only its own heading (“Software Engineer Co-op · Star”)",
+     "weight": 0.008791398220172816
+    },
+    {
+     "key": "div.group|Creative Technologist Co-op · MullenLowe#rest",
+     "label": "section “Creative Technologist Co-op · ”",
+     "reason": "only its own heading (“Creative Technologist Co-op · ”)",
+     "weight": 0.008791398220172816
+    },
+    {
+     "key": "ol.group/list|Senior Frontend Engineer, Accessibility #rest",
+     "label": "section “Senior Frontend Engineer, Acce”",
+     "reason": "empty wrapper: no own text, content images or controls",
+     "weight": 0.0021547544657286918
+    },
+    {
+     "key": "div|Senior Frontend Engineer, Accessibility #rest",
+     "label": "section “Senior Frontend Engineer, Acce”",
+     "reason": "only its own heading (“Senior Frontend Engineer, Acce”)",
+     "weight": 0.013962808937921503
+    },
+    {
+     "key": "section#experience.scroll-mt-16|Experience#rest",
+     "label": "section “Experience”",
+     "reason": "only its own heading (“Experience”)",
+     "weight": 0.006593548665129614
+    },
+    {
+     "key": "div|Build a Spotify Connected App#rest",
+     "label": "section “Build a Spotify Connected App”",
+     "reason": "only its own heading (“Build a Spotify Connected App”)",
+     "weight": 0.01838005559266522
+    },
+    {
+     "key": "section#projects.scroll-mt-16|Projects#rest",
+     "label": "section “Projects”",
+     "reason": "only its own heading (“Projects”)",
+     "weight": 0.00655045357581505
+    },
+    {
+     "key": "main#content.pt-24|#rest",
+     "label": "main “”",
+     "reason": "empty wrapper: no own text, content images or controls",
+     "weight": 0.004309508931457138
+    }
+   ],
+   "fallback": false,
+   "semCoverage": 0.8986079411157284
+  },
+  {
+   "id": "forum",
+   "territories": [
+    5,
+    4
+   ],
+   "regions": [
+    3,
+    3
+   ],
+   "remainders": [
+    1,
+    0
+   ],
+   "observed": 0,
+   "zeroLot": [
+    0,
+    0
+   ],
+   "images": 25,
+   "contentImages": 0,
+   "incidental": {
+    "content": 0,
+    "spacer": 0,
+    "icon": 25,
+    "repeated": 0,
+    "named-ui": 0
+   },
+   "chromeRaw": 0.009142427752903973,
+   "chromeLandB": 0.0078125,
+   "chromeLandA": 0.0078125,
+   "footerRaw": 0.009142427752903973,
+   "footerLandB": 0.0078125,
+   "footerLandA": 0.0078125,
+   "largestB": 0.96484375,
+   "largestA": 0.96484375,
+   "coverageB": 0.9921875,
+   "coverageA": 0.99609375,
+   "observedLand": 0,
+   "mediaLandB": 0.96484375,
+   "mediaLandA": 0,
+   "morph": 0.5131892613658059,
+   "decision": 0.46875,
+   "landmark": [
+    "clocktower 8f quad",
+    "clocktower 8f quad"
+   ],
+   "merges": [
+    {
+     "key": "main#inside|#rest",
+     "label": "main “”",
+     "reason": "only its own heading",
+     "weight": 0.003996877075637636
+    }
+   ],
+   "fallback": false,
+   "semCoverage": 0.9965041891466726
+  },
+  {
+   "id": "institution",
+   "territories": [
+    16,
+    11
+   ],
+   "regions": [
+    9,
+    9
+   ],
+   "remainders": [
+    6,
+    1
+   ],
+   "observed": 0,
+   "zeroLot": [
+    1,
+    0
+   ],
+   "images": 5,
+   "contentImages": 5,
+   "incidental": {
+    "content": 5,
+    "spacer": 0,
+    "icon": 0,
+    "repeated": 0,
+    "named-ui": 0
+   },
+   "chromeRaw": 0.2766066838046273,
+   "chromeLandB": 0.27734375,
+   "chromeLandA": 0.21875,
+   "footerRaw": 0.23835008179481187,
+   "footerLandB": 0.23828125,
+   "footerLandA": 0.1875,
+   "largestB": 0.23828125,
+   "largestA": 0.26171875,
+   "coverageB": 0.9453125,
+   "coverageA": 0.97265625,
+   "observedLand": 0,
+   "mediaLandB": 0.1171875,
+   "mediaLandA": 0.1328125,
+   "morph": 0.08020253881326125,
+   "decision": 0.13860293071897903,
+   "landmark": [
+    "civic 3f half",
+    "civic 3f half"
+   ],
+   "merges": [
+    {
+     "key": "section.homepage-section|Services and information#rest",
+     "label": "section “Services and information”",
+     "reason": "only its own heading (“Services and information”)",
+     "weight": 0.016662771675625136
+    },
+    {
+     "key": "div.govuk-grid-row|Services and information#rest",
+     "label": "section “Services and information”",
+     "reason": "empty wrapper: no own text, content images or controls",
+     "weight": 0.004673989249824726
+    },
+    {
+     "key": "div.govuk-grid-row|Government activity#rest",
+     "label": "section “Government activity”",
+     "reason": "empty wrapper: no own text, content images or controls",
+     "weight": 0.004673989249824726
+    },
+    {
+     "key": "div.govuk-width-container|Services and information#rest",
+     "label": "section “Services and information”",
+     "reason": "empty wrapper: no own text, content images or controls",
+     "weight": 0.002336994624912363
+    },
+    {
+     "key": "main#content.govuk-main-wrapper|#rest",
+     "label": "main “”",
+     "reason": "empty wrapper: no own text, content images or controls",
+     "weight": 0.004673989249824726
+    }
+   ],
+   "fallback": false,
+   "semCoverage": 0.9740367778422154
+  },
+  {
+   "id": "oldweb",
+   "territories": [
+    2,
+    3
+   ],
+   "regions": [
+    1,
+    1
+   ],
+   "remainders": [
+    0,
+    0
+   ],
+   "observed": 2,
+   "zeroLot": [
+    1,
+    0
+   ],
+   "images": 709,
+   "contentImages": 3,
+   "incidental": {
+    "content": 3,
+    "spacer": 471,
+    "icon": 235,
+    "repeated": 0,
+    "named-ui": 0
+   },
+   "chromeRaw": 0.0009314607866652074,
+   "chromeLandB": 0,
+   "chromeLandA": 0.00390625,
+   "footerRaw": 0,
+   "footerLandB": 0,
+   "footerLandA": 0,
+   "largestB": 1,
+   "largestA": 0.96484375,
+   "coverageB": 0,
+   "coverageA": 0.00390625,
+   "observedLand": 0.99609375,
+   "mediaLandB": 1,
+   "mediaLandA": 0,
+   "morph": 0.5398403757789153,
+   "decision": 0.5917804621848739,
+   "landmark": [
+    "none",
+    "none"
+   ],
+   "merges": [],
+   "fallback": true,
+   "semCoverage": 0.00272047771588691
+  },
+  {
+   "id": "media",
+   "territories": [
+    23,
+    16
+   ],
+   "regions": [
+    13,
+    13
+   ],
+   "remainders": [
+    9,
+    2
+   ],
+   "observed": 0,
+   "zeroLot": [
+    3,
+    0
+   ],
+   "images": 27,
+   "contentImages": 27,
+   "incidental": {
+    "content": 27,
+    "spacer": 0,
+    "icon": 0,
+    "repeated": 0,
+    "named-ui": 0
+   },
+   "chromeRaw": 0.2791310708420166,
+   "chromeLandB": 0.28125,
+   "chromeLandA": 0.21484375,
+   "footerRaw": 0.21386477496998219,
+   "footerLandB": 0.21484375,
+   "footerLandA": 0.1640625,
+   "largestB": 0.21484375,
+   "largestA": 0.2109375,
+   "coverageB": 0.875,
+   "coverageA": 0.88671875,
+   "observedLand": 0,
+   "mediaLandB": 0.40625,
+   "mediaLandA": 0.44140625,
+   "morph": 0.09357837318524541,
+   "decision": 0.1259816539018943,
+   "landmark": [
+    "civic 3f half",
+    "civic 3f half"
+   ],
+   "merges": [
+    {
+     "key": "div.hds-module|#rest",
+     "label": "section “”",
+     "reason": "empty wrapper: no own text, content images or controls",
+     "weight": 0.0013801289040396372
+    },
+    {
+     "key": "div.entry-content|NASA Images#rest",
+     "label": "section “NASA Images”",
+     "reason": "empty wrapper: no own text, content images or controls",
+     "weight": 0.0013801289040396372
+    },
+    {
+     "key": "article#post-336989.topic|NASA Images#rest",
+     "label": "section “NASA Images”",
+     "reason": "empty wrapper: no own text, content images or controls",
+     "weight": 0.0013801289040396372
+    },
+    {
+     "key": "main#primary.site-main|#rest",
+     "label": "main “”",
+     "reason": "empty wrapper: no own text, content images or controls",
+     "weight": 0.0013801289040396372
+    },
+    {
+     "key": "div.form-entry-content|#rest",
+     "label": "section “”",
+     "reason": "empty wrapper: no own text, content images or controls",
+     "weight": 0.0027602578080792744
+    },
+    {
+     "key": "div.hds-single-form-embed|Was this page helpful?#rest",
+     "label": "section “Was this page helpful?”",
+     "reason": "only its own heading (“Was this page helpful?”)",
+     "weight": 0.008446388892722576
+    },
+    {
+     "key": "div#pum-872473.pum|Was this page helpful?#rest",
+     "label": "section “Was this page helpful?”",
+     "reason": "single-child wrapper: own text under 10% of the region",
+     "weight": 0.006914445809238589
+    }
+   ],
+   "fallback": false,
+   "semCoverage": 0.8988483613249664
+  },
+  {
+   "id": "directory",
+   "territories": [
+    9,
+    9
+   ],
+   "regions": [
+    8,
+    8
+   ],
+   "remainders": [
+    0,
+    0
+   ],
+   "observed": 0,
+   "zeroLot": [
+    0,
+    1
+   ],
+   "images": 0,
+   "contentImages": 0,
+   "incidental": {
+    "content": 0,
+    "spacer": 0,
+    "icon": 0,
+    "repeated": 0,
+    "named-ui": 0
+   },
+   "chromeRaw": 0.14540227176320875,
+   "chromeLandB": 0.1484375,
+   "chromeLandA": 0.125,
+   "footerRaw": 0.005966913324221144,
+   "footerLandB": 0.0078125,
+   "footerLandA": 0.00390625,
+   "largestB": 0.4375,
+   "largestA": 0.44921875,
+   "coverageB": 0.5625,
+   "coverageA": 0.55078125,
+   "observedLand": 0,
+   "mediaLandB": 0,
+   "mediaLandA": 0,
+   "morph": 0.02052600076703733,
+   "decision": 0.037450974950974956,
+   "landmark": [
+    "none",
+    "none"
+   ],
+   "merges": [],
+   "fallback": false,
+   "semCoverage": 0.5612857614177311
+  },
+  {
+   "id": "reference-2",
+   "territories": [
+    17,
+    17
+   ],
+   "regions": [
+    14,
+    14
+   ],
+   "remainders": [
+    2,
+    2
+   ],
+   "observed": 0,
+   "zeroLot": [
+    1,
+    1
+   ],
+   "images": 39,
+   "contentImages": 32,
+   "incidental": {
+    "content": 32,
+    "spacer": 0,
+    "icon": 7,
+    "repeated": 0,
+    "named-ui": 0
+   },
+   "chromeRaw": 0.03961606976682354,
+   "chromeLandB": 0.0390625,
+   "chromeLandA": 0.0390625,
+   "footerRaw": 0.013190290074712185,
+   "footerLandB": 0.015625,
+   "footerLandA": 0.015625,
+   "largestB": 0.1875,
+   "largestA": 0.19140625,
+   "coverageB": 0.7890625,
+   "coverageA": 0.7890625,
+   "observedLand": 0,
+   "mediaLandB": 0.07107954486211616,
+   "mediaLandA": 0.06891554659200788,
+   "morph": 0.016422327576330796,
+   "decision": 0.04779790199926777,
+   "landmark": [
+    "clocktower 15f full",
+    "clocktower 15f full"
+   ],
+   "merges": [],
+   "fallback": false,
+   "semCoverage": 0.7870456189226115
+  },
+  {
+   "id": "saas-2",
+   "territories": [
+    11,
+    10
+   ],
+   "regions": [
+    8,
+    8
+   ],
+   "remainders": [
+    2,
+    1
+   ],
+   "observed": 0,
+   "zeroLot": [
+    0,
+    0
+   ],
+   "images": 41,
+   "contentImages": 40,
+   "incidental": {
+    "content": 40,
+    "spacer": 0,
+    "icon": 1,
+    "repeated": 0,
+    "named-ui": 0
+   },
+   "chromeRaw": 0.46493016932394027,
+   "chromeLandB": 0.46484375,
+   "chromeLandA": 0.3203125,
+   "footerRaw": 0.2615663494417666,
+   "footerLandB": 0.26171875,
+   "footerLandA": 0.1796875,
+   "largestB": 0.26171875,
+   "largestA": 0.1796875,
+   "coverageB": 0.9140625,
+   "coverageA": 0.8984375,
+   "observedLand": 0,
+   "mediaLandB": 0.11328125,
+   "mediaLandA": 0.14453125,
+   "morph": 0.21918989194686336,
+   "decision": 0.16360031619747045,
+   "landmark": [
+    "podiumTower 21f full",
+    "podiumTower 24f full"
+   ],
+   "merges": [
+    {
+     "key": "section.mt-40|Recently shipped#rest",
+     "label": "section “Recently shipped”",
+     "reason": "only its own heading (“Recently shipped”)",
+     "weight": 0.004229925950440578
+    }
+   ],
+   "fallback": false,
+   "semCoverage": 0.9211620402928888
+  }
+ ],
+ "stability": [
+  {
+   "id": "reference",
+   "k": "text-10",
+   "ownerB": 0.015625,
+   "ownerA": 0.00390625,
+   "blockB": 0.028075865083567887,
+   "blockA": 0.02190112042950053
+  },
+  {
+   "id": "reference",
+   "k": "text+10",
+   "ownerB": 0.01953125,
+   "ownerA": 0.03125,
+   "blockB": 0.04992828283914869,
+   "blockA": 0.044779845945389925
+  },
+  {
+   "id": "reference",
+   "k": "links-10",
+   "ownerB": 0.05859375,
+   "ownerA": 0.06640625,
+   "blockB": 0.06371641419216624,
+   "blockA": 0.043630383488413756
+  },
+  {
+   "id": "reference",
+   "k": "drop-secondary",
+   "ownerB": 0.0234375,
+   "ownerA": 0.03125,
+   "blockB": 0.01439674910933313,
+   "blockA": 0.010787598238246446
+  },
+  {
+   "id": "docs",
+   "k": "text-10",
+   "ownerB": 0,
+   "ownerA": 0,
+   "blockB": 0,
+   "blockA": 0.0005653437650206981
+  },
+  {
+   "id": "docs",
+   "k": "text+10",
+   "ownerB": 0,
+   "ownerA": 0,
+   "blockB": 0.0002663675044369783,
+   "blockA": 0.0016764844611421347
+  },
+  {
+   "id": "docs",
+   "k": "links-10",
+   "ownerB": 0,
+   "ownerA": 0.0078125,
+   "blockB": 0.0002663675044369783,
+   "blockA": 0.0038340595936426003
+  },
+  {
+   "id": "docs",
+   "k": "drop-secondary",
+   "ownerB": 0,
+   "ownerA": 0,
+   "blockB": 0,
+   "blockA": 0
+  },
+  {
+   "id": "app",
+   "k": "text-10",
+   "ownerB": 0.26953125,
+   "ownerA": 0.44921875,
+   "blockB": 0.1612092583913529,
+   "blockA": 0.15291826708155568
+  },
+  {
+   "id": "app",
+   "k": "text+10",
+   "ownerB": 0.00390625,
+   "ownerA": 0,
+   "blockB": 0.0009538182556077307,
+   "blockA": 0.0064459584030606325
+  },
+  {
+   "id": "app",
+   "k": "links-10",
+   "ownerB": 0.078125,
+   "ownerA": 0.0625,
+   "blockB": 0.040289874550320834,
+   "blockA": 0.03306910468071598
+  },
+  {
+   "id": "app",
+   "k": "drop-secondary",
+   "ownerB": 0,
+   "ownerA": 0,
+   "blockB": 0,
+   "blockA": 0
+  },
+  {
+   "id": "saas",
+   "k": "text-10",
+   "ownerB": 0.00390625,
+   "ownerA": 0,
+   "blockB": 0.017317216749006225,
+   "blockA": 0.002189522112463288
+  },
+  {
+   "id": "saas",
+   "k": "text+10",
+   "ownerB": 0,
+   "ownerA": 0.00390625,
+   "blockB": 0.009852491105361037,
+   "blockA": 0.0053111967461334595
+  },
+  {
+   "id": "saas",
+   "k": "links-10",
+   "ownerB": 0.11328125,
+   "ownerA": 0.30859375,
+   "blockB": 0.07772377636739686,
+   "blockA": 0.14625185662152895
+  },
+  {
+   "id": "saas",
+   "k": "drop-secondary",
+   "ownerB": 0.02734375,
+   "ownerA": 0.09765625,
+   "blockB": 0.04205033615163464,
+   "blockA": 0.10288913082104485
+  },
+  {
+   "id": "shop",
+   "k": "text-10",
+   "ownerB": 0,
+   "ownerA": 0,
+   "blockB": 0,
+   "blockA": 0
+  },
+  {
+   "id": "shop",
+   "k": "text+10",
+   "ownerB": 0,
+   "ownerA": 0,
+   "blockB": 0,
+   "blockA": 0
+  },
+  {
+   "id": "shop",
+   "k": "links-10",
+   "ownerB": 0.01171875,
+   "ownerA": 0,
+   "blockB": 0.0032091946260218553,
+   "blockA": 0
+  },
+  {
+   "id": "shop",
+   "k": "drop-secondary",
+   "ownerB": 0.0078125,
+   "ownerA": 0.00390625,
+   "blockB": 0.0014678519066904433,
+   "blockA": 0.002971084329764666
+  },
+  {
+   "id": "news",
+   "k": "text-10",
+   "ownerB": 0,
+   "ownerA": 0.00390625,
+   "blockB": 0.0048827049127608425,
+   "blockA": 0.0018511499315310032
+  },
+  {
+   "id": "news",
+   "k": "text+10",
+   "ownerB": 0.0078125,
+   "ownerA": 0.00390625,
+   "blockB": 0.001513817086679076,
+   "blockA": 0.00395441039858542
+  },
+  {
+   "id": "news",
+   "k": "links-10",
+   "ownerB": 0.33984375,
+   "ownerA": 0.31640625,
+   "blockB": 0.046657509629026594,
+   "blockA": 0.05175109762971388
+  },
+  {
+   "id": "news",
+   "k": "drop-secondary",
+   "ownerB": 0.1171875,
+   "ownerA": 0.11328125,
+   "blockB": 0.049105491504451614,
+   "blockA": 0.03240587412080642
+  },
+  {
+   "id": "portfolio",
+   "k": "text-10",
+   "ownerB": 0.0078125,
+   "ownerA": 0.015625,
+   "blockB": 0.0012496905498582721,
+   "blockA": 0.008399308549880965
+  },
+  {
+   "id": "portfolio",
+   "k": "text+10",
+   "ownerB": 0.01171875,
+   "ownerA": 0.00390625,
+   "blockB": 0.0005628082167343212,
+   "blockA": 0.002428968417608474
+  },
+  {
+   "id": "portfolio",
+   "k": "links-10",
+   "ownerB": 0.49609375,
+   "ownerA": 0.48828125,
+   "blockB": 0.0732952126728952,
+   "blockA": 0.058131265087058834
+  },
+  {
+   "id": "portfolio",
+   "k": "drop-secondary",
+   "ownerB": 0.6875,
+   "ownerA": 0.6015625,
+   "blockB": 0.11156522589481499,
+   "blockA": 0.11972109312677581
+  },
+  {
+   "id": "forum",
+   "k": "text-10",
+   "ownerB": 0,
+   "ownerA": 0,
+   "blockB": 0,
+   "blockA": 0.002287851452977342
+  },
+  {
+   "id": "forum",
+   "k": "text+10",
+   "ownerB": 0,
+   "ownerA": 0,
+   "blockB": 0,
+   "blockA": 0.0035138523883277858
+  },
+  {
+   "id": "forum",
+   "k": "links-10",
+   "ownerB": 0.00390625,
+   "ownerA": 0.00390625,
+   "blockB": 0.001788761825502581,
+   "blockA": 0.004270410686592094
+  },
+  {
+   "id": "forum",
+   "k": "drop-secondary",
+   "ownerB": 0,
+   "ownerA": 0,
+   "blockB": 0,
+   "blockA": 0
+  },
+  {
+   "id": "institution",
+   "k": "text-10",
+   "ownerB": 0,
+   "ownerA": 0,
+   "blockB": 0.0017526168119511446,
+   "blockA": 0.0071268835089242965
+  },
+  {
+   "id": "institution",
+   "k": "text+10",
+   "ownerB": 0,
+   "ownerA": 0.00390625,
+   "blockB": 0.013575740870246017,
+   "blockA": 0.012730527686434973
+  },
+  {
+   "id": "institution",
+   "k": "links-10",
+   "ownerB": 0.046875,
+   "ownerA": 0.02734375,
+   "blockB": 0.014059865089424077,
+   "blockA": 0.020184812603426916
+  },
+  {
+   "id": "institution",
+   "k": "drop-secondary",
+   "ownerB": 0,
+   "ownerA": 0,
+   "blockB": 0,
+   "blockA": 0
+  },
+  {
+   "id": "oldweb",
+   "k": "text-10",
+   "ownerB": 0,
+   "ownerA": 0,
+   "blockB": 0,
+   "blockA": 0.003999014921954386
+  },
+  {
+   "id": "oldweb",
+   "k": "text+10",
+   "ownerB": 0,
+   "ownerA": 0,
+   "blockB": 0,
+   "blockA": 0.0054317170302510195
+  },
+  {
+   "id": "oldweb",
+   "k": "links-10",
+   "ownerB": 0,
+   "ownerA": 0.00390625,
+   "blockB": 0,
+   "blockA": 0.007943290972532574
+  },
+  {
+   "id": "oldweb",
+   "k": "drop-secondary",
+   "ownerB": 0,
+   "ownerA": 0,
+   "blockB": 0,
+   "blockA": 0
+  },
+  {
+   "id": "media",
+   "k": "text-10",
+   "ownerB": 0,
+   "ownerA": 0,
+   "blockB": 0.0013613648286366874,
+   "blockA": 0.001671140269991727
+  },
+  {
+   "id": "media",
+   "k": "text+10",
+   "ownerB": 0,
+   "ownerA": 0,
+   "blockB": 0,
+   "blockA": 0
+  },
+  {
+   "id": "media",
+   "k": "links-10",
+   "ownerB": 0.03515625,
+   "ownerA": 0.01953125,
+   "blockB": 0.016435883772341068,
+   "blockA": 0.005272162126625846
+  },
+  {
+   "id": "media",
+   "k": "drop-secondary",
+   "ownerB": 0,
+   "ownerA": 0,
+   "blockB": 0,
+   "blockA": 0
+  },
+  {
+   "id": "directory",
+   "k": "text-10",
+   "ownerB": 0,
+   "ownerA": 0,
+   "blockB": 0,
+   "blockA": 0.0019933655765748282
+  },
+  {
+   "id": "directory",
+   "k": "text+10",
+   "ownerB": 0,
+   "ownerA": 0,
+   "blockB": 0.0007469788904614374,
+   "blockA": 0.0004982053393364351
+  },
+  {
+   "id": "directory",
+   "k": "links-10",
+   "ownerB": 0.01171875,
+   "ownerA": 0.0078125,
+   "blockB": 0.0040922361589622695,
+   "blockA": 0.003391840803806877
+  },
+  {
+   "id": "directory",
+   "k": "drop-secondary",
+   "ownerB": 0,
+   "ownerA": 0,
+   "blockB": 0,
+   "blockA": 0
+  },
+  {
+   "id": "reference-2",
+   "k": "text-10",
+   "ownerB": 0.0078125,
+   "ownerA": 0.00390625,
+   "blockB": 0.005957491521711739,
+   "blockA": 0.004609730874797866
+  },
+  {
+   "id": "reference-2",
+   "k": "text+10",
+   "ownerB": 0.015625,
+   "ownerA": 0.01953125,
+   "blockB": 0.024064582692337116,
+   "blockA": 0.02453468115539807
+  },
+  {
+   "id": "reference-2",
+   "k": "links-10",
+   "ownerB": 0.046875,
+   "ownerA": 0.05078125,
+   "blockB": 0.04805770641304423,
+   "blockA": 0.04265584970557715
+  },
+  {
+   "id": "reference-2",
+   "k": "drop-secondary",
+   "ownerB": 0.02734375,
+   "ownerA": 0.0234375,
+   "blockB": 0.010795164436035098,
+   "blockA": 0.010292665337076845
+  },
+  {
+   "id": "saas-2",
+   "k": "text-10",
+   "ownerB": 0,
+   "ownerA": 0,
+   "blockB": 0.0003305688529169643,
+   "blockA": 0.003204957014074389
+  },
+  {
+   "id": "saas-2",
+   "k": "text+10",
+   "ownerB": 0,
+   "ownerA": 0,
+   "blockB": 0.005890600234575981,
+   "blockA": 0.0021727535204450026
+  },
+  {
+   "id": "saas-2",
+   "k": "links-10",
+   "ownerB": 0.0390625,
+   "ownerA": 0.046875,
+   "blockB": 0.031191704712510093,
+   "blockA": 0.05203312406113149
+  },
+  {
+   "id": "saas-2",
+   "k": "drop-secondary",
+   "ownerB": 0,
+   "ownerA": 0.00390625,
+   "blockB": 0,
+   "blockA": 0.004204391724970444
+  }
+ ],
+ "landmark": {
+  "before": [
+   [
+    "none",
+    [
+     "docs",
+     "app",
+     "news",
+     "oldweb",
+     "directory"
+    ]
+   ],
+   [
+    "clocktower @1,1 full 10–14f",
+    [
+     "reference",
+     "portfolio"
+    ]
+   ],
+   [
+    "civic @1,1 half ≤4f",
+    [
+     "institution",
+     "media"
+    ]
+   ],
+   [
+    "podiumTower @1,1 full ≥20f",
+    [
+     "saas"
+    ]
+   ],
+   [
+    "podiumTower @1,1 full 15–19f",
+    [
+     "shop"
+    ]
+   ],
+   [
+    "clocktower @1,1 quad 5–9f",
+    [
+     "forum"
+    ]
+   ]
+  ],
+  "after": [
+   [
+    "none",
+    [
+     "docs",
+     "app",
+     "news",
+     "oldweb",
+     "directory"
+    ]
+   ],
+   [
+    "clocktower @1,1 full 10–14f",
+    [
+     "reference",
+     "portfolio"
+    ]
+   ],
+   [
+    "civic @1,1 half ≤4f",
+    [
+     "institution",
+     "media"
+    ]
+   ],
+   [
+    "podiumTower @1,1 full ≥20f",
+    [
+     "saas"
+    ]
+   ],
+   [
+    "podiumTower @1,1 full 15–19f",
+    [
+     "shop"
+    ]
+   ],
+   [
+    "clocktower @1,1 quad 5–9f",
+    [
+     "forum"
+    ]
+   ]
+  ]
+ }
+}

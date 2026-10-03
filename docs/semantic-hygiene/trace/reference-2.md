@@ -1,0 +1,28 @@
+# reference-2 — hygiene trace
+
+URL: https://en.wikipedia.org/wiki/Lighthouse
+
+- images 39: content 32, incidental 7 (icon 7)
+- named-region coverage of the content: 78.7%
+- chrome: 4.0% → 3.8% over 5 region(s) (S → S/(1+S))
+- remainder merges: none
+
+| # | territory | source | rawWeight | urbanWeight | lots | organisation | why |
+|---|---|---|---|---|---|---|---|
+| 0 | hero “Lighthouse” | region | 10.9% | 11.0% | 28 | landmark | T2 tier 0 (hero); T1 hero region, 11.0% of the page's content weight; T3 kind “hero” → landmark; weights: raw 10.9% → content 11.0% → ×1.00 (chrome compression elsewhere) = urban 11.0% |
+| 1 | toc “Contents” | region | 5.8% | 5.8% | 15 | archive | T2 tier 1 (main content); T1 toc region, 5.8% of the page's content weight; T3 kind “toc” → archive; weights: raw 5.8% → content 5.8% → ×1.00 (chrome compression elsewhere) = urban 5.8% |
+| 2 | remainder “” | remainder | 8.7% | 8.8% | 23 | parcelled 36% + continuous 64% | T2 tier 1 (main content); T1 own content of the main “” outside its 8 child region(s); T3 metrics (3180 chars, 73 links, 2 content images, 6 controls, 0% in tables) → parcelled 36% + continuous 64%; weights: raw 8.7% → content 8.8% → ×1.00 (chrome compression elsewhere) = urban 8.8% |
+| 3 | features “History” | region | 14.3% | 14.4% | 37 | continuous | T2 tier 1 (main content); T1 features region, 14.4% of the page's content weight; T3 metrics (10999 chars, 161 links, 6 content images, 0 controls, 0% in tables) → continuous 100%; weights: raw 14.3% → content 14.4% → ×1.00 (chrome compression elsewhere) = urban 14.4% |
+| 4 | features “Technology” | region | 6.6% | 6.7% | 17 | continuous | T2 tier 1 (main content); T1 features region, 6.6% of the page's content weight; T3 metrics (6322 chars, 57 links, 2 content images, 0 controls, 0% in tables) → continuous 100%; weights: raw 6.6% → content 6.6% → ×1.00 (chrome compression elsewhere) = urban 6.7% |
+| 5 | features “Building” | region | 7.5% | 7.6% | 19 | continuous | T2 tier 1 (main content); T1 features region, 7.6% of the page's content weight; T3 metrics (7206 chars, 75 links, 6 content images, 0 controls, 0% in tables) → continuous 100%; weights: raw 7.5% → content 7.6% → ×1.00 (chrome compression elsewhere) = urban 7.6% |
+| 6 | features “Maintenance” | region | 2.4% | 2.4% | 6 | continuous | T2 tier 1 (main content); T1 features region, 2.4% of the page's content weight; T3 metrics (1203 chars, 22 links, 0 content images, 0 controls, 0% in tables) → continuous 100%; weights: raw 2.4% → content 2.4% → ×1.00 (chrome compression elsewhere) = urban 2.4% |
+| 7 | showcase “See also” | region | 2.3% | 2.3% | 6 | media | T2 tier 1 (main content); T1 showcase region, 2.3% of the page's content weight; T3 metrics (283 chars, 22 links, 4 content images, 0 controls, 0% in tables) → media 100%; weights: raw 2.3% → content 2.3% → ×1.00 (chrome compression elsewhere) = urban 2.3% |
+| 8 | references “References” | region | 18.8% | 18.9% | 49 | archive | T2 tier 1 (main content); T1 references region, 18.9% of the page's content weight; T3 kind “references” → archive; weights: raw 18.8% → content 18.9% → ×1.00 (chrome compression elsewhere) = urban 18.9% |
+| 9 | remainder “External links” | remainder | 9.0% | 8.8% | 22 | structured 47% + media 53% | T2 tier 1 (main content); T1 own content of the section “External links” outside its 1 child region(s); T3 metrics (1312 chars, 64 links, 6 content images, 0 controls, 29% in tables) → structured 47% + media 53%; weights: raw 9.0% → content 8.8% → ×1.00 (chrome compression elsewhere) = urban 8.8% |
+| 10 | directory “Links” | region | 6.1% | 5.7% | 15 | archive | T2 tier 1 (main content); T1 directory region, 5.7% of the page's content weight; T3 kind “directory” → archive; weights: raw 6.1% → content 5.7% → ×1.00 (chrome compression elsewhere) = urban 5.7% |
+| 11 | nav “” | region | 1.8% | 1.8% | 4 | navigation | T2 tier 2 (chrome); T1 nav region, 1.8% of the page's content weight; T3 kind “nav” → navigation; weights: raw 1.8% → content 1.8% → chrome ×0.96 (nav: site-wide chrome; chrome 4% → 4%) = urban 1.8% |
+| 12 | brand “Wikipedia” | region | 0.0% | 0.0% | 0 | marker | T2 tier 2 (chrome); T1 brand region, 0.0% of the page's content weight; T3 kind “brand” → marker; weights: raw 0.0% → content 0.0% → chrome ×0.96 (brand: site-wide chrome; chrome 4% → 4%) = urban 0.0% |
+| 13 | form “Search” | region | 0.4% | 0.4% | 1 | interactive | T2 tier 2 (chrome); T1 form region, 0.4% of the page's content weight (typed: not opened, holds 1 region(s)); T3 kind “form” → interactive; weights: raw 0.4% → content 0.4% → chrome ×0.96 (form outside the main content: utility chrome; chrome 4% → 4%) = urban 0.4% |
+| 14 | form “Search” | region | 0.3% | 0.3% | 1 | interactive | T2 tier 2 (chrome); T1 form region, 0.3% of the page's content weight (typed: not opened, holds 1 region(s)); T3 kind “form” → interactive; weights: raw 0.3% → content 0.3% → chrome ×0.96 (form outside the main content: utility chrome; chrome 4% → 4%) = urban 0.3% |
+| 15 | footer “” | region | 1.3% | 1.3% | 4 | support | T2 tier 3 (footer); T1 footer region, 1.3% of the page's content weight; T3 kind “footer” → support; weights: raw 1.3% → content 1.3% → chrome ×0.96 (footer: site-wide chrome; chrome 4% → 4%) = urban 1.3% |
+| 16 | remainder “page” | page | 3.6% | 3.7% | 9 | parcelled | T2 tier 4 (page remainder); T1 page content outside every detected region; T3 metrics (157 chars, 16 links, 2 content images, 5 controls, 0% in tables) → parcelled 100%; weights: raw 3.6% → content 3.7% → ×1.00 (chrome compression elsewhere) = urban 3.7% |
