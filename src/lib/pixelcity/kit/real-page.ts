@@ -29,7 +29,9 @@ export interface RealPage {
 export function realPage(snapshot: DomSnapshot, perturbation: Perturbation = "none"): RealPage {
   const { snap, note } = perturb(snapshot, perturbation);
   const doc = normalize(snap);
-  const sem = analyzeSemantics(doc);
+  // Content media only: incidental imagery (spacers, icons, avatars…) does not make a region media.
+  // An explicit footer is the footer at any size (so it stays chrome however large it grows).
+  const sem = analyzeSemantics(doc, { contentMedia: true, explicitFooter: true });
   const fp = computeFingerprint(doc);
   return { doc, sem, fp, plan: planFromPage(doc, sem, fp), perturbed: note };
 }

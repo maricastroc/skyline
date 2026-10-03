@@ -1,0 +1,77 @@
+# Corpus fingerprint before the semantic hygiene pass
+seeds 7 (8 9 10 control) · day · 1440×900 @2x · KitView CITY · perturbations text-10 text+10 links-10 drop-secondary
+
+## snapshots
+reference    b40f1ca88972e05a39262a6b0089c028b64ce19a
+docs         b02b95e23be4c21d5f8b48abe3cbf433c751c61e
+app          2ab69c1bc595745b9e7fbf4e5240edfd715a9baf
+saas         7dea4b59a074e4637d8a0f62bbabf1d484bd919e
+shop         087cb3de3e0e5d8314d39e8d92712ac89f963b4a
+news         a80feedfe8caf4db0ed8315aa6a544dfaaac304c
+portfolio    ed484a6ad7776623d5d9753b660e31799ba57e8b
+forum        c0bfd7d3e0ffb0b76a775fb4bb50dc899094c5c9
+institution  51e6fa52f1c6a573d690162b71efedfb51349f85
+oldweb       b1082e8aa54f153a8fa20045cc2064120d5637bf
+media        6ac8c2db69deb502de6e2e109e973ef7905af5e8
+directory    6e4dc1f2f7effa904642dda5fd10f7d95c8c04c6
+reference-2  017f0a931d4b7b2be239c485da40b393dc45b755
+saas-2       55d59ce7e138dff0470e8c441d6fe7390ff4f856
+
+## allocation pass (kit-v3) cities, seed 7 day: parts+signs
+v3 reference    66721e6d26e3a3b1e5cec95c43cb5b9ae71c31d4
+v3 docs         247bb70b5aa3c008aaca2f175ad5067f45405f9a
+v3 app          42a7897c439d23ed5bf292c315499307b04e08ff
+v3 saas         daaef195d1631cd6f445a021caf24bfea2eb0d9d
+v3 shop         e7b726fed698ccb9b65d1a5ae41201161135a87e
+v3 news         3dd1a84793ea8e5ddb376e5d922dd0dea462ea71
+v3 portfolio    e00582a140cee863c85391e651a79bbd98424fb3
+v3 forum        04d2adb3a22ee4b1332c4397c22be2ca26f47d6e
+v3 institution  8f9b47ed4539b9dc58770cf9caeadbeeb1f1f7e4
+v3 oldweb       7e1a7095b2d01ad210ad52cccf753331e80cace2
+v3 media        59379110fecba34b43fb4108fd36bcd03dfbe465
+v3 directory    3909bbf2749e70de5cf0af62b1590db04dab250f
+v3 reference-2  352651ea075aba0ee2b40c0a7774b2a9d9425251
+v3 saas-2       83b226d740e6e0314374c67113e7ac932ad10d1b
+
+## allocation pass (kit-v3) provenance view, seed 7 day
+v3p reference    bb69a16f8e1e13fb9e64e8b1a704822160ac8fab
+v3p docs         e505e6b4c895a64c3cf20bbbb989c9e0a6506103
+v3p app          e8da9bb66c8689205470aceec69e2f15e7010d78
+v3p saas         16f00bc0fd059511ee132b3bbd87d868049aab44
+v3p shop         f74514560bd9df51eab7045c73b21b404c4c47db
+v3p news         66881ad70ebc96207b441d7d2f00f356fba42c24
+v3p portfolio    9f61c3859b8d32eb8aa281fc05a1f54bb6d1fb59
+v3p forum        f04bdfdabee21b741dc0577fc8d66887d469becb
+v3p institution  3fe17ccf7422ce4525cecced882aeaed6d80173a
+v3p oldweb       7baf3d5576522d511c176d50a8470ca750f82159
+v3p media        63fecfd42645a262d311dbb0552fdf81aecd4d3c
+v3p directory    3d486d2eaebe6a730314bcc7d7e9e47d4696539f
+v3p reference-2  b8d39a86f58cc0d735094382c91816dabbedd885
+v3p saas-2       b4dfb956403f5e8f3558985be0c2ab3b1f706213
+
+## kit-v2 cities, seed 7 day
+v2 reference    fca1c9ebf937358c83341034a9c3b56730393417
+v2 docs         95420a7d52eda46f9b50f4783a69cc81b6a90174
+v2 app          5b52e1fe430df2de409485b35116bda17e499ceb
+v2 saas         a7e7cf552b05c4c8c637326e9a2d33dd9262be3b
+v2 shop         1443d3194051e81771a11c685cc7a8719f68734a
+v2 news         d72cae4aa6ddd2d07d0c1e1f17ba9627bea969b1
+v2 portfolio    e91b473d85eed96f4f81796ded5cccba032982bf
+v2 forum        453f690b92a892598d91f9ba183ab9a984c48c65
+v2 institution  039edc61f4f8566d5a72f13342f75cee3d5c1191
+v2 oldweb       34d7c6afe30430475b42a8f84943ec02981aeeca
+v2 media        86d757199685ea78655fe52b756723d9a34d7b82
+v2 directory    0d4adbedf059543f867a954fe315ce8f771a55ca
+v2 reference-2  634d6a6035d8634529b7a13245222a47f33bc4a0
+v2 saas-2       dfe18b1d1237995c54b792cc254651c27521fd97
+
+## synthetic profiles under the allocation pass (kit-v3)
+v3 mixed 1ff173a86d81cc806e9ed973240428b4b2076d1c
+v3 portal 1b8335a3bdd5553b7a47017c492bb09e02ccb5da
+v3 product f748347585bae3d11095096c87bebfd5b0af3557
+v3 reference cc206b74cf063a674bb649d2e9af9a3916f8ddb9
+
+## previous tables
+docs/real-pages/tables.md cbdc4f4a08795d47207116eecfaaa506b4063082
+docs/semantic-allocation/tables.md ff8cebbad00ee491f18effe7d5f2c117052b5963
+docs/semantic-allocation/report.json 01ba4da7f26b16ff77f817873ad4b704c6b3a00a

@@ -9,14 +9,19 @@ import { debugColor, generateKitDistrict, newTrace, type KitTrace, type ProfileN
 import type { Plan } from "@/lib/pixelcity/kit/plan";
 import { generateKitDistrict as generateKitDistrictV1 } from "@/lib/pixelcity/kit-v1/district";
 import { generateKitDistrict as generateKitDistrictV2, type Profile as ProfileV2, type ProfileName as ProfileNameV2 } from "@/lib/pixelcity/kit-v2/district";
+import { generateKitDistrict as generateKitDistrictV3, type ProfileName as ProfileNameV3 } from "@/lib/pixelcity/kit-v3/district";
+import type { Plan as PlanV3 } from "@/lib/pixelcity/kit-v3/plan";
 import type { ViewState } from "./PixelScene";
 
 const PixelScene = dynamic(() => import("./PixelScene"), { ssr: false });
 
 const CITY: ViewState = { azimuth: 45, zoom: 0.9, pan: [0, 0] };
 
-/** Which generator: the first kit (frozen), the massing pass with cycled minors (frozen), or the current allocation. */
-export type KitSource = { v: 1 } | { v: 2; profile: ProfileNameV2 | ProfileV2 } | { v: 3; profile: ProfileName | Plan };
+/**
+ * Which generator: 1 the first kit, 2 the massing pass with cycled minors, 3 the semantic
+ * allocation pass (all frozen), 4 the current one (allocation + semantic hygiene).
+ */
+export type KitSource = { v: 1 } | { v: 2; profile: ProfileNameV2 | ProfileV2 } | { v: 3; profile: ProfileNameV3 | PlanV3 } | { v: 4; profile: ProfileName | Plan };
 
 export interface KitViewProps {
   fp: SiteFingerprint;
@@ -43,6 +48,7 @@ export function KitView({ fp, time, people, view, source, flat, seed, provenance
       return { city: { ...c, signs: [], parts: c.parts.filter((q) => q.mesh !== "sign" && q.mesh !== "sprite" && q.mesh !== "glow").map((q) => ({ ...q, color: q.y + q.h > 0.4 ? grey : q.color, surf: 0, variant: 0, lit: 0 })) }, trace: null };
     }
     if (source.v === 2) return { city: generateKitDistrictV2(fp, { time, people, profile: source.profile, flat, seed }), trace: null };
+    if (source.v === 3) return { city: generateKitDistrictV3(fp, { time, people, profile: source.profile, flat, seed, provenance }), trace: null };
     const tr: KitTrace = newTrace();
     return { city: generateKitDistrict(fp, { time, people, profile: source.profile, flat, seed, provenance, trace: tr }), trace: tr };
   }, [fp, time, people, source, flat, seed, provenance]);

@@ -5,6 +5,9 @@
  * weight) and a COMPOSITION MIX (what urban organisation it becomes). Weights sum to 1, so
  * the city can hand out land in proportion to them (territory.ts).
  *
+ *   (hygiene)      Weights are the semantics/hygiene.ts CONTENT weights (incidental imagery
+ *                  removed) with chrome compressed; see planFromPage. The raw structural
+ *                  share is kept as `rawWeight`.
  *   T1 PARTITION   The semantic regions form a tree. Generic containers (main, section,
  *                  sidebar) that have child regions are opened: each child becomes a territory
  *                  and the container keeps a REMAINDER territory for its own content. Typed
@@ -33,10 +36,12 @@
 import type { SiteFingerprint } from "../../fingerprint/fingerprint";
 import type { NormalizedDocument } from "../../model/types";
 import type { Region, RegionKind, Semantics } from "../../semantics/analyze";
+import { chromeFactors, chromeOf, contentImages, contentWeight, observedBlocks } from "../../semantics/hygiene";
+import type { MediaReport } from "../../snapshot/media";
 import type { Content } from "./brief";
 
 export type Comp = "landmark" | "marker" | "continuous" | "parcelled" | "archive" | "grid" | "media" | "interactive" | "navigation" | "support" | "structured";
-export type Source = "region" | "remainder" | "page";
+export type Source = "region" | "remainder" | "page" | "observed";
 
 export interface Metrics {
   chars: number;
@@ -53,11 +58,13 @@ export interface Territory {
   /** Stable identity across runs and perturbations: selector + title (+ "~n" repeat). */
   key: string;
   region: number;
-  kind: RegionKind | "remainder";
+  kind: RegionKind | "remainder" | "observed";
   source: Source;
   label?: string;
-  /** Share of the page (all territories sum to 1). */
+  /** URBAN weight: share of the page after the hygiene corrections (all territories sum to 1). */
   weight: number;
+  /** Plain structural share of the page, before any correction (for the trace). */
+  rawWeight: number;
   repeat: number;
   metrics: Metrics;
   tier: number;
@@ -74,6 +81,7 @@ export interface Plan {
   territories: Territory[];
   /** Index (in `territories`) of the hero, if the page has a real hero (with an <h1>). */
   hero: number;
+  hygiene?: PlanHygiene;
 }
 
 export const MIN_SHARE = 0.15;
@@ -154,9 +162,31 @@ export function regionKeys(doc: NormalizedDocument, sem: Semantics): Map<number,
   return out;
 }
 
+export interface PlanHygiene {
+  media?: MediaReport;
+  /** Share of the page's content weight inside named semantic regions. */
+  coverage: number;
+  /** Coverage below COVERAGE_MIN: the uncovered content was segmented into observed blocks. */
+  fallback: boolean;
+  chrome: { before: number; after: number; regions: number };
+  /** Remainders merged into their container's children (never deleted: their weight moves). */
+  merges: Array<{ key: string; label: string; reason: string; weight: number }>;
+}
+
+/** Below this share of named-region content, the rest of the page is segmented by structure. */
+export const COVERAGE_MIN = 0.5;
+
+/**
+ * Page → territories, with the hygiene pass (semantics/hygiene.ts):
+ *   weights are CONTENT weights (incidental imagery removed, H1); chrome is compressed (H2);
+ *   remainders that are only a wrapper's structure are merged into its children (T1b); pages
+ *   whose named regions cover less than half of their content are segmented into observed
+ *   blocks (H3). `rawWeight` keeps the plain structural share for the trace.
+ */
 export function planFromPage(doc: NormalizedDocument, sem: Semantics, fp: SiteFingerprint): Plan {
   const nodes = doc.nodes;
-  const total = nodes[0]?.weight || 1;
+  const rawTotal = nodes[0]?.weight || 1;
+  const total = contentWeight(nodes[0]) || 1;
   const regions = sem.regions;
   const kids = new Map<number, Region[]>();
   for (const r of regions) if (r.parent >= 0) kids.set(r.parent, [...(kids.get(r.parent) ?? []), r]);
@@ -166,12 +196,13 @@ export function planFromPage(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
   const districtNodes = sem.districts.map((d) => regions[d].node);
   const footerNode = sem.footer >= 0 ? regions[sem.footer].node : -1;
 
-  const metricsOf = (r: Region): Metrics => {
-    const n = nodes[r.node];
+  const metricsOfNode = (i: number, items = 0): Metrics => {
+    const n = nodes[i];
     let inTables = 0;
-    for (let k = r.node; k < n.end; k++) if (nodes[k].role === "table") inTables += nodes[k].end - k;
-    return { chars: n.chars, links: n.links, images: n.images, controls: n.controls, descendants: n.descendants, inTables, items: r.items.length };
+    for (let k = i; k < n.end; k++) if (nodes[k].role === "table") inTables += nodes[k].end - k;
+    return { chars: n.chars, links: n.links, images: contentImages(n), controls: n.controls, descendants: n.descendants, inTables, items };
   };
+  const metricsOf = (r: Region): Metrics => metricsOfNode(r.node, r.items.length);
   const minus = (a: Metrics, bs: Metrics[]): Metrics => ({
     chars: Math.max(0, a.chars - bs.reduce((s, b) => s + b.chars, 0)),
     links: Math.max(0, a.links - bs.reduce((s, b) => s + b.links, 0)),
@@ -188,30 +219,31 @@ export function planFromPage(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
     if (footerNode >= 0 && inside(node, footerNode)) return 3;
     if (mainNode >= 0 && inside(node, mainNode)) return 1;
     if (districtNodes.some((d) => inside(node, d) || inside(d, node))) return 1;
-    if (kind === "remainder") return 1;
+    if (kind === "remainder" || kind === "observed") return 1;
     return 2;
   };
 
+  const merges: PlanHygiene["merges"] = [];
   const out: Territory[] = [];
-  const push = (r: Region | null, source: Source, weight: number, m: Metrics, why: string[], keySuffix = "") => {
-    const kind: Territory["kind"] = source === "region" && r ? r.kind : "remainder";
+  const push = (r: Region | null, source: Source, weight: number, rawWeight: number, m: Metrics, why: string[], keySuffix = "", node = r ? r.node : 0, label?: string) => {
+    const kind: Territory["kind"] = source === "region" && r ? r.kind : source === "observed" ? "observed" : "remainder";
     let mix: Territory["mix"];
     if (source === "region" && r && BY_KIND[r.kind] && !(r.kind === "hero" && r !== heroR)) {
       mix = [{ comp: BY_KIND[r.kind]!, share: 1 }];
       why.push(`T3 kind “${r.kind}” → ${BY_KIND[r.kind]}`);
     } else {
       mix = softMix(m);
-      why.push(`T3 metrics (${m.chars} chars, ${m.links} links, ${m.images} images, ${m.controls} controls, ${Math.round((m.inTables / Math.max(m.descendants, 1)) * 100)}% in tables) → ${mix.map((x) => `${x.comp} ${Math.round(x.share * 100)}%`).join(" + ")}`);
+      why.push(`T3 metrics (${m.chars} chars, ${m.links} links, ${m.images} content images, ${m.controls} controls, ${Math.round((m.inTables / Math.max(m.descendants, 1)) * 100)}% in tables) → ${mix.map((x) => `${x.comp} ${Math.round(x.share * 100)}%`).join(" + ")}`);
     }
     const strongest = [...mix].sort((a, b) => b.share - a.share)[0]?.comp ?? "continuous";
-    const node = r ? r.node : 0;
     out.push({
-      key: r ? keyOf(r) + keySuffix : "page|body|",
+      key: r ? keyOf(r) + keySuffix : source === "observed" ? `observed|${nodes[node].selector}${keySuffix}` : "page|body|",
       region: r ? r.id : -1,
       kind,
       source,
-      label: r?.title ?? (source === "page" ? "page" : undefined),
+      label: label ?? r?.title ?? (source === "page" ? "page" : undefined),
       weight,
+      rawWeight,
       repeat: source === "region" && r ? r.items.length : 0,
       metrics: m,
       tier: source === "page" ? 4 : tierOf(node, kind, r),
@@ -220,25 +252,89 @@ export function planFromPage(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
       content: COMP_CONTENT[strongest],
       why,
     });
+    return out.length - 1;
   };
 
-  const emit = (r: Region) => {
-    const w = nodes[r.node].weight / total;
+  /** T1b: is this remainder only the wrapper's own structure (merged), or real own content (kept)? */
+  const mergeReason = (r: Region, children: Region[], m: Metrics, whole: Metrics): string | null => {
+    if (m.chars === 0 && m.images === 0 && m.controls === 0) return "empty wrapper: no own text, content images or controls";
+    if (m.images === 0 && m.controls === 0 && m.chars <= (r.title?.length ?? 0) + 24) return `only its own heading${r.title ? ` (“${r.title.slice(0, 30)}”)` : ""}`;
+    if (children.length === 1 && m.images === 0 && m.chars < 0.1 * whole.chars) return "single-child wrapper: own text under 10% of the region";
+    return null;
+  };
+
+  const emit = (r: Region): number[] => {
+    const w = contentWeight(nodes[r.node]);
+    const raw = nodes[r.node].weight / rawTotal;
     const children = (kids.get(r.id) ?? []).sort((a, b) => a.node - b.node);
     if (OPENABLE.has(r.kind) && children.length && r !== heroR) {
-      for (const c of children) emit(c);
-      const rest = Math.max(0, w - children.reduce((s, c) => s + nodes[c.node].weight / total, 0));
-      if (rest > 0) push(r, "remainder", rest, minus(metricsOf(r), children.map(metricsOf)), [`T1 own content of the ${r.kind} “${r.title ?? ""}” outside its ${children.length} child region(s)`], "#rest");
-      return;
+      const produced: number[] = [];
+      for (const c of children) produced.push(...emit(c));
+      const rest = Math.max(0, w - children.reduce((s, c) => s + contentWeight(nodes[c.node]), 0));
+      const restRaw = Math.max(0, raw - children.reduce((s, c) => s + nodes[c.node].weight / rawTotal, 0));
+      if (rest <= 0) return produced;
+      const whole = metricsOf(r);
+      const m = minus(whole, children.map(metricsOf));
+      const reason = mergeReason(r, children, m, whole);
+      if (reason && produced.length) {
+        const pw = produced.reduce((s, i) => s + out[i].weight, 0) || 1;
+        for (const i of produced) {
+          out[i].weight += (rest * out[i].weight) / pw;
+          out[i].why.push(`T1b received ${((rest * out[i].weight) / pw / total * 100).toFixed(2)}% from the ${r.kind} “${r.title ?? ""}” (${reason})`);
+        }
+        merges.push({ key: keyOf(r) + "#rest", label: `${r.kind} “${(r.title ?? "").slice(0, 30)}”`, reason, weight: rest / total });
+        return produced;
+      }
+      produced.push(push(r, "remainder", rest, restRaw, m, [`T1 own content of the ${r.kind} “${r.title ?? ""}” outside its ${children.length} child region(s)`], "#rest"));
+      return produced;
     }
-    push(r, "region", w, metricsOf(r), [`T1 ${r.kind} region, ${(w * 100).toFixed(1)}% of the page${children.length ? ` (typed: not opened, holds ${children.length} region(s))` : ""}`]);
+    return [push(r, "region", w, raw, metricsOf(r), [`T1 ${r.kind} region, ${((w / total) * 100).toFixed(1)}% of the page's content weight${children.length ? ` (typed: not opened, holds ${children.length} region(s))` : ""}`])];
   };
   const roots = regions.filter((r) => r.parent < 0).sort((a, b) => a.node - b.node);
   for (const r of roots) emit(r);
-  const covered = roots.reduce((s, r) => s + nodes[r.node].weight / total, 0);
-  if (1 - covered > 0) {
-    const root: Region = { id: -1, node: 0, kind: "page", importance: 0, evidence: [], parent: -1, children: [], items: [] };
-    push(null, "page", 1 - covered, minus(metricsOf(root), roots.map(metricsOf)), ["T1 page content outside every detected region"]);
+
+  // H3: coverage of named regions; a poorly covered page is segmented into observed blocks.
+  const named = out.filter((t) => t.source === "region").reduce((s, t) => s + t.weight, 0);
+  const coverage = named / total;
+  const coveredW = roots.reduce((s, r) => s + contentWeight(nodes[r.node]), 0);
+  const coveredRaw = roots.reduce((s, r) => s + nodes[r.node].weight / rawTotal, 0);
+  const fallback = coverage < COVERAGE_MIN;
+  const rootRegion: Region = { id: -1, node: 0, kind: "page", importance: 0, evidence: [], parent: -1, children: [], items: [] };
+  if (fallback) {
+    const blocks = observedBlocks(
+      doc,
+      roots.map((r) => r.node),
+    );
+    const coveredInside = (ids: number[]) => roots.filter((r) => ids.some((i) => r.node > i && r.node < nodes[i].end));
+    for (const b of blocks) {
+      const inner = coveredInside(b.nodes);
+      const m = minus(
+        b.nodes.map((i) => metricsOfNode(i)).reduce((a, x) => ({ chars: a.chars + x.chars, links: a.links + x.links, images: a.images + x.images, controls: a.controls + x.controls, descendants: a.descendants + x.descendants + 1, inTables: a.inTables + x.inTables, items: 0 })),
+        inner.map(metricsOf),
+      );
+      const raw = (b.nodes.reduce((s, i) => s + nodes[i].weight, 0) - inner.reduce((s, r) => s + nodes[r.node].weight, 0)) / rawTotal;
+      // Identity: selector + ordinal among observed blocks (node ids shift when content changes).
+      push(null, "observed", b.share * total, Math.max(0, raw), m, [`H3 named regions cover ${(coverage * 100).toFixed(0)}% of the content (< ${COVERAGE_MIN * 100}%): observed block — ${b.label}`], `~${blocks.indexOf(b)}`, b.nodes[0], b.label);
+    }
+  } else if (total - coveredW > 0) {
+    push(null, "page", total - coveredW, Math.max(0, 1 - coveredRaw), minus(metricsOf(rootRegion), roots.map(metricsOf)), ["T1 page content outside every detected region"]);
+  }
+
+  // H2: chrome compression.
+  const chrome = chromeOf(doc, sem);
+  const chromeNodes = [...chrome.keys()].map((id) => regions[id].node);
+  const isChrome = (t: Territory) => t.region >= 0 && (chrome.has(t.region) || chromeNodes.some((c) => inside(regions[t.region].node, c)));
+  const sum0 = out.reduce((s, t) => s + t.weight, 0) || 1;
+  const S = out.filter(isChrome).reduce((s, t) => s + t.weight, 0) / sum0;
+  const f = chromeFactors(S);
+  for (const t of out) {
+    t.weight /= sum0;
+    const c = isChrome(t);
+    const before = t.weight;
+    t.weight *= c ? f.chrome : f.content;
+    t.why.push(
+      `weights: raw ${(t.rawWeight * 100).toFixed(1)}% → content ${(before * 100).toFixed(1)}%${c ? ` → chrome ×${f.chrome.toFixed(2)} (${chrome.get(t.region) ?? "inside chrome"}; chrome ${(f.before * 100).toFixed(0)}% → ${(f.after * 100).toFixed(0)}%)` : ` → ×${f.content.toFixed(2)} (chrome compression elsewhere)`} = urban ${(t.weight * 100).toFixed(1)}%`,
+    );
   }
 
   // T2: tiers, then reading order.
@@ -247,5 +343,10 @@ export function planFromPage(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
   for (const t of territories) t.why.unshift(`T2 tier ${t.tier} (${["hero", "main content", "chrome", "footer", "page remainder"][t.tier]})`);
   const sum = territories.reduce((s, t) => s + t.weight, 0) || 1;
   for (const t of territories) t.weight /= sum;
-  return { identity: fp, territories, hero: heroR ? territories.findIndex((t) => t.region === heroR.id && t.source === "region") : -1 };
+  return {
+    identity: fp,
+    territories,
+    hero: heroR ? territories.findIndex((t) => t.region === heroR.id && t.source === "region") : -1,
+    hygiene: { media: doc.media, coverage, fallback, chrome: { before: f.before, after: f.after, regions: out.filter(isChrome).length }, merges },
+  };
 }

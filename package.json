@@ -11,7 +11,8 @@
     "shoot": "node scripts/shoot.mjs",
     "typecheck": "tsc --noEmit",
     "fingerprint": "tsx scripts/fingerprint.ts",
-    "test:allocation": "tsx scripts/semantic-allocation/check.ts"
+    "test:allocation": "tsx scripts/semantic-allocation/check.ts",
+    "test:hygiene": "tsx scripts/semantic-hygiene/check.ts"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",

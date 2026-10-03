@@ -152,6 +152,7 @@ export function planFromProfile(prof: Profile, base: SiteFingerprint): Plan {
       source: "region",
       label: b.label,
       weight: b.weight / sum,
+      rawWeight: b.weight / sum,
       repeat: b.repeat,
       metrics: { chars: hero ? 400 : 0, links: 0, images: 0, controls: 0, descendants: 0, inTables: 0, items: b.repeat },
       tier: hero ? 0 : b.role === "support" ? 3 : 1,
