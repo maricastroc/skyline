@@ -1,0 +1,18 @@
+2026-10-03T16:26:54.448Z
+reference    https://en.wikipedia.org/wiki/Suspension_bridge  → https://en.wikipedia.org/wiki/Suspension_bridge  2548 el, 877 nodes, 25 regions, 12 districts  USED
+docs         https://docs.python.org/3/library/itertools.html  → https://docs.python.org/3/library/itertools.html  4954 el, 323 nodes, 11 regions, 1 districts  USED
+app          https://github.com/sveltejs/svelte  → https://github.com/sveltejs/svelte  1447 el, 417 nodes, 29 regions, 2 districts  USED
+saas         https://linear.app/  → https://linear.app/  2160 el, 781 nodes, 12 regions, 6 districts  USED
+shop         https://www.allbirds.com/collections/mens  ✗ too_large: too_large
+shop         https://www.patagonia.com/shop/mens  → https://www.patagonia.com/shop/mens  125 el, 19 nodes, 5 regions, 1 districts  USED
+news         https://www.theguardian.com/international  → https://www.theguardian.com/international  3855 el, 1429 nodes, 32 regions, 23 districts  USED
+portfolio    https://brittanychiang.com/  → https://brittanychiang.com/  396 el, 167 nodes, 27 regions, 4 districts  USED
+forum        https://lobste.rs/  → https://lobste.rs/  787 el, 460 nodes, 6 regions, 1 districts  USED
+institution  https://www.gov.uk/  → https://www.gov.uk/  374 el, 202 nodes, 17 regions, 3 districts  USED
+oldweb       https://www.berkshirehathaway.com/  → https://www.berkshirehathaway.com/  1 el, 1 nodes, 0 regions, 0 districts  [few_elements]  REJECTED (shell)
+oldweb       https://www.paulgraham.com/articles.html  → https://www.paulgraham.com/articles.html  2165 el, 135 nodes, 1 regions, 0 districts  REJECTED (no districts)
+media        https://unsplash.com/  ✗ auth_required: auth_required
+media        https://www.nasa.gov/images/  → https://www.nasa.gov/images/  592 el, 228 nodes, 23 regions, 3 districts  USED
+directory    https://www.craigslist.org/about/sites  → https://www.craigslist.org/about/sites  1781 el, 1057 nodes, 8 regions, 5 districts  USED
+reference-2  https://en.wikipedia.org/wiki/Lighthouse  → https://en.wikipedia.org/wiki/Lighthouse  3040 el, 800 nodes, 18 regions, 8 districts  USED
+saas-2       https://vercel.com/  → https://vercel.com/  823 el, 415 nodes, 12 regions, 4 districts  USED

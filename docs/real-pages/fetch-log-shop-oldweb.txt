@@ -1,0 +1,9 @@
+2026-10-03T16:27:34.294Z
+shop         https://www.allbirds.com/collections/mens  ✗ too_large: too_large
+shop         https://www.patagonia.com/shop/mens  → https://www.patagonia.com/shop/mens  125 el, 19 nodes, 5 regions, 1 districts  REJECTED (under 60 nodes)
+shop         https://www.ikea.com/us/en/cat/chairs-fu002/  → https://www.ikea.com/us/en/cat/tables-chairs-fu002/  1668 el, 603 nodes, 7 regions, 1 districts  USED
+oldweb       https://www.berkshirehathaway.com/  → https://www.berkshirehathaway.com/  1 el, 1 nodes, 0 regions, 0 districts  [few_elements]  REJECTED (shell)
+oldweb       https://www.paulgraham.com/articles.html  → https://www.paulgraham.com/articles.html  2165 el, 135 nodes, 1 regions, 0 districts  REJECTED (no districts)
+oldweb       https://www.spacejam.com/1996/  → https://www.spacejam.com/1996/  85 el, 34 nodes, 1 regions, 1 districts  REJECTED (under 60 nodes)
+oldweb       https://www.cs.utexas.edu/~EWD/  ✗ timeout: timeout
+oldweb       https://danluu.com/  → https://danluu.com/  624 el, 72 nodes, 1 regions, 0 districts  REJECTED (no districts)

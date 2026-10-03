@@ -1,0 +1,6309 @@
+{
+ "seed": 7,
+ "pages": [
+  {
+   "id": "reference",
+   "url": "https://en.wikipedia.org/wiki/Suspension_bridge",
+   "category": "long article / reference",
+   "summary": {
+    "blocks": [
+     "civic",
+     "market",
+     "court",
+     "towers",
+     "market",
+     "court",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots"
+    ],
+    "blockHist": {
+     "civic": 1,
+     "market": 2,
+     "court": 2,
+     "towers": 1,
+     "lots": 10
+    },
+    "families": {
+     "civic": 1,
+     "corner": 31,
+     "rows": 11,
+     "courtyard": 2,
+     "podiumTower": 1,
+     "asymmetric": 1,
+     "walkup": 49,
+     "kiosk": 20,
+     "shed": 7,
+     "apartments": 6
+    },
+    "roofs": {
+     "dome": 1,
+     "mansard": 49,
+     "flat": 39,
+     "gable": 36,
+     "terrace": 4
+    },
+    "styles": {
+     "classic": 114,
+     "modern": 15
+    },
+    "grounds": {
+     "lobby": 13,
+     "shop": 61,
+     "cafe": 10,
+     "arcade": 17,
+     "docks": 7,
+     "homes": 21
+    },
+    "signage": {
+     "plaque": 24,
+     "shop": 63,
+     "blade": 9,
+     "screen": 5,
+     "billboard": 9,
+     "painted": 13,
+     "none": 6
+    },
+    "buildings": 129,
+    "floors": {
+     "min": 1,
+     "max": 15,
+     "mean": 3.9069767441860463
+    },
+    "distinctLotPrograms": 50,
+    "lots": 108,
+    "lotsPerMinor": {
+     "0": 7,
+     "1": 7,
+     "2": 7,
+     "3": 7,
+     "7": 7,
+     "8": 7,
+     "9": 6,
+     "11": 6,
+     "12": 6,
+     "13": 6,
+     "14": 6,
+     "15": 6,
+     "17": 6,
+     "18": 6,
+     "20": 6,
+     "22": 6,
+     "23": 6
+    },
+    "landmark": "civic"
+   },
+   "majors": [
+    {
+     "role": "landmark",
+     "content": "links",
+     "weight": 0.07490814527941213,
+     "repeat": 0,
+     "label": "Wikipedia",
+     "region": 6,
+     "kind": "hero",
+     "selector": "header.mw-body-header",
+     "why": [
+      "B1 the hero region → landmark (contains the page's <h1> “Suspension bridge”)",
+      "B2 11.1 links per 100 chars → links",
+      "B3 weight 7.5% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.07490814527941213,
+      "chars": 569,
+      "links": 63,
+      "images": 0,
+      "controls": 2,
+      "descendants": 208,
+      "tableShare": 0,
+      "items": 0
+     }
+    },
+    {
+     "role": "major",
+     "content": "links",
+     "weight": 0.06352871080658375,
+     "repeat": 26,
+     "label": "Contents",
+     "region": 4,
+     "kind": "toc",
+     "selector": "nav#mw-panel-toc.mw-table-of-contents-container",
+     "why": [
+      "B1 district with 6.4% of the page (≥ 4%) → major",
+      "B2 kind \"toc\" → links",
+      "B3 weight 6.4% of the page",
+      "B4 26 repeated items"
+     ],
+     "metrics": {
+      "share": 0.06352871080658375,
+      "chars": 600,
+      "links": 26,
+      "images": 0,
+      "controls": 6,
+      "descendants": 172,
+      "tableShare": 0,
+      "items": 26
+     }
+    },
+    {
+     "role": "major",
+     "content": "text",
+     "weight": 0.10176013505126487,
+     "repeat": 3,
+     "label": "History",
+     "region": 10,
+     "kind": "features",
+     "selector": "section#mwTg",
+     "why": [
+      "B1 district with 10.2% of the page (≥ 4%) → major",
+      "B2 5641 chars, 1.7 links/100 chars, 9 images → text",
+      "B3 weight 10.2% of the page",
+      "B4 3 repeated items"
+     ],
+     "metrics": {
+      "share": 0.10176013505126487,
+      "chars": 5641,
+      "links": 94,
+      "images": 9,
+      "controls": 0,
+      "descendants": 231,
+      "tableShare": 0,
+      "items": 3
+     }
+    },
+    {
+     "role": "major",
+     "content": "media",
+     "weight": 0.08189034532409821,
+     "repeat": 11,
+     "label": "Longest",
+     "region": 16,
+     "kind": "showcase",
+     "selector": "section#mwAfA",
+     "why": [
+      "B1 district with 8.2% of the page (≥ 4%) → major",
+      "B2 kind \"showcase\" → media",
+      "B3 weight 8.2% of the page",
+      "B4 11 repeated items"
+     ],
+     "metrics": {
+      "share": 0.08189034532409821,
+      "chars": 776,
+      "links": 24,
+      "images": 11,
+      "controls": 0,
+      "descendants": 216,
+      "tableShare": 0.9431818181818182,
+      "items": 11
+     }
+    },
+    {
+     "role": "major",
+     "content": "links",
+     "weight": 0.1173133735508056,
+     "repeat": 1,
+     "label": "References",
+     "region": 19,
+     "kind": "references",
+     "selector": "section#mwAq4",
+     "why": [
+      "B1 district with 11.7% of the page (≥ 4%) → major",
+      "B2 kind \"references\" → links",
+      "B3 weight 11.7% of the page",
+      "B4 1 repeated items"
+     ],
+     "metrics": {
+      "share": 0.1173133735508056,
+      "chars": 3653,
+      "links": 94,
+      "images": 0,
+      "controls": 0,
+      "descendants": 319,
+      "tableShare": 0,
+      "items": 1
+     }
+    },
+    {
+     "role": "major",
+     "content": "structured",
+     "weight": 0.11624587274397359,
+     "repeat": 0,
+     "label": "External",
+     "region": 21,
+     "kind": "section",
+     "selector": "section#mwA8w",
+     "why": [
+      "B1 district with 11.6% of the page (≥ 4%) → major",
+      "B2 86% of its elements in tables → structured",
+      "B3 weight 11.6% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.11624587274397359,
+      "chars": 1655,
+      "links": 101,
+      "images": 4,
+      "controls": 0,
+      "descendants": 312,
+      "tableShare": 0.8561643835616438,
+      "items": 0
+     }
+    }
+   ],
+   "minors": 17,
+   "suspicious": []
+  },
+  {
+   "id": "docs",
+   "url": "https://docs.python.org/3/library/itertools.html",
+   "category": "technical documentation",
+   "summary": {
+    "blocks": [
+     "civic",
+     "market",
+     "slabs",
+     "slabs",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots"
+    ],
+    "blockHist": {
+     "civic": 1,
+     "market": 1,
+     "slabs": 2,
+     "lots": 12
+    },
+    "families": {
+     "stepped": 1,
+     "corner": 16,
+     "rows": 70,
+     "slab": 4,
+     "walkup": 54
+    },
+    "roofs": {
+     "crown": 9,
+     "flat": 92,
+     "terrace": 44
+    },
+    "styles": {
+     "modern": 123,
+     "tech": 22
+    },
+    "grounds": {
+     "lobby": 1,
+     "shop": 99,
+     "cafe": 41,
+     "arcade": 4
+    },
+    "signage": {
+     "plaque": 1,
+     "shop": 84,
+     "blade": 23,
+     "painted": 4,
+     "none": 33
+    },
+    "buildings": 145,
+    "floors": {
+     "min": 1,
+     "max": 21,
+     "mean": 2.5310344827586206
+    },
+    "distinctLotPrograms": 23,
+    "lots": 132,
+    "lotsPerMinor": {
+     "1": 33,
+     "2": 33,
+     "9": 33,
+     "10": 33
+    },
+    "landmark": "stepped"
+   },
+   "majors": [
+    {
+     "role": "landmark",
+     "content": "text",
+     "weight": 0.00046031243706665895,
+     "repeat": 0,
+     "label": "Python",
+     "region": 0,
+     "kind": "brand",
+     "selector": "a.nav-logo",
+     "why": [
+      "B1 the hero region → landmark (no <h1> on the page: the site name is its monument)",
+      "B2 0 chars, 1.0 links/100 chars, 1 images → text",
+      "B3 weight 0.0% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.00046031243706665895,
+      "chars": 0,
+      "links": 1,
+      "images": 1,
+      "controls": 0,
+      "descendants": 1,
+      "tableShare": 0,
+      "items": 0
+     }
+    },
+    {
+     "role": "major",
+     "content": "links",
+     "weight": 0.07134459180835659,
+     "repeat": 9,
+     "label": "Feed",
+     "region": 6,
+     "kind": "feed",
+     "selector": "tbody",
+     "why": [
+      "B1 district with 7.1% of the page (≥ 4%) → major",
+      "B2 kind \"feed\" → links",
+      "B3 weight 7.1% of the page",
+      "B4 9 repeated items"
+     ],
+     "metrics": {
+      "share": 0.07134459180835659,
+      "chars": 1471,
+      "links": 17,
+      "images": 0,
+      "controls": 0,
+      "descendants": 356,
+      "tableShare": 0,
+      "items": 9
+     }
+    },
+    {
+     "role": "major",
+     "content": "text",
+     "weight": 0.502829962503716,
+     "repeat": 0,
+     "label": "Itertool",
+     "region": 7,
+     "kind": "section",
+     "selector": "section#itertool-functions",
+     "why": [
+      "B1 district with 50.3% of the page (≥ 4%) → major",
+      "B2 18162 chars, 0.3 links/100 chars, 0 images → text",
+      "B3 weight 50.3% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.502829962503716,
+      "chars": 18162,
+      "links": 52,
+      "images": 0,
+      "controls": 0,
+      "descendants": 2499,
+      "tableShare": 0,
+      "items": 0
+     }
+    },
+    {
+     "role": "major",
+     "content": "text",
+     "weight": 0.34774686651898307,
+     "repeat": 0,
+     "label": "Itertools",
+     "region": 8,
+     "kind": "section",
+     "selector": "section#itertools-recipes",
+     "why": [
+      "B1 district with 34.8% of the page (≥ 4%) → major",
+      "B2 12004 chars, 0.0 links/100 chars, 0 images → text",
+      "B3 weight 34.8% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.34774686651898307,
+      "chars": 12004,
+      "links": 6,
+      "images": 0,
+      "controls": 0,
+      "descendants": 1743,
+      "tableShare": 0,
+      "items": 0
+     }
+    }
+   ],
+   "minors": 4,
+   "suspicious": []
+  },
+  {
+   "id": "app",
+   "url": "https://github.com/sveltejs/svelte",
+   "category": "dashboard / app",
+   "summary": {
+    "blocks": [
+     "civic",
+     "towers",
+     "market",
+     "slabs",
+     "towers",
+     "market",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots"
+    ],
+    "blockHist": {
+     "civic": 1,
+     "towers": 2,
+     "market": 2,
+     "slabs": 1,
+     "lots": 10
+    },
+    "families": {
+     "stepped": 1,
+     "podiumTower": 2,
+     "asymmetric": 2,
+     "corner": 8,
+     "walkup": 58,
+     "slab": 2,
+     "rows": 58
+    },
+    "roofs": {
+     "terrace": 46,
+     "flat": 40,
+     "gable": 45
+    },
+    "styles": {
+     "soft": 96,
+     "modern": 35
+    },
+    "grounds": {
+     "lobby": 2,
+     "shop": 92,
+     "cafe": 36,
+     "arcade": 1
+    },
+    "signage": {
+     "plaque": 1,
+     "billboard": 2,
+     "screen": 2,
+     "shop": 52,
+     "blade": 18,
+     "painted": 2,
+     "none": 54
+    },
+    "buildings": 131,
+    "floors": {
+     "min": 1,
+     "max": 22,
+     "mean": 3.312977099236641
+    },
+    "distinctLotPrograms": 16,
+    "lots": 108,
+    "lotsPerMinor": {
+     "12": 54,
+     "28": 54
+    },
+    "landmark": "stepped"
+   },
+   "majors": [
+    {
+     "role": "landmark",
+     "content": "text",
+     "weight": 0.004165958705406307,
+     "repeat": 0,
+     "label": "GitHub",
+     "region": 6,
+     "kind": "brand",
+     "selector": "a.Primer_Brand__Link-module__Link___lF11y",
+     "why": [
+      "B1 the hero region → landmark (no <h1> on the page: the site name is its monument)",
+      "B2 39 chars, 1.0 links/100 chars, 0 images → text",
+      "B3 weight 0.4% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.004165958705406307,
+      "chars": 39,
+      "links": 1,
+      "images": 0,
+      "controls": 0,
+      "descendants": 4,
+      "tableShare": 0,
+      "items": 0
+     }
+    },
+    {
+     "role": "major",
+     "content": "media",
+     "weight": 0.2845186178079002,
+     "repeat": 0,
+     "label": "Navigation",
+     "region": 0,
+     "kind": "section",
+     "selector": "div.position-relative",
+     "why": [
+      "B1 district with 28.5% of the page (≥ 4%) → major",
+      "B2 10 images, 6.3 per 1000 chars → media",
+      "B3 weight 28.5% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.2845186178079002,
+      "chars": 1576,
+      "links": 66,
+      "images": 10,
+      "controls": 10,
+      "descendants": 396,
+      "tableShare": 0,
+      "items": 0
+     }
+    },
+    {
+     "role": "major",
+     "content": "links",
+     "weight": 0.042087510304769454,
+     "repeat": 0,
+     "region": 15,
+     "kind": "section",
+     "selector": "div.OverviewContent-module__Box_1__MPS0U",
+     "why": [
+      "B1 district with 4.2% of the page (≥ 4%) → major",
+      "B2 4.0 links per 100 chars → links",
+      "B3 weight 4.2% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.042087510304769454,
+      "chars": 52,
+      "links": 4,
+      "images": 0,
+      "controls": 5,
+      "descendants": 54,
+      "tableShare": 0,
+      "items": 0
+     }
+    },
+    {
+     "role": "major",
+     "content": "structured",
+     "weight": 0.4224105923590528,
+     "repeat": 0,
+     "label": "Latest",
+     "region": 19,
+     "kind": "section",
+     "selector": "div",
+     "why": [
+      "B1 district with 42.2% of the page (≥ 4%) → major",
+      "B2 91% of its elements in tables → structured",
+      "B3 weight 42.2% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.4224105923590528,
+      "chars": 936,
+      "links": 60,
+      "images": 0,
+      "controls": 1,
+      "descendants": 639,
+      "tableShare": 0.9065420560747663,
+      "items": 0
+     }
+    },
+    {
+     "role": "major",
+     "content": "media",
+     "weight": 0.07941752093992084,
+     "repeat": 0,
+     "label": "Repository",
+     "region": 21,
+     "kind": "section",
+     "selector": "div.OverviewRepoFiles-module__Box_1__OXeac",
+     "why": [
+      "B1 district with 7.9% of the page (≥ 4%) → major",
+      "B2 3 images, 2.6 per 1000 chars → media",
+      "B3 weight 7.9% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.07941752093992084,
+      "chars": 1151,
+      "links": 22,
+      "images": 3,
+      "controls": 2,
+      "descendants": 97,
+      "tableShare": 0,
+      "items": 0
+     }
+    },
+    {
+     "role": "major",
+     "content": "links",
+     "weight": 0.07113594744095604,
+     "repeat": 6,
+     "label": "About",
+     "region": 27,
+     "kind": "features",
+     "selector": "div.CodeViewSidebar-module__borderGrid__Lpx5",
+     "why": [
+      "B1 district with 7.1% of the page (≥ 4%) → major",
+      "B2 3.9 links per 100 chars → links",
+      "B3 weight 7.1% of the page",
+      "B4 6 repeated items"
+     ],
+     "metrics": {
+      "share": 0.07113594744095604,
+      "chars": 337,
+      "links": 13,
+      "images": 0,
+      "controls": 0,
+      "descendants": 101,
+      "tableShare": 0,
+      "items": 6
+     }
+    }
+   ],
+   "minors": 2,
+   "suspicious": []
+  },
+  {
+   "id": "saas",
+   "url": "https://linear.app/",
+   "category": "product / SaaS landing",
+   "summary": {
+    "blocks": [
+     "civic",
+     "towers",
+     "towers",
+     "towers",
+     "towers",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots"
+    ],
+    "blockHist": {
+     "civic": 1,
+     "towers": 4,
+     "lots": 11
+    },
+    "families": {
+     "stepped": 1,
+     "podiumTower": 4,
+     "asymmetric": 4,
+     "rows": 24,
+     "apartments": 35,
+     "corner": 14,
+     "walkup": 47
+    },
+    "roofs": {
+     "crown": 1,
+     "flat": 70,
+     "terrace": 55,
+     "gable": 3
+    },
+    "styles": {
+     "modern": 103,
+     "soft": 26
+    },
+    "grounds": {
+     "lobby": 3,
+     "shop": 64,
+     "cafe": 16,
+     "homes": 46
+    },
+    "signage": {
+     "plaque": 47,
+     "billboard": 4,
+     "screen": 4,
+     "shop": 44,
+     "none": 24,
+     "blade": 6
+    },
+    "buildings": 129,
+    "floors": {
+     "min": 1,
+     "max": 21,
+     "mean": 3.4108527131782944
+    },
+    "distinctLotPrograms": 33,
+    "lots": 120,
+    "lotsPerMinor": {
+     "0": 24,
+     "1": 24,
+     "9": 24,
+     "10": 24,
+     "11": 24
+    },
+    "landmark": "stepped"
+   },
+   "majors": [
+    {
+     "role": "landmark",
+     "content": "media",
+     "weight": 0.1438015342658012,
+     "repeat": 0,
+     "label": "Linear",
+     "region": 3,
+     "kind": "hero",
+     "selector": "div",
+     "why": [
+      "B1 the hero region → landmark (contains the page's <h1> “The product development system for teams …”)",
+      "B2 42 images, 39.7 per 1000 chars → media",
+      "B3 weight 14.4% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.1438015342658012,
+      "chars": 1059,
+      "links": 2,
+      "images": 42,
+      "controls": 27,
+      "descendants": 275,
+      "tableShare": 0,
+      "items": 0
+     }
+    },
+    {
+     "role": "major",
+     "content": "media",
+     "weight": 0.19189486611058834,
+     "repeat": 10,
+     "label": "Intake and",
+     "region": 5,
+     "kind": "logos",
+     "selector": "section.b-30Va_root",
+     "why": [
+      "B1 district with 19.2% of the page (≥ 4%) → major",
+      "B2 kind \"logos\" → media",
+      "B3 weight 19.2% of the page",
+      "B4 10 repeated items"
+     ],
+     "metrics": {
+      "share": 0.19189486611058834,
+      "chars": 1429,
+      "links": 1,
+      "images": 46,
+      "controls": 21,
+      "descendants": 400,
+      "tableShare": 0,
+      "items": 10
+     }
+    },
+    {
+     "role": "major",
+     "content": "media",
+     "weight": 0.11765761311621824,
+     "repeat": 1,
+     "label": "Planning and",
+     "region": 6,
+     "kind": "showcase",
+     "selector": "section.b-30Va_root",
+     "why": [
+      "B1 district with 11.8% of the page (≥ 4%) → major",
+      "B2 kind \"showcase\" → media",
+      "B3 weight 11.8% of the page",
+      "B4 1 repeated items"
+     ],
+     "metrics": {
+      "share": 0.11765761311621824,
+      "chars": 480,
+      "links": 1,
+      "images": 8,
+      "controls": 6,
+      "descendants": 276,
+      "tableShare": 0,
+      "items": 1
+     }
+    },
+    {
+     "role": "major",
+     "content": "media",
+     "weight": 0.09255434522575398,
+     "repeat": 4,
+     "label": "AI and",
+     "region": 7,
+     "kind": "showcase",
+     "selector": "section.b-30Va_root",
+     "why": [
+      "B1 district with 9.3% of the page (≥ 4%) → major",
+      "B2 kind \"showcase\" → media",
+      "B3 weight 9.3% of the page",
+      "B4 4 repeated items"
+     ],
+     "metrics": {
+      "share": 0.09255434522575398,
+      "chars": 1034,
+      "links": 1,
+      "images": 29,
+      "controls": 4,
+      "descendants": 205,
+      "tableShare": 0,
+      "items": 4
+     }
+    },
+    {
+     "role": "major",
+     "content": "media",
+     "weight": 0.26246391604599606,
+     "repeat": 15,
+     "label": "Build review",
+     "region": 8,
+     "kind": "showcase",
+     "selector": "section.b-30Va_root",
+     "why": [
+      "B1 district with 26.2% of the page (≥ 4%) → major",
+      "B2 kind \"showcase\" → media",
+      "B3 weight 26.2% of the page",
+      "B4 15 repeated items"
+     ],
+     "metrics": {
+      "share": 0.26246391604599606,
+      "chars": 1960,
+      "links": 1,
+      "images": 49,
+      "controls": 12,
+      "descendants": 577,
+      "tableShare": 0,
+      "items": 15
+     }
+    }
+   ],
+   "minors": 5,
+   "suspicious": []
+  },
+  {
+   "id": "shop",
+   "url": "https://www.ikea.com/us/en/cat/tables-chairs-fu002/",
+   "category": "e-commerce",
+   "summary": {
+    "blocks": [
+     "civic",
+     "slabs",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots"
+    ],
+    "blockHist": {
+     "civic": 1,
+     "slabs": 1,
+     "lots": 14
+    },
+    "families": {
+     "stepped": 1,
+     "slab": 2,
+     "corner": 14,
+     "kiosk": 51,
+     "walkup": 77,
+     "apartments": 10
+    },
+    "roofs": {
+     "crown": 1,
+     "flat": 87,
+     "terrace": 67
+    },
+    "styles": {
+     "modern": 120,
+     "soft": 35
+    },
+    "grounds": {
+     "lobby": 1,
+     "arcade": 2,
+     "shop": 48,
+     "cafe": 69,
+     "homes": 35
+    },
+    "signage": {
+     "plaque": 36,
+     "painted": 2,
+     "shop": 67,
+     "none": 50
+    },
+    "buildings": 155,
+    "floors": {
+     "min": 1,
+     "max": 22,
+     "mean": 2.793548387096774
+    },
+    "distinctLotPrograms": 28,
+    "lots": 152,
+    "lotsPerMinor": {
+     "0": 51,
+     "1": 51,
+     "6": 50
+    },
+    "landmark": "stepped"
+   },
+   "majors": [
+    {
+     "role": "landmark",
+     "content": "media",
+     "weight": 0.07308558885246534,
+     "repeat": 10,
+     "label": "IKEA",
+     "region": 3,
+     "kind": "hero",
+     "selector": "div.plp-navigation-slot-wrapper",
+     "why": [
+      "B1 the hero region → landmark (contains the page's <h1> “Tables & chairs”)",
+      "B2 13 images, 13.0 per 1000 chars → media",
+      "B3 weight 7.3% of the page",
+      "B4 10 repeated items"
+     ],
+     "metrics": {
+      "share": 0.07308558885246534,
+      "chars": 251,
+      "links": 17,
+      "images": 13,
+      "controls": 2,
+      "descendants": 99,
+      "tableShare": 0,
+      "items": 10
+     }
+    },
+    {
+     "role": "major",
+     "content": "structured",
+     "weight": 0.747478556854554,
+     "repeat": 5,
+     "label": "Living on a",
+     "region": 5,
+     "kind": "pricing",
+     "selector": "div.g1su26hm",
+     "why": [
+      "B1 district with 74.7% of the page (≥ 4%) → major",
+      "B2 kind \"pricing\" → structured",
+      "B3 weight 74.7% of the page",
+      "B4 5 repeated items"
+     ],
+     "metrics": {
+      "share": 0.747478556854554,
+      "chars": 5052,
+      "links": 75,
+      "images": 46,
+      "controls": 47,
+      "descendants": 1253,
+      "tableShare": 0,
+      "items": 5
+     }
+    }
+   ],
+   "minors": 3,
+   "suspicious": []
+  },
+  {
+   "id": "news",
+   "url": "https://www.theguardian.com/international",
+   "category": "news / editorial",
+   "summary": {
+    "blocks": [
+     "civic",
+     "towers",
+     "towers",
+     "towers",
+     "court",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots"
+    ],
+    "blockHist": {
+     "civic": 1,
+     "towers": 3,
+     "court": 1,
+     "lots": 11
+    },
+    "families": {
+     "civic": 1,
+     "podiumTower": 3,
+     "asymmetric": 3,
+     "courtyard": 1,
+     "corner": 36,
+     "kiosk": 12,
+     "walkup": 72
+    },
+    "roofs": {
+     "dome": 1,
+     "flat": 44,
+     "mansard": 35,
+     "gable": 24,
+     "terrace": 24
+    },
+    "styles": {
+     "classic": 91,
+     "soft": 37
+    },
+    "grounds": {
+     "lobby": 57,
+     "shop": 59,
+     "cafe": 5,
+     "arcade": 7
+    },
+    "signage": {
+     "plaque": 2,
+     "billboard": 58,
+     "screen": 51,
+     "shop": 12,
+     "none": 5
+    },
+    "buildings": 128,
+    "floors": {
+     "min": 1,
+     "max": 14,
+     "mean": 3.65625
+    },
+    "distinctLotPrograms": 34,
+    "lots": 120,
+    "lotsPerMinor": {
+     "0": 6,
+     "3": 6,
+     "4": 6,
+     "8": 6,
+     "12": 6,
+     "13": 6,
+     "14": 6,
+     "15": 6,
+     "16": 6,
+     "17": 6,
+     "18": 5,
+     "19": 5,
+     "20": 5,
+     "21": 5,
+     "22": 5,
+     "23": 5,
+     "24": 5,
+     "25": 5,
+     "26": 5,
+     "27": 5,
+     "28": 5,
+     "31": 5
+    },
+    "landmark": "civic"
+   },
+   "majors": [
+    {
+     "role": "landmark",
+     "content": "links",
+     "weight": 0.002972627882850531,
+     "repeat": 0,
+     "label": "Latest news",
+     "region": 2,
+     "kind": "hero",
+     "selector": "ul#dropbox-id-masthead-edition.dcr-1e6hays",
+     "why": [
+      "B1 the hero region → landmark (class/id “dropbox-id-masthead-edition”)",
+      "B2 5.0 links per 100 chars → links",
+      "B3 weight 0.3% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.002972627882850531,
+      "chars": 72,
+      "links": 5,
+      "images": 0,
+      "controls": 0,
+      "descendants": 10,
+      "tableShare": 0,
+      "items": 0
+     }
+    },
+    {
+     "role": "major",
+     "content": "media",
+     "weight": 0.07347334166821837,
+     "repeat": 0,
+     "label": "News",
+     "region": 6,
+     "kind": "section",
+     "selector": "section#news.dcr-cavc6m",
+     "why": [
+      "B1 district with 7.3% of the page (≥ 4%) → major",
+      "B2 9 images, 4.2 per 1000 chars → media",
+      "B3 weight 7.3% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.07347334166821837,
+      "chars": 2134,
+      "links": 19,
+      "images": 9,
+      "controls": 1,
+      "descendants": 282,
+      "tableShare": 0,
+      "items": 0
+     }
+    },
+    {
+     "role": "major",
+     "content": "media",
+     "weight": 0.04061704749997783,
+     "repeat": 6,
+     "label": "More",
+     "region": 9,
+     "kind": "showcase",
+     "selector": "section#more-features.dcr-cavc6m",
+     "why": [
+      "B1 district with 4.1% of the page (≥ 4%) → major",
+      "B2 kind \"showcase\" → media",
+      "B3 weight 4.1% of the page",
+      "B4 6 repeated items"
+     ],
+     "metrics": {
+      "share": 0.04061704749997783,
+      "chars": 619,
+      "links": 7,
+      "images": 6,
+      "controls": 1,
+      "descendants": 156,
+      "tableShare": 0,
+      "items": 6
+     }
+    },
+    {
+     "role": "major",
+     "content": "media",
+     "weight": 0.05747745590934483,
+     "repeat": 0,
+     "label": "Sport",
+     "region": 10,
+     "kind": "section",
+     "selector": "section#sport.dcr-cavc6m",
+     "why": [
+      "B1 district with 5.7% of the page (≥ 4%) → major",
+      "B2 5 images, 2.9 per 1000 chars → media",
+      "B3 weight 5.7% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.05747745590934483,
+      "chars": 1745,
+      "links": 19,
+      "images": 5,
+      "controls": 1,
+      "descendants": 224,
+      "tableShare": 0,
+      "items": 0
+     }
+    },
+    {
+     "role": "major",
+     "content": "text",
+     "weight": 0.046868211280468884,
+     "repeat": 0,
+     "label": "Most popular",
+     "region": 29,
+     "kind": "section",
+     "selector": "section#most-viewed.dcr-cavc6m",
+     "why": [
+      "B1 district with 4.7% of the page (≥ 4%) → major",
+      "B2 1628 chars, 1.3 links/100 chars, 0 images → text",
+      "B3 weight 4.7% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.046868211280468884,
+      "chars": 1628,
+      "links": 21,
+      "images": 0,
+      "controls": 1,
+      "descendants": 191,
+      "tableShare": 0,
+      "items": 0
+     }
+    }
+   ],
+   "minors": 22,
+   "suspicious": []
+  },
+  {
+   "id": "portfolio",
+   "url": "https://brittanychiang.com/",
+   "category": "portfolio",
+   "summary": {
+    "blocks": [
+     "civic",
+     "court",
+     "court",
+     "towers",
+     "towers",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots"
+    ],
+    "blockHist": {
+     "civic": 1,
+     "court": 2,
+     "towers": 2,
+     "lots": 11
+    },
+    "families": {
+     "stepped": 1,
+     "courtyard": 2,
+     "podiumTower": 2,
+     "asymmetric": 2,
+     "walkup": 120
+    },
+    "roofs": {
+     "terrace": 74,
+     "flat": 53
+    },
+    "styles": {
+     "soft": 91,
+     "modern": 36
+    },
+    "grounds": {
+     "lobby": 3,
+     "shop": 89,
+     "cafe": 35
+    },
+    "signage": {
+     "plaque": 3,
+     "screen": 2,
+     "billboard": 2,
+     "none": 120
+    },
+    "buildings": 127,
+    "floors": {
+     "min": 1,
+     "max": 21,
+     "mean": 1.7874015748031495
+    },
+    "distinctLotPrograms": 8,
+    "lots": 120,
+    "lotsPerMinor": {
+     "26": 120
+    },
+    "landmark": "stepped"
+   },
+   "majors": [
+    {
+     "role": "landmark",
+     "content": "links",
+     "weight": 0.09789049537805168,
+     "repeat": 0,
+     "label": "Brittany",
+     "region": 0,
+     "kind": "hero",
+     "selector": "header.lg:sticky",
+     "why": [
+      "B1 the hero region → landmark (contains the page's <h1> “Brittany Chiang”)",
+      "B2 5.9 links per 100 chars → links",
+      "B3 weight 9.8% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.09789049537805168,
+      "chars": 152,
+      "links": 9,
+      "images": 0,
+      "controls": 0,
+      "descendants": 40,
+      "tableShare": 0,
+      "items": 0
+     }
+    },
+    {
+     "role": "major",
+     "content": "text",
+     "weight": 0.060225387317115214,
+     "repeat": 0,
+     "label": "About",
+     "region": 5,
+     "kind": "section",
+     "selector": "section#about.scroll-mt-16",
+     "why": [
+      "B1 district with 6.0% of the page (≥ 4%) → major",
+      "B2 927 chars, 0.2 links/100 chars, 0 images → text",
+      "B3 weight 6.0% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.060225387317115214,
+      "chars": 927,
+      "links": 2,
+      "images": 0,
+      "controls": 0,
+      "descendants": 21,
+      "tableShare": 0,
+      "items": 0
+     }
+    },
+    {
+     "role": "major",
+     "content": "text",
+     "weight": 0.42118985541597537,
+     "repeat": 0,
+     "label": "Experience",
+     "region": 6,
+     "kind": "section",
+     "selector": "section#experience.scroll-mt-16",
+     "why": [
+      "B1 district with 42.1% of the page (≥ 4%) → major",
+      "B2 1917 chars, 0.6 links/100 chars, 0 images → text",
+      "B3 weight 42.1% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.42118985541597537,
+      "chars": 1917,
+      "links": 12,
+      "images": 0,
+      "controls": 0,
+      "descendants": 179,
+      "tableShare": 0,
+      "items": 0
+     }
+    },
+    {
+     "role": "major",
+     "content": "media",
+     "weight": 0.21047641621237262,
+     "repeat": 0,
+     "label": "Projects",
+     "region": 22,
+     "kind": "section",
+     "selector": "section#projects.scroll-mt-16",
+     "why": [
+      "B1 district with 21.0% of the page (≥ 4%) → major",
+      "B2 4 images, 4.0 per 1000 chars → media",
+      "B3 weight 21.0% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.21047641621237262,
+      "chars": 769,
+      "links": 6,
+      "images": 4,
+      "controls": 0,
+      "descendants": 78,
+      "tableShare": 0,
+      "items": 0
+     }
+    },
+    {
+     "role": "major",
+     "content": "media",
+     "weight": 0.14583378224051372,
+     "repeat": 4,
+     "label": "Writing",
+     "region": 25,
+     "kind": "showcase",
+     "selector": "section#writing.scroll-mt-16",
+     "why": [
+      "B1 district with 14.6% of the page (≥ 4%) → major",
+      "B2 kind \"showcase\" → media",
+      "B3 weight 14.6% of the page",
+      "B4 4 repeated items"
+     ],
+     "metrics": {
+      "share": 0.14583378224051372,
+      "chars": 194,
+      "links": 4,
+      "images": 4,
+      "controls": 0,
+      "descendants": 52,
+      "tableShare": 0,
+      "items": 4
+     }
+    }
+   ],
+   "minors": 1,
+   "suspicious": []
+  },
+  {
+   "id": "forum",
+   "url": "https://lobste.rs/",
+   "category": "forum / community",
+   "summary": {
+    "blocks": [
+     "civic",
+     "towers",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots"
+    ],
+    "blockHist": {
+     "civic": 1,
+     "towers": 1,
+     "lots": 14
+    },
+    "families": {
+     "stepped": 1,
+     "podiumTower": 1,
+     "asymmetric": 1,
+     "walkup": 152
+    },
+    "roofs": {
+     "crown": 1,
+     "flat": 92,
+     "terrace": 62
+    },
+    "styles": {
+     "modern": 133,
+     "soft": 22
+    },
+    "grounds": {
+     "lobby": 1,
+     "shop": 111,
+     "cafe": 43
+    },
+    "signage": {
+     "plaque": 1,
+     "billboard": 1,
+     "screen": 1,
+     "none": 152
+    },
+    "buildings": 155,
+    "floors": {
+     "min": 1,
+     "max": 20,
+     "mean": 1.4645161290322581
+    },
+    "distinctLotPrograms": 8,
+    "lots": 152,
+    "lotsPerMinor": {
+     "5": 152
+    },
+    "landmark": "stepped"
+   },
+   "majors": [
+    {
+     "role": "landmark",
+     "content": "links",
+     "weight": 0.020455660269054553,
+     "repeat": 0,
+     "label": "Lobsters",
+     "region": 0,
+     "kind": "hero",
+     "selector": "header#header",
+     "why": [
+      "B1 the hero region → landmark (contains the page's <h1> “Lobsters”)",
+      "B2 6.0 links per 100 chars → links",
+      "B3 weight 2.0% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.020455660269054553,
+      "chars": 39,
+      "links": 6,
+      "images": 0,
+      "controls": 0,
+      "descendants": 16,
+      "tableShare": 0,
+      "items": 0
+     }
+    },
+    {
+     "role": "major",
+     "content": "media",
+     "weight": 0.9636912030224282,
+     "repeat": 16,
+     "label": "I got",
+     "region": 4,
+     "kind": "showcase",
+     "selector": "ol.stories",
+     "why": [
+      "B1 district with 96.4% of the page (≥ 4%) → major",
+      "B2 kind \"showcase\" → media",
+      "B3 weight 96.4% of the page",
+      "B4 16 repeated items"
+     ],
+     "metrics": {
+      "share": 0.9636912030224282,
+      "chars": 3430,
+      "links": 243,
+      "images": 25,
+      "controls": 0,
+      "descendants": 731,
+      "tableShare": 0,
+      "items": 16
+     }
+    }
+   ],
+   "minors": 1,
+   "suspicious": []
+  },
+  {
+   "id": "institution",
+   "url": "https://www.gov.uk/",
+   "category": "institutional",
+   "summary": {
+    "blocks": [
+     "civic",
+     "market",
+     "towers",
+     "slabs",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots"
+    ],
+    "blockHist": {
+     "civic": 1,
+     "market": 1,
+     "towers": 1,
+     "slabs": 1,
+     "lots": 12
+    },
+    "families": {
+     "stepped": 1,
+     "corner": 25,
+     "walkup": 74,
+     "podiumTower": 1,
+     "asymmetric": 1,
+     "slab": 2,
+     "rows": 33,
+     "apartments": 8
+    },
+    "roofs": {
+     "crown": 1,
+     "flat": 81,
+     "terrace": 60,
+     "gable": 3
+    },
+    "styles": {
+     "modern": 123,
+     "soft": 22
+    },
+    "grounds": {
+     "lobby": 1,
+     "shop": 73,
+     "cafe": 27,
+     "arcade": 2,
+     "homes": 42
+    },
+    "signage": {
+     "plaque": 43,
+     "shop": 56,
+     "blade": 9,
+     "screen": 1,
+     "billboard": 1,
+     "painted": 2,
+     "none": 33
+    },
+    "buildings": 145,
+    "floors": {
+     "min": 1,
+     "max": 20,
+     "mean": 2.8
+    },
+    "distinctLotPrograms": 31,
+    "lots": 132,
+    "lotsPerMinor": {
+     "0": 33,
+     "1": 33,
+     "15": 33,
+     "16": 33
+    },
+    "landmark": "stepped"
+   },
+   "majors": [
+    {
+     "role": "landmark",
+     "content": "text",
+     "weight": 0.050058424865622814,
+     "repeat": 0,
+     "label": "Welcome to",
+     "region": 3,
+     "kind": "hero",
+     "selector": "div.govuk-width-container",
+     "why": [
+      "B1 the hero region → landmark (contains the page's <h1> “The best place to find government service…”)",
+      "B2 77 chars, 0.0 links/100 chars, 0 images → text",
+      "B3 weight 5.0% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.050058424865622814,
+      "chars": 77,
+      "links": 0,
+      "images": 0,
+      "controls": 2,
+      "descendants": 15,
+      "tableShare": 0,
+      "items": 0
+     }
+    },
+    {
+     "role": "major",
+     "content": "links",
+     "weight": 0.08102360364571162,
+     "repeat": 0,
+     "label": "Popular on",
+     "region": 5,
+     "kind": "section",
+     "selector": "section.homepage-section",
+     "why": [
+      "B1 district with 8.1% of the page (≥ 4%) → major",
+      "B2 2.6 links per 100 chars → links",
+      "B3 weight 8.1% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.08102360364571162,
+      "chars": 232,
+      "links": 6,
+      "images": 0,
+      "controls": 0,
+      "descendants": 30,
+      "tableShare": 0,
+      "items": 0
+     }
+    },
+    {
+     "role": "major",
+     "content": "media",
+     "weight": 0.36136947885019866,
+     "repeat": 0,
+     "label": "Services and",
+     "region": 7,
+     "kind": "section",
+     "selector": "div.govuk-grid-row",
+     "why": [
+      "B1 district with 36.1% of the page (≥ 4%) → major",
+      "B2 4 images, 2.6 per 1000 chars → media",
+      "B3 weight 36.1% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.36136947885019866,
+      "chars": 1558,
+      "links": 20,
+      "images": 4,
+      "controls": 0,
+      "descendants": 124,
+      "tableShare": 0,
+      "items": 0
+     }
+    },
+    {
+     "role": "major",
+     "content": "text",
+     "weight": 0.18015891563449407,
+     "repeat": 0,
+     "label": "Government",
+     "region": 11,
+     "kind": "section",
+     "selector": "div.govuk-grid-row",
+     "why": [
+      "B1 district with 18.0% of the page (≥ 4%) → major",
+      "B2 662 chars, 2.4 links/100 chars, 0 images → text",
+      "B3 weight 18.0% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.18015891563449407,
+      "chars": 662,
+      "links": 16,
+      "images": 0,
+      "controls": 0,
+      "descendants": 65,
+      "tableShare": 0,
+      "items": 0
+     }
+    }
+   ],
+   "minors": 4,
+   "suspicious": []
+  },
+  {
+   "id": "oldweb",
+   "url": "https://www.paulgraham.com/articles.html",
+   "category": "old / simple HTML",
+   "summary": {
+    "blocks": [
+     "civic",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots"
+    ],
+    "blockHist": {
+     "civic": 1,
+     "lots": 15
+    },
+    "families": {
+     "clocktower": 1,
+     "corner": 60,
+     "walkup": 104
+    },
+    "roofs": {
+     "spire": 1,
+     "flat": 108,
+     "gable": 47,
+     "terrace": 9
+    },
+    "styles": {
+     "retro": 143,
+     "modern": 22
+    },
+    "grounds": {
+     "lobby": 1,
+     "shop": 117,
+     "cafe": 47
+    },
+    "signage": {
+     "plaque": 1,
+     "shop": 123,
+     "blade": 41
+    },
+    "buildings": 165,
+    "floors": {
+     "min": 2,
+     "max": 12,
+     "mean": 3.278787878787879
+    },
+    "distinctLotPrograms": 22,
+    "lots": 164,
+    "lotsPerMinor": {
+     "-1": 164
+    },
+    "landmark": "clocktower"
+   },
+   "majors": [
+    {
+     "role": "landmark",
+     "content": "text",
+     "weight": 0.0009314607866652074,
+     "repeat": 0,
+     "label": "Essays",
+     "region": 0,
+     "kind": "brand",
+     "selector": "img",
+     "why": [
+      "B1 the hero region → landmark (no <h1> on the page: the site name is its monument)",
+      "B2 0 chars, 0.0 links/100 chars, 1 images → text",
+      "B3 weight 0.1% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.0009314607866652074,
+      "chars": 0,
+      "links": 0,
+      "images": 1,
+      "controls": 0,
+      "descendants": 0,
+      "tableShare": 0,
+      "items": 0
+     }
+    }
+   ],
+   "minors": 1,
+   "suspicious": [
+    "no minor regions: every lot uses one fallback brief built from the whole page"
+   ]
+  },
+  {
+   "id": "media",
+   "url": "https://www.nasa.gov/images/",
+   "category": "media-heavy",
+   "summary": {
+    "blocks": [
+     "civic",
+     "market",
+     "towers",
+     "towers",
+     "towers",
+     "plaza",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots"
+    ],
+    "blockHist": {
+     "civic": 1,
+     "market": 1,
+     "towers": 3,
+     "plaza": 1,
+     "lots": 10
+    },
+    "families": {
+     "stepped": 1,
+     "corner": 30,
+     "walkup": 57,
+     "podiumTower": 3,
+     "asymmetric": 3,
+     "kiosk": 18,
+     "apartments": 13
+    },
+    "roofs": {
+     "crown": 1,
+     "flat": 67,
+     "terrace": 57
+    },
+    "styles": {
+     "modern": 93,
+     "soft": 32
+    },
+    "grounds": {
+     "lobby": 3,
+     "shop": 61,
+     "cafe": 34,
+     "homes": 27
+    },
+    "signage": {
+     "plaque": 28,
+     "shop": 64,
+     "blade": 12,
+     "screen": 3,
+     "billboard": 3,
+     "none": 15
+    },
+    "buildings": 125,
+    "floors": {
+     "min": 1,
+     "max": 20,
+     "mean": 3.304
+    },
+    "distinctLotPrograms": 41,
+    "lots": 108,
+    "lotsPerMinor": {
+     "0": 16,
+     "1": 16,
+     "8": 16,
+     "12": 15,
+     "13": 15,
+     "14": 15,
+     "18": 15
+    },
+    "landmark": "stepped"
+   },
+   "majors": [
+    {
+     "role": "landmark",
+     "content": "text",
+     "weight": 0.035358902521495504,
+     "repeat": 0,
+     "label": "NASA",
+     "region": 10,
+     "kind": "hero",
+     "selector": "div.hds-topic-hero",
+     "why": [
+      "B1 the hero region → landmark (contains the page's <h1> “NASA Images”)",
+      "B2 112 chars, 0.0 links/100 chars, 1 images → text",
+      "B3 weight 3.5% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.035358902521495504,
+      "chars": 112,
+      "links": 0,
+      "images": 1,
+      "controls": 0,
+      "descendants": 21,
+      "tableShare": 0,
+      "items": 0
+     }
+    },
+    {
+     "role": "major",
+     "content": "links",
+     "weight": 0.07622451937010916,
+     "repeat": 0,
+     "label": "Suggested",
+     "region": 2,
+     "kind": "section",
+     "selector": "div.hds-search-panel-mobile",
+     "why": [
+      "B1 district with 7.6% of the page (≥ 4%) → major",
+      "B2 7.0 links per 100 chars → links",
+      "B3 weight 7.6% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.07622451937010916,
+      "chars": 77,
+      "links": 7,
+      "images": 0,
+      "controls": 3,
+      "descendants": 45,
+      "tableShare": 0,
+      "items": 0
+     }
+    },
+    {
+     "role": "major",
+     "content": "media",
+     "weight": 0.19417033550933654,
+     "repeat": 7,
+     "label": "NASA Image",
+     "region": 15,
+     "kind": "gallery",
+     "selector": "div.padding-0",
+     "why": [
+      "B1 district with 19.4% of the page (≥ 4%) → major",
+      "B2 kind \"gallery\" → media",
+      "B3 weight 19.4% of the page",
+      "B4 7 repeated items"
+     ],
+     "metrics": {
+      "share": 0.19417033550933654,
+      "chars": 163,
+      "links": 7,
+      "images": 7,
+      "controls": 0,
+      "descendants": 114,
+      "tableShare": 0,
+      "items": 7
+     }
+    },
+    {
+     "role": "major",
+     "content": "media",
+     "weight": 0.13264418896724953,
+     "repeat": 10,
+     "label": "Artemis II",
+     "region": 16,
+     "kind": "gallery",
+     "selector": "div.hds-gallery-preview",
+     "why": [
+      "B1 district with 13.3% of the page (≥ 4%) → major",
+      "B2 kind \"gallery\" → media",
+      "B3 weight 13.3% of the page",
+      "B4 10 repeated items"
+     ],
+     "metrics": {
+      "share": 0.13264418896724953,
+      "chars": 57,
+      "links": 2,
+      "images": 10,
+      "controls": 0,
+      "descendants": 64,
+      "tableShare": 0,
+      "items": 10
+     }
+    },
+    {
+     "role": "major",
+     "content": "media",
+     "weight": 0.07859834108505734,
+     "repeat": 4,
+     "label": "Discover",
+     "region": 17,
+     "kind": "showcase",
+     "selector": "div.padding-x-0",
+     "why": [
+      "B1 district with 7.9% of the page (≥ 4%) → major",
+      "B2 kind \"showcase\" → media",
+      "B3 weight 7.9% of the page",
+      "B4 4 repeated items"
+     ],
+     "metrics": {
+      "share": 0.07859834108505734,
+      "chars": 64,
+      "links": 4,
+      "images": 4,
+      "controls": 0,
+      "descendants": 41,
+      "tableShare": 0,
+      "items": 4
+     }
+    },
+    {
+     "role": "major",
+     "content": "action",
+     "weight": 0.051492609409718865,
+     "repeat": 0,
+     "label": "Was this",
+     "region": 19,
+     "kind": "section",
+     "selector": "div#pum-872473.pum",
+     "why": [
+      "B1 district with 5.1% of the page (≥ 4%) → major",
+      "B2 4 controls → action",
+      "B3 weight 5.1% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.051492609409718865,
+      "chars": 56,
+      "links": 0,
+      "images": 0,
+      "controls": 4,
+      "descendants": 28,
+      "tableShare": 0,
+      "items": 0
+     }
+    }
+   ],
+   "minors": 7,
+   "suspicious": []
+  },
+  {
+   "id": "directory",
+   "url": "https://www.craigslist.org/about/sites",
+   "category": "links / navigation",
+   "summary": {
+    "blocks": [
+     "civic",
+     "market",
+     "market",
+     "market",
+     "market",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots"
+    ],
+    "blockHist": {
+     "civic": 1,
+     "market": 4,
+     "lots": 11
+    },
+    "families": {
+     "civic": 1,
+     "corner": 16,
+     "rows": 96,
+     "walkup": 40
+    },
+    "roofs": {
+     "dome": 1,
+     "mansard": 21,
+     "flat": 27,
+     "gable": 96,
+     "terrace": 8
+    },
+    "styles": {
+     "classic": 134,
+     "modern": 19
+    },
+    "grounds": {
+     "lobby": 1,
+     "shop": 108,
+     "cafe": 44
+    },
+    "signage": {
+     "plaque": 1,
+     "shop": 85,
+     "blade": 27,
+     "none": 40
+    },
+    "buildings": 153,
+    "floors": {
+     "min": 1,
+     "max": 6,
+     "mean": 3.2222222222222223
+    },
+    "distinctLotPrograms": 20,
+    "lots": 120,
+    "lotsPerMinor": {
+     "1": 40,
+     "6": 40,
+     "7": 40
+    },
+    "landmark": "civic"
+   },
+   "majors": [
+    {
+     "role": "landmark",
+     "content": "text",
+     "weight": 0.0009709195456473583,
+     "repeat": 0,
+     "label": "craigslist",
+     "region": 0,
+     "kind": "brand",
+     "selector": "div#logo",
+     "why": [
+      "B1 the hero region → landmark (no <h1> on the page: the site name is its monument)",
+      "B2 11 chars, 0.0 links/100 chars, 0 images → text",
+      "B3 weight 0.1% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.0009709195456473583,
+      "chars": 11,
+      "links": 0,
+      "images": 0,
+      "controls": 0,
+      "descendants": 1,
+      "tableShare": 0,
+      "items": 0
+     }
+    },
+    {
+     "role": "major",
+     "content": "links",
+     "weight": 0.07787151812226045,
+     "repeat": 4,
+     "label": "Alberta",
+     "region": 2,
+     "kind": "features",
+     "selector": "div.colmask",
+     "why": [
+      "B1 district with 7.8% of the page (≥ 4%) → major",
+      "B2 7.2 links per 100 chars → links",
+      "B3 weight 7.8% of the page",
+      "B4 4 repeated items"
+     ],
+     "metrics": {
+      "share": 0.07787151812226045,
+      "chars": 762,
+      "links": 55,
+      "images": 0,
+      "controls": 0,
+      "descendants": 138,
+      "tableShare": 0,
+      "items": 4
+     }
+    },
+    {
+     "role": "major",
+     "content": "links",
+     "weight": 0.15056794080218694,
+     "repeat": 4,
+     "label": "Austria",
+     "region": 3,
+     "kind": "features",
+     "selector": "div.colmask",
+     "why": [
+      "B1 district with 15.1% of the page (≥ 4%) → major",
+      "B2 9.5 links per 100 chars → links",
+      "B3 weight 15.1% of the page",
+      "B4 4 repeated items"
+     ],
+     "metrics": {
+      "share": 0.15056794080218694,
+      "chars": 1110,
+      "links": 106,
+      "images": 0,
+      "controls": 0,
+      "descendants": 270,
+      "tableShare": 0,
+      "items": 4
+     }
+    },
+    {
+     "role": "major",
+     "content": "links",
+     "weight": 0.09753028232078052,
+     "repeat": 4,
+     "label": "Bangladesh",
+     "region": 4,
+     "kind": "features",
+     "selector": "div.colmask",
+     "why": [
+      "B1 district with 9.8% of the page (≥ 4%) → major",
+      "B2 9.0 links per 100 chars → links",
+      "B3 weight 9.8% of the page",
+      "B4 4 repeated items"
+     ],
+     "metrics": {
+      "share": 0.09753028232078052,
+      "chars": 719,
+      "links": 65,
+      "images": 0,
+      "controls": 0,
+      "descendants": 176,
+      "tableShare": 0,
+      "items": 4
+     }
+    },
+    {
+     "role": "major",
+     "content": "links",
+     "weight": 0.06932648348022813,
+     "repeat": 4,
+     "label": "Argentina",
+     "region": 5,
+     "kind": "features",
+     "selector": "div.colmask",
+     "why": [
+      "B1 district with 6.9% of the page (≥ 4%) → major",
+      "B2 7.0 links per 100 chars → links",
+      "B3 weight 6.9% of the page",
+      "B4 4 repeated items"
+     ],
+     "metrics": {
+      "share": 0.06932648348022813,
+      "chars": 598,
+      "links": 42,
+      "images": 0,
+      "controls": 0,
+      "descendants": 126,
+      "tableShare": 0,
+      "items": 4
+     }
+    }
+   ],
+   "minors": 3,
+   "suspicious": []
+  },
+  {
+   "id": "reference-2",
+   "url": "https://en.wikipedia.org/wiki/Lighthouse",
+   "category": "long article / reference",
+   "summary": {
+    "blocks": [
+     "civic",
+     "court",
+     "court",
+     "court",
+     "market",
+     "court",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots"
+    ],
+    "blockHist": {
+     "civic": 1,
+     "court": 4,
+     "market": 1,
+     "lots": 10
+    },
+    "families": {
+     "civic": 1,
+     "courtyard": 4,
+     "corner": 14,
+     "walkup": 30,
+     "rows": 24,
+     "kiosk": 36,
+     "apartments": 12
+    },
+    "roofs": {
+     "dome": 1,
+     "mansard": 43,
+     "flat": 34,
+     "gable": 41,
+     "terrace": 2
+    },
+    "styles": {
+     "classic": 108,
+     "modern": 13
+    },
+    "grounds": {
+     "lobby": 9,
+     "shop": 43,
+     "cafe": 19,
+     "arcade": 33,
+     "homes": 17
+    },
+    "signage": {
+     "plaque": 22,
+     "shop": 68,
+     "blade": 7,
+     "screen": 5,
+     "none": 12,
+     "billboard": 7
+    },
+    "buildings": 121,
+    "floors": {
+     "min": 1,
+     "max": 6,
+     "mean": 3.4545454545454546
+    },
+    "distinctLotPrograms": 44,
+    "lots": 108,
+    "lotsPerMinor": {
+     "0": 12,
+     "1": 12,
+     "2": 12,
+     "3": 12,
+     "4": 12,
+     "10": 12,
+     "11": 12,
+     "15": 12,
+     "16": 12
+    },
+    "landmark": "civic"
+   },
+   "majors": [
+    {
+     "role": "landmark",
+     "content": "links",
+     "weight": 0.10905054372391056,
+     "repeat": 0,
+     "label": "Wikipedia",
+     "region": 6,
+     "kind": "hero",
+     "selector": "header.mw-body-header",
+     "why": [
+      "B1 the hero region → landmark (contains the page's <h1> “Lighthouse”)",
+      "B2 11.7 links per 100 chars → links",
+      "B3 weight 10.9% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.10905054372391056,
+      "chars": 960,
+      "links": 112,
+      "images": 0,
+      "controls": 2,
+      "descendants": 355,
+      "tableShare": 0,
+      "items": 0
+     }
+    },
+    {
+     "role": "major",
+     "content": "text",
+     "weight": 0.14317088085932309,
+     "repeat": 6,
+     "label": "History",
+     "region": 7,
+     "kind": "features",
+     "selector": "section#mwIQ",
+     "why": [
+      "B1 district with 14.3% of the page (≥ 4%) → major",
+      "B2 10999 chars, 1.5 links/100 chars, 6 images → text",
+      "B3 weight 14.3% of the page",
+      "B4 6 repeated items"
+     ],
+     "metrics": {
+      "share": 0.14317088085932309,
+      "chars": 10999,
+      "links": 161,
+      "images": 6,
+      "controls": 0,
+      "descendants": 394,
+      "tableShare": 0,
+      "items": 6
+     }
+    },
+    {
+     "role": "major",
+     "content": "text",
+     "weight": 0.06591688601738853,
+     "repeat": 3,
+     "label": "Technology",
+     "region": 8,
+     "kind": "features",
+     "selector": "section#mwAVE",
+     "why": [
+      "B1 district with 6.6% of the page (≥ 4%) → major",
+      "B2 6322 chars, 0.9 links/100 chars, 2 images → text",
+      "B3 weight 6.6% of the page",
+      "B4 3 repeated items"
+     ],
+     "metrics": {
+      "share": 0.06591688601738853,
+      "chars": 6322,
+      "links": 57,
+      "images": 2,
+      "controls": 0,
+      "descendants": 183,
+      "tableShare": 0,
+      "items": 3
+     }
+    },
+    {
+     "role": "major",
+     "content": "text",
+     "weight": 0.07524926218393554,
+     "repeat": 4,
+     "label": "Building",
+     "region": 9,
+     "kind": "features",
+     "selector": "section#mwAcc",
+     "why": [
+      "B1 district with 7.5% of the page (≥ 4%) → major",
+      "B2 7206 chars, 1.0 links/100 chars, 6 images → text",
+      "B3 weight 7.5% of the page",
+      "B4 4 repeated items"
+     ],
+     "metrics": {
+      "share": 0.07524926218393554,
+      "chars": 7206,
+      "links": 75,
+      "images": 6,
+      "controls": 0,
+      "descendants": 194,
+      "tableShare": 0,
+      "items": 4
+     }
+    },
+    {
+     "role": "major",
+     "content": "links",
+     "weight": 0.18829597724070088,
+     "repeat": 2,
+     "label": "References",
+     "region": 12,
+     "kind": "references",
+     "selector": "section#mwArM",
+     "why": [
+      "B1 district with 18.8% of the page (≥ 4%) → major",
+      "B2 kind \"references\" → links",
+      "B3 weight 18.8% of the page",
+      "B4 2 repeated items"
+     ],
+     "metrics": {
+      "share": 0.18829597724070088,
+      "chars": 6814,
+      "links": 148,
+      "images": 1,
+      "controls": 0,
+      "descendants": 607,
+      "tableShare": 0,
+      "items": 2
+     }
+    },
+    {
+     "role": "major",
+     "content": "structured",
+     "weight": 0.1502831618409508,
+     "repeat": 0,
+     "label": "External",
+     "region": 13,
+     "kind": "section",
+     "selector": "section#mwBMo",
+     "why": [
+      "B1 district with 15.0% of the page (≥ 4%) → major",
+      "B2 96% of its elements in tables → structured",
+      "B3 weight 15.0% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.1502831618409508,
+      "chars": 2125,
+      "links": 121,
+      "images": 13,
+      "controls": 0,
+      "descendants": 465,
+      "tableShare": 0.9607843137254902,
+      "items": 0
+     }
+    }
+   ],
+   "minors": 9,
+   "suspicious": []
+  },
+  {
+   "id": "saas-2",
+   "url": "https://vercel.com/",
+   "category": "product / SaaS landing",
+   "summary": {
+    "blocks": [
+     "civic",
+     "market",
+     "towers",
+     "slabs",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots",
+     "lots"
+    ],
+    "blockHist": {
+     "civic": 1,
+     "market": 1,
+     "towers": 1,
+     "slabs": 1,
+     "lots": 12
+    },
+    "families": {
+     "narrowTower": 1,
+     "corner": 22,
+     "walkup": 73,
+     "podiumTower": 1,
+     "asymmetric": 1,
+     "slab": 2,
+     "apartments": 12,
+     "rows": 33
+    },
+    "roofs": {
+     "flat": 80,
+     "crown": 42,
+     "terrace": 17,
+     "gable": 6
+    },
+    "styles": {
+     "tech": 115,
+     "soft": 30
+    },
+    "grounds": {
+     "lobby": 1,
+     "shop": 82,
+     "cafe": 19,
+     "arcade": 1,
+     "homes": 42
+    },
+    "signage": {
+     "plaque": 43,
+     "shop": 58,
+     "blade": 7,
+     "screen": 1,
+     "billboard": 1,
+     "painted": 2,
+     "none": 33
+    },
+    "buildings": 145,
+    "floors": {
+     "min": 1,
+     "max": 21,
+     "mean": 3.510344827586207
+    },
+    "distinctLotPrograms": 31,
+    "lots": 132,
+    "lotsPerMinor": {
+     "0": 33,
+     "1": 33,
+     "10": 33,
+     "11": 33
+    },
+    "landmark": "narrowTower"
+   },
+   "majors": [
+    {
+     "role": "landmark",
+     "content": "media",
+     "weight": 0.10632183908045978,
+     "repeat": 0,
+     "label": "Vercel",
+     "region": 4,
+     "kind": "hero",
+     "selector": "section.relative",
+     "why": [
+      "B1 the hero region → landmark (contains the page's <h1> “Agentic Infrastructure”)",
+      "B2 24 images, 24.0 per 1000 chars → media",
+      "B3 weight 10.6% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.10632183908045978,
+      "chars": 436,
+      "links": 2,
+      "images": 24,
+      "controls": 0,
+      "descendants": 90,
+      "tableShare": 0,
+      "items": 0
+     }
+    },
+    {
+     "role": "major",
+     "content": "links",
+     "weight": 0.13531495900795124,
+     "repeat": 0,
+     "label": "Introduction",
+     "region": 2,
+     "kind": "section",
+     "selector": "div.fixed",
+     "why": [
+      "B1 district with 13.5% of the page (≥ 4%) → major",
+      "B2 9.7 links per 100 chars → links",
+      "B3 weight 13.5% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.13531495900795124,
+      "chars": 392,
+      "links": 38,
+      "images": 0,
+      "controls": 0,
+      "descendants": 113,
+      "tableShare": 0,
+      "items": 0
+     }
+    },
+    {
+     "role": "major",
+     "content": "media",
+     "weight": 0.1124706463972315,
+     "repeat": 12,
+     "label": "Build agents",
+     "region": 7,
+     "kind": "showcase",
+     "selector": "section.mt-40",
+     "why": [
+      "B1 district with 11.2% of the page (≥ 4%) → major",
+      "B2 kind \"showcase\" → media",
+      "B3 weight 11.2% of the page",
+      "B4 12 repeated items"
+     ],
+     "metrics": {
+      "share": 0.1124706463972315,
+      "chars": 579,
+      "links": 0,
+      "images": 12,
+      "controls": 0,
+      "descendants": 69,
+      "tableShare": 0,
+      "items": 12
+     }
+    },
+    {
+     "role": "major",
+     "content": "text",
+     "weight": 0.06647303588349196,
+     "repeat": 0,
+     "label": "Recently",
+     "region": 8,
+     "kind": "section",
+     "selector": "section.mt-40",
+     "why": [
+      "B1 district with 6.6% of the page (≥ 4%) → major",
+      "B2 422 chars, 0.7 links/100 chars, 2 images → text",
+      "B3 weight 6.6% of the page",
+      "B4 0 repeated items"
+     ],
+     "metrics": {
+      "share": 0.06647303588349196,
+      "chars": 422,
+      "links": 3,
+      "images": 2,
+      "controls": 0,
+      "descendants": 59,
+      "tableShare": 0,
+      "items": 0
+     }
+    }
+   ],
+   "minors": 4,
+   "suspicious": []
+  }
+ ],
+ "pair": {
+  "reference": {
+   "reference": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0
+   },
+   "docs": {
+    "mass": 0.4724700280840736,
+    "block": 0.21693008821164317,
+    "decision": 0.5580894145950281
+   },
+   "app": {
+    "mass": 0.47934601180134584,
+    "block": 0.21795042521688474,
+    "decision": 0.4636572430321321
+   },
+   "saas": {
+    "mass": 0.4800857548379092,
+    "block": 0.23682151089684467,
+    "decision": 0.5392441860465116
+   },
+   "shop": {
+    "mass": 0.63021240287807,
+    "block": 0.2845731221858887,
+    "decision": 0.5477924168542136
+   },
+   "news": {
+    "mass": 0.3639691492458874,
+    "block": 0.12113659520293606,
+    "decision": 0.23239159399224807
+   },
+   "portfolio": {
+    "mass": 0.49600210037525755,
+    "block": 0.26541341724331596,
+    "decision": 0.5661337209302326
+   },
+   "forum": {
+    "mass": 0.5988077325104265,
+    "block": 0.3390482716689335,
+    "decision": 0.6019098524631157
+   },
+   "institution": {
+    "mass": 0.48510140010478975,
+    "block": 0.2191419745151411,
+    "decision": 0.5048407845495857
+   },
+   "oldweb": {
+    "mass": 0.3682871792303899,
+    "block": 0.17313797404218853,
+    "decision": 0.4909156976744186
+   },
+   "media": {
+    "mass": 0.5294504743857522,
+    "block": 0.22717640878386175,
+    "decision": 0.47800678294573645
+   },
+   "directory": {
+    "mass": 0.34213780855200665,
+    "block": 0.10178212666918368,
+    "decision": 0.27681116051071597
+   },
+   "reference-2": {
+    "mass": 0.3547796220128987,
+    "block": 0.07425481714982253,
+    "decision": 0.13010322570312
+   },
+   "saas-2": {
+    "mass": 0.4621471285616686,
+    "block": 0.19402460353860226,
+    "decision": 0.5339105519914461
+   }
+  },
+  "docs": {
+   "reference": {
+    "mass": 0.4724700280840736,
+    "block": 0.21693008821164317,
+    "decision": 0.5580894145950281
+   },
+   "docs": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0
+   },
+   "app": {
+    "mass": 0.326057724439121,
+    "block": 0.15386749637708647,
+    "decision": 0.3532845814688076
+   },
+   "saas": {
+    "mass": 0.39245763364772057,
+    "block": 0.1481789758884875,
+    "decision": 0.23297580860732428
+   },
+   "shop": {
+    "mass": 0.45395153165692076,
+    "block": 0.1434961735841265,
+    "decision": 0.2493812569521691
+   },
+   "news": {
+    "mass": 0.4731839033943852,
+    "block": 0.2208912759183293,
+    "decision": 0.5589978448275862
+   },
+   "portfolio": {
+    "mass": 0.369171191143565,
+    "block": 0.1524400952496352,
+    "decision": 0.46661349443388545
+   },
+   "forum": {
+    "mass": 0.3782261700812222,
+    "block": 0.16801008934708905,
+    "decision": 0.2642276140155728
+   },
+   "institution": {
+    "mass": 0.1938518358615205,
+    "block": 0.0644072113231532,
+    "decision": 0.15355603448275862
+   },
+   "oldweb": {
+    "mass": 0.35548545608107474,
+    "block": 0.11464966997620767,
+    "decision": 0.4705949582027168
+   },
+   "media": {
+    "mass": 0.44458660524719684,
+    "block": 0.1666495347811212,
+    "decision": 0.2922241379310345
+   },
+   "directory": {
+    "mass": 0.38785966875921407,
+    "block": 0.19332337631147734,
+    "decision": 0.49644678273608295
+   },
+   "reference-2": {
+    "mass": 0.48157977367289506,
+    "block": 0.22117825944413136,
+    "decision": 0.5721038757480764
+   },
+   "saas-2": {
+    "mass": 0.3491620127838481,
+    "block": 0.18442762721339934,
+    "decision": 0.36390086206896555
+   }
+  },
+  "app": {
+   "reference": {
+    "mass": 0.47934601180134584,
+    "block": 0.21795042521688474,
+    "decision": 0.46365724303213207
+   },
+   "docs": {
+    "mass": 0.326057724439121,
+    "block": 0.15386749637708647,
+    "decision": 0.3532845814688076
+   },
+   "app": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0
+   },
+   "saas": {
+    "mass": 0.34392641851019395,
+    "block": 0.11697088711218569,
+    "decision": 0.34735135954790225
+   },
+   "shop": {
+    "mass": 0.5463940935320214,
+    "block": 0.23244543431100953,
+    "decision": 0.3943394484117213
+   },
+   "news": {
+    "mass": 0.4292458282061803,
+    "block": 0.19923037944006347,
+    "decision": 0.4209357108778626
+   },
+   "portfolio": {
+    "mass": 0.38289094054031625,
+    "block": 0.19088778444386692,
+    "decision": 0.26659610356434454
+   },
+   "forum": {
+    "mass": 0.4179334982106678,
+    "block": 0.22659287195789085,
+    "decision": 0.4305743659197242
+   },
+   "institution": {
+    "mass": 0.3158552607680417,
+    "block": 0.15436986875197564,
+    "decision": 0.315759081337194
+   },
+   "oldweb": {
+    "mass": 0.3799656907987899,
+    "block": 0.16093945170802276,
+    "decision": 0.5076531054823039
+   },
+   "media": {
+    "mass": 0.47639168544463006,
+    "block": 0.18459503359346816,
+    "decision": 0.350837786259542
+   },
+   "directory": {
+    "mass": 0.4063317360486839,
+    "block": 0.18208309929786473,
+    "decision": 0.43144816768946764
+   },
+   "reference-2": {
+    "mass": 0.4974088605079851,
+    "block": 0.20849079455800135,
+    "decision": 0.4997121632704562
+   },
+   "saas-2": {
+    "mass": 0.4422855238122349,
+    "block": 0.18889853514251395,
+    "decision": 0.4237875098710187
+   }
+  },
+  "saas": {
+   "reference": {
+    "mass": 0.4800857548379092,
+    "block": 0.23682151089684467,
+    "decision": 0.5392441860465116
+   },
+   "docs": {
+    "mass": 0.39245763364772057,
+    "block": 0.1481789758884875,
+    "decision": 0.23297580860732428
+   },
+   "app": {
+    "mass": 0.34392641851019395,
+    "block": 0.11697088711218569,
+    "decision": 0.3473513595479022
+   },
+   "saas": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0
+   },
+   "shop": {
+    "mass": 0.5192661126729771,
+    "block": 0.22136684141197085,
+    "decision": 0.19329519879969995
+   },
+   "news": {
+    "mass": 0.3408044310405647,
+    "block": 0.14336666032362896,
+    "decision": 0.44667514534883723
+   },
+   "portfolio": {
+    "mass": 0.36425562890748486,
+    "block": 0.13857848857640867,
+    "decision": 0.3481791338582677
+   },
+   "forum": {
+    "mass": 0.39642992776340985,
+    "block": 0.21825240637006038,
+    "decision": 0.22858292698174543
+   },
+   "institution": {
+    "mass": 0.34813770834837865,
+    "block": 0.1331269639867639,
+    "decision": 0.1296336206896552
+   },
+   "oldweb": {
+    "mass": 0.39128179502604704,
+    "block": 0.1834914337637461,
+    "decision": 0.5058403805496829
+   },
+   "media": {
+    "mass": 0.3464986399766724,
+    "block": 0.10896748237956799,
+    "decision": 0.14418023255813955
+   },
+   "directory": {
+    "mass": 0.44473103387280194,
+    "block": 0.24930758836811945,
+    "decision": 0.5804358565131479
+   },
+   "reference-2": {
+    "mass": 0.5395404627960918,
+    "block": 0.2685219351167923,
+    "decision": 0.5606511067332949
+   },
+   "saas-2": {
+    "mass": 0.4174310380823802,
+    "block": 0.20553251825560165,
+    "decision": 0.3848995923549853
+   }
+  },
+  "shop": {
+   "reference": {
+    "mass": 0.63021240287807,
+    "block": 0.2845731221858887,
+    "decision": 0.5477924168542136
+   },
+   "docs": {
+    "mass": 0.45395153165692076,
+    "block": 0.1434961735841265,
+    "decision": 0.2493812569521691
+   },
+   "app": {
+    "mass": 0.5463940935320214,
+    "block": 0.23244543431100953,
+    "decision": 0.3943394484117213
+   },
+   "saas": {
+    "mass": 0.5192661126729771,
+    "block": 0.22136684141197085,
+    "decision": 0.19329519879969992
+   },
+   "shop": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0
+   },
+   "news": {
+    "mass": 0.6174632535599204,
+    "block": 0.28134694804882365,
+    "decision": 0.4530241935483871
+   },
+   "portfolio": {
+    "mass": 0.4537032872942889,
+    "block": 0.170437733452265,
+    "decision": 0.3469805689611379
+   },
+   "forum": {
+    "mass": 0.37777908429565465,
+    "block": 0.12439468176688383,
+    "decision": 0.16885080645161288
+   },
+   "institution": {
+    "mass": 0.46741979972095576,
+    "block": 0.17503461081284943,
+    "decision": 0.13964822024471638
+   },
+   "oldweb": {
+    "mass": 0.5336689234051312,
+    "block": 0.17971669931217968,
+    "decision": 0.4315585288367546
+   },
+   "media": {
+    "mass": 0.5558240809448992,
+    "block": 0.21415667661648996,
+    "decision": 0.1516733870967742
+   },
+   "directory": {
+    "mass": 0.564222555323357,
+    "block": 0.2607926191326085,
+    "decision": 0.6363245835968796
+   },
+   "reference-2": {
+    "mass": 0.5812610488771276,
+    "block": 0.257320684549234,
+    "decision": 0.5518120167955213
+   },
+   "saas-2": {
+    "mass": 0.5659149802368589,
+    "block": 0.3033425671374272,
+    "decision": 0.39454254727474974
+   }
+  },
+  "news": {
+   "reference": {
+    "mass": 0.3639691492458874,
+    "block": 0.12113659520293606,
+    "decision": 0.23239159399224807
+   },
+   "docs": {
+    "mass": 0.4731839033943852,
+    "block": 0.2208912759183293,
+    "decision": 0.5589978448275863
+   },
+   "app": {
+    "mass": 0.4292458282061803,
+    "block": 0.19923037944006347,
+    "decision": 0.4209357108778626
+   },
+   "saas": {
+    "mass": 0.3408044310405647,
+    "block": 0.14336666032362896,
+    "decision": 0.44667514534883723
+   },
+   "shop": {
+    "mass": 0.6174632535599204,
+    "block": 0.28134694804882365,
+    "decision": 0.45302419354838713
+   },
+   "news": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0
+   },
+   "portfolio": {
+    "mass": 0.5353773234959718,
+    "block": 0.26285685233166256,
+    "decision": 0.4100947342519685
+   },
+   "forum": {
+    "mass": 0.5369038508306961,
+    "block": 0.2923656997932444,
+    "decision": 0.4847278225806452
+   },
+   "institution": {
+    "mass": 0.42418580970453634,
+    "block": 0.19358761755554857,
+    "decision": 0.4468211206896552
+   },
+   "oldweb": {
+    "mass": 0.3678846543315947,
+    "block": 0.17882418696269578,
+    "decision": 0.4551136363636364
+   },
+   "media": {
+    "mass": 0.46878225108479626,
+    "block": 0.21122799503158804,
+    "decision": 0.37528125
+   },
+   "directory": {
+    "mass": 0.38843202346594863,
+    "block": 0.14705374792630616,
+    "decision": 0.4016161151960784
+   },
+   "reference-2": {
+    "mass": 0.46385211531377624,
+    "block": 0.15888863812721538,
+    "decision": 0.3249451188016529
+   },
+   "saas-2": {
+    "mass": 0.4200909001623905,
+    "block": 0.19526209327067923,
+    "decision": 0.4523168103448276
+   }
+  },
+  "portfolio": {
+   "reference": {
+    "mass": 0.49600210037525755,
+    "block": 0.26541341724331596,
+    "decision": 0.5661337209302326
+   },
+   "docs": {
+    "mass": 0.369171191143565,
+    "block": 0.1524400952496352,
+    "decision": 0.46661349443388545
+   },
+   "app": {
+    "mass": 0.38289094054031625,
+    "block": 0.19088778444386692,
+    "decision": 0.26659610356434454
+   },
+   "saas": {
+    "mass": 0.36425562890748486,
+    "block": 0.13857848857640867,
+    "decision": 0.3481791338582677
+   },
+   "shop": {
+    "mass": 0.4537032872942889,
+    "block": 0.170437733452265,
+    "decision": 0.3469805689611379
+   },
+   "news": {
+    "mass": 0.5353773234959718,
+    "block": 0.26285685233166256,
+    "decision": 0.4100947342519685
+   },
+   "portfolio": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0
+   },
+   "forum": {
+    "mass": 0.3162005028625531,
+    "block": 0.13969851283075282,
+    "decision": 0.245135096520193
+   },
+   "institution": {
+    "mass": 0.39987035995691267,
+    "block": 0.18171237953780472,
+    "decision": 0.3475402185718165
+   },
+   "oldweb": {
+    "mass": 0.44703430896682617,
+    "block": 0.19114531303079302,
+    "decision": 0.5036238367931282
+   },
+   "media": {
+    "mass": 0.3914174001082023,
+    "block": 0.15906420791053474,
+    "decision": 0.3198356299212598
+   },
+   "directory": {
+    "mass": 0.4651831674554322,
+    "block": 0.27581406464473246,
+    "decision": 0.6589052287581699
+   },
+   "reference-2": {
+    "mass": 0.523896518139769,
+    "block": 0.2994932895686768,
+    "decision": 0.6297148516301164
+   },
+   "saas-2": {
+    "mass": 0.5006932697707334,
+    "block": 0.28978436562757975,
+    "decision": 0.48219946375237577
+   }
+  },
+  "forum": {
+   "reference": {
+    "mass": 0.5988077325104265,
+    "block": 0.3390482716689335,
+    "decision": 0.6019098524631159
+   },
+   "docs": {
+    "mass": 0.3782261700812222,
+    "block": 0.16801008934708905,
+    "decision": 0.2642276140155729
+   },
+   "app": {
+    "mass": 0.4179334982106678,
+    "block": 0.22659287195789085,
+    "decision": 0.4305743659197242
+   },
+   "saas": {
+    "mass": 0.39642992776340985,
+    "block": 0.21825240637006038,
+    "decision": 0.22858292698174543
+   },
+   "shop": {
+    "mass": 0.37777908429565465,
+    "block": 0.12439468176688383,
+    "decision": 0.16885080645161288
+   },
+   "news": {
+    "mass": 0.5369038508306961,
+    "block": 0.2923656997932444,
+    "decision": 0.4847278225806452
+   },
+   "portfolio": {
+    "mass": 0.3162005028625531,
+    "block": 0.13969851283075282,
+    "decision": 0.245135096520193
+   },
+   "forum": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0
+   },
+   "institution": {
+    "mass": 0.38711514273679315,
+    "block": 0.19967503503471032,
+    "decision": 0.160004171301446
+   },
+   "oldweb": {
+    "mass": 0.4754002382020068,
+    "block": 0.18102022713447896,
+    "decision": 0.41269244868035193
+   },
+   "media": {
+    "mass": 0.4929384999849524,
+    "block": 0.27003373599571684,
+    "decision": 0.23656451612903223
+   },
+   "directory": {
+    "mass": 0.5106284884007221,
+    "block": 0.27807059141529206,
+    "decision": 0.6589052287581699
+   },
+   "reference-2": {
+    "mass": 0.5991591621692308,
+    "block": 0.33421428409220005,
+    "decision": 0.6649018595041323
+   },
+   "saas-2": {
+    "mass": 0.5106219032338024,
+    "block": 0.33046281476179296,
+    "decision": 0.44782397107897665
+   }
+  },
+  "institution": {
+   "reference": {
+    "mass": 0.48510140010478975,
+    "block": 0.2191419745151411,
+    "decision": 0.5048407845495857
+   },
+   "docs": {
+    "mass": 0.1938518358615205,
+    "block": 0.0644072113231532,
+    "decision": 0.15355603448275862
+   },
+   "app": {
+    "mass": 0.3158552607680417,
+    "block": 0.15436986875197564,
+    "decision": 0.315759081337194
+   },
+   "saas": {
+    "mass": 0.34813770834837865,
+    "block": 0.1331269639867639,
+    "decision": 0.1296336206896552
+   },
+   "shop": {
+    "mass": 0.46741979972095576,
+    "block": 0.17503461081284943,
+    "decision": 0.13964822024471635
+   },
+   "news": {
+    "mass": 0.42418580970453634,
+    "block": 0.19358761755554857,
+    "decision": 0.4468211206896552
+   },
+   "portfolio": {
+    "mass": 0.39987035995691267,
+    "block": 0.18171237953780472,
+    "decision": 0.34754021857181644
+   },
+   "forum": {
+    "mass": 0.38711514273679315,
+    "block": 0.19967503503471032,
+    "decision": 0.160004171301446
+   },
+   "institution": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0
+   },
+   "oldweb": {
+    "mass": 0.35656087928251673,
+    "block": 0.12609834539011336,
+    "decision": 0.4343880616509927
+   },
+   "media": {
+    "mass": 0.386216166109503,
+    "block": 0.12520526083855915,
+    "decision": 0.15770258620689656
+   },
+   "directory": {
+    "mass": 0.3999366731515256,
+    "block": 0.1894945394771953,
+    "decision": 0.5550674723912553
+   },
+   "reference-2": {
+    "mass": 0.4950698370636742,
+    "block": 0.22532930938990645,
+    "decision": 0.551798945568538
+   },
+   "saas-2": {
+    "mass": 0.2989080050435902,
+    "block": 0.1402581194167822,
+    "decision": 0.29655172413793107
+   }
+  },
+  "oldweb": {
+   "reference": {
+    "mass": 0.3682871792303899,
+    "block": 0.17313797404218853,
+    "decision": 0.4909156976744186
+   },
+   "docs": {
+    "mass": 0.35548545608107474,
+    "block": 0.11464966997620767,
+    "decision": 0.4705949582027169
+   },
+   "app": {
+    "mass": 0.3799656907987899,
+    "block": 0.16093945170802276,
+    "decision": 0.5076531054823039
+   },
+   "saas": {
+    "mass": 0.39128179502604704,
+    "block": 0.1834914337637461,
+    "decision": 0.5058403805496829
+   },
+   "shop": {
+    "mass": 0.5336689234051312,
+    "block": 0.17971669931217968,
+    "decision": 0.4315585288367546
+   },
+   "news": {
+    "mass": 0.3678846543315947,
+    "block": 0.17882418696269578,
+    "decision": 0.45511363636363633
+   },
+   "portfolio": {
+    "mass": 0.44703430896682617,
+    "block": 0.19114531303079302,
+    "decision": 0.503623836793128
+   },
+   "forum": {
+    "mass": 0.4754002382020068,
+    "block": 0.18102022713447896,
+    "decision": 0.41269244868035193
+   },
+   "institution": {
+    "mass": 0.35656087928251673,
+    "block": 0.12609834539011336,
+    "decision": 0.43438806165099275
+   },
+   "oldweb": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0
+   },
+   "media": {
+    "mass": 0.45444464368241017,
+    "block": 0.19483935943222486,
+    "decision": 0.47315530303030306
+   },
+   "directory": {
+    "mass": 0.2761894680699565,
+    "block": 0.11355932690420853,
+    "decision": 0.5615493166963755
+   },
+   "reference-2": {
+    "mass": 0.4096786544917407,
+    "block": 0.18169006474426935,
+    "decision": 0.5647641184573002
+   },
+   "saas-2": {
+    "mass": 0.3626569183898768,
+    "block": 0.18497589472437873,
+    "decision": 0.471169670846395
+   }
+  },
+  "media": {
+   "reference": {
+    "mass": 0.5294504743857522,
+    "block": 0.22717640878386175,
+    "decision": 0.47800678294573645
+   },
+   "docs": {
+    "mass": 0.44458660524719684,
+    "block": 0.1666495347811212,
+    "decision": 0.2922241379310345
+   },
+   "app": {
+    "mass": 0.47639168544463006,
+    "block": 0.18459503359346816,
+    "decision": 0.350837786259542
+   },
+   "saas": {
+    "mass": 0.3464986399766724,
+    "block": 0.10896748237956799,
+    "decision": 0.14418023255813953
+   },
+   "shop": {
+    "mass": 0.5558240809448992,
+    "block": 0.21415667661648996,
+    "decision": 0.15167338709677416
+   },
+   "news": {
+    "mass": 0.46878225108479626,
+    "block": 0.21122799503158804,
+    "decision": 0.37528125
+   },
+   "portfolio": {
+    "mass": 0.3914174001082023,
+    "block": 0.15906420791053474,
+    "decision": 0.3198356299212598
+   },
+   "forum": {
+    "mass": 0.4929384999849524,
+    "block": 0.27003373599571684,
+    "decision": 0.23656451612903223
+   },
+   "institution": {
+    "mass": 0.386216166109503,
+    "block": 0.12520526083855915,
+    "decision": 0.15770258620689656
+   },
+   "oldweb": {
+    "mass": 0.45444464368241017,
+    "block": 0.19483935943222486,
+    "decision": 0.47315530303030306
+   },
+   "media": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0
+   },
+   "directory": {
+    "mass": 0.51041787097634,
+    "block": 0.25564057099657606,
+    "decision": 0.6327614379084967
+   },
+   "reference-2": {
+    "mass": 0.5945834884619113,
+    "block": 0.2572229849035798,
+    "decision": 0.5595578512396695
+   },
+   "saas-2": {
+    "mass": 0.47178937421230116,
+    "block": 0.2145411408713256,
+    "decision": 0.4037715517241379
+   }
+  },
+  "directory": {
+   "reference": {
+    "mass": 0.34213780855200665,
+    "block": 0.10178212666918368,
+    "decision": 0.27681116051071597
+   },
+   "docs": {
+    "mass": 0.38785966875921407,
+    "block": 0.19332337631147734,
+    "decision": 0.4964467827360829
+   },
+   "app": {
+    "mass": 0.4063317360486839,
+    "block": 0.18208309929786473,
+    "decision": 0.43144816768946764
+   },
+   "saas": {
+    "mass": 0.44473103387280194,
+    "block": 0.24930758836811945,
+    "decision": 0.5804358565131479
+   },
+   "shop": {
+    "mass": 0.564222555323357,
+    "block": 0.2607926191326085,
+    "decision": 0.6363245835968796
+   },
+   "news": {
+    "mass": 0.38843202346594863,
+    "block": 0.14705374792630616,
+    "decision": 0.4016161151960784
+   },
+   "portfolio": {
+    "mass": 0.4651831674554322,
+    "block": 0.27581406464473246,
+    "decision": 0.6589052287581699
+   },
+   "forum": {
+    "mass": 0.5106284884007221,
+    "block": 0.27807059141529206,
+    "decision": 0.6589052287581698
+   },
+   "institution": {
+    "mass": 0.3999366731515256,
+    "block": 0.1894945394771953,
+    "decision": 0.5550674723912553
+   },
+   "oldweb": {
+    "mass": 0.2761894680699565,
+    "block": 0.11355932690420853,
+    "decision": 0.5615493166963755
+   },
+   "media": {
+    "mass": 0.51041787097634,
+    "block": 0.25564057099657606,
+    "decision": 0.6327614379084967
+   },
+   "directory": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0
+   },
+   "reference-2": {
+    "mass": 0.3587369728249123,
+    "block": 0.09395874120586707,
+    "decision": 0.25842988710635767
+   },
+   "saas-2": {
+    "mass": 0.4007449445566548,
+    "block": 0.15805616864930508,
+    "decision": 0.5809408102321388
+   }
+  },
+  "reference-2": {
+   "reference": {
+    "mass": 0.3547796220128987,
+    "block": 0.07425481714982253,
+    "decision": 0.13010322570312
+   },
+   "docs": {
+    "mass": 0.48157977367289506,
+    "block": 0.22117825944413136,
+    "decision": 0.5721038757480764
+   },
+   "app": {
+    "mass": 0.4974088605079851,
+    "block": 0.20849079455800135,
+    "decision": 0.49971216327045614
+   },
+   "saas": {
+    "mass": 0.5395404627960918,
+    "block": 0.2685219351167923,
+    "decision": 0.5606511067332949
+   },
+   "shop": {
+    "mass": 0.5812610488771276,
+    "block": 0.257320684549234,
+    "decision": 0.5518120167955212
+   },
+   "news": {
+    "mass": 0.46385211531377624,
+    "block": 0.15888863812721538,
+    "decision": 0.3249451188016529
+   },
+   "portfolio": {
+    "mass": 0.523896518139769,
+    "block": 0.2994932895686768,
+    "decision": 0.6297148516301164
+   },
+   "forum": {
+    "mass": 0.5991591621692308,
+    "block": 0.33421428409220005,
+    "decision": 0.6649018595041322
+   },
+   "institution": {
+    "mass": 0.4950698370636742,
+    "block": 0.22532930938990645,
+    "decision": 0.551798945568538
+   },
+   "oldweb": {
+    "mass": 0.4096786544917407,
+    "block": 0.18169006474426935,
+    "decision": 0.5647641184573002
+   },
+   "media": {
+    "mass": 0.5945834884619113,
+    "block": 0.2572229849035798,
+    "decision": 0.5595578512396695
+   },
+   "directory": {
+    "mass": 0.3587369728249123,
+    "block": 0.09395874120586707,
+    "decision": 0.25842988710635767
+   },
+   "reference-2": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0
+   },
+   "saas-2": {
+    "mass": 0.48738399857568027,
+    "block": 0.1909841913744376,
+    "decision": 0.5665894841835281
+   }
+  },
+  "saas-2": {
+   "reference": {
+    "mass": 0.4621471285616686,
+    "block": 0.19402460353860226,
+    "decision": 0.5339105519914462
+   },
+   "docs": {
+    "mass": 0.3491620127838481,
+    "block": 0.18442762721339934,
+    "decision": 0.36390086206896555
+   },
+   "app": {
+    "mass": 0.4422855238122349,
+    "block": 0.18889853514251395,
+    "decision": 0.4237875098710187
+   },
+   "saas": {
+    "mass": 0.4174310380823802,
+    "block": 0.20553251825560165,
+    "decision": 0.38489959235498533
+   },
+   "shop": {
+    "mass": 0.5659149802368589,
+    "block": 0.3033425671374272,
+    "decision": 0.39454254727474974
+   },
+   "news": {
+    "mass": 0.4200909001623905,
+    "block": 0.19526209327067923,
+    "decision": 0.4523168103448276
+   },
+   "portfolio": {
+    "mass": 0.5006932697707334,
+    "block": 0.28978436562757975,
+    "decision": 0.48219946375237577
+   },
+   "forum": {
+    "mass": 0.5106219032338024,
+    "block": 0.33046281476179296,
+    "decision": 0.44782397107897665
+   },
+   "institution": {
+    "mass": 0.2989080050435902,
+    "block": 0.1402581194167822,
+    "decision": 0.29655172413793107
+   },
+   "oldweb": {
+    "mass": 0.3626569183898768,
+    "block": 0.18497589472437873,
+    "decision": 0.471169670846395
+   },
+   "media": {
+    "mass": 0.47178937421230116,
+    "block": 0.2145411408713256,
+    "decision": 0.4037715517241379
+   },
+   "directory": {
+    "mass": 0.4007449445566548,
+    "block": 0.15805616864930508,
+    "decision": 0.5809408102321388
+   },
+   "reference-2": {
+    "mass": 0.48738399857568027,
+    "block": 0.1909841913744376,
+    "decision": 0.5665894841835281
+   },
+   "saas-2": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0
+   }
+  }
+ },
+ "seedCtl": {
+  "reference": [
+   {
+    "mass": 0.21088986701882892,
+    "block": 0.02949870078037914,
+    "decision": 0.03289768723172528
+   },
+   {
+    "mass": 0.2653566791391673,
+    "block": 0.0388625483618302,
+    "decision": 0.015503875968992243
+   },
+   {
+    "mass": 0.2048816129169252,
+    "block": 0.04871712185666977,
+    "decision": 0.02283720930232558
+   }
+  ],
+  "docs": [
+   {
+    "mass": 0.18922936220395734,
+    "block": 0.04065378544883824,
+    "decision": 0.035558724397199905
+   },
+   {
+    "mass": 0.1950006319043778,
+    "block": 0.02852927909178629,
+    "decision": 0.010344827586206891
+   },
+   {
+    "mass": 0.18452934465079585,
+    "block": 0.03651161867186221,
+    "decision": 0.03363903154805577
+   }
+  ],
+  "app": [
+   {
+    "mass": 0.1701544558128739,
+    "block": 0.030545302220682236,
+    "decision": 0.015422329795817055
+   },
+   {
+    "mass": 0.19287752143926173,
+    "block": 0.03153637424204397,
+    "decision": 0.02099236641221374
+   },
+   {
+    "mass": 0.20373414447359592,
+    "block": 0.026926283304743767,
+    "decision": 0.025094668509947713
+   }
+  ],
+  "saas": [
+   {
+    "mass": 0.20438358148448532,
+    "block": 0.02466520596160951,
+    "decision": 0.031584342366583376
+   },
+   {
+    "mass": 0.24804725069250197,
+    "block": 0.01960707845366233,
+    "decision": 0.021317829457364337
+   },
+   {
+    "mass": 0.23059857867836253,
+    "block": 0.021341864316838287,
+    "decision": 0.04403100775193799
+   }
+  ],
+  "shop": [
+   {
+    "mass": 0.4459791198781566,
+    "block": 0.029638487822293953,
+    "decision": 0.02117076471915183
+   },
+   {
+    "mass": 0.36644582990954694,
+    "block": 0.03197465337121424,
+    "decision": 0.014516129032258072
+   },
+   {
+    "mass": 0.2788058941780994,
+    "block": 0.029672722227717385,
+    "decision": 0.022367015594958337
+   }
+  ],
+  "news": [
+   {
+    "mass": 0.21515785643397498,
+    "block": 0.02932450667850028,
+    "decision": 0.03190104166666668
+   },
+   {
+    "mass": 0.274612753780598,
+    "block": 0.04111874593362333,
+    "decision": 0.0390625
+   },
+   {
+    "mass": 0.23445469802247346,
+    "block": 0.03854286329921919,
+    "decision": 0.03181703629032259
+   }
+  ],
+  "portfolio": [
+   {
+    "mass": 0.17406815432786243,
+    "block": 0.01809127794621461,
+    "decision": 0.010603453980017198
+   },
+   {
+    "mass": 0.16782965475880715,
+    "block": 0.018169599526910087,
+    "decision": 0.009842519685039366
+   },
+   {
+    "mass": 0.181472754165267,
+    "block": 0.01644963858349625,
+    "decision": 0.022405735868382293
+   }
+  ],
+  "forum": [
+   {
+    "mass": 0.1615875834359587,
+    "block": 0.01693180556059036,
+    "decision": 0.015971125648545005
+   },
+   {
+    "mass": 0.20404302081494266,
+    "block": 0.017234052509240136,
+    "decision": 0.003225806451612908
+   },
+   {
+    "mass": 0.20190925835432633,
+    "block": 0.019422681028595325,
+    "decision": 0.019942320017090356
+   }
+  ],
+  "institution": [
+   {
+    "mass": 0.18572098676565446,
+    "block": 0.03829904368380329,
+    "decision": 0.03759398496240603
+   },
+   {
+    "mass": 0.20598540724075878,
+    "block": 0.03052301360362149,
+    "decision": 0.020689655172413793
+   },
+   {
+    "mass": 0.21089028124252981,
+    "block": 0.03928079588322089,
+    "decision": 0.03778429933969185
+   }
+  ],
+  "oldweb": [
+   {
+    "mass": 0.1889447568328244,
+    "block": 0.024554829932710433,
+    "decision": 0.026084373143196678
+   },
+   {
+    "mass": 0.21722514372166768,
+    "block": 0.02685562980021808,
+    "decision": 0.009090909090909085
+   },
+   {
+    "mass": 0.20299011430342262,
+    "block": 0.030494764763756493,
+    "decision": 0.018008106543138384
+   }
+  ],
+  "media": [
+   {
+    "mass": 0.25465783052754015,
+    "block": 0.02952803453260438,
+    "decision": 0.012820512820512829
+   },
+   {
+    "mass": 0.3378711778689067,
+    "block": 0.030121081168783693,
+    "decision": 0.031999999999999994
+   },
+   {
+    "mass": 0.2888086159663916,
+    "block": 0.033663897609554905,
+    "decision": 0.028231404958677674
+   }
+  ],
+  "directory": [
+   {
+    "mass": 0.2316728854675564,
+    "block": 0.04110071848102991,
+    "decision": 0.03011043497858915
+   },
+   {
+    "mass": 0.27282710222017326,
+    "block": 0.04149983291524147,
+    "decision": 0.008169934640522878
+   },
+   {
+    "mass": 0.23840215433816267,
+    "block": 0.038930585647199326,
+    "decision": 0.013751809448611652
+   }
+  ],
+  "reference-2": [
+   {
+    "mass": 0.23938030355163176,
+    "block": 0.04963509136221193,
+    "decision": 0.036915819498281294
+   },
+   {
+    "mass": 0.2900195569534088,
+    "block": 0.05209872650809675,
+    "decision": 0.018595041322314043
+   },
+   {
+    "mass": 0.22756661659051558,
+    "block": 0.04807237861242902,
+    "decision": 0.02571166207529844
+   }
+  ],
+  "saas-2": [
+   {
+    "mass": 0.19555600081880842,
+    "block": 0.04771477826407743,
+    "decision": 0.027871402644542406
+   },
+   {
+    "mass": 0.23545679685556392,
+    "block": 0.056718401256846324,
+    "decision": 0.022413793103448286
+   },
+   {
+    "mass": 0.2000551069176978,
+    "block": 0.037047147404061835,
+    "decision": 0.04102470041574957
+   }
+  ]
+ },
+ "perturb": {
+  "reference": {
+   "text-10": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "note": "own text of every element ×0.9",
+    "changes": []
+   },
+   "text+10": {
+    "mass": 0.005595047778076733,
+    "block": 0.004119363592525808,
+    "decision": 0,
+    "note": "own text of every element ×1.1",
+    "changes": [
+     "1 minor weight/repeat changes"
+    ]
+   },
+   "links-10": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "note": "70 of 700 links removed (every tenth)",
+    "changes": [
+     "1 minor weight/repeat changes"
+    ]
+   },
+   "drop-secondary": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "note": "removed <section#mwAZY> (1.2% of the text)",
+    "changes": [
+     "1 minor weight/repeat changes"
+    ]
+   }
+  },
+  "docs": {
+   "text-10": {
+    "mass": 0.0033956703775422682,
+    "block": 0.0015673926737793929,
+    "decision": 0,
+    "note": "own text of every element ×0.9",
+    "changes": []
+   },
+   "text+10": {
+    "mass": 0.001398528457959737,
+    "block": 0.0006065949510152798,
+    "decision": 0,
+    "note": "own text of every element ×1.1",
+    "changes": []
+   },
+   "links-10": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "note": "12 of 125 links removed (every tenth)",
+    "changes": []
+   },
+   "drop-secondary": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "note": "no section-like element with 1–6% of the text: unchanged",
+    "changes": []
+   }
+  },
+  "app": {
+   "text-10": {
+    "mass": 0.20040697230602758,
+    "block": 0.10540325407515952,
+    "decision": 0.18129770992366415,
+    "note": "own text of every element ×0.9",
+    "changes": [
+     "minors 2 → 1"
+    ]
+   },
+   "text+10": {
+    "mass": 0.003098713299493078,
+    "block": 0.0014514064420525956,
+    "decision": 0,
+    "note": "own text of every element ×1.1",
+    "changes": []
+   },
+   "links-10": {
+    "mass": 0.06489797424873686,
+    "block": 0.03018963207066405,
+    "decision": 0.021174031121550207,
+    "note": "18 of 187 links removed (every tenth)",
+    "changes": [
+     "blocks civic+towers+market+slabs+towers+market → civic+towers+market+slabs+court+market",
+     "majors [text:GitHub media:Navigation links:section structured:Latest media:Repository links:About] → [text:GitHub media:Navigation links:section structured:Latest text:Repository links:About]",
+     "1 minor weight/repeat changes"
+    ]
+   },
+   "drop-secondary": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "note": "no section-like element with 1–6% of the text: unchanged",
+    "changes": []
+   }
+  },
+  "saas": {
+   "text-10": {
+    "mass": 0.0020695772454937394,
+    "block": 0.0007395161169114735,
+    "decision": 0,
+    "note": "own text of every element ×0.9",
+    "changes": []
+   },
+   "text+10": {
+    "mass": 0.0015196837330900888,
+    "block": 0.0007167663962544734,
+    "decision": 0,
+    "note": "own text of every element ×1.1",
+    "changes": []
+   },
+   "links-10": {
+    "mass": 0.17611515017965462,
+    "block": 0.02238883978194785,
+    "decision": 0.021317829457364337,
+    "note": "7 of 74 links removed (every tenth)",
+    "changes": [
+     "minors 5 → 4"
+    ]
+   },
+   "drop-secondary": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "note": "removed <section#customers.hide-laptop> (3.8% of the text)",
+    "changes": []
+   }
+  },
+  "shop": {
+   "text-10": {
+    "mass": 0.0023092301141700968,
+    "block": 0.0006649536817765278,
+    "decision": 0,
+    "note": "own text of every element ×0.9",
+    "changes": []
+   },
+   "text+10": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "note": "own text of every element ×1.1",
+    "changes": []
+   },
+   "links-10": {
+    "mass": 0.0023092301141700968,
+    "block": 0.0006649536817765278,
+    "decision": 0,
+    "note": "14 of 149 links removed (every tenth)",
+    "changes": []
+   },
+   "drop-secondary": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "note": "removed <section.vbpjg77> (1.6% of the text)",
+    "changes": []
+   }
+  },
+  "news": {
+   "text-10": {
+    "mass": 0.006932724515039072,
+    "block": 0.004756395036479878,
+    "decision": 0,
+    "note": "own text of every element ×0.9",
+    "changes": []
+   },
+   "text+10": {
+    "mass": 0.0021512821962831365,
+    "block": 0.0015991841871100185,
+    "decision": 0,
+    "note": "own text of every element ×1.1",
+    "changes": [
+     "1 minor weight/repeat changes"
+    ]
+   },
+   "links-10": {
+    "mass": 0.10970321607903116,
+    "block": 0.022863047822811094,
+    "decision": 0.00390625,
+    "note": "34 of 342 links removed (every tenth)",
+    "changes": [
+     "minors 22 → 21"
+    ]
+   },
+   "drop-secondary": {
+    "mass": 0.0018183886845117125,
+    "block": 0.00045128443513841546,
+    "decision": 0,
+    "note": "removed <section#in-pictures.dcr-cavc6m> (1.4% of the text)",
+    "changes": []
+   }
+  },
+  "portfolio": {
+   "text-10": {
+    "mass": 0.0023610511748883385,
+    "block": 0.000814466767810846,
+    "decision": 0,
+    "note": "own text of every element ×0.9",
+    "changes": []
+   },
+   "text+10": {
+    "mass": 0.0008141918952876569,
+    "block": 0.0001277355294800656,
+    "decision": 0,
+    "note": "own text of every element ×1.1",
+    "changes": []
+   },
+   "links-10": {
+    "mass": 0.2672331480109616,
+    "block": 0.06568447945315045,
+    "decision": 0.18897637795275593,
+    "note": "4 of 40 links removed (every tenth)",
+    "changes": [
+     "minor content “footer” links→text",
+     "1 minor weight/repeat changes"
+    ]
+   },
+   "drop-secondary": {
+    "mass": 0.06340193210028407,
+    "block": 0.041140801522741584,
+    "decision": 0.02576926116443476,
+    "note": "removed <section#writing.scroll-mt-16> (4.7% of the text)",
+    "changes": [
+     "blocks civic+court+court+towers+towers → civic+court+court+towers",
+     "majors [links:Brittany text:About text:Experience media:Projects media:Writing] → [links:Brittany text:About text:Experience media:Projects]",
+     "1 minor weight/repeat changes"
+    ]
+   }
+  },
+  "forum": {
+   "text-10": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "note": "own text of every element ×0.9",
+    "changes": []
+   },
+   "text+10": {
+    "mass": 0.09627870520429439,
+    "block": 0.027441295646901318,
+    "decision": 0.02046370967741936,
+    "note": "own text of every element ×1.1",
+    "changes": [
+     "blocks civic+towers → civic+slabs",
+     "majors [links:Lobsters media:I got] → [links:Lobsters text:I got]"
+    ]
+   },
+   "links-10": {
+    "mass": 0.0947106998791713,
+    "block": 0.026499743642919325,
+    "decision": 0.022076612903225813,
+    "note": "25 of 254 links removed (every tenth)",
+    "changes": [
+     "blocks civic+towers → civic+slabs",
+     "majors [links:Lobsters media:I got] → [links:Lobsters text:I got]"
+    ]
+   },
+   "drop-secondary": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "note": "no section-like element with 1–6% of the text: unchanged",
+    "changes": []
+   }
+  },
+  "institution": {
+   "text-10": {
+    "mass": 0.07100592788429592,
+    "block": 0.02686271391696304,
+    "decision": 0.026323789678008674,
+    "note": "own text of every element ×0.9",
+    "changes": [
+     "blocks civic+market+towers+slabs → civic+market+towers+market",
+     "majors [text:Welcome to links:Popular on media:Services and text:Government] → [text:Welcome to links:Popular on media:Services and links:Government]"
+    ]
+   },
+   "text+10": {
+    "mass": 0.06323603953050574,
+    "block": 0.022453324577435308,
+    "decision": 0.027334253287025555,
+    "note": "own text of every element ×1.1",
+    "changes": [
+     "blocks civic+market+towers+slabs → civic+slabs+towers+slabs",
+     "majors [text:Welcome to links:Popular on media:Services and text:Government] → [text:Welcome to text:Popular on media:Services and text:Government]"
+    ]
+   },
+   "links-10": {
+    "mass": 0.0038444281124066343,
+    "block": 0.0014049880875107888,
+    "decision": 0,
+    "note": "8 of 81 links removed (every tenth)",
+    "changes": [
+     "1 minor weight/repeat changes"
+    ]
+   },
+   "drop-secondary": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "note": "no section-like element with 1–6% of the text: unchanged",
+    "changes": []
+   }
+  },
+  "oldweb": {
+   "text-10": {
+    "mass": 0.0083727054320631,
+    "block": 0.004250769337354764,
+    "decision": 0,
+    "note": "own text of every element ×0.9",
+    "changes": []
+   },
+   "text+10": {
+    "mass": 0.00356403000812082,
+    "block": 0.0012963621968442819,
+    "decision": 0,
+    "note": "own text of every element ×1.1",
+    "changes": []
+   },
+   "links-10": {
+    "mass": 0.007032052727094739,
+    "block": 0.003484362655570914,
+    "decision": 0,
+    "note": "24 of 240 links removed (every tenth)",
+    "changes": []
+   },
+   "drop-secondary": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "note": "no section-like element with 1–6% of the text: unchanged",
+    "changes": []
+   }
+  },
+  "media": {
+   "text-10": {
+    "mass": 0.0035637296265180153,
+    "block": 0.0005720342864184366,
+    "decision": 0,
+    "note": "own text of every element ×0.9",
+    "changes": []
+   },
+   "text+10": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "note": "own text of every element ×1.1",
+    "changes": []
+   },
+   "links-10": {
+    "mass": 0.031596936564205376,
+    "block": 0.009504967372049944,
+    "decision": 0.006,
+    "note": "6 of 67 links removed (every tenth)",
+    "changes": [
+     "minor content “Image Of The” links→text",
+     "3 minor weight/repeat changes"
+    ]
+   },
+   "drop-secondary": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "note": "no section-like element with 1–6% of the text: unchanged",
+    "changes": []
+   }
+  },
+  "directory": {
+   "text-10": {
+    "mass": 0.0051937731536473,
+    "block": 0.002187924848159304,
+    "decision": 0,
+    "note": "own text of every element ×0.9",
+    "changes": []
+   },
+   "text+10": {
+    "mass": 0.006832285688791142,
+    "block": 0.0026861553732696075,
+    "decision": 0,
+    "note": "own text of every element ×1.1",
+    "changes": []
+   },
+   "links-10": {
+    "mass": 0.00413495679639509,
+    "block": 0.0014879452164985605,
+    "decision": 0,
+    "note": "73 of 734 links removed (every tenth)",
+    "changes": []
+   },
+   "drop-secondary": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "note": "no section-like element with 1–6% of the text: unchanged",
+    "changes": []
+   }
+  },
+  "reference-2": {
+   "text-10": {
+    "mass": 0.010875182516248517,
+    "block": 0.004241086000595671,
+    "decision": 0,
+    "note": "own text of every element ×0.9",
+    "changes": []
+   },
+   "text+10": {
+    "mass": 0.0009710608522728579,
+    "block": 0.0007161694150527136,
+    "decision": 0,
+    "note": "own text of every element ×1.1",
+    "changes": [
+     "1 minor weight/repeat changes"
+    ]
+   },
+   "links-10": {
+    "mass": 0.0062488312015440235,
+    "block": 0.0020819300230695836,
+    "decision": 0,
+    "note": "86 of 865 links removed (every tenth)",
+    "changes": [
+     "3 minor weight/repeat changes"
+    ]
+   },
+   "drop-secondary": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "note": "removed <section#mwBL4> (1.2% of the text)",
+    "changes": []
+   }
+  },
+  "saas-2": {
+   "text-10": {
+    "mass": 0.004638909566864214,
+    "block": 0.002890680457744198,
+    "decision": 0,
+    "note": "own text of every element ×0.9",
+    "changes": []
+   },
+   "text+10": {
+    "mass": 0.0036999827477179376,
+    "block": 0.0028978996512291216,
+    "decision": 0,
+    "note": "own text of every element ×1.1",
+    "changes": []
+   },
+   "links-10": {
+    "mass": 0.000856585285354557,
+    "block": 0.0015318347985158465,
+    "decision": 0,
+    "note": "16 of 166 links removed (every tenth)",
+    "changes": [
+     "2 minor weight/repeat changes"
+    ]
+   },
+   "drop-secondary": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "note": "removed <section.flex> (1.2% of the text)",
+    "changes": []
+   }
+  }
+ },
+ "sens": {
+  "reference": {
+   "size": {
+    "mass": 0.023567934310370395,
+    "block": 0.010201898083578215,
+    "decision": 0,
+    "grammar": [
+     "vert 0.81→0.74"
+    ]
+   },
+   "depth": {
+    "mass": 0.03453319861380476,
+    "block": 0.01687961952585436,
+    "decision": 0,
+    "grammar": [
+     "vert 0.81→0.71"
+    ]
+   },
+   "breadth": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "regularity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "sections": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "textDensity": {
+    "mass": 0.0191010994346996,
+    "block": 0.006858648397141877,
+    "decision": 0,
+    "grammar": [
+     "vert 0.81→0.76"
+    ]
+   },
+   "imagery": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": [
+     "share 0.15→0.16"
+    ]
+   },
+   "linkDensity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "headings": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "interactivity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "forms": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "roundness": {
+    "mass": 0.0038019597765477035,
+    "block": 0.0014090347156686936,
+    "decision": 0.044573643410852716,
+    "grammar": [
+     "2nd modern→soft",
+     "share 0.15→0.18"
+    ]
+   },
+   "airiness": {
+    "mass": 0.023567934310370395,
+    "block": 0.010201898083578215,
+    "decision": 0,
+    "grammar": [
+     "vert 0.81→0.74"
+    ]
+   },
+   "ornament": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": [
+     "share 0.15→0.17"
+    ]
+   },
+   "darkness": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "legacy": {
+    "mass": 0.00644390820433841,
+    "block": 0.0017131481668662837,
+    "decision": 0.03875968992248062,
+    "grammar": [
+     "2nd modern→retro"
+    ]
+   },
+   "colorfulness": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "type.serif": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": [
+     "share 0.15→0.06"
+    ]
+   },
+   "type.mono": {
+    "mass": 0.008333118113673717,
+    "block": 0.004923081976194154,
+    "decision": 0.04457364341085272,
+    "grammar": [
+     "2nd modern→tech",
+     "share 0.15→0.21"
+    ]
+   },
+   "hues": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": [
+     "time day→golden"
+    ]
+   }
+  },
+  "docs": {
+   "size": {
+    "mass": 0.019347542123700174,
+    "block": 0.007343243081514539,
+    "decision": 0,
+    "grammar": [
+     "vert 0.68→0.61"
+    ]
+   },
+   "depth": {
+    "mass": 0.035384680923579374,
+    "block": 0.01389944870596675,
+    "decision": 0,
+    "grammar": [
+     "vert 0.68→0.78"
+    ]
+   },
+   "breadth": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "regularity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "sections": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "textDensity": {
+    "mass": 0.016163324140103765,
+    "block": 0.0066972476697242395,
+    "decision": 0,
+    "grammar": [
+     "vert 0.68→0.63"
+    ]
+   },
+   "imagery": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": [
+     "share 0.22→0.20"
+    ]
+   },
+   "linkDensity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "headings": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "interactivity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "forms": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "roundness": {
+    "mass": 0.019988263977734615,
+    "block": 0.008237327466487279,
+    "decision": 0.11379310344827587,
+    "grammar": [
+     "2nd tech→soft",
+     "share 0.22→0.30"
+    ]
+   },
+   "airiness": {
+    "mass": 0.019347542123700174,
+    "block": 0.007343243081514539,
+    "decision": 0,
+    "grammar": [
+     "vert 0.68→0.61"
+    ]
+   },
+   "ornament": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": [
+     "share 0.22→0.19"
+    ]
+   },
+   "darkness": {
+    "mass": 0.0012125499284490041,
+    "block": 0.00020397619037198318,
+    "decision": 0.005172413793103438,
+    "grammar": [
+     "share 0.22→0.19"
+    ]
+   },
+   "legacy": {
+    "mass": 0.02378800614076398,
+    "block": 0.01207562371909806,
+    "decision": 0.08965517241379312,
+    "grammar": [
+     "2nd tech→retro",
+     "share 0.22→0.26"
+    ]
+   },
+   "colorfulness": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "type.serif": {
+    "mass": 0.2503539479349419,
+    "block": 0.1042139340958193,
+    "decision": 0.39651404629852904,
+    "grammar": [
+     "style modern→classic",
+     "2nd tech→modern",
+     "share 0.22→0.29"
+    ]
+   },
+   "type.mono": {
+    "mass": 0.11482413522982542,
+    "block": 0.06094739493468004,
+    "decision": 0.24310344827586206,
+    "grammar": [
+     "style modern→tech",
+     "2nd tech→modern",
+     "share 0.22→0.17"
+    ]
+   },
+   "hues": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   }
+  },
+  "app": {
+   "size": {
+    "mass": 0.0161959144515638,
+    "block": 0.005511576890252748,
+    "decision": 0,
+    "grammar": [
+     "vert 0.79→0.73"
+    ]
+   },
+   "depth": {
+    "mass": 0.027789957849758507,
+    "block": 0.01331483022384269,
+    "decision": 0,
+    "grammar": [
+     "vert 0.79→0.69"
+    ]
+   },
+   "breadth": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "regularity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "sections": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "textDensity": {
+    "mass": 0.020916323082267277,
+    "block": 0.01812070371123116,
+    "decision": 0,
+    "grammar": [
+     "vert 0.79→0.84"
+    ]
+   },
+   "imagery": {
+    "mass": 0.0011133762327066843,
+    "block": 0.00020647845242813007,
+    "decision": 0.005725190839694666,
+    "grammar": [
+     "share 0.31→0.30"
+    ]
+   },
+   "linkDensity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "headings": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "interactivity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "forms": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "roundness": {
+    "mass": 0.06977150532031211,
+    "block": 0.02005558592977705,
+    "decision": 0.1870229007633588,
+    "grammar": [
+     "style soft→modern",
+     "2nd modern→soft",
+     "share 0.31→0.28"
+    ]
+   },
+   "airiness": {
+    "mass": 0.018986717933744433,
+    "block": 0.005995033483348083,
+    "decision": 0.013358778625954193,
+    "grammar": [
+     "share 0.31→0.28",
+     "vert 0.79→0.73"
+    ]
+   },
+   "ornament": {
+    "mass": 0.0011133762327066843,
+    "block": 0.00020647845242813007,
+    "decision": 0.005725190839694666,
+    "grammar": []
+   },
+   "darkness": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "legacy": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "colorfulness": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "type.serif": {
+    "mass": 0.003322589203716071,
+    "block": 0.0007150468403117035,
+    "decision": 0.020992366412213737,
+    "grammar": [
+     "share 0.31→0.26"
+    ]
+   },
+   "type.mono": {
+    "mass": 0.125399409615144,
+    "block": 0.07194489055766248,
+    "decision": 0.3129770992366412,
+    "grammar": [
+     "style soft→tech",
+     "2nd modern→soft",
+     "share 0.31→0.28"
+    ]
+   },
+   "hues": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": [
+     "time day→golden"
+    ]
+   }
+  },
+  "saas": {
+   "size": {
+    "mass": 0.02099817373201726,
+    "block": 0.008668885984582857,
+    "decision": 0,
+    "grammar": [
+     "vert 0.63→0.57"
+    ]
+   },
+   "depth": {
+    "mass": 0.03985076621292927,
+    "block": 0.02377195557513102,
+    "decision": 0,
+    "grammar": [
+     "vert 0.63→0.53"
+    ]
+   },
+   "breadth": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "regularity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "sections": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "textDensity": {
+    "mass": 0.015187479709025349,
+    "block": 0.008605328359224548,
+    "decision": 0,
+    "grammar": [
+     "vert 0.63→0.68"
+    ]
+   },
+   "imagery": {
+    "mass": 0.0004534044678864658,
+    "block": 0.000012593170064892703,
+    "decision": 0.005813953488372096,
+    "grammar": [
+     "share 0.27→0.28"
+    ]
+   },
+   "linkDensity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "headings": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "interactivity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "forms": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "roundness": {
+    "mass": 0.07540098560276033,
+    "block": 0.015232932885976522,
+    "decision": 0.2112403100775194,
+    "grammar": [
+     "style modern→soft",
+     "2nd soft→modern",
+     "share 0.27→0.34"
+    ]
+   },
+   "airiness": {
+    "mass": 0.025124836324769254,
+    "block": 0.021371378202622443,
+    "decision": 0.02131782945736435,
+    "grammar": [
+     "share 0.27→0.23",
+     "vert 0.63→0.69"
+    ]
+   },
+   "ornament": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "darkness": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "legacy": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "colorfulness": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "type.serif": {
+    "mass": 0.004465988485170694,
+    "block": 0.001338610938278328,
+    "decision": 0.027131782945736434,
+    "grammar": [
+     "share 0.27→0.32"
+    ]
+   },
+   "type.mono": {
+    "mass": 0.004465988485170694,
+    "block": 0.001338610938278328,
+    "decision": 0.027131782945736434,
+    "grammar": [
+     "share 0.27→0.32"
+    ]
+   },
+   "hues": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   }
+  },
+  "shop": {
+   "size": {
+    "mass": 0.014526611087351239,
+    "block": 0.0065820277797532245,
+    "decision": 0,
+    "grammar": [
+     "vert 0.74→0.68"
+    ]
+   },
+   "depth": {
+    "mass": 0.018985461244266817,
+    "block": 0.007130100413374144,
+    "decision": 0,
+    "grammar": [
+     "vert 0.74→0.64"
+    ]
+   },
+   "breadth": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "regularity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "sections": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "textDensity": {
+    "mass": 0.008108612181580653,
+    "block": 0.005099064850342275,
+    "decision": 0,
+    "grammar": [
+     "vert 0.74→0.79"
+    ]
+   },
+   "imagery": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0.0032258064516129115,
+    "grammar": []
+   },
+   "linkDensity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "headings": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "interactivity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "forms": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "roundness": {
+    "mass": 0.1026430065467706,
+    "block": 0.018307473798451497,
+    "decision": 0.1903225806451613,
+    "grammar": [
+     "style modern→soft",
+     "2nd soft→modern",
+     "share 0.26→0.35"
+    ]
+   },
+   "airiness": {
+    "mass": 0.016049011071991182,
+    "block": 0.0068203943487212225,
+    "decision": 0.016129032258064512,
+    "grammar": [
+     "share 0.26→0.30",
+     "vert 0.74→0.68"
+    ]
+   },
+   "ornament": {
+    "mass": 0.0007629052642255206,
+    "block": 0.00006099220791369597,
+    "decision": 0.003225806451612908,
+    "grammar": []
+   },
+   "darkness": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "legacy": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "colorfulness": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "type.serif": {
+    "mass": 0.0015435744481750132,
+    "block": 0.00023836656896799842,
+    "decision": 0.016129032258064512,
+    "grammar": [
+     "share 0.26→0.30"
+    ]
+   },
+   "type.mono": {
+    "mass": 0.0015435744481750132,
+    "block": 0.00023836656896799842,
+    "decision": 0.016129032258064512,
+    "grammar": [
+     "share 0.26→0.30"
+    ]
+   },
+   "hues": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": [
+     "time golden→day"
+    ]
+   }
+  },
+  "news": {
+   "size": {
+    "mass": 0.02252485778802952,
+    "block": 0.011541726386038184,
+    "decision": 0,
+    "grammar": [
+     "vert 0.66→0.60"
+    ]
+   },
+   "depth": {
+    "mass": 0.03312102295709629,
+    "block": 0.013138524685703156,
+    "decision": 0,
+    "grammar": [
+     "vert 0.66→0.56"
+    ]
+   },
+   "breadth": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "regularity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "sections": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "textDensity": {
+    "mass": 0.0164063224380609,
+    "block": 0.015571524017058342,
+    "decision": 0,
+    "grammar": [
+     "vert 0.66→0.71"
+    ]
+   },
+   "imagery": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "linkDensity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "headings": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "interactivity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "forms": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "roundness": {
+    "mass": 0.028491081086980667,
+    "block": 0.009500003177197434,
+    "decision": 0.103515625,
+    "grammar": [
+     "2nd soft→modern",
+     "share 0.33→0.26"
+    ]
+   },
+   "airiness": {
+    "mass": 0.20445220675133433,
+    "block": 0.07917248800770073,
+    "decision": 0.19140625,
+    "grammar": [
+     "style classic→soft",
+     "2nd soft→classic",
+     "share 0.33→0.32",
+     "vert 0.66→0.60"
+    ]
+   },
+   "ornament": {
+    "mass": 0.1952607589696666,
+    "block": 0.07252886054273416,
+    "decision": 0.181640625,
+    "grammar": [
+     "style classic→soft",
+     "2nd soft→classic"
+    ]
+   },
+   "darkness": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "legacy": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "colorfulness": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "type.serif": {
+    "mass": 0.02463111738743366,
+    "block": 0.006709218061990269,
+    "decision": 0.068359375,
+    "grammar": [
+     "share 0.33→0.21"
+    ]
+   },
+   "type.mono": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "hues": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   }
+  },
+  "portfolio": {
+   "size": {
+    "mass": 0.005570535568450322,
+    "block": 0.0009625335236834579,
+    "decision": 0,
+    "grammar": [
+     "vert 0.60→0.66"
+    ]
+   },
+   "depth": {
+    "mass": 0.03192141133162067,
+    "block": 0.015040988887339585,
+    "decision": 0,
+    "grammar": [
+     "vert 0.60→0.50"
+    ]
+   },
+   "breadth": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "regularity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "sections": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "textDensity": {
+    "mass": 0.02351099607912458,
+    "block": 0.013076386312972279,
+    "decision": 0,
+    "grammar": [
+     "vert 0.60→0.55"
+    ]
+   },
+   "imagery": {
+    "mass": 0.0016420009210009327,
+    "block": 0.00043142771136481196,
+    "decision": 0.007874015748031503,
+    "grammar": [
+     "share 0.33→0.31"
+    ]
+   },
+   "linkDensity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "headings": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "interactivity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "forms": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "roundness": {
+    "mass": 0.20861909917706903,
+    "block": 0.04894302464600509,
+    "decision": 0.21458028138924495,
+    "grammar": [
+     "style soft→modern",
+     "2nd modern→soft",
+     "share 0.33→0.24"
+    ]
+   },
+   "airiness": {
+    "mass": 0.028723269594142137,
+    "block": 0.013839604485493505,
+    "decision": 0.015748031496063002,
+    "grammar": [
+     "share 0.33→0.29",
+     "vert 0.60→0.53"
+    ]
+   },
+   "ornament": {
+    "mass": 0.0003715257641804799,
+    "block": 0.00005983589262322387,
+    "decision": 0.0019685039370078705,
+    "grammar": []
+   },
+   "darkness": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "legacy": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "colorfulness": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "type.serif": {
+    "mass": 0.006093680289677441,
+    "block": 0.001014744281455331,
+    "decision": 0.029527559055118124,
+    "grammar": [
+     "share 0.33→0.26"
+    ]
+   },
+   "type.mono": {
+    "mass": 0.021023805170747003,
+    "block": 0.020270918976734636,
+    "decision": 0.09448818897637795,
+    "grammar": [
+     "2nd modern→tech"
+    ]
+   },
+   "hues": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   }
+  },
+  "forum": {
+   "size": {
+    "mass": 0.009639404605389503,
+    "block": 0.00732075373939728,
+    "decision": 0,
+    "grammar": [
+     "vert 0.49→0.43"
+    ]
+   },
+   "depth": {
+    "mass": 0.0200718391136273,
+    "block": 0.009141637671693603,
+    "decision": 0,
+    "grammar": [
+     "vert 0.49→0.59"
+    ]
+   },
+   "breadth": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "regularity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "sections": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "textDensity": {
+    "mass": 0.008013814308063956,
+    "block": 0.0020975052207484125,
+    "decision": 0,
+    "grammar": [
+     "vert 0.49→0.54"
+    ]
+   },
+   "imagery": {
+    "mass": 0.0024293986619005926,
+    "block": 0.00039925521073726775,
+    "decision": 0.008064516129032237,
+    "grammar": []
+   },
+   "linkDensity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "headings": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "interactivity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "forms": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "roundness": {
+    "mass": 0.015503118316775241,
+    "block": 0.003094879372322615,
+    "decision": 0.05483870967741934,
+    "grammar": [
+     "share 0.19→0.31"
+    ]
+   },
+   "airiness": {
+    "mass": 0.016312558416366044,
+    "block": 0.00800045239176965,
+    "decision": 0.019354838709677403,
+    "grammar": [
+     "share 0.19→0.24",
+     "vert 0.49→0.43"
+    ]
+   },
+   "ornament": {
+    "mass": 0.0024293986619005926,
+    "block": 0.00039925521073726775,
+    "decision": 0.008064516129032237,
+    "grammar": []
+   },
+   "darkness": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": [
+     "time golden→night"
+    ]
+   },
+   "legacy": {
+    "mass": 0.028841708605691782,
+    "block": 0.009187518792511836,
+    "decision": 0.06774193548387097,
+    "grammar": [
+     "2nd soft→retro",
+     "share 0.19→0.21"
+    ]
+   },
+   "colorfulness": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "type.serif": {
+    "mass": 0.22645811302702556,
+    "block": 0.09374162085354522,
+    "decision": 0.3032258064516129,
+    "grammar": [
+     "style modern→classic",
+     "2nd soft→modern",
+     "share 0.19→0.31"
+    ]
+   },
+   "type.mono": {
+    "mass": 0.15646267267241043,
+    "block": 0.08129772145510031,
+    "decision": 0.26935483870967747,
+    "grammar": [
+     "style modern→tech",
+     "2nd soft→modern",
+     "share 0.19→0.29"
+    ]
+   },
+   "hues": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": [
+     "time golden→day"
+    ]
+   }
+  },
+  "institution": {
+   "size": {
+    "mass": 0.017700194497532823,
+    "block": 0.010379947444027475,
+    "decision": 0,
+    "grammar": [
+     "vert 0.52→0.58"
+    ]
+   },
+   "depth": {
+    "mass": 0.033657093137307116,
+    "block": 0.016308928540512177,
+    "decision": 0,
+    "grammar": [
+     "vert 0.52→0.62"
+    ]
+   },
+   "breadth": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "regularity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "sections": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "textDensity": {
+    "mass": 0.028861961654267167,
+    "block": 0.010219858445974526,
+    "decision": 0,
+    "grammar": [
+     "vert 0.52→0.47"
+    ]
+   },
+   "imagery": {
+    "mass": 0.001843024719495581,
+    "block": 0.0002251416732694531,
+    "decision": 0.008620689655172403,
+    "grammar": []
+   },
+   "linkDensity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "headings": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "interactivity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "forms": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "roundness": {
+    "mass": 0.009257980279581619,
+    "block": 0.0029864839376622584,
+    "decision": 0.060344827586206906,
+    "grammar": [
+     "share 0.19→0.32"
+    ]
+   },
+   "airiness": {
+    "mass": 0.03436898287150666,
+    "block": 0.010747882382550904,
+    "decision": 0.018965517241379327,
+    "grammar": [
+     "share 0.19→0.25",
+     "vert 0.52→0.46"
+    ]
+   },
+   "ornament": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "darkness": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "legacy": {
+    "mass": 0.02452292409774549,
+    "block": 0.008612587808919686,
+    "decision": 0.07758620689655171,
+    "grammar": [
+     "2nd soft→retro"
+    ]
+   },
+   "colorfulness": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "type.serif": {
+    "mass": 0.04743017389009766,
+    "block": 0.013118023203082176,
+    "decision": 0.1275862068965517,
+    "grammar": [
+     "2nd soft→classic",
+     "share 0.19→0.31"
+    ]
+   },
+   "type.mono": {
+    "mass": 0.11596236504123936,
+    "block": 0.06111240198325415,
+    "decision": 0.26724137931034486,
+    "grammar": [
+     "style modern→tech",
+     "2nd soft→modern",
+     "share 0.19→0.35"
+    ]
+   },
+   "hues": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   }
+  },
+  "oldweb": {
+   "size": {
+    "mass": 0.03304657098834891,
+    "block": 0.01256218158256667,
+    "decision": 0,
+    "grammar": [
+     "vert 0.52→0.46"
+    ]
+   },
+   "depth": {
+    "mass": 0.04126370801779237,
+    "block": 0.014186036301779528,
+    "decision": 0,
+    "grammar": [
+     "vert 0.52→0.62"
+    ]
+   },
+   "breadth": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "regularity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "sections": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "textDensity": {
+    "mass": 0.02128259063766208,
+    "block": 0.007221339377909527,
+    "decision": 0,
+    "grammar": [
+     "vert 0.52→0.57"
+    ]
+   },
+   "imagery": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "linkDensity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "headings": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "interactivity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "forms": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "roundness": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "airiness": {
+    "mass": 0.03304657098834891,
+    "block": 0.01256218158256667,
+    "decision": 0,
+    "grammar": [
+     "vert 0.52→0.46"
+    ]
+   },
+   "ornament": {
+    "mass": 0.00020118566594535137,
+    "block": 0.000026216858992040605,
+    "decision": 0.0015151515151515214,
+    "grammar": [
+     "share 0.15→0.16"
+    ]
+   },
+   "darkness": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "legacy": {
+    "mass": 0.0024041918165699926,
+    "block": 0.0013957598618441211,
+    "decision": 0.007575757575757586,
+    "grammar": [
+     "share 0.15→0.19"
+    ]
+   },
+   "colorfulness": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "type.serif": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": [
+     "share 0.15→0.12"
+    ]
+   },
+   "type.mono": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": [
+     "share 0.15→0.12"
+    ]
+   },
+   "hues": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": [
+     "time day→golden"
+    ]
+   }
+  },
+  "media": {
+   "size": {
+    "mass": 0.030593951513028936,
+    "block": 0.020637625812130807,
+    "decision": 0,
+    "grammar": [
+     "vert 0.46→0.39"
+    ]
+   },
+   "depth": {
+    "mass": 0.03928114595548996,
+    "block": 0.010774938153574764,
+    "decision": 0,
+    "grammar": [
+     "vert 0.46→0.56"
+    ]
+   },
+   "breadth": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "regularity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "sections": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "textDensity": {
+    "mass": 0.016224541629229025,
+    "block": 0.00678671092591824,
+    "decision": 0,
+    "grammar": [
+     "vert 0.46→0.51"
+    ]
+   },
+   "imagery": {
+    "mass": 0.0019252158363089133,
+    "block": 0.0006581324476923056,
+    "decision": 0.008000000000000007,
+    "grammar": [
+     "share 0.31→0.33"
+    ]
+   },
+   "linkDensity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "headings": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "interactivity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "forms": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "roundness": {
+    "mass": 0.08660983854887877,
+    "block": 0.014913030039842378,
+    "decision": 0.202,
+    "grammar": [
+     "style modern→soft",
+     "2nd soft→modern",
+     "share 0.31→0.28"
+    ]
+   },
+   "airiness": {
+    "mass": 0.1038901512503294,
+    "block": 0.027886046873738194,
+    "decision": 0.18,
+    "grammar": [
+     "style modern→soft",
+     "2nd soft→modern",
+     "share 0.31→0.34",
+     "vert 0.46→0.39"
+    ]
+   },
+   "ornament": {
+    "mass": 0.0004224365520290752,
+    "block": 0.0004209106206232464,
+    "decision": 0.0020000000000000018,
+    "grammar": []
+   },
+   "darkness": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "legacy": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "colorfulness": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "type.serif": {
+    "mass": 0.08821907250969793,
+    "block": 0.014916014724673922,
+    "decision": 0.19,
+    "grammar": [
+     "style modern→soft",
+     "2nd soft→modern"
+    ]
+   },
+   "type.mono": {
+    "mass": 0.11399644653071772,
+    "block": 0.07749283087980814,
+    "decision": 0.306,
+    "grammar": [
+     "style modern→tech",
+     "share 0.31→0.23"
+    ]
+   },
+   "hues": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": [
+     "time day→golden"
+    ]
+   }
+  },
+  "directory": {
+   "size": {
+    "mass": 0.025804796430215316,
+    "block": 0.01243228204390576,
+    "decision": 0,
+    "grammar": [
+     "vert 0.51→0.45"
+    ]
+   },
+   "depth": {
+    "mass": 0.04363706766392941,
+    "block": 0.022010222555898035,
+    "decision": 0,
+    "grammar": [
+     "vert 0.51→0.61"
+    ]
+   },
+   "breadth": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "regularity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "sections": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "textDensity": {
+    "mass": 0.02437691774293325,
+    "block": 0.009199909112056787,
+    "decision": 0,
+    "grammar": [
+     "vert 0.51→0.56"
+    ]
+   },
+   "imagery": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": [
+     "share 0.17→0.18"
+    ]
+   },
+   "linkDensity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "headings": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "interactivity": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "forms": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "roundness": {
+    "mass": 0.014436007389290921,
+    "block": 0.0027723401286962857,
+    "decision": 0.07352941176470587,
+    "grammar": [
+     "2nd modern→soft",
+     "share 0.17→0.25"
+    ]
+   },
+   "airiness": {
+    "mass": 0.03284571820655606,
+    "block": 0.012491160549250539,
+    "decision": 0.0522875816993464,
+    "grammar": [
+     "2nd modern→soft",
+     "share 0.17→0.19",
+     "vert 0.51→0.45"
+    ]
+   },
+   "ornament": {
+    "mass": 0.004568719276164118,
+    "block": 0.00127652925794798,
+    "decision": 0.009803921568627447,
+    "grammar": [
+     "share 0.17→0.20"
+    ]
+   },
+   "darkness": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "legacy": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "colorfulness": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": []
+   },
+   "type.serif": {
+    "mass": 0.008092290565465518,
+    "block": 0.0021861188598579985,
+    "decision": 0.049019607843137254,
+    "grammar": [
+     "2nd modern→soft",
+     "share 0.17→0.09"
+    ]
+   },
+   "type.mono": {
+    "mass": 0.0185576238684692,
+    "block": 0.01260823282167911,
+    "decision": 0.07679738562091502,
+    "grammar": [
+     "2nd modern→tech",
+     "share 0.17→0.25"
+    ]
+   },
+   "hues": {
+    "mass": 0,
+    "block": 0,
+    "decision": 0,
+    "grammar": [
+     "time day→golden"
+    ]
+   }
+  }
+ },
+ "briefSens": {
+  "reference": {
+   "major weights ×1.25": 0,
+   "minor weights ×1.25": 0,
+   "all repeats +3": 0.008082506951902966,
+   "minor order reversed": 0.04450030985356299,
+   "first minor removed": 0.05393497453661981,
+   "major content → text": 0.034613656053328806
+  },
+  "docs": {
+   "major weights ×1.25": 0,
+   "minor weights ×1.25": 0.03600875473459462,
+   "all repeats +3": 0.011375262481775613,
+   "minor order reversed": 0.020290313588974693,
+   "first minor removed": 0.020016264565842247,
+   "major content → text": 0.016532972368083765
+  },
+  "app": {
+   "major weights ×1.25": 0,
+   "minor weights ×1.25": 0,
+   "all repeats +3": 0.008002009049081979,
+   "minor order reversed": 0.02636856711794348,
+   "first minor removed": 0.1048521738874447,
+   "major content → text": 0.08861140180076744
+  },
+  "saas": {
+   "major weights ×1.25": 0,
+   "minor weights ×1.25": 0,
+   "all repeats +3": 0.0021233549423357112,
+   "minor order reversed": 0.017087116440922315,
+   "first minor removed": 0.02056590574365706,
+   "major content → text": 0.11488329155878882
+  },
+  "shop": {
+   "major weights ×1.25": 0,
+   "minor weights ×1.25": 0,
+   "all repeats +3": 0,
+   "minor order reversed": 0.014212652477830025,
+   "first minor removed": 0.06462094990169738,
+   "major content → text": 0
+  },
+  "news": {
+   "major weights ×1.25": 0,
+   "minor weights ×1.25": 0,
+   "all repeats +3": 0,
+   "minor order reversed": 0.022491499204909494,
+   "first minor removed": 0.025823076178039698,
+   "major content → text": 0.07908550811502435
+  },
+  "portfolio": {
+   "major weights ×1.25": 0,
+   "minor weights ×1.25": 0,
+   "all repeats +3": 0,
+   "minor order reversed": 0,
+   "first minor removed": null,
+   "major content → text": 0.04986145516257304
+  },
+  "forum": {
+   "major weights ×1.25": 0,
+   "minor weights ×1.25": 0,
+   "all repeats +3": 0,
+   "minor order reversed": 0,
+   "first minor removed": null,
+   "major content → text": 0.026437425903182175
+  },
+  "institution": {
+   "major weights ×1.25": 0,
+   "minor weights ×1.25": 0.03091609640963625,
+   "all repeats +3": 0.014239385622068612,
+   "minor order reversed": 0.03316165199151634,
+   "first minor removed": 0.04039746333457765,
+   "major content → text": 0.049835409162669896
+  },
+  "oldweb": {
+   "major weights ×1.25": 0,
+   "minor weights ×1.25": 0,
+   "all repeats +3": 0.03489522766209665,
+   "minor order reversed": 0,
+   "first minor removed": null,
+   "major content → text": 0
+  },
+  "media": {
+   "major weights ×1.25": 0,
+   "minor weights ×1.25": 0.005122093035598851,
+   "all repeats +3": 0.027061269164520264,
+   "minor order reversed": 0.021770847634510287,
+   "first minor removed": 0.01769426885909468,
+   "major content → text": 0.13056779072190178
+  },
+  "directory": {
+   "major weights ×1.25": 0,
+   "minor weights ×1.25": 0,
+   "all repeats +3": 0.008550964128048634,
+   "minor order reversed": 0.025543189285037172,
+   "first minor removed": 0.07236726251603033,
+   "major content → text": 0.027110229505663396
+  }
+ }
+}
