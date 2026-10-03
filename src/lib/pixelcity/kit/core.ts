@@ -13,6 +13,7 @@ import type { GamePalette } from "../palette";
 import { textWidth } from "../pixel-font";
 import { Surf, type Part, type SignSpec } from "../types";
 import { lookOf, PERSON_H, PERSON_W, personRect, type Pose } from "./people";
+import { NEUTRAL_SIGNALS, type Anatomy, type SurfaceSignals } from "./surface";
 
 export type PeopleMode = "sprite" | "voxel";
 export type KitPart = Omit<Part, "rotY" | "surf" | "lit" | "delay"> & Partial<Pick<Part, "rotY" | "surf" | "lit" | "delay">>;
@@ -27,6 +28,13 @@ export class Kit {
   readonly smoke: Array<[number, number, number]> = [];
   /** DOM node the next parts belong to (-1 = scenery). */
   node = -1;
+  /** Page signals the surface grammar may use (page-level). */
+  surface: SurfaceSignals = NEUTRAL_SIGNALS;
+  /** Every anatomy the surface grammar decided, in build order (for the trace). */
+  readonly anatomies: Anatomy[] = [];
+  /** Test instrumentation (off unless set): the anatomy zone of every part, aligned with `parts`. */
+  zones?: Array<string | null>;
+  zone: string | null = null;
   private shelf = { x: 1, y: 1, h: 0 };
   private f = { x: 0, y: 0, z: 0, r: 0 };
 
@@ -87,6 +95,7 @@ export class Kit {
     p.y = y + q.y;
     p.rotY = (q.rotY ?? 0) + r;
     this.parts.push(p);
+    this.zones?.push(this.zone);
     return p;
   }
 

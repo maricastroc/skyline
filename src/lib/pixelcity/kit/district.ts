@@ -18,6 +18,7 @@ import { buildGamePalette } from "../palette";
 import { Surf, type Part, type PixelCity } from "../types";
 import type { Brief } from "./brief";
 import type { Program } from "./buildings";
+import type { Anatomy } from "./surface";
 import { composeLandmark, composePiece, piecesOfBlock, type LandmarkInfo, type Piece, type PieceType } from "./compose";
 import { Kit, type PeopleMode } from "./core";
 import type { Comp, Plan, Territory } from "./plan";
@@ -114,6 +115,8 @@ export interface TraceBuilding {
   d: number;
   /** Index range of this building's parts in the city's part list. */
   parts: [number, number];
+  /** Surface grammar: the anatomy of every volume the building put up (usually one). */
+  anatomy: Anatomy[];
 }
 export interface TracePiece {
   territory: number;
@@ -195,6 +198,8 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
   const grammar: CityGrammar = { ...g0, time: o.time ?? g0.time };
   const palette = buildGamePalette(fp, grammar);
   const kit = new Kit(palette, o.seed ?? 7, o.people ?? "sprite");
+  // Page signals the surface grammar may spend (unused at territory, composition and massing).
+  kit.surface = { regularity: fp.regularity, headings: fp.headings, interactivity: fp.interactivity, linkDensity: fp.linkDensity };
   const trace = o.trace ?? (o.provenance ? newTrace() : undefined);
 
   const grid: Grid = { lines: LINES, road: R, side: S, block: B, ext: 14 };
@@ -227,8 +232,9 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
   let current: { territory: number; comp: Comp; piece: PieceType; block: [number, number] } | null = null;
   const record = (P: Program, w: number, d: number, fn: () => number) => {
     const from = kit.parts.length;
+    const an = kit.anatomies.length;
     const top = fn();
-    if (trace && current) trace.buildings.push({ ...current, P, w, d, parts: [from, kit.parts.length] });
+    if (trace && current) trace.buildings.push({ ...current, P, w, d, parts: [from, kit.parts.length], anatomy: kit.anatomies.slice(an) });
     return top;
   };
   const ctx = { kit, g: grammar, p: palette, plan, vf: 0.7 + 0.6 * grammar.verticality, record };

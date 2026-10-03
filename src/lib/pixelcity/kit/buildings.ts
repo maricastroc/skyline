@@ -1,14 +1,19 @@
 /**
  * Detail kit — buildings. A building is a *massing family* (how its volumes are composed:
- * footprint, stacking, roof family) dressed with reusable pieces (ground floors, façade
- * extras, rooftop furniture, signage). Families and pieces are chosen by a `Program`, which
- * the brief grammar (brief.ts) derives from what a part of the page is.
+ * footprint, stacking, roof family) dressed by the surface grammar (surface.ts): an anatomy
+ * per volume decides the ground floor, base, body, crown, roof zones and corner, and the
+ * pieces below draw it. Families and programs come from the brief grammar (brief.ts) and the
+ * composition (compose.ts); `use` comes from the composition.
  *
  *   families  walkup · corner · rows · apartments · lshape · asymmetric · slab · podiumTower ·
  *             stepped · narrowTower · courtyard · shed · civic · clocktower · kiosk
- *   ground    shop / café (four awning kinds) · lobby · homes (stoops) · arcade · docks · blank
+ *   ground    storefront units (four awning kinds) · arcade · lobby · civic portal · domestic
+ *             stoops · service door · loading docks · blank
+ *   façade    string courses · base / body / crown zones (shader patterns) · corner bay ·
+ *             balconies · fire escape · blade sign · screen
+ *   roof      EDGE (volume) · SERVICE cluster (hvac, tanks, vents, penthouse, bulkheads,
+ *             chimneys) · OCCUPIED strip (terrace, garden) · ENERGY (solar) · civic lantern
  *   signage   plaque · shop fascia · blade · rooftop billboard · façade screen · painted wall
- *   rooftop   hvac · tank · terrace · garden · solar · bare, plus area-scaled service clutter
  */
 import { mix } from "../../city/palette";
 import type { RGB } from "../../city/types";
@@ -17,6 +22,7 @@ import { Surf } from "../types";
 import type { Kit } from "./core";
 import { clockFace, colonnade, darkOf, plaza, rhythm, trimOf, turret, volume, type RoofFamily, type Vol } from "./massing";
 import { tree } from "./street";
+import { anatomyFor, ATTIC, bodyVariant, LIT_GROUPS, RUSTIC, type Anatomy, type Use } from "./surface";
 
 export const FLOOR = 0.5;
 
@@ -64,6 +70,8 @@ export interface Program {
   seed: number;
   /** Units in an attached series (rows). */
   units?: number;
+  /** What the building is for (surface grammar); set by the composition, else inferred. */
+  use?: Use;
 }
 
 type Side = "front" | "right" | "back" | "left";
@@ -82,7 +90,7 @@ const litOf = (kit: Kit, k = 0.5) => (kit.night ? k : 0);
 /* ───────────────────────── ground floors ───────────────────────── */
 
 /** Shop or café frontage along u0..u1 of the current face frame, `g` tall. */
-export function storefront(kit: Kit, u0: number, u1: number, g: number, P: Program, kind: "shop" | "cafe", label?: string, k = 0) {
+export function storefront(kit: Kit, u0: number, u1: number, g: number, P: Program, kind: "shop" | "cafe", label?: string, k = 0, door?: "left" | "right") {
   const pil = 0.12;
   const fascia = 0.26;
   const frame = darkOf(P.wall, 0.35);
@@ -91,7 +99,7 @@ export function storefront(kit: Kit, u0: number, u1: number, g: number, P: Progr
   kit.span(u1 - pil, u1, 0, g, -0.02, 0.05, trimOf(P.wall));
   kit.span(u0 + pil, u1 - pil, 0, g - fascia, -0.05, 0.0, frame, Surf.STORE, { lit: litOf(kit, 0.9) });
   const inner = u1 - u0 - 2 * pil;
-  const du = u0 + pil + (kit.rand(P.seed + k, 3) < 0.5 ? 0.1 : Math.max(0.1, inner - 0.42));
+  const du = u0 + pil + ((door ? door === "left" : kit.rand(P.seed + k, 3) < 0.5) ? 0.1 : Math.max(0.1, inner - 0.42));
   kit.span(du - 0.03, du + 0.33, 0, 0.48, -0.03, 0.012, trimOf(P.wall));
   kit.span(du, du + 0.3, 0, 0.44, -0.04, 0.016, darkOf(P.accent, 0.62));
   kit.span(u0 + 0.02, u1 - 0.02, g - fascia, g - 0.02, -0.02, 0.07, signBg);
@@ -109,7 +117,7 @@ export function storefront(kit: Kit, u0: number, u1: number, g: number, P: Progr
     for (let u = u0 + 0.4; u < u1 - 0.3; u += 0.5) kit.glow(u, g - fascia - 0.04, 0.3, 0.06, 0.02, 0.06, kit.palette.lamp, kit.night ? 1.6 : 0.2);
   }
   if (kind === "cafe") cafeTerrace(kit, u0 + pil, u1 - pil, P);
-  else if (kit.rand(P.seed + k, 9) < 0.6) {
+  else if (door ? door === "right" : kit.rand(P.seed + k, 9) < 0.6) {
     // Goods outside: crates, a rack or a sandwich board — not every shop.
     const u = du < (u0 + u1) / 2 ? u1 - pil - 0.35 : u0 + pil + 0.35;
     const r = kit.rand(P.seed + k, 10);
@@ -173,45 +181,25 @@ function docks(kit: Kit, u0: number, u1: number, P: Program) {
     kit.span(u - 0.04, u + 0.74, 0.62, 0.68, -0.02, 0.04, [0.95, 0.75, 0.15], Surf.STRIPES);
     for (const s of [0.05, 0.6]) kit.box(u + s, 0.1, 0.04, 0.08, 0.1, 0.06, [0.15, 0.15, 0.16]);
   }
+  // A painted wall sign above the doors: façade signage, not part of the ground floor.
+  const z = kit.zone;
+  if (z) kit.zone = "facade";
   kit.sign(P.label ?? "WORKS", (u0 + u1) / 2, 0.86, 0.01, { bg: darkOf(P.wall, 0.2), fg: white, texel: 0.045, maxW: u1 - u0 - 0.4 });
-}
-
-/** Ground floor along a face, by kind. */
-function groundRun(kit: Kit, span: number, g: number, P: Program, kind: Ground, label: string | undefined, k = 0) {
-  switch (kind) {
-    case "shop":
-    case "cafe":
-      storefront(kit, 0.06, span - 0.06, g, P, kind, label, k);
-      break;
-    case "lobby":
-      lobby(kit, Math.max(0.1, span / 2 - 1.4), Math.min(span - 0.1, span / 2 + 1.4), g, P);
-      break;
-    case "homes":
-      stoop(kit, span * (kit.rand(P.seed + k, 7) < 0.5 ? 0.3 : 0.7), P);
-      if (span > 3.2) stoop(kit, span * 0.5 + (kit.rand(P.seed + k, 8) < 0.5 ? 1.0 : -1.0), P);
-      break;
-    case "arcade":
-      colonnade(kit, 0.25, span - 0.25, 0.25, g, P.wall, false);
-      kit.span(0.3, span - 0.3, 0, g - 0.08, -0.08, -0.03, darkOf(P.wall, 0.4), Surf.STORE, { lit: litOf(kit, 0.85) });
-      break;
-    case "docks":
-      docks(kit, 0.1, span - 0.1, P);
-      break;
-    case "blank":
-      if (label && P.signage === "painted") kit.sign(label, span / 2, 0.2, 0.01, { bg: darkOf(P.wall, 0.15), fg: white, texel: 0.06, maxW: span - 0.4 });
-      break;
-  }
+  kit.zone = z;
 }
 
 /* ───────────────────────── façade extras ───────────────────────── */
 
-function balconies(kit: Kit, span: number, y0: number, floors: number, P: Program, every = 2) {
-  const bay = 0.5 + 0.25 * (Math.floor(P.rhythm / 2) % 4);
+function balconies(kit: Kit, span: number, y0: number, floors: number, P: Program, every = 2, bayCode = Math.floor(P.rhythm / 2) % 4) {
+  const bay = 0.5 + 0.25 * bayCode;
   const bays = Math.max(1, Math.floor((span - 0.16) / bay));
   const m = (span - bays * bay) / 2;
   const rail: RGB = [0.16, 0.16, 0.18];
+  // Stacked in the same bays floor after floor (a balcony is a column of rooms, not a pattern);
+  // the end bays stay closed so the stacks read as the façade's middle.
+  const first = bays >= 4 ? 1 : 0;
   for (let f = 1; f < floors; f++)
-    for (let b = f % every; b < bays; b += every) {
+    for (let b = first; b < bays - first; b += every) {
       const u = m + b * bay + bay / 2;
       const y = y0 + f * FLOOR + 0.02;
       const hw = Math.min(0.42, bay * 0.6);
@@ -254,93 +242,6 @@ function screen(kit: Kit, u0: number, u1: number, y0: number, y1: number, text: 
 
 /* ───────────────────────── rooftops ───────────────────────── */
 
-export function rooftop(kit: Kit, x0: number, x1: number, z0: number, z1: number, y: number, P: Program, topside = P.topside) {
-  const w = x1 - x0;
-  const d = z1 - z0;
-  const cx = (x0 + x1) / 2;
-  const cz = (z0 + z1) / 2;
-  const steel = kit.palette.walls.tech[2];
-  const r = (k: number) => kit.rand(P.seed * 13, k);
-  // Bulkhead (stair/elevator) at a varying back position, on most roofs.
-  if (r(1) < 0.7 && w > 1.6 && d > 1.6) {
-    const bx = r(2) < 0.5 ? x0 + 0.55 : x1 - 0.55;
-    kit.box(bx, y, z0 + 0.55, 0.7, 0.5, 0.6, P.wall);
-    kit.box(bx, y + 0.5, z0 + 0.55, 0.78, 0.05, 0.68, trimOf(P.wall));
-    kit.span(bx - 0.13, bx + 0.13, y, y + 0.36, z0 + 0.85, z0 + 0.86, darkOf(P.accent, 0.5));
-  }
-  switch (topside) {
-    case "hvac": {
-      const n = 1 + Math.floor(r(3) * 3);
-      for (let i = 0; i < n; i++) {
-        const x = x0 + 0.6 + r(4 + i) * (w - 1.2);
-        const z = z0 + 0.6 + r(14 + i) * (d - 1.2);
-        const big = r(24 + i) < 0.4;
-        kit.box(x, y, z, big ? 0.8 : 0.5, big ? 0.36 : 0.28, big ? 0.55 : 0.38, steel, Surf.GRILLE);
-        if (r(34 + i) < 0.5) kit.box(x + 0.45, y + 0.05, z, 0.5, 0.1, 0.1, steel);
-      }
-      break;
-    }
-    case "tank":
-      waterTank(kit, r(5) < 0.5 ? x1 - 0.65 : x0 + 0.65, y, z0 + 0.75 + r(6) * Math.max(0, d - 1.5));
-      break;
-    case "solar": {
-      const rows = Math.max(1, Math.floor((d - 1.0) / 0.55));
-      for (let i = 0; i < rows; i++) {
-        const z = z0 + 0.7 + i * 0.55;
-        kit.box(cx, y, z, w - 1.0, 0.08, 0.04, steel);
-        kit.box(cx, y + 0.1, z, w - 1.0, 0.025, 0.42, [0.2, 0.25, 0.4], Surf.SOLAR, { rotX: -0.38 });
-      }
-      break;
-    }
-    case "terrace": {
-      kit.span(x0 + 0.2, x1 - 0.2, y, y + 0.03, cz - 0.1, z1 - 0.2, mix([0.62, 0.45, 0.3], kit.palette.sidewalk, 0.3), Surf.SLABS);
-      const n = Math.max(1, Math.floor(w / 1.6));
-      for (let i = 0; i < n; i++) {
-        const x = x0 + 0.8 + (i * (w - 1.6)) / Math.max(1, n - 1);
-        const z = (cz + z1) / 2;
-        kit.cyl(x, y, z, 0.24, 0.2, 0.24, white);
-        kit.box(x, y, z, 0.03, 0.6, 0.03, [0.3, 0.3, 0.32]);
-        kit.part({ mesh: "pyramid", node: kit.node, x, y: y + 0.52, z, w: 0.7, h: 0.17, d: 0.7, color: i % 2 ? P.accent : white, rotY: Math.PI / 4 });
-        kit.person(x - 0.25, z + 0.05, { variant: Math.floor(r(80 + i) * 48), pose: "sit", y });
-        if (r(90 + i) < 0.5) kit.person(x + 0.3, z - 0.1, { variant: Math.floor(r(95 + i) * 48), y, flip: true });
-      }
-      planter(kit, x1 - 0.45, z1 - 0.45, P.seed + 5, y);
-      if (r(7) < 0.6) for (let x = x0 + 0.3; x < x1 - 0.2; x += 0.32) kit.glow(x, y + 0.46, z1 - 0.12, 0.04, 0.04, 0.04, kit.palette.lamp, kit.night ? 1.8 : 0.3);
-      break;
-    }
-    case "garden": {
-      kit.span(x0 + 0.25, x1 - 0.25, y, y + 0.04, z0 + 0.25, z1 - 0.25, kit.palette.grass[1], Surf.GRASS);
-      const n = 1 + Math.floor(r(8) * 3);
-      for (let i = 0; i < n; i++) shrub(kit, x0 + 0.6 + r(40 + i) * (w - 1.2), z0 + 0.6 + r(50 + i) * (d - 1.2), y + 0.04, 0.6 + r(60 + i) * 0.4);
-      if (r(9) < 0.5) tree(kit, cx, cz, P.seed, 0.7, y + 0.04);
-      break;
-    }
-    case "bare":
-      break;
-  }
-  roofClutter(kit, x0, x1, z0, z1, y, P, topside === "terrace" || topside === "garden");
-}
-
-/** Service clutter scaled by roof area — vents, skylights, hatches, conduit. */
-function roofClutter(kit: Kit, x0: number, x1: number, z0: number, z1: number, y: number, P: Program, backOnly: boolean) {
-  const steel = kit.palette.walls.tech[2];
-  const w = x1 - x0;
-  const zb = backOnly ? (z0 + z1) / 2 - 0.3 : z1 - 0.45;
-  const area = Math.max(0, (w - 0.9) * (zb - z0 - 0.45));
-  const n = Math.round(area / (1.6 + kit.rand(P.seed, 77) * 2.4));
-  for (let i = 0; i < n; i++) {
-    const r = kit.rand(P.seed * 17 + i, 1);
-    const x = x0 + 0.45 + kit.rand(P.seed * 17 + i, 2) * (w - 0.9);
-    const z = z0 + 0.45 + kit.rand(P.seed * 17 + i, 3) * (zb - z0 - 0.45);
-    if (r < 0.3) kit.cyl(x, y, z, 0.1, 0.18, 0.1, steel);
-    else if (r < 0.5) {
-      kit.box(x, y, z, 0.42, 0.06, 0.42, mix(kit.palette.glass, white, 0.3));
-      kit.part({ mesh: "prism", node: kit.node, x, y: y + 0.06, z, w: 0.42, h: 0.14, d: 0.42, color: mix(kit.palette.glass, white, 0.15) });
-    } else if (r < 0.7) kit.box(x, y, z, 0.32, 0.12, 0.32, darkOf(P.wall, 0.3));
-    else kit.box(x, y, z, Math.min(1.4, w - 1), 0.05, 0.06, steel);
-  }
-}
-
 export function waterTank(kit: Kit, x: number, y: number, z: number) {
   const wood: RGB = [0.52, 0.36, 0.24];
   for (const [dx, dz] of [
@@ -378,30 +279,282 @@ export function rooftopBillboard(kit: Kit, x: number, z: number, y: number, text
 
 /* ───────────────────────── families ───────────────────────── */
 
+/* ───────────────────────── surface grammar: zones ───────────────────────── */
+
 const groundH = (g: Ground) => (g === "homes" ? 0.62 : g === "arcade" ? 0.8 : g === "docks" ? 0.9 : 0.74);
 
-/** The common "street building": one volume, ground floor on its fronts, extras, roof. */
+/** A thin projecting band around the footprint at height y (string course / zone joint). */
+function course(kit: Kit, x0: number, x1: number, z0: number, z1: number, y: number, wall: RGB, h = 0.05, o = 0.03) {
+  kit.span(x0 - o, x1 + o, y - h / 2, y + h / 2, z0 - o, z1 + o, trimOf(wall));
+}
+
+/** Recessed corner entrance where the front (+z) and right (+x) faces meet. */
+function cornerEntrance(kit: Kit, x1: number, z1: number, g: number, P: Program) {
+  const r = 0.42;
+  kit.span(x1 - r, x1 + 0.005, 0, g - 0.06, z1 - r, z1 + 0.005, darkOf(P.wall, 0.6));
+  kit.frame(x1 - r / 2, z1 - r / 2, Math.PI / 4, () => {
+    kit.span(-0.17, 0.17, 0, 0.5, 0.24, 0.26, darkOf(P.accent, 0.55), Surf.STORE, { lit: litOf(kit, 0.9) });
+    kit.span(-0.21, 0.21, 0.5, 0.56, 0.2, 0.3, trimOf(P.wall));
+    kit.glow(0, 0.6, 0.31, 0.06, 0.05, 0.03, kit.palette.lamp, kit.night ? 1.6 : 0.25);
+  });
+  kit.box(x1 - 0.05, g - 0.06, z1 - 0.05, 0.1, 0.06, 0.1, trimOf(P.wall));
+}
+
+/** Ceremonial / institutional entrance on the axis: steps, a recessed portal, a surround. */
+function portal(kit: Kit, span: number, g: number, P: Program, axial: boolean) {
+  const mid = span / 2;
+  const w = axial ? Math.min(1.6, span * 0.4) : Math.min(0.9, span * 0.3);
+  const trim = trimOf(P.wall);
+  for (let i = 0; i < 3; i++) kit.span(mid - w / 2 - 0.15 - i * 0.1, mid + w / 2 + 0.15 + i * 0.1, 0, 0.06 * (3 - i), 0, 0.12 + i * 0.12, mix(kit.palette.stone, white, 0.25));
+  // The surround (and pediment, plaque) may rise into the floor above: a two-zone entrance.
+  const z = kit.zone;
+  if (z) kit.zone = "portal";
+  kit.span(mid - w / 2 - 0.08, mid + w / 2 + 0.08, 0.18, g + (axial ? 0.25 : 0.06), -0.02, 0.04, trim);
+  kit.span(mid - w / 2, mid + w / 2, 0.18, g - 0.04, -0.06, 0.0, darkOf(P.wall, 0.55), Surf.STORE, { lit: litOf(kit, 0.6) });
+  if (axial && P.style !== "modern" && P.style !== "tech") kit.part({ mesh: "prism", node: kit.node, x: mid, y: g + 0.25, z: 0.02, w: w + 0.3, h: 0.22, d: 0.12, color: trim });
+  if (P.brand || P.label) kit.sign((P.brand ?? P.label)!, mid, g + (axial ? 0.06 : 0.0), 0.05, { bg: darkOf(P.wall, 0.35), texel: 0.026, maxW: w });
+  kit.zone = z;
+  for (const s of [-1, 1]) kit.glow(mid + s * (w / 2 + 0.2), 0.5, 0.06, 0.05, 0.08, 0.05, kit.palette.lamp, kit.night ? 1.4 : 0.15);
+}
+
+/** One service door (roll-up grille) on an otherwise blank wall. */
+function serviceDoor(kit: Kit, span: number, P: Program, at: number) {
+  const u = span * at;
+  kit.span(u - 0.3, u + 0.3, 0, 0.52, -0.03, 0.01, mix(kit.palette.walls.tech[2], white, 0.15), Surf.GRILLE);
+  kit.span(u - 0.34, u + 0.34, 0.52, 0.56, -0.02, 0.03, darkOf(P.wall, 0.3));
+  kit.glow(u, 0.6, 0.04, 0.05, 0.04, 0.04, kit.palette.lamp, kit.night ? 1.2 : 0.1);
+}
+
+/** The ground floor of one frontage, from the anatomy. `first`: the main street face. */
+function groundFace(kit: Kit, span: number, g: number, P: Program, A: Anatomy, label: string | undefined, k: number, first: boolean, cornerSide: "end" | "start" | "none") {
+  // Leave the corner entrance free on both faces that meet at it.
+  const u0 = cornerSide === "start" && A.ground.cornerEntrance ? 0.5 : 0.06;
+  const u1 = cornerSide === "end" && A.ground.cornerEntrance ? span - 0.5 : span - 0.06;
+  switch (A.ground.kind) {
+    case "storefront": {
+      const units = first ? A.ground.units : Math.max(1, Math.round(A.ground.units * 0.6));
+      const uw = (u1 - u0) / units;
+      // Doors alternate between neighbouring units; which side the first takes is free.
+      const flip = kit.rand(P.seed + k, 12) < 0.5 ? 0 : 1;
+      for (let i = 0; i < units; i++) {
+        const lbl = i === 0 ? label : kit.pick(SHOP_WORDS, P.seed + k, 60 + i);
+        storefront(kit, u0 + i * uw, u0 + (i + 1) * uw, g, { ...P, awning: A.ground.awning }, P.ground === "cafe" && i === 0 ? "cafe" : "shop", lbl, k * 10 + i, (i + flip) % 2 === 0 ? "left" : "right");
+      }
+      break;
+    }
+    case "arcade":
+      colonnade(kit, u0 + 0.2, u1 - 0.2, 0.25, g, P.wall, false);
+      kit.span(u0 + 0.25, u1 - 0.25, 0, g - 0.08, -0.08, -0.03, darkOf(P.wall, 0.4), Surf.STORE, { lit: litOf(kit, 0.85) });
+      break;
+    case "lobby":
+      if (first) lobby(kit, Math.max(0.1, span / 2 - 1.4), Math.min(span - 0.1, span / 2 + 1.4), g, P);
+      break;
+    case "civic":
+      if (first) portal(kit, span, g, P, A.ground.entrance === "axial");
+      break;
+    case "domestic":
+      if (first) for (let i = 0; i < A.ground.units; i++) stoop(kit, (span * (i + 0.5)) / A.ground.units, P);
+      break;
+    case "service":
+      if (first) serviceDoor(kit, span, P, kit.rand(P.seed + k, 5) < 0.5 ? 0.3 : 0.7);
+      break;
+    case "loading":
+      if (first) docks(kit, 0.1, span - 0.1, P);
+      break;
+    case "blank":
+      if (label && P.signage === "painted") kit.sign(label, span / 2, 0.2, 0.01, { bg: darkOf(P.wall, 0.15), fg: white, texel: 0.06, maxW: span - 0.4 });
+      break;
+  }
+}
+
+/** Roof zones: SERVICE (one grouped cluster at the back), OCCUPIED (front strip). EDGE is the volume's. */
+export function roofZones(kit: Kit, x0: number, x1: number, z0: number, z1: number, y: number, P: Program, A: Anatomy) {
+  const w = x1 - x0;
+  const d = z1 - z0;
+  if (w < 1.2 || d < 1.2) return;
+  const steel = kit.palette.walls.tech[2];
+  // Occupied zone along the front (street) edge.
+  // A terrace is a strip people use; a green roof covers everything the service zone leaves.
+  const od = A.roof.occupied === "garden" ? Math.max(Math.min(1.7, d * 0.45), d - (A.roof.service === "none" ? 0.4 : A.roof.service === "penthouse" ? 0.75 + Math.min(d - 0.6, Math.max(1.0, d * 0.4)) : 1.5)) : A.roof.occupied !== "none" ? Math.min(1.7, d * 0.45) : 0;
+  if (A.roof.occupied === "terrace") {
+    kit.span(x0 + 0.15, x1 - 0.15, y, y + 0.03, z1 - od, z1 - 0.15, mix([0.62, 0.45, 0.3], kit.palette.sidewalk, 0.3), Surf.SLABS);
+    kit.span(x0 + 0.1, x1 - 0.1, y + 0.03, y + 0.24, z1 - od - 0.02, z1 - od, [0.22, 0.22, 0.25], Surf.RAIL);
+    const n = Math.max(1, Math.min(3, Math.floor(w / 2.2)));
+    for (let i = 0; i < n; i++) {
+      const x = x0 + (w * (i + 0.5)) / n;
+      const z = z1 - od / 2;
+      kit.box(x, y, z, 0.03, 0.6, 0.03, [0.3, 0.3, 0.32]);
+      kit.part({ mesh: "pyramid", node: kit.node, x, y: y + 0.52, z, w: 0.7, h: 0.17, d: 0.7, color: i % 2 ? P.accent : white, rotY: Math.PI / 4 });
+      kit.cyl(x - 0.3, y, z, 0.22, 0.18, 0.22, white);
+    }
+    planter(kit, x0 + 0.4, z1 - 0.4, P.seed + 5, y);
+    planter(kit, x1 - 0.4, z1 - 0.4, P.seed + 6, y);
+  } else if (A.roof.occupied === "garden") {
+    kit.span(x0 + 0.2, x1 - 0.2, y, y + 0.04, z1 - od, z1 - 0.2, kit.palette.grass[1], Surf.GRASS);
+    // Shrubs in rows along the front edge (and a second row on deep roofs), evenly spaced.
+    for (const zr of od > 2.4 ? [z1 - 0.7, z1 - od + 0.7] : [z1 - od / 2]) for (let x = x0 + 0.5; x < x1 - 0.4; x += 1.1) shrub(kit, x, zr, y + 0.04, 0.7);
+  }
+  // Service zone: the back strip, one grouped cluster on a pad; the side is the only free choice.
+  const zb0 = z0 + 0.15;
+  const zb1 = Math.max(zb0 + 0.6, z1 - od - 0.25);
+  const left = kit.rand(P.seed, 301) < 0.5;
+  const cw = Math.min(w - 0.4, Math.max(1.2, w * 0.45));
+  const cx0 = left ? x0 + 0.25 : x1 - 0.25 - cw;
+  const cz = zb0 + Math.min(0.55, (zb1 - zb0) / 2);
+  const bulkhead = (x: number) => {
+    kit.box(x, y, zb0 + 0.38, 0.62, 0.48, 0.55, P.wall);
+    kit.box(x, y + 0.48, zb0 + 0.38, 0.7, 0.05, 0.62, trimOf(P.wall));
+    kit.span(x - 0.12, x + 0.12, y, y + 0.34, zb0 + 0.655, zb0 + 0.665, darkOf(P.accent, 0.5));
+  };
+  switch (A.roof.service) {
+    case "hvac": {
+      // Unit count follows the roof area; one fewer is an equivalent installation.
+      const n0 = Math.max(1, Math.min(3, Math.round((w * d) / 7)));
+      const n = n0 > 1 && kit.rand(P.seed, 302) < 0.4 ? n0 - 1 : n0;
+      kit.box(cx0 + cw / 2, y, cz, cw, 0.05, 0.75, darkOf(steel, 0.25));
+      for (let i = 0; i < n; i++) {
+        const x = cx0 + (cw * (i + 0.5)) / n;
+        kit.box(x, y + 0.05, cz, Math.min(0.62, cw / n - 0.12), 0.3, 0.5, steel, Surf.GRILLE);
+      }
+      kit.box(cx0 + cw / 2, y + 0.42, cz - 0.3, cw - 0.1, 0.08, 0.08, steel);
+      if (w > 3.2) bulkhead(left ? x1 - 0.6 : x0 + 0.6);
+      break;
+    }
+    case "tank":
+      waterTank(kit, cx0 + 0.4, y, cz);
+      if (w > 5) waterTank(kit, cx0 + 1.05, y, cz);
+      bulkhead(left ? x1 - 0.6 : x0 + 0.6);
+      break;
+    case "vents": {
+      const n = Math.max(2, Math.min(5, Math.round(w / 1.2)));
+      for (let i = 0; i < n; i++) kit.cyl(x0 + (w * (i + 0.5)) / n, y, cz, 0.16, 0.26, 0.16, steel);
+      kit.cyl(left ? x0 + 0.4 : x1 - 0.4, y, zb0 + 0.3, 0.24, 0.9, 0.24, mix(steel, white, 0.1));
+      break;
+    }
+    case "penthouse": {
+      const pw = Math.min(w - 0.6, Math.max(1.4, w * 0.5));
+      const pd = Math.min(d - 0.6, Math.max(1.0, d * 0.4));
+      const px = (x0 + x1) / 2;
+      const pz = z0 + 0.3 + pd / 2;
+      kit.box(px, y, pz, pw, 0.5, pd, darkOf(P.wall, 0.15), Surf.GRILLE);
+      kit.box(px, y + 0.5, pz, pw + 0.06, 0.04, pd + 0.06, trimOf(P.wall));
+      kit.box(px + pw * 0.3, y + 0.54, pz, 0.04, 0.7, 0.04, [0.2, 0.2, 0.22]);
+      kit.glow(px + pw * 0.3, y + 1.24, pz, 0.06, 0.06, 0.06, [1, 0.2, 0.2], kit.night ? 2 : 0.6);
+      break;
+    }
+    case "bulkhead": {
+      // One stair core per ~5 tiles of frontage reaches the roof.
+      const cores = Math.max(1, Math.min(3, Math.round(w / 5)));
+      if (cores === 1) bulkhead(left ? x0 + 0.6 : x1 - 0.6);
+      else for (let i = 0; i < cores; i++) bulkhead(x0 + 0.6 + (i * (w - 1.2)) / (cores - 1));
+      break;
+    }
+    case "chimneys":
+    case "none":
+      break;
+  }
+  // Energy: a solar array fills the free roof between the service strip and the occupied strip.
+  if (A.roof.energy === "solar") {
+    const za = A.roof.service === "penthouse" ? z0 + 0.6 + Math.min(d - 0.6, Math.max(1.0, d * 0.4)) : zb0 + (A.roof.service === "none" ? 0.3 : 1.1);
+    const zz = z1 - od - (od ? 0.3 : 0.4);
+    const rows = Math.min(6, Math.floor((zz - za) / 0.55));
+    const aw = w - 1.0;
+    for (let i = 0; i < rows; i++) {
+      const z = za + 0.25 + i * 0.55;
+      kit.box((x0 + x1) / 2, y, z, aw, 0.08, 0.04, steel);
+      kit.box((x0 + x1) / 2, y + 0.1, z, aw, 0.025, 0.42, [0.2, 0.25, 0.4], Surf.SOLAR, { rotX: -0.38 });
+    }
+  }
+  // Architectural zone: a civic roof carries no plant, only a central skylight lantern.
+  if (A.details.some((t) => t.startsWith("central skylight"))) {
+    const lw = Math.min(w * 0.3, 1.8);
+    const ld = Math.min(d * 0.3, 1.4);
+    const cx = (x0 + x1) / 2;
+    const cz = (z0 + z1) / 2;
+    kit.box(cx, y, cz, lw + 0.12, 0.1, ld + 0.12, trimOf(P.wall));
+    kit.span(cx - lw / 2, cx + lw / 2, y + 0.1, y + 0.26, cz - ld / 2, cz + ld / 2, kit.palette.glass, Surf.GLASS, { lit: litOf(kit, 0.6) });
+    kit.part({ mesh: "pyramid", node: kit.node, x: cx, y: y + 0.26, z: cz, w: lw, h: Math.min(lw, ld) * 0.35, d: ld, color: mix(kit.palette.glass, white, 0.15) });
+  }
+}
+
+/** Chimney stacks for pitched residential roofs: at the gable ends, on the back slope. */
+function chimneys(kit: Kit, x0: number, x1: number, z0: number, z1: number, H: number, P: Program) {
+  const w = x1 - x0;
+  const d = z1 - z0;
+  const rise = Math.min(1.1, Math.min(w, d) * 0.42);
+  for (const x of w > 3 ? [x0 + 0.45, x1 - 0.45] : [x1 - 0.45]) {
+    kit.box(x, H, z0 + d * 0.32, 0.24, rise + 0.2, 0.24, darkOf(P.wall, 0.2));
+    kit.box(x, H + rise + 0.2, z0 + d * 0.32, 0.3, 0.05, 0.3, trimOf(P.wall));
+  }
+}
+
+/** The common "street building": ground, base, body, crown and roof zones from the anatomy. */
 function block(kit: Kit, x0: number, x1: number, z0: number, z1: number, floors: number, P: Program, fronts: Side[], opts: { roof?: RoofFamily; wall?: RGB; label?: string; k?: number; cornice?: Vol["cornice"] } = {}) {
   const g = groundH(P.ground);
   const wall = opts.wall ?? P.wall;
   const H = g + floors * FLOOR;
   const roof = opts.roof ?? P.roof;
-  const Q = { ...P, wall };
-  kit.span(x0, x1, 0, g, z0, z1, darkOf(wall, 0.12), P.ground === "homes" ? Surf.FRAMED : Surf.PLAIN, { variant: P.rhythm & 1, lit: litOf(kit, 0.45) });
-  const top = volume(kit, { x0, x1, z0, z1, y0: g, y1: H, wall, surf: surfOf(P), variant: P.rhythm, lit: litOf(kit), roof, roofColor: P.roofColor, cornice: opts.cornice ?? (P.style === "classic" ? "heavy" : P.style === "modern" || P.style === "tech" ? "none" : "light") });
-  kit.span(x0 - 0.03, x1 + 0.03, g - 0.03, g + 0.03, z0 - 0.03, z1 + 0.03, trimOf(wall));
+  // Equivalent choices are seeded by the program AND the lot: a composition that repeats one
+  // program (a grid) still gets neighbours that differ in subdivision, bays, doors and plant.
+  const [lx, , lz] = kit.toWorld((x0 + x1) / 2, 0, (z0 + z1) / 2);
+  const Q = { ...P, wall, seed: P.seed + Math.round(lx * 3) * 7919 + Math.round(lz * 3) * 104729 };
+  const k = opts.k ?? 0;
+  const corner = fronts.length >= 2;
+  const A = anatomyFor(Q, { span: x1 - x0, floors, groundHeight: g, corner, roof, signals: kit.surface, rand: (n) => kit.rand(Q.seed + k, 200 + n) });
+  kit.anatomies.push(A);
+  const zone0 = kit.zone;
+  kit.zone = "ground";
+  const surf = A.body.surf === "bands" ? Surf.BANDS : A.body.surf === "curtain" ? Surf.GLASS : Surf.FRAMED;
+  const bv = bodyVariant(A.body);
+  // GROUND: the street floor (domestic grounds carry the body's bays, so openings line up).
+  kit.span(x0, x1, 0, g, z0, z1, darkOf(wall, 0.12), A.ground.kind === "domestic" ? Surf.FRAMED : Surf.PLAIN, { variant: A.ground.kind === "domestic" ? bodyVariant({ ...A.body, pattern: "single", tall: false, accentEnds: false }) : 0, lit: litOf(kit, 0.45) });
+  course(kit, x0, x1, z0, z1, g, wall, 0.06);
+  // BASE / BODY / CROWN, stacked inside the massing's one volume (same outer box).
+  const cF = floors - A.crown.floors >= 1 + (A.base.floors ? 1 : 0) ? A.crown.floors : 0;
+  const bF = floors - cF - A.base.floors >= 1 ? A.base.floors : 0;
+  let y = g;
+  if (bF) {
+    kit.zone = "base";
+    const bs = A.base.treatment === "glazed" ? Surf.STORE : surf === Surf.FRAMED ? Surf.FRAMED : surf;
+    kit.span(x0, x1, y, y + bF * FLOOR, z0, z1, A.base.treatment === "rusticated" ? mix(wall, white, 0.12) : wall, bs, { variant: bs === Surf.FRAMED ? bv + (A.base.treatment === "rusticated" ? RUSTIC : 0) : LIT_GROUPS, lit: litOf(kit, bs === Surf.STORE ? 0.45 : 0.5) });
+    y += bF * FLOOR;
+    course(kit, x0, x1, z0, z1, y, wall, A.base.treatment === "rusticated" ? 0.08 : 0.05);
+  }
+  const cornice = opts.cornice ?? A.crown.cornice;
+  let top: { deck: number | null; top: number };
+  kit.zone = "body";
+  if (cF) {
+    kit.span(x0, x1, y, H - cF * FLOOR, z0, z1, wall, surf, { variant: bv, lit: litOf(kit) });
+    kit.zone = "crown";
+    course(kit, x0, x1, z0, z1, H - cF * FLOOR, wall, 0.06);
+    const crownSurf = A.crown.kind === "attic" ? Surf.FRAMED : Surf.GRILLE;
+    top = volume(kit, { x0, x1, z0, z1, y0: H - cF * FLOOR, y1: H, wall: A.crown.kind === "emphasized" ? darkOf(wall, 0.2) : wall, surf: crownSurf, variant: crownSurf === Surf.FRAMED ? (bv & ~(48 | 8 | 256)) + ATTIC : 0, lit: litOf(kit), roof, roofColor: P.roofColor, cornice });
+  } else top = volume(kit, { x0, x1, z0, z1, y0: y, y1: H, wall, surf, variant: bv, lit: litOf(kit), roof, roofColor: P.roofColor, cornice });
+  // Corner: an emphasised vertical bay (residential) or the corner entrance (shops, offices).
+  kit.zone = "corner";
+  if (corner && A.corner.treatment === "vertical") kit.span(x1 - 0.32, x1 + 0.04, g, H, z1 - 0.32, z1 + 0.04, mix(wall, white, 0.2), Surf.FRAMED, { variant: (bv & ~(48 | 256)) + 32, lit: litOf(kit) });
+  if (corner && A.ground.cornerEntrance) cornerEntrance(kit, x1, z1, g, Q);
   fronts.forEach((side, i) =>
     face(kit, x0, x1, z0, z1, side, (span) => {
-      groundRun(kit, span, g, Q, i === 0 ? P.ground : (P.ground2 ?? P.ground), i === 0 ? (opts.label ?? P.label) : P.label2, (opts.k ?? 0) + i);
+      const cornerSide = !corner ? "none" : side === "front" ? "end" : side === "right" ? "start" : "none";
+      kit.zone = "ground";
+      groundFace(kit, span, g, Q, A, i === 0 ? (opts.label ?? P.label) : P.label2, k + i, i === 0, cornerSide);
+      kit.zone = "facade";
       if (i === 0) {
         if (P.signage === "blade" && opts.label !== "" && span > 2) bladeSign(kit, span - 0.25, g + 0.12, opts.label ?? P.label ?? "", P.accent);
         if (P.signage === "screen" && floors >= 3) screen(kit, span * 0.18, span * 0.82, g + FLOOR * 0.6, g + FLOOR * Math.min(floors - 0.5, 3.2), P.brand ?? P.label, P.accent);
-        if (P.style === "retro" && floors >= 3 && kit.rand(P.seed + (opts.k ?? 0), 11) < 0.2) fireEscape(kit, span * 0.5, g, floors);
+        // One stack of balconies per flat (~2 tiles), on the façade's own bays.
+        if (A.details.some((d) => d.startsWith("balconies"))) balconies(kit, span, g, floors - A.crown.floors, Q, Math.max(2, Math.round(2 / (0.5 + 0.25 * A.body.bay))), A.body.bay);
+        if (A.details.some((d) => d.startsWith("fire escape"))) fireEscape(kit, span * (kit.rand(Q.seed + k, 11) < 0.5 ? 0.3 : 0.7), g, floors);
       }
     }),
   );
-  if (top.deck !== null) rooftop(kit, x0, x1, z0, z1, top.deck, Q);
-  if (P.signage === "billboard" && top.deck !== null && kit.rand(P.seed + (opts.k ?? 0), 13) < 0.7 && (P.label || P.brand)) rooftopBillboard(kit, (x0 + x1) / 2, z1 - 0.5, top.deck, (P.label ?? P.brand)!, P.accent);
+  kit.zone = "roof";
+  if (top.deck !== null) roofZones(kit, x0, x1, z0, z1, top.deck, Q, A);
+  else if (A.roof.service === "chimneys") chimneys(kit, x0, x1, z0, z1, H, Q);
+  kit.zone = "sign";
+  if (P.signage === "billboard" && top.deck !== null && (P.label || P.brand)) rooftopBillboard(kit, (x0 + x1) / 2, z1 - 0.5, top.deck, (P.label ?? P.brand)!, P.accent);
+  kit.zone = zone0;
   return top.top;
 }
 
@@ -443,7 +596,12 @@ export function building(kit: Kit, w: number, d: number, P: Program): number {
     case "apartments": {
       const top = block(kit, x0, x1, z0, z1, P.floors, P, ["front"]);
       const g = groundH(P.ground);
-      face(kit, x0, x1, z0, z1, "front", (span) => balconies(kit, span, g, P.floors, P, 2));
+      // The family is defined by its balconies: the same stacks the grammar uses, on the façade's bays.
+      const A = kit.anatomies[kit.anatomies.length - 1];
+      if (!A.details.some((d) => d.startsWith("balconies"))) {
+        A.details.push("balconies: apartments family");
+        face(kit, x0, x1, z0, z1, "front", (span) => balconies(kit, span, g, P.floors - A.crown.floors, P, Math.max(2, Math.round(2 / (0.5 + 0.25 * A.body.bay))), A.body.bay));
+      }
       if (P.style === "soft") for (const sx of [x0, x1]) kit.cyl(sx, 0, z1 - 0.45, 0.9, g + P.floors * FLOOR, 0.9, P.wall, { surf: Surf.FRAMED, lit: litOf(kit) });
       return top;
     }
@@ -484,7 +642,9 @@ export function building(kit: Kit, w: number, d: number, P: Program): number {
       }
       const top = volume(kit, { x0, x1, z0: sz0, z1, y0: g, y1: H, wall: P.wall, surf: Surf.BANDS, lit: litOf(kit), roof: "flat", roofColor: P.roofColor, cornice: "none" });
       kit.span(x1 - 0.9, x1 - 0.1, 0, H + 0.6, sz0 - 0.3, sz0 + 0.5, darkOf(P.wall, 0.1));
-      if (top.deck !== null) rooftop(kit, x0, x1 - 1, sz0, z1, top.deck, P);
+      const A = anatomyFor(P, { span: w, floors: P.floors, groundHeight: g, corner: false, roof: "flat", signals: kit.surface, rand: (n) => kit.rand(P.seed, 200 + n) });
+      kit.anatomies.push(A);
+      if (top.deck !== null) roofZones(kit, x0, x1 - 1, sz0, z1, top.deck, P, A);
       if (z0 < sz0 - 0.5) plaza(kit, x0, x1, z0, sz0 - 0.3, P.seed, false);
       return H + 0.6;
     }
@@ -493,8 +653,14 @@ export function building(kit: Kit, w: number, d: number, P: Program): number {
       const pod = g + 2 * FLOOR;
       kit.span(x0, x1, 0, g, z0, z1, darkOf(P.wall, 0.25));
       const pt = volume(kit, { x0, x1, z0, z1, y0: g, y1: pod, wall: P.wall, surf: Surf.BANDS, lit: litOf(kit, 0.6), roof: "terrace", roofColor: P.roofColor, cornice: "light" });
-      face(kit, x0, x1, z0, z1, "front", (span) => groundRun(kit, span, g, P, P.ground, P.label));
-      if (P.ground2) face(kit, x0, x1, z0, z1, "right", (span) => groundRun(kit, span, g, P, P.ground2!, P.label2, 1));
+      const A = anatomyFor(P, { span: w, floors: P.floors, groundHeight: g, corner: false, roof: "flat", signals: kit.surface, rand: (n) => kit.rand(P.seed, 200 + n) });
+      kit.anatomies.push(A);
+      face(kit, x0, x1, z0, z1, "front", (span) => groundFace(kit, span, g, P, A, P.label, 0, true, "none"));
+      // A second ground on the side street (mixed use: a lobby in front, shops round the side).
+      if (P.ground2) {
+        const A2 = anatomyFor({ ...P, ground: P.ground2, use: undefined }, { span: d, floors: P.floors, groundHeight: g, corner: false, roof: "flat", signals: kit.surface, rand: (n) => kit.rand(P.seed, 220 + n) });
+        face(kit, x0, x1, z0, z1, "right", (span) => groundFace(kit, span, g, P, A2, P.label2, 1, true, "none"));
+      }
       // Tower set back and pushed to one side: an asymmetric silhouette, a terrace on the rest.
       const tw = Math.min(w * 0.55, 3.2);
       const td = Math.min(d * 0.6, 3.2);
@@ -507,15 +673,18 @@ export function building(kit: Kit, w: number, d: number, P: Program): number {
       for (let u = tx0; u <= tx0 + tw + 0.01; u += 0.8) kit.box(u, pod, tz0 + td + 0.03, 0.05, H1 - pod, 0.06, trimOf(P.wall));
       const ins = 0.35;
       const crown = volume(kit, { x0: tx0 + ins, x1: tx0 + tw - ins, z0: tz0 + ins, z1: tz0 + td - ins, y0: H1, y1: H2, wall: darkOf(P.wall, 0.15), surf: Surf.GLASS, lit: litOf(kit), roof: P.roof === "spire" || P.roof === "crown" || P.roof === "mansard" || P.roof === "terrace" ? P.roof : "flat", roofColor: P.roofColor, cornice: "none" });
-      if (crown.deck !== null) rooftop(kit, tx0 + ins, tx0 + tw - ins, tz0 + ins, tz0 + td - ins, crown.deck, { ...P, topside: "hvac" });
+      if (crown.deck !== null) roofZones(kit, tx0 + ins, tx0 + tw - ins, tz0 + ins, tz0 + td - ins, crown.deck, P, { ...A, roof: { ...A.roof, occupied: "none" } });
       if (P.brand) kit.sign(P.brand, tx0 + tw / 2, H1 - 0.5, tz0 + td + 0.07, { bg: darkOf(P.accent, 0.25), texel: 0.05, maxW: tw - 0.3 });
-      if (pt.deck !== null) rooftop(kit, left ? tx0 + tw + 0.1 : x0, left ? x1 : tx0 - 0.1, z0, z1, pt.deck, { ...P, topside: "terrace" });
+      // The podium's free roof is the building's occupied zone (a terrace), service stays on the tower.
+      if (pt.deck !== null) roofZones(kit, left ? tx0 + tw + 0.1 : x0, left ? x1 : tx0 - 0.1, z0, z1, pt.deck, P, { ...A, roof: { ...A.roof, occupied: "terrace", service: "none" } });
       return crown.top;
     }
     case "stepped": {
       const g = 0.8;
       kit.span(x0, x1, 0, g, z0, z1, darkOf(P.wall, 0.2));
-      face(kit, x0, x1, z0, z1, "front", (span) => groundRun(kit, span, g, P, P.ground, P.label));
+      const A = anatomyFor(P, { span: w, floors: P.floors, groundHeight: g, corner: false, roof: "flat", signals: kit.surface, rand: (n) => kit.rand(P.seed, 200 + n) });
+      kit.anatomies.push(A);
+      face(kit, x0, x1, z0, z1, "front", (span) => groundFace(kit, span, g, P, A, P.label, 0, true, "none"));
       const tiers = 3;
       let y = g;
       let inset = 0;
@@ -528,7 +697,9 @@ export function building(kit: Kit, w: number, d: number, P: Program): number {
         y += f * FLOOR + 0.12;
         inset += Math.min(w, d) * 0.14;
         top = v.top;
-        if (last && v.deck !== null) rooftop(kit, x0 + inset - 0.3, x1 - inset + 0.3, z0 + inset - 0.3, z1 - inset + 0.3, v.deck, { ...P, topside: "hvac" });
+        if (last && v.deck !== null) {
+          roofZones(kit, x0 + inset - 0.3, x1 - inset + 0.3, z0 + inset - 0.3, z1 - inset + 0.3, v.deck, P, { ...A, roof: { ...A.roof, occupied: "none" } });
+        }
       }
       if (P.brand) kit.sign(P.brand, 0, y - 0.6, z1 - inset + Math.min(w, d) * 0.14 + 0.02, { bg: darkOf(P.accent, 0.25), texel: 0.045, maxW: w - 2 * inset });
       return top;

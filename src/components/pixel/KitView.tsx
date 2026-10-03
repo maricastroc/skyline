@@ -1,16 +1,19 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import type { SiteFingerprint } from "@/lib/fingerprint/fingerprint";
 import type { TimeOfDay } from "@/lib/pixelcity/grammar";
 import type { PeopleMode } from "@/lib/pixelcity/kit/core";
 import { debugColor, generateKitDistrict, newTrace, type KitTrace, type ProfileName } from "@/lib/pixelcity/kit/district";
 import type { Plan } from "@/lib/pixelcity/kit/plan";
+import { surfaceTrace } from "@/lib/pixelcity/kit/surface";
 import { generateKitDistrict as generateKitDistrictV1 } from "@/lib/pixelcity/kit-v1/district";
 import { generateKitDistrict as generateKitDistrictV2, type Profile as ProfileV2, type ProfileName as ProfileNameV2 } from "@/lib/pixelcity/kit-v2/district";
 import { generateKitDistrict as generateKitDistrictV3, type ProfileName as ProfileNameV3 } from "@/lib/pixelcity/kit-v3/district";
 import type { Plan as PlanV3 } from "@/lib/pixelcity/kit-v3/plan";
+import { generateKitDistrict as generateKitDistrictV4, type ProfileName as ProfileNameV4 } from "@/lib/pixelcity/kit-v4/district";
+import type { Plan as PlanV4 } from "@/lib/pixelcity/kit-v4/plan";
 import type { ViewState } from "./PixelScene";
 
 const PixelScene = dynamic(() => import("./PixelScene"), { ssr: false });
@@ -19,9 +22,9 @@ const CITY: ViewState = { azimuth: 45, zoom: 0.9, pan: [0, 0] };
 
 /**
  * Which generator: 1 the first kit, 2 the massing pass with cycled minors, 3 the semantic
- * allocation pass (all frozen), 4 the current one (allocation + semantic hygiene).
+ * allocation pass, 4 the semantic hygiene pass (all frozen), 5 the current one (+ surface grammar).
  */
-export type KitSource = { v: 1 } | { v: 2; profile: ProfileNameV2 | ProfileV2 } | { v: 3; profile: ProfileNameV3 | PlanV3 } | { v: 4; profile: ProfileName | Plan };
+export type KitSource = { v: 1 } | { v: 2; profile: ProfileNameV2 | ProfileV2 } | { v: 3; profile: ProfileNameV3 | PlanV3 } | { v: 4; profile: ProfileNameV4 | PlanV4 } | { v: 5; profile: ProfileName | Plan };
 
 export interface KitViewProps {
   fp: SiteFingerprint;
@@ -35,10 +38,16 @@ export interface KitViewProps {
   seed?: number;
   /** Provenance view (current generator only): territories in debug colours, plus a legend. */
   provenance?: boolean;
+  /** Surface inspector (current generator only): click a building to read its anatomy and why. */
+  inspect?: boolean;
+  /** Street / close views: world point to look at and zoom (defaults: the view's own). */
+  focus?: [number, number];
+  zoom?: number;
 }
 
 /** The prototype district in the regular scene, camera and post — no UI (except the provenance legend). */
-export function KitView({ fp, time, people, view, source, flat, seed, provenance }: KitViewProps) {
+export function KitView({ fp, time, people, view, source, flat, seed, provenance, inspect, focus, zoom }: KitViewProps) {
+  const [picked, setPicked] = useState<number | null>(null);
   const { city, trace } = useMemo(() => {
     if (source.v === 1) {
       const c = generateKitDistrictV1(fp, { time, people });
@@ -49,13 +58,62 @@ export function KitView({ fp, time, people, view, source, flat, seed, provenance
     }
     if (source.v === 2) return { city: generateKitDistrictV2(fp, { time, people, profile: source.profile, flat, seed }), trace: null };
     if (source.v === 3) return { city: generateKitDistrictV3(fp, { time, people, profile: source.profile, flat, seed, provenance }), trace: null };
+    if (source.v === 4) return { city: generateKitDistrictV4(fp, { time, people, profile: source.profile, flat, seed, provenance }), trace: null };
     const tr: KitTrace = newTrace();
-    return { city: generateKitDistrict(fp, { time, people, profile: source.profile, flat, seed, provenance, trace: tr }), trace: tr };
-  }, [fp, time, people, source, flat, seed, provenance]);
+    const c = generateKitDistrict(fp, { time, people, profile: source.profile, flat, seed, provenance, trace: tr });
+    if (!inspect || flat || provenance) return { city: c, trace: tr };
+    // Inspector: each building's parts answer picking as that building (node = trace index).
+    const parts = c.parts.map((q) => ({ ...q, node: -1 }));
+    tr.buildings.forEach((b, i) => {
+      for (let k = b.parts[0]; k < b.parts[1]; k++) parts[k].node = i;
+    });
+    return { city: { ...c, parts }, trace: tr };
+  }, [fp, time, people, source, flat, seed, provenance, inspect]);
+  const sel = inspect && picked !== null ? trace?.buildings[picked] : undefined;
   return (
     <div className="kit-stage" data-ready="1" style={{ position: "absolute", inset: 0 }}>
-      <PixelScene city={city} view={CITY} mode={view === "city" ? "city" : "explore"} focus={view === "close" ? [1.2, 3.2] : [0, 0]} exploreZoom={view === "close" ? 3.2 : 1.75} interactive />
+      <PixelScene city={city} view={CITY} mode={view === "city" ? "city" : "explore"} focus={focus ?? (view === "close" ? [1.2, 3.2] : [0, 0])} exploreZoom={zoom ?? (view === "close" ? 3.2 : 1.75)} interactive onPick={inspect ? setPicked : undefined} highlight={sel ? [picked!, picked! + 1] : null} />
       {provenance && trace?.plan && trace.alloc ? <Legend trace={trace} /> : null}
+      {inspect ? (
+        <div style={{ position: "absolute", right: 12, top: 12, width: 440, maxHeight: "94%", overflow: "auto", background: "rgba(14,14,18,0.88)", color: "#e8e8ea", font: "11px/1.4 ui-monospace, Menlo, monospace", padding: 10, borderRadius: 4 }}>
+          {sel ? (
+            <>
+              <div style={{ color: "#ffcf5a" }}>
+                #{picked} {sel.comp} / {sel.piece} · {sel.P.family} {sel.w.toFixed(1)}×{sel.d.toFixed(1)} · {sel.P.floors} floors · {sel.P.style}
+              </div>
+              {sel.anatomy.length === 0 ? <div>no anatomy (a family outside the street-building grammar)</div> : null}
+              {sel.anatomy.map((A, i) => {
+                const t = surfaceTrace(A);
+                return (
+                  <div key={i} style={{ marginTop: 6 }}>
+                    {(["program", "groundFloor", "base", "body", "crown", "roof", "cornerCondition", "styleExpression"] as const).map((k) => (
+                      <div key={k}>
+                        <span style={{ color: "#8fb4ff" }}>{k}</span> {String(t[k])}
+                      </div>
+                    ))}
+                    {(["detailFamilies", "pageSignalsUsed", "variation", "absent"] as const).map((k) =>
+                      t[k].length ? (
+                        <div key={k}>
+                          <span style={{ color: "#8fb4ff" }}>{k}</span>
+                          {t[k].map((x) => (
+                            <div key={x}>· {x}</div>
+                          ))}
+                        </div>
+                      ) : null,
+                    )}
+                    <div style={{ color: "#8fb4ff" }}>why</div>
+                    {A.why.map((x) => (
+                      <div key={x}>· {x}</div>
+                    ))}
+                  </div>
+                );
+              })}
+            </>
+          ) : (
+            <div>surface inspector — click a building</div>
+          )}
+        </div>
+      ) : null}
     </div>
   );
 }

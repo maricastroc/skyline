@@ -8,6 +8,7 @@ import puppeteer from "puppeteer-core";
 const OUT = (process.env.OUT ?? "docs/screenshots/kit").replace(/\/?$/, "/");
 mkdirSync(OUT, { recursive: true });
 const BASE = process.env.BASE ?? "http://localhost:3000";
+const ROUTE = process.env.ROUTE ?? "/pixel/kit"; // e.g. /pixel/surface-lab
 const DEFAULT = [
   // The prototype views (default profile).
   ["kit-city-day", "view=city"],
@@ -42,7 +43,7 @@ for (const [name, query] of shots) {
   const page = await browser.newPage();
   await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 2 });
   page.on("pageerror", (e) => console.log("[pageerror]", e.message));
-  await page.goto(`${BASE}/pixel/kit?${query}`, { waitUntil: "domcontentloaded" });
+  await page.goto(`${BASE}${ROUTE}?${query}`, { waitUntil: "domcontentloaded" });
   await page.waitForFunction(`!!document.querySelector('.kit-stage canvas')`, { timeout: 120000 });
   await new Promise((r) => setTimeout(r, 6000)); // camera glide + build-up
   // Rough frame rate of the prototype at this view (headless GPU; relative, not absolute).

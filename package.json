@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit",
     "fingerprint": "tsx scripts/fingerprint.ts",
     "test:allocation": "tsx scripts/semantic-allocation/check.ts",
-    "test:hygiene": "tsx scripts/semantic-hygiene/check.ts"
+    "test:hygiene": "tsx scripts/semantic-hygiene/check.ts",
+    "test:surface": "tsx scripts/surface/check.ts"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",

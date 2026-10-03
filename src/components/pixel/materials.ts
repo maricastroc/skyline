@@ -218,24 +218,40 @@ vec3 pxEmitColor = uLit;
   }
   // Punched windows with frames and sills, centred in bays, one row per floor. Variant bits:
   // 1 = brick courses, 2–4 = bay width (0.5 / 0.75 / 1.0 / 1.25 tiles), 8 = tall windows.
+  // Surface grammar (only set by the current kit; older kits never use them, so they render
+  // exactly as before): 16–32 = opening pattern (0 single, 1 paired, 2 vertical, 3 sparse),
+  // 64 = attic (small square openings), 128 = rusticated base, 256 = end bays left blank,
+  // 512 = lights grouped by flat (two bays × one floor) instead of window by window.
   if (side && surf == 14) {
     float fv = floor(vMeta.w + 0.5);
     float brick = mod(fv, 2.0);
     float bay = 0.5 + 0.25 * mod(floor(fv / 2.0), 4.0);
     float tall = mod(floor(fv / 8.0), 2.0);
+    float pat = mod(floor(fv / 16.0), 4.0);
+    float attic = mod(floor(fv / 64.0), 2.0);
+    float rustic = mod(floor(fv / 128.0), 2.0);
+    float ends = mod(floor(fv / 256.0), 2.0);
+    float groups = mod(floor(fv / 512.0), 2.0);
     if (brick > 0.5) {
       float row = floor(fc.y / 0.083);
       float joint = step(fract(fc.y / 0.083), 0.16) + step(fract((fc.x + mod(row, 2.0) * 0.09) / 0.18), 0.09);
       diffuseColor.rgb *= 1.0 - 0.08 * min(joint, 1.0);
     }
+    if (rustic > 0.5) diffuseColor.rgb *= 1.0 - 0.13 * step(fract(fc.y / 0.125), 0.14);
     float n = max(1.0, floor((fs.x - 0.16) / bay));
     float bx = fc.x - (fs.x - n * bay) * 0.5;
     float fy = fract(fc.y / 0.5) * 0.5;
-    if (bx > 0.0 && bx < n * bay && fc.y < fs.y - 0.1) {
+    float bi = floor(bx / bay);
+    bool blankBay = (ends > 0.5 && n >= 4.0 && (bi < 0.5 || bi > n - 1.5)) || (pat > 2.5 && mod(bi, 2.0) > 0.5);
+    if (ends > 0.5 && n >= 4.0 && (bi < 0.5 || bi > n - 1.5) && bx > 0.0 && bx < n * bay) diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.97, 0.95, 0.9), 0.14);
+    if (bx > 0.0 && bx < n * bay && fc.y < fs.y - 0.1 && !blankBay) {
       float wx = fract(bx / bay) * bay - bay * 0.5;
       float hw = bay > 0.6 ? bay * 0.3 : 0.12;
       float y0 = tall > 0.5 ? 0.08 : 0.13;
       float y1 = tall > 0.5 ? 0.43 : 0.4;
+      if (pat > 0.5 && pat < 1.5) { wx = abs(wx) - bay * 0.22; hw = max(0.055, bay * 0.12); }
+      if (pat > 1.5 && pat < 2.5) { hw = max(0.07, bay * 0.17); y0 = 0.04; y1 = 0.46; }
+      if (attic > 0.5) { hw = min(hw, 0.09); y0 = 0.17; y1 = 0.33; }
       float inX = step(abs(wx), hw);
       float inY = step(y0, fy) * step(fy, y1);
       float frame = step(abs(wx), hw + 0.035) * step(y0 - 0.035, fy) * step(fy, y1 + 0.035);
@@ -245,8 +261,9 @@ vec3 pxEmitColor = uLit;
       else if (inX * inY > 0.5) {
         vec3 g = mix(uGlass, uGlass * 1.4, step(y1 - 0.04, fy));
         // Wide bays get a mullion: paired windows.
-        if (bay > 0.6 && abs(wx) < 0.02) g = trim;
-        if (pxHash(vec2(floor(bx / bay), floor(fc.y / 0.5)) + seed) < vMeta.y * uLights) { pxEmit = 1.0; g = uLit; }
+        if (pat < 0.5 && bay > 0.6 && abs(wx) < 0.02) g = trim;
+        vec2 lc = groups > 0.5 ? vec2(floor(bi / 2.0), floor(fc.y / 0.5)) : vec2(bi, floor(fc.y / 0.5));
+        if (pxHash(lc + seed) < vMeta.y * uLights) { pxEmit = 1.0; g = uLit; }
         diffuseColor.rgb = g;
       } else if (frame > 0.5) diffuseColor.rgb = trim;
     }
@@ -256,7 +273,9 @@ vec3 pxEmitColor = uLit;
     float fy = fract(fc.y / 0.5);
     if (step(0.3, fy) * step(fy, 0.84) > 0.5 && fc.y < fs.y - 0.1 && fc.x > 0.06 && fc.x < fs.x - 0.06) {
       vec3 g = mix(uGlass, uGlass * 1.35, step(0.76, fy));
-      if (pxHash(vec2(floor(fc.x / 0.7), floor(fc.y / 0.5)) + seed) < vMeta.y * uLights) { pxEmit = 1.0; g = uLit; }
+      // Variant 512 (surface grammar): lit in long runs per floor, as offices are; else in 0.7 segments.
+      float run = mod(floor(floor(vMeta.w + 0.5) / 512.0), 2.0) > 0.5 ? 2.8 : 0.7;
+      if (pxHash(vec2(floor(fc.x / run), floor(fc.y / 0.5)) + seed) < vMeta.y * uLights) { pxEmit = 1.0; g = uLit; }
       diffuseColor.rgb = mix(g, diffuseColor.rgb * 0.7, step(fract(fc.x / 0.35), 0.1));
     } else diffuseColor.rgb *= 1.0 - 0.06 * step(fy, 0.06);
   }

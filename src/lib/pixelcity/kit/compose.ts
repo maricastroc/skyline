@@ -32,6 +32,7 @@ import { building, type Family, type Program } from "./buildings";
 import type { Kit } from "./core";
 import { plaza, type RoofFamily } from "./massing";
 import { softMix, type Comp, type Plan, type Territory } from "./plan";
+import type { Use } from "./surface";
 import { bench, tree } from "./street";
 import { LOTS, N, type Allocation } from "./territory";
 
@@ -130,10 +131,28 @@ const COMP_CONTENT: Record<Comp, Brief["content"]> = {
   structured: "structured",
 };
 
+/**
+ * What each organisation's buildings are FOR — the surface grammar's first input (surface.ts).
+ * The landmark's use follows its family (civic hall / clock tower → civic, towers → office).
+ */
+const USE: Record<Comp, Use | undefined> = {
+  landmark: undefined,
+  marker: "kiosk",
+  continuous: "residential",
+  parcelled: "commercial",
+  archive: "institutional",
+  grid: "commercial",
+  media: "office",
+  interactive: "kiosk",
+  navigation: "commercial",
+  support: "service",
+  structured: "office",
+};
+
 /** Base program for a segment piece: style, colours, roof, awnings… from the brief grammar. */
 function prog(ctx: ComposeCtx, t: Territory, comp: Comp, salt: number, corner = false): Program {
   const b: Brief = { role: comp === "support" ? "support" : "minor", content: COMP_CONTENT[comp], weight: t.weight, repeat: t.repeat, label: shortLabel(t.label) };
-  return programFor(b, ctx.g, ctx.p, ctx.kit, salt, corner);
+  return { ...programFor(b, ctx.g, ctx.p, ctx.kit, salt, corner), use: USE[comp] };
 }
 
 /** log₂(1 + k·w): grows with weight, saturates. */
