@@ -1,0 +1,61 @@
+# Corpus fingerprint before the surface grammar pass (kit-v4 = hygiene pass)
+seed 7 · day · 1440×900 @2x · KitView CITY / street (1.75) / close (3.2)
+
+## kit-v4 cities, normal
+v4-normal reference    e2925536526f462290c03b9a7381b6e5c10aea5d parts 13916
+v4-normal docs         c48b4542aab508b6c4ad6549a516e4f412432a7c parts 16358
+v4-normal app          24ce5149f509134a98c7a03c1f318c7a32042073 parts 17151
+v4-normal saas         6a93bb01a45c41792ed93147a9fdf448366a7413 parts 14701
+v4-normal shop         0a08dd4c9e2b566e097dff73c75da89cf7dd3b86 parts 14322
+v4-normal news         767a7349439d953af9f84878b323a1871e6ba29f parts 15988
+v4-normal portfolio    09728aae12eb5938e49f99fe630232dd803a8f6e parts 14567
+v4-normal forum        3f4c454a118c0368aa9485423f62322b4a4c3a18 parts 18510
+v4-normal institution  197d45dc35ab552b2122f6fa6295edc8795e207a parts 16582
+v4-normal oldweb       d4e760fd4c317ce37dd5b42708c47bc6fbcfe0fc parts 16620
+v4-normal media        8ac893c114bb3bc7cd5411554fafe9efcde62f27 parts 14064
+v4-normal directory    9fb276435026f7b83ecffd5a32cf8e93847053c4 parts 15858
+v4-normal reference-2  c9e9ab4a0c05d04c15e4be2dab396eab587a0726 parts 13601
+v4-normal saas-2       3c3eb743002f08c84909313ccb6222cd5edcdb6e parts 14053
+
+## kit-v4 cities, flat
+v4-flat reference    cb8a3a89cb0f314596ea308d0feed33f05e0a5f0 parts 10844
+v4-flat docs         f83706318c90cba26fbb09879a5cd5e56642510d parts 12747
+v4-flat app          2ded551e3d5b0e709711afa58706b10d941d18ca parts 13581
+v4-flat saas         466b2786e254a5ff4eb0620335a28e7918ebbbed parts 11196
+v4-flat shop         4e7b30e8ef89d85ef850321eb73f9db861ad2182 parts 10944
+v4-flat news         19137a4dfff5adc4b65d22e8d693a55d32b226fe parts 12712
+v4-flat portfolio    7bf603647ce49d961e0c07912419c09caa4cbf31 parts 11116
+v4-flat forum        43f3eabaed4ccd9656337f57192ecbacfea5eaea parts 14525
+v4-flat institution  c4ec0e9bd24d0a60055ed43b3b415696eeaaf67b parts 12884
+v4-flat oldweb       0716e39a7e5e40cf5520089d92c5e3485152e035 parts 13177
+v4-flat media        e3fb78229f45fef902097c4b59def9789066d8d9 parts 10698
+v4-flat directory    4e5d25832a04c1eba51c2ecf2640935d8b98c1d3 parts 12478
+v4-flat reference-2  630ff19d8460f1a63b338d23d43df319340bb425 parts 10672
+v4-flat saas-2       e454c4814958da946adcb0f67457b8fa2f9367ae parts 10708
+
+## kit-v4 cities, night
+v4-night reference    dc893ba983d74709a81307ebc7bb71892f482ace parts 13918
+v4-night docs         b381d2c9c37bb98164e0ddb1fe980acfdd22c17b parts 16358
+v4-night app          aed6e602f28a18a0db7e8d550d6cdfc829d58884 parts 17151
+v4-night saas         e4d068ae3fdf758dfd70cb2939e47dd7e44532a0 parts 14701
+v4-night shop         0c87946b505846df92f8dad425da84a0350c648c parts 14322
+v4-night news         25f64fe9a6c9094ff54c124532be82d7a11ea642 parts 15988
+v4-night portfolio    1ddf266d30bf74bbd6a845428f9fc603b4ab522f parts 14569
+v4-night forum        f025175c5366e2202dd1403ff29342e7a5fa0a82 parts 18512
+v4-night institution  90087e9f2d8e90a5fb02b74f069f46c2e424f501 parts 16582
+v4-night oldweb       bf251999e7ef9ba83193d4d03e7beacd9448a0ed parts 16620
+v4-night media        e2d08b128cbaf5206cf0f0664c6b49b4f38b6afa parts 14064
+v4-night directory    4c93027cc9ab73a7e227f8cac0d340e2e2e0623f parts 15858
+v4-night reference-2  c5064b5d278f34f0ecef68d3dbf8ff770fd44ea3 parts 13603
+v4-night saas-2       fa34f51204083adeda3284261712cbf371afd720 parts 14053
+
+## synthetic profiles (kit-v4)
+v4 mixed 1ff173a86d81cc806e9ed973240428b4b2076d1c
+v4 portal 1b8335a3bdd5553b7a47017c492bb09e02ccb5da
+v4 product f748347585bae3d11095096c87bebfd5b0af3557
+v4 reference cc206b74cf063a674bb649d2e9af9a3916f8ddb9
+
+## previous tables
+docs/real-pages/tables.md cbdc4f4a08795d47207116eecfaaa506b4063082
+docs/semantic-allocation/tables.md ff8cebbad00ee491f18effe7d5f2c117052b5963
+docs/semantic-hygiene/tables.md ee82f8c9e6e46b837628975508d0b807b44efb4a
