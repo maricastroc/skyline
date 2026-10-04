@@ -1,0 +1,83 @@
+## IKEA (shop)
+fingerprint: size 0.76 depth 0.96 textDensity 0.32 linkDensity 0.26 airiness 0.38 imagery 1.00 interactivity 1.00 regularity 0.50 headings 0.22 darkness 0.00
+grammar (computed): style modern/soft time(own) day/golden verticality 0.74 coverage 0.46 parks 0.56 trees 0.48 traffic 0.28 avenue 2 streetLevels 2 industry 0.17 billboards 1.00
+plan: 7 territories, hero weight 0.07, dominant 0.76, structure groups 20, item series 14×div > a 25×div > div 41×ul > a
+land by composition: grid 76%, support 10%, landmark 7%, parcelled 5%, interactive 1%, continuous 0%, marker 0%
+buildings 138, height (tiles above sidewalk) median 3.79 p90 3.79 max 12.62 (landmark podiumTower), footprint/blocks 58%
+uses: commercial 86%, service 11%, kiosk 2%, office 1%
+
+## Paul Graham (oldweb)
+fingerprint: size 0.81 depth 0.25 textDensity 0.10 linkDensity 0.32 airiness 0.00 imagery 1.00 interactivity 0.00 regularity 1.00 headings 0.00 darkness 0.00
+grammar (computed): style retro/modern time(own) day/golden verticality 0.52 coverage 0.59 parks 0.16 trees 0.14 traffic 0.35 avenue 2 streetLevels 1 industry 0.50 billboards 1.00
+plan: 3 territories, hero weight 0.00, dominant 0.97, structure groups 0, item series 20×table > td 215×table > td
+land by composition: parcelled 100%, marker 0%
+buildings 119, height (tiles above sidewalk) median 5.37 p90 6.18 max 6.37 (landmark -), footprint/blocks 75%
+uses: institutional 100%
+
+## craigslist (directory)
+fingerprint: size 0.77 depth 0.08 textDensity 0.45 linkDensity 1.00 airiness 0.02 imagery 0.00 interactivity 0.00 regularity 1.00 headings 1.00 darkness 0.00
+grammar (computed): style classic/modern time(own) day/golden verticality 0.51 coverage 0.68 parks 0.14 trees 0.32 traffic 1.00 avenue 3 streetLevels 2 industry 0.03 billboards 0.00
+plan: 9 territories, hero weight 0.00, dominant 0.45, structure groups 140, item series 45×ul > a 85×ul > a 49×ul > a
+land by composition: parcelled 88%, navigation 12%, support 0%, marker 0%
+buildings 131, height (tiles above sidewalk) median 4.66 p90 5.62 max 5.87 (landmark -), footprint/blocks 67%
+uses: institutional 91%, commercial 8%, service 1%
+
+## GOV.UK (institution)
+fingerprint: size 0.48 depth 0.38 textDensity 0.75 linkDensity 0.62 airiness 0.39 imagery 0.34 interactivity 0.33 regularity 0.73 headings 1.00 darkness 0.20
+grammar (computed): style modern/soft time(own) day/golden verticality 0.52 coverage 0.54 parks 0.53 trees 0.45 traffic 0.68 avenue 3 streetLevels 2 industry 0.18 billboards 0.34
+plan: 11 territories, hero weight 0.05, dominant 0.27, structure groups 3, item series 6×ul > a 16×ul > div 4×section > div
+land by composition: parcelled 39%, continuous 20%, support 19%, media 13%, landmark 5%, navigation 3%
+buildings 91, height (tiles above sidewalk) median 3.83 p90 4.87 max 10.12 (landmark civic), footprint/blocks 73%
+uses: institutional 40%, service 27%, residential 21%, office 8%
+
+## Wikipedia (reference)
+fingerprint: size 0.84 depth 0.58 textDensity 0.96 linkDensity 0.78 airiness 0.12 imagery 0.42 interactivity 0.71 regularity 0.74 headings 0.13 darkness 0.00
+grammar (computed): style classic/modern time(own) day/golden verticality 0.81 coverage 0.80 parks 0.19 trees 0.36 traffic 0.86 avenue 3 streetLevels 1 industry 0.37 billboards 0.42
+plan: 25 territories, hero weight 0.08, dominant 0.12, structure groups 16, item series 62×ul > a 17×ul > a 31×ul > a
+land by composition: continuous 37%, archive 21%, structured 13%, parcelled 13%, landmark 8%, media 4%, navigation 2%, support 2%, interactive 1%, marker 0%
+buildings 83, height (tiles above sidewalk) median 3.45 p90 5.66 max 10.88 (landmark clocktower), footprint/blocks 69%
+uses: residential 31%, institutional 30%, commercial 17%, office 14%
+
+## Wikipedia 2 (reference-2)
+fingerprint: size 0.87 depth 0.67 textDensity 0.91 linkDensity 0.81 airiness 0.12 imagery 0.41 interactivity 0.59 regularity 1.00 headings 0.12 darkness 0.00
+grammar (computed): style classic/modern time(own) day/golden verticality 0.84 coverage 0.79 parks 0.19 trees 0.36 traffic 0.89 avenue 3 streetLevels 1 industry 0.37 billboards 0.41
+plan: 17 territories, hero weight 0.11, dominant 0.19, structure groups 26, item series 111×ul > a 19×ul > a 8×div > div
+land by composition: continuous 37%, archive 31%, landmark 11%, media 7%, parcelled 7%, structured 4%, navigation 2%, support 2%, interactive 1%, marker 0%
+buildings 72, height (tiles above sidewalk) median 3.83 p90 5.47 max 11.88 (landmark clocktower), footprint/blocks 69%
+uses: institutional 32%, residential 31%, office 17%, commercial 11%
+
+## NASA (media)
+fingerprint: size 0.56 depth 0.46 textDensity 0.24 linkDensity 0.32 airiness 0.46 imagery 1.00 interactivity 1.00 regularity 0.49 headings 0.49 darkness 0.00
+grammar (computed): style modern/soft time(own) day/golden verticality 0.46 coverage 0.36 parks 0.67 trees 0.57 traffic 0.36 avenue 2 streetLevels 2 industry 0.50 billboards 1.00
+plan: 16 territories, hero weight 0.04, dominant 0.21, structure groups 2, item series 7×ul > a 6×ul > a 7×div > div
+land by composition: media 44%, support 16%, interactive 14%, parcelled 10%, continuous 7%, landmark 4%, navigation 4%, marker 0%
+buildings 79, height (tiles above sidewalk) median 2.83 p90 8.62 max 10.62 (landmark civic), footprint/blocks 57%
+uses: office 32%, service 24%, kiosk 18%, residential 13%
+
+## Linear (saas)
+fingerprint: size 0.81 depth 0.71 textDensity 0.35 linkDensity 0.10 airiness 0.51 imagery 1.00 interactivity 1.00 regularity 0.46 headings 0.09 darkness 1.00
+grammar (computed): style modern/soft time(own) night verticality 0.63 coverage 0.42 parks 0.69 trees 0.59 traffic 0.11 avenue 2 streetLevels 2 industry 0.00 billboards 1.00
+plan: 17 territories, hero weight 0.11, dominant 0.17, structure groups 9, item series 11×div > div 4×div > a 3×section > div
+land by composition: continuous 38%, interactive 25%, media 17%, landmark 11%, support 6%, navigation 2%
+buildings 75, height (tiles above sidewalk) median 3.33 p90 6.06 max 14.12 (landmark podiumTower), footprint/blocks 57%
+uses: kiosk 31%, residential 29%, office 25%, service 12%
+
+## Python Docs (docs)
+fingerprint: size 0.96 depth 0.33 textDensity 0.60 linkDensity 0.07 airiness 0.07 imagery 0.03 interactivity 0.07 regularity 1.00 headings 0.03 darkness 0.88
+grammar (computed): style modern/tech time(own) night verticality 0.68 coverage 0.74 parks 0.17 trees 0.15 traffic 0.08 avenue 2 streetLevels 2 industry 0.40 billboards 0.03
+plan: 10 territories, hero weight 0.00, dominant 0.50, structure groups 0, item series 8×tbody > tr 49×tr > p 21×section > dl
+land by composition: continuous 86%, parcelled 10%, structured 4%, navigation 1%, support 0%, marker 0%
+buildings 35, height (tiles above sidewalk) median 4.95 p90 6.94 max 7.06 (landmark -), footprint/blocks 92%
+uses: residential 60%, commercial 29%, institutional 6%, service 3%
+
+## inner street segments (24): interior / frontier, and what faces them
+
+IKEA         interior 15/24  frontier  9/24  facing: grid 76%, support 10%, landmark 10%, parcelled 3%
+Paul Graham  interior 21/24  frontier  3/24  facing: parcelled 100%
+craigslist   interior 11/24  frontier 13/24  facing: parcelled 87%, navigation 13%, support 1%
+GOV.UK       interior  9/24  frontier 15/24  facing: parcelled 44%, continuous 21%, support 17%, media 11%
+Wikipedia    interior  4/24  frontier 20/24  facing: continuous 40%, archive 22%, structured 11%, landmark 10%
+Wikipedia 2  interior  6/24  frontier 18/24  facing: continuous 36%, archive 33%, landmark 15%, parcelled 7%
+NASA         interior  5/24  frontier 19/24  facing: media 40%, interactive 14%, support 14%, parcelled 12%
+Linear       interior  6/24  frontier 18/24  facing: continuous 35%, interactive 23%, media 20%, landmark 15%
+Python Docs  interior 10/24  frontier 14/24  facing: continuous 82%, parcelled 12%, structured 4%, navigation 1%
