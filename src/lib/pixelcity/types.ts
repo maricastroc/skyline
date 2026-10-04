@@ -180,4 +180,7 @@ export interface PixelCity {
   smokestacks: Array<[number, number, number]>;
   /** Seconds until the build-up animation settles. */
   buildDuration: number;
+  /** Environment beyond the palette (art direction C4): the City View haze band, as fractions of
+   *  the frame height where land starts and finishes dissolving into the sky. Absent: 0.64 → 0.97. */
+  atmosphere?: { haze: [number, number] };
 }

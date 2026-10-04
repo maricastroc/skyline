@@ -26,6 +26,7 @@ import type { Comp, Plan, Territory } from "./plan";
 import { bench, bin, bollards, busShelter, CARRIAGEWAY, hydrant, laneOffset, mailbox, meter, newsBoxes, SIDEWALK_H, streetLamp, streetSurfaces, streetTree, trafficSignal, uniformStreetSurfaces, type Grid } from "./street";
 import { planStreets, RANK, type StreetPlan, type StreetRole, type StreetSegment } from "./street-roles";
 import { lifeCrossings, lifeSidewalks, lifeTraffic, planStreetLife, type Built, type StreetLife } from "./street-life";
+import { applyEnvironment, planEnvironment, type Environment } from "./atmosphere";
 import { allocate, BLOCKS, LOTS, N, type Allocation } from "./territory";
 import { vehicle, type VehicleType } from "./vehicles";
 
@@ -113,6 +114,11 @@ export interface KitOptions {
   artDirection?: boolean;
   /** Art direction C3, street life (default on). Off: C1's streets with the stamped street layer (kit-v10). */
   streetLife?: boolean;
+  /**
+   * Art direction C4, atmosphere (default on). Off: the shared sky, haze and light of each time of
+   * day (kit-v11). The layers switch off in order: no C3 means no C4, no art direction means none.
+   */
+  atmosphere?: boolean;
   /** Validation: filled with every allocation and building decision (no effect on the output). */
   trace?: KitTrace;
 }
@@ -157,6 +163,8 @@ export interface KitTrace {
   scene?: { furniture: [number, number]; crossings: [number, number]; traffic: [number, number] };
   /** Art direction, C3: the life of every sidewalk and carriageway, and why (scene only). */
   life?: StreetLife;
+  /** Art direction, C4: the page's environment (air, tint, light) and why (sky, haze, light only). */
+  environment?: Environment;
 }
 
 export const newTrace = (): KitTrace => ({ pieces: [], buildings: [], landmark: null, frontage: [], range: [0, 0] });
@@ -343,9 +351,13 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
   const f2 = kit.parts.length;
   if (life) lifeTraffic(kit, life, LINES, R, palette);
   else traffic(kit, LINES, R, P_, palette, roles);
+  // Art direction C4: the page's environment over the time of day (sky, haze, light; no part reads it).
+  const env = life && o.atmosphere !== false ? planEnvironment(fp, grammar, alloc) : null;
+  const lit = env ? applyEnvironment(palette, env) : null;
   if (trace) {
     trace.scene = { furniture: [f0, f1], crossings: [f1, f2], traffic: [f2, kit.parts.length] };
     if (life) trace.life = life;
+    if (env) trace.environment = env;
   }
 
   let parts = kit.parts;
@@ -379,7 +391,7 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
     rail: null,
     entrance: [0, 0],
     grammar,
-    palette,
+    palette: lit ? lit.palette : palette,
     size: { w: extent * 0.6, d: extent * 0.6 },
     parts,
     roads: [],
@@ -390,6 +402,7 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
     maxHeight,
     smokestacks: o.flat || o.provenance ? [] : kit.smoke,
     buildDuration: 0,
+    ...(lit ? { atmosphere: { haze: lit.haze } } : {}),
   };
 }
 

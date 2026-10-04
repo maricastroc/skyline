@@ -871,8 +871,9 @@ function Rig({
       const viewH = size.height / cam.zoom;
       // View depth of the ground under the screen row at height v (0 = bottom, 1 = top).
       const groundDepth = (v: number) => 600 + (target.y + Math.cos(el) * (v - 0.5) * viewH) / Math.sin(el);
-      fog.near = groundDepth(1.6 + (0.64 - 1.6) * s.haze);
-      fog.far = groundDepth(2.1 + (0.97 - 2.1) * s.haze);
+      const [hn, hf] = city.atmosphere?.haze ?? [0.64, 0.97];
+      fog.near = groundDepth(1.6 + (hn - 1.6) * s.haze);
+      fog.far = groundDepth(2.1 + (hf - 2.1) * s.haze);
     } else {
       fog.near = 1e6;
       fog.far = 1e6 + 1;
