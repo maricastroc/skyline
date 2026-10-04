@@ -1,0 +1,402 @@
+// FROZEN: art direction v1, final baseline (C1 street roles, C3 street life, C4 atmosphere). Do not edit.
+/**
+ * Art Direction Layer, C3 — street life. Downstream of the frozen foundation and of C1: it reads
+ * what fronts each sidewalk (the ground floor the Surface Grammar gave each building, or the open
+ * ground of a square), the role C1 gave the street, and two page measures the grammar already
+ * derives, and decides how much life each stretch of street has. It replaces the stamp (the same
+ * trees, lamps, benches, people and cars in every city) with three intensities:
+ *
+ *   footfall  people on a sidewalk ......... how active the frontage is (ground-floor transparency:
+ *                                            shops and lobbies open to the street, homes and service
+ *                                            doors closed to it; squares are open) × how walkable
+ *                                            the street is (C1 role)
+ *   canopy    street trees ................. how much room the street has for a row of trees (C1
+ *                                            role) × how green the frontage and the page are (homes,
+ *                                            civic fronts and yards take trees, shopfronts and loading
+ *                                            bays keep the curb clear; the page's whitespace)
+ *   traffic   cars on a carriageway ........ how much the street carries (C1 role) × how much the
+ *                                            page moves (its link density: links are circulation)
+ *
+ * Kinds of furniture follow the lot they stand in front of (news boxes and bins at shops,
+ * hydrants and mailboxes at homes, bollards at civic fronts…); their number follows footfall.
+ * Lamps follow the street role (a boulevard is lit in a regular rhythm, a lane sparsely).
+ * Every count is a function of the page. Where things stand within a count is decoration: it is
+ * drawn from the seed and from the territories along the street (so two pages never repeat the
+ * same cars or benches in the same places), never from the counts of another page.
+ */
+import type { RGB } from "../../city/types";
+import type { CityGrammar } from "../grammar";
+import type { Part, PixelCity } from "../types";
+import type { Kit } from "./core";
+import type { Comp, Plan } from "./plan";
+import { bench, bin, bollards, busShelter, CARRIAGEWAY, hydrant, laneOffset, mailbox, meter, newsBoxes, SIDEWALK_H, streetLamp, streetTree } from "./street";
+import type { StreetPlan, StreetRole } from "./street-roles";
+import type { Anatomy, GroundKind, Use } from "./surface";
+import type { Allocation } from "./territory";
+import { N } from "./territory";
+import { vehicle, type VehicleType } from "./vehicles";
+
+/** What fronts a sidewalk, lot by lot: a building's ground floor, a square, or a yard. */
+export type FrontKind = GroundKind | "square" | "yard";
+export interface Front {
+  kind: FrontKind;
+  /** How open the frontage is to the street, 0..1 (the ground floor's transparency). */
+  activity: number;
+  /** How readily the curb in front takes a tree, 0..1. */
+  plantable: number;
+}
+
+/** One sidewalk: block (i, j), side 0 +z · 1 +x · 2 −z · 3 −x, and the street segment it faces. */
+export interface LifeSide {
+  block: [number, number];
+  side: number;
+  axis: "x" | "z";
+  line: number;
+  span: number;
+  role: StreetRole;
+  /** The four lots along the side, in the side's own direction. */
+  front: Front[];
+  footfall: number;
+  canopy: number;
+  /** A bus stop: the busier side of a boulevard, where enough people walk. */
+  busStop: boolean;
+  /** Placement salt: the territories along the side (decoration only). */
+  salt: number;
+  why: string;
+}
+export interface LifeSegment {
+  axis: "x" | "z";
+  line: number;
+  span: number;
+  role: StreetRole;
+  traffic: number;
+  /** Share of service / loading frontage along it (delivery vans). */
+  service: number;
+  /** Placement salt: the territories on both sides (decoration only). */
+  salt: number;
+}
+export interface StreetLife {
+  /** Page measures the grammar derives from the fingerprint (unused by the foundation's kit). */
+  movement: number;
+  green: number;
+  sides: LifeSide[];
+  segments: LifeSegment[];
+}
+
+/* ───────────────────────── the grammar ───────────────────────── */
+
+/** How much each role carries (cars) — C1's carriageway, as capacity. */
+export const CAPACITY: Record<StreetRole, number> = { primary: 1, street: 0.65, lane: 0.3, pedestrian: 0 };
+/** How walkable each role is: a promenade or a shared lane draws people, a boulevard less. */
+export const WALK: Record<StreetRole, number> = { primary: 0.85, street: 1, lane: 1.15, pedestrian: 1.3 };
+/** Room for a row of trees: the boulevard's sidewalks and median, a promenade's band; a shared lane has no tree pits. */
+export const ROOM: Record<StreetRole, number> = { primary: 1, street: 0.6, lane: 0, pedestrian: 0.8 };
+/** Lamp spacing along a side (tiles). */
+const LAMP: Record<StreetRole, number> = { primary: 3.4, street: 4.4, lane: 5.6, pedestrian: 3.4 };
+
+const PLANTABLE: Record<FrontKind, number> = { domestic: 1, civic: 0.8, lobby: 0.5, blank: 0.4, storefront: 0.3, arcade: 0.2, service: 0.1, loading: 0, square: 0.8, yard: 1 };
+const USE_ACTIVITY: Record<Use, number> = { commercial: 0.8, kiosk: 0.9, office: 0.6, residential: 0.25, civic: 0.3, institutional: 0.3, service: 0.1, industrial: 0.05 };
+const USE_GROUND: Record<Use, GroundKind> = { commercial: "storefront", kiosk: "storefront", office: "lobby", residential: "domestic", civic: "civic", institutional: "civic", service: "service", industrial: "loading" };
+const OPEN = new Set<Comp>(["media", "interactive", "landmark", "marker"]);
+
+const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+/** FNV-1a of a string, folded to a small positive integer (a placement salt). */
+const hash = (str: string) => {
+  let h = 2166136261;
+  for (let k = 0; k < str.length; k++) h = Math.imul(h ^ str.charCodeAt(k), 16777619);
+  return (h >>> 0) % 1000003;
+};
+const mean = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
+
+/** A building as the street sees it: its footprint on the ground and its ground floor. */
+export interface Built {
+  parts: [number, number];
+  anatomy: Anatomy[];
+  use: Use;
+}
+
+/** The segment a block side faces: side 0 (+z) and 2 (−z) face streets along x, 1 (+x) and 3 (−x) along z. */
+export const facing = (i: number, j: number, si: number): { axis: "x" | "z"; line: number; span: number } =>
+  si === 0 ? { axis: "x", line: j + 1, span: i } : si === 2 ? { axis: "x", line: j, span: i } : si === 1 ? { axis: "z", line: i + 1, span: j } : { axis: "z", line: i, span: j };
+
+/** The four lots along a block side, in the side's local direction (see Kit.frame). */
+const sideLots = (i: number, j: number, si: number): Array<[number, number]> =>
+  [0, 1, 2, 3].map((k) =>
+    si === 0 ? [4 * i + k, 4 * j + 3] : si === 1 ? [4 * i + 3, 4 * j + 3 - k] : si === 2 ? [4 * i + 3 - k, 4 * j] : [4 * i, 4 * j + k],
+  );
+
+export function planStreetLife(o: {
+  plan: Plan;
+  alloc: Allocation;
+  roles: StreetPlan;
+  grammar: CityGrammar;
+  built: Built[];
+  parts: Part[];
+  lines: number[];
+  block: number;
+}): StreetLife {
+  const { plan, alloc, roles, grammar, built, parts, lines, block: B } = o;
+  const keyOf = (X: number, Y: number) => {
+    const sg = alloc.owner[X * N + Y];
+    return sg >= 0 ? plan.territories[alloc.segments[sg].territory].key : "";
+  };
+  // Footprints at street level (what a passer-by walks past).
+  const boxes = built.map((b) => {
+    let x0 = Infinity;
+    let x1 = -Infinity;
+    let z0 = Infinity;
+    let z1 = -Infinity;
+    for (let k = b.parts[0]; k < b.parts[1]; k++) {
+      const q = parts[k];
+      if (q.mesh === "sign" || q.mesh === "sprite" || q.mesh === "glow") continue;
+      if (q.y > SIDEWALK_H + 0.6) continue;
+      const r = Math.max(q.w, q.d) / 2;
+      x0 = Math.min(x0, q.x - r);
+      x1 = Math.max(x1, q.x + r);
+      z0 = Math.min(z0, q.z - r);
+      z1 = Math.max(z1, q.z + r);
+    }
+    return { x0, x1, z0, z1, b };
+  });
+  const blockCentre = (i: number, j: number) => [(lines[i] + lines[i + 1]) / 2, (lines[j] + lines[j + 1]) / 2];
+  const frontOf = (X: number, Y: number, si: number): Front => {
+    const [bx, bz] = blockCentre(X >> 2, Y >> 2);
+    // The frontage point: the lot's middle, a step in from the block edge on this side.
+    let x = bx - B / 2 + 3.5 * (X & 3) + 1.75;
+    let z = bz - B / 2 + 3.5 * (Y & 3) + 1.75;
+    const inset = 1.75 - 0.9;
+    if (si === 0) z += inset;
+    else if (si === 2) z -= inset;
+    else if (si === 1) x += inset;
+    else x -= inset;
+    const hit = boxes.find((q) => x >= q.x0 && x <= q.x1 && z >= q.z0 && z <= q.z1);
+    if (hit) {
+      const g = hit.b.anatomy[0]?.ground;
+      const kind: FrontKind = g ? g.kind : USE_GROUND[hit.b.use];
+      return { kind, activity: g ? g.transparency : USE_ACTIVITY[hit.b.use], plantable: PLANTABLE[kind] };
+    }
+    const s = alloc.owner[X * N + Y];
+    const open = s >= 0 && OPEN.has(alloc.segments[s].comp);
+    return open ? { kind: "square", activity: 0.8, plantable: PLANTABLE.square } : { kind: "yard", activity: 0.15, plantable: PLANTABLE.yard };
+  };
+
+  const sides: LifeSide[] = [];
+  for (let i = 0; i < 4; i++)
+    for (let j = 0; j < 4; j++)
+      for (let si = 0; si < 4; si++) {
+        const f = facing(i, j, si);
+        const role = roles.role(f.axis, f.line, f.span);
+        const lots = sideLots(i, j, si);
+        const front = lots.map(([X, Y]) => frontOf(X, Y, si));
+        const act = mean(front.map((x) => x.activity));
+        const plant = mean(front.map((x) => x.plantable));
+        const footfall = clamp01(act * WALK[role]);
+        const canopy = clamp01(ROOM[role] * (0.5 * grammar.parks + 0.5 * plant));
+        const kinds = [...new Set(front.map((x) => x.kind))].join("/");
+        sides.push({
+          block: [i, j],
+          side: si,
+          ...f,
+          role,
+          front,
+          footfall,
+          canopy,
+          busStop: false,
+          salt: hash(`${lots.map(([X, Y]) => keyOf(X, Y)).join("|")}#${i},${j},${si}`),
+          why: `${role}: front ${kinds} (activity ${act.toFixed(2)}, plantable ${plant.toFixed(2)}) → footfall ${act.toFixed(2)}×${WALK[role]} = ${footfall.toFixed(2)}, canopy ${ROOM[role]}×(½·${grammar.parks.toFixed(2)} + ½·${plant.toFixed(2)}) = ${canopy.toFixed(2)}`,
+        });
+      }
+  // Bus stops: on inner boulevards, the busier side, if at least moderately walked.
+  for (const axis of ["x", "z"] as const)
+    for (let line = 1; line < lines.length - 1; line++)
+      for (let span = 0; span < lines.length - 1; span++) {
+        if (roles.role(axis, line, span) !== "primary") continue;
+        const pair = sides.filter((s) => s.axis === axis && s.line === line && s.span === span);
+        const best = pair.reduce((m, s) => (s.footfall > m.footfall ? s : m), pair[0]);
+        if (best && best.footfall >= 0.45) best.busStop = true;
+      }
+  const segments: LifeSegment[] = [];
+  for (const axis of ["x", "z"] as const)
+    for (let line = 0; line < lines.length; line++)
+      for (let span = 0; span < lines.length - 1; span++) {
+        const role = roles.role(axis, line, span);
+        const along = sides.filter((s) => s.axis === axis && s.line === line && s.span === span);
+        const service = mean(along.flatMap((s) => s.front.map((x) => (x.kind === "service" || x.kind === "loading" ? 1 : 0))));
+        segments.push({ axis, line, span, role, traffic: CAPACITY[role] * (0.25 + 0.75 * grammar.traffic), service, salt: hash(`${along.map((s) => s.salt).join("|")}#${axis}${line}.${span}`) });
+      }
+  return { movement: grammar.traffic, green: grammar.parks, sides, segments };
+}
+
+/* ───────────────────────── expression ───────────────────────── */
+
+/** Evenly spaced positions in [a, b] (n ≥ 1). */
+const spread = (n: number, a: number, b: number) => (n <= 0 ? [] : n === 1 ? [(a + b) / 2] : Array.from({ length: n }, (_, k) => a + ((b - a) * k) / (n - 1)));
+
+/**
+ * Sidewalks: lamps by role, trees by canopy, furniture by footfall and by the lot in front, people
+ * by footfall; a bus stop on the busier side of a boulevard where enough people walk. Drawn in each
+ * side's curb frame (local x along the side, +z toward the street, y = 0 on the sidewalk).
+ */
+export function lifeSidewalks(kit: Kit, life: StreetLife, lines: number[], B: number, S: number, palette: PixelCity["palette"]) {
+  const H = 1.3;
+  for (const sd of life.sides) {
+    const [i, j] = sd.block;
+    const bx = (lines[i] + lines[i + 1]) / 2;
+    const bz = (lines[j] + lines[j + 1]) / 2;
+    const at: Array<[number, number, number]> = [
+      [bx, bz + B / 2, 0],
+      [bx + B / 2, bz, Math.PI / 2],
+      [bx, bz - B / 2, Math.PI],
+      [bx - B / 2, bz, -Math.PI / 2],
+    ];
+    const [sx, sz, rot] = at[sd.side];
+    const seed = sd.salt;
+    const ped = sd.role === "pedestrian";
+    // The line of lamps and trees: at the curb (wherever C1 put it), or a row on the promenade.
+    const zt = ped ? S + 0.75 : S + (H - CARRIAGEWAY[sd.role]) - 0.32;
+    const lotAt = (u: number) => sd.front[Math.max(0, Math.min(3, Math.floor((u + B / 2) / 3.5)))];
+    kit.frame(
+      sx,
+      sz,
+      rot,
+      () => {
+        const lim = B / 2 - 0.9;
+        // A regular rhythm per role, its phase per street.
+        const phase = (kit.rand(seed, 1) - 0.5) * Math.min(1.2, LAMP[sd.role] / 3);
+        const lamps = spread(Math.max(2, Math.round((2 * lim) / LAMP[sd.role]) + 1), -lim, lim).map((u) => Math.max(-lim, Math.min(lim, u + phase)));
+        for (const u of lamps) streetLamp(kit, u, zt);
+        const taken = [...lamps];
+        const free = (u: number, gap = 0.5) => taken.every((t) => Math.abs(t - u) >= gap);
+        // Trees: a regular row on a boulevard (an avenue), loosely spaced elsewhere.
+        const nTrees = Math.round(13 * sd.canopy);
+        for (const [k, u0] of spread(nTrees, -lim + 0.3, lim - 0.3).entries()) {
+          let u = sd.role === "primary" ? u0 : u0 + (kit.rand(seed, 900 + k) - 0.5) * 0.6;
+          if (!free(u)) u += u > 0 ? -0.5 : 0.5;
+          if (!free(u, 0.4)) continue;
+          taken.push(u);
+          streetTree(kit, u, zt - 0.05, seed * 5 + k);
+        }
+        // Furniture: as many pieces as the footfall asks for, each of the kind its lot calls for.
+        const nFurn = Math.round(5 * sd.footfall);
+        for (let k = 0; k < nFurn; k++) {
+          let u = -lim + kit.rand(seed, 300 + k) * 2 * lim;
+          for (let t = 0; t < 6 && !free(u, 0.45); t++) u = -lim + kit.rand(seed, 310 + k * 7 + t) * 2 * lim;
+          if (!free(u, 0.45)) continue;
+          taken.push(u);
+          const kind = lotAt(u).kind;
+          const r = kit.rand(seed, 330 + k);
+          const traffic = sd.role === "primary" || sd.role === "street";
+          if (kind === "storefront" || kind === "arcade") {
+            if (r < 0.3) newsBoxes(kit, u, 0.3);
+            else if (r < 0.55) bin(kit, u, zt);
+            else if (r < 0.8 || !traffic) bench(kit, u, zt - 0.15, Math.PI);
+            else meter(kit, u, zt);
+          } else if (kind === "lobby") {
+            if (r < 0.4) bench(kit, u, zt - 0.15, Math.PI);
+            else if (r < 0.7) bin(kit, u, zt);
+            else bollards(kit, u, zt);
+          } else if (kind === "domestic" || kind === "yard") {
+            if (r < 0.45) hydrant(kit, u, zt);
+            else if (r < 0.7) mailbox(kit, u, 0.3);
+            else bin(kit, u, zt);
+          } else if (kind === "civic") {
+            if (r < 0.55) bollards(kit, u, zt);
+            else bench(kit, u, zt - 0.15, Math.PI);
+          } else if (kind === "square") {
+            if (r < 0.65) bench(kit, u, zt - 0.15, Math.PI);
+            else bin(kit, u, zt);
+          } else hydrant(kit, u, zt);
+        }
+        // People: on the sidewalk, and on the promenade's band.
+        const zone: Array<[number, number, number]> = [[0.3, Math.max(0.45, zt - 0.2), Math.round(9 * sd.footfall)]];
+        if (ped) zone.push([S + 0.2, S + H - 0.1, Math.round(6 * sd.footfall)]);
+        zone.forEach(([z0, z1, n], zi) => {
+          for (let k = 0; k < n; k++) {
+            const u = -B / 2 + 0.4 + kit.rand(seed, 500 + zi * 50 + k) * (B - 0.8);
+            const z = z0 + kit.rand(seed, 560 + zi * 50 + k) * (z1 - z0);
+            const pr = kit.rand(seed, 620 + zi * 50 + k);
+            kit.person(u, z, { variant: Math.floor(kit.rand(seed, 680 + zi * 50 + k) * 48), pose: pr < 0.4 ? "walkA" : pr < 0.75 ? "walkB" : "stand", flip: kit.rand(seed, 740 + zi * 50 + k) < 0.5 });
+          }
+        });
+        if (sd.busStop) {
+          busShelter(kit, 0, 0.62, palette.accents[1], "M5");
+          for (let k = 0; k < 1 + Math.round(2 * sd.footfall); k++) kit.person(-0.45 + k * 0.32, 0.55 + (k % 2) * 0.12, { variant: 7 + k * 5, pose: k === 1 ? "sit" : "stand", flip: k === 2 });
+        }
+      },
+      SIDEWALK_H,
+    );
+  }
+}
+
+/**
+ * Crossings: people waiting at each corner, as many as the two sidewalks meeting there carry;
+ * where a busy corner meets a zebra, someone is crossing.
+ */
+export function lifeCrossings(kit: Kit, life: StreetLife, roles: StreetPlan, lines: number[]) {
+  const H = 1.3;
+  const side = (i: number, j: number, si: number) => life.sides.find((s) => s.block[0] === i && s.block[1] === j && s.side === si);
+  for (const [ci, cx] of lines.entries())
+    for (const [cj, cz] of lines.entries())
+      for (const sx of [-1, 1])
+        for (const sz of [-1, 1]) {
+          const bi = sx > 0 ? ci : ci - 1;
+          const bj = sz > 0 ? cj : cj - 1;
+          if (bi < 0 || bj < 0 || bi > 3 || bj > 3) continue;
+          // The block's sides that meet at this corner: the one facing the street along x, the one along z.
+          const a = side(bi, bj, sz > 0 ? 2 : 0);
+          const b = side(bi, bj, sx > 0 ? 3 : 1);
+          const f = (a ? a.footfall : 0) / 2 + (b ? b.footfall : 0) / 2;
+          const seed = ((a ? a.salt : 7) * 31 + (b ? b.salt : 11) + (sx + 1) * 3 + (sz + 1)) % 1000003;
+          const n = Math.round(3 * f);
+          for (let k = 0; k < n; k++)
+            kit.person(cx + sx * (H + 0.35 + kit.rand(seed, k) * 0.5), cz + sz * (H + 0.35 + kit.rand(seed, k + 10) * 0.5), { variant: Math.floor(kit.rand(seed, k + 20) * 48), pose: "stand", flip: kit.rand(seed, k + 30) < 0.5, y: SIDEWALK_H });
+          // Someone on the zebra across the street along x, east or west of the crossing.
+          const r = roles.role("x", cj, sx > 0 ? ci : ci - 1);
+          if (f >= 0.5 && (r === "street" || r === "primary"))
+            kit.person(cx + sx * (H + 0.4), cz + sz * 0.35, { variant: Math.floor(kit.rand(seed, 40) * 48), pose: kit.rand(seed, 41) < 0.5 ? "walkA" : "walkB", flip: sz < 0, y: 0.05 });
+        }
+}
+
+/** The lane next to a sidewalk (side ±1 of its street) and the stop's place along the street. */
+const nearLane = (sd: LifeSide, lines: number[]) => ({
+  side: sd.side === 0 || sd.side === 1 ? -1 : 1,
+  t: sd.axis === "x" ? (lines[sd.block[0]] + lines[sd.block[0] + 1]) / 2 : (lines[sd.block[1]] + lines[sd.block[1] + 1]) / 2,
+});
+
+/**
+ * Traffic: on each carriageway, a share of the slots (every 1.25 tiles, as before) proportional to
+ * the segment's traffic, the slots themselves picked by the seed; delivery vans in proportion to the
+ * service frontage; a bus waiting at each bus stop.
+ */
+export function lifeTraffic(kit: Kit, life: StreetLife, lines: number[], R: number, palette: PixelCity["palette"]) {
+  const carColors: RGB[] = [palette.accents[0], palette.accents[1], [0.92, 0.92, 0.9], [0.2, 0.22, 0.26], [0.75, 0.2, 0.18], [0.55, 0.6, 0.66]];
+  const types: VehicleType[] = ["sedan", "hatch", "sedan", "van", "hatch", "taxi"];
+  for (const sg of life.segments) {
+    const c = lines[sg.line];
+    const a = lines[sg.span] + R / 2 + 1.6;
+    const b = lines[sg.span + 1] - R / 2 - 1.6;
+    const base = sg.salt;
+    const stops = life.sides.filter((s) => s.busStop && s.axis === sg.axis && s.line === sg.line && s.span === sg.span).map((s) => nearLane(s, lines));
+    for (const side of [-1, 1]) {
+      const off = laneOffset(sg.role, side);
+      if (off === null) continue;
+      const stop = stops.find((x) => x.side === side);
+      if (stop) {
+        if (sg.axis === "x") vehicle(kit, stop.t, c + off, side > 0 ? 0 : Math.PI, "bus", palette.accents[1]);
+        else vehicle(kit, c + off, stop.t, side > 0 ? -Math.PI / 2 : Math.PI / 2, "bus", palette.accents[1]);
+      }
+      const slots: number[] = [];
+      for (let t = a; t < b; t += 1.25) if (!stop || Math.abs(t - stop.t) > 1.9) slots.push(t);
+      const n = Math.round(slots.length * 0.85 * sg.traffic);
+      const order = slots.map((t, k) => ({ t, k, r: kit.rand(base + (side + 1) * 7, k) })).sort((x, y) => x.r - y.r).slice(0, n);
+      for (const { t, k } of order) {
+        const v = base + (side + 1) * 7 + k;
+        let type = kit.pick(types, v, 4);
+        if (kit.rand(v, 8) < sg.service) type = kit.rand(v, 9) < 0.6 ? "van" : "truck";
+        const color = type === "taxi" ? ([0.98, 0.78, 0.18] as RGB) : kit.pick(carColors, v, 5);
+        if (sg.axis === "x") vehicle(kit, t, c + off, side > 0 ? 0 : Math.PI, type, color);
+        else vehicle(kit, c + off, t, side > 0 ? -Math.PI / 2 : Math.PI / 2, type, color);
+      }
+    }
+  }
+}

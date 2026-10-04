@@ -14,6 +14,7 @@ import { realPage as realPageV8 } from "@/lib/pixelcity/kit-v8/real-page";
 import { realPage as realPageV9 } from "@/lib/pixelcity/kit-v9/real-page";
 import { realPage as realPageV10 } from "@/lib/pixelcity/kit-v10/real-page";
 import { realPage as realPageV11 } from "@/lib/pixelcity/kit-v11/real-page";
+import { realPage as realPageV12 } from "@/lib/pixelcity/kit-v12/real-page";
 import { forceStyle, STYLES } from "@/lib/pixelcity/diagnostics";
 import { groupFixture } from "@/lib/pixelcity/kit/fixtures";
 import { vacantFingerprint } from "@/lib/pixelcity/vacant-fingerprint";
@@ -34,7 +35,8 @@ const PROFILES: ProfileName[] = ["mixed", "portal", "product", "reference"];
  *   ?v=4 semantic hygiene pass · ?v=5 architectural surface grammar · ?v=6 openings depth ·
  *   ?v=7 intra-territory composition · ?v=8 simple-index program experiment ·
  *   ?v=9 semantic / architectural foundation v1 · ?v=10 art direction C1, street roles ·
- *   ?v=11 art direction C3, street life (all frozen) · default: current
+ *   ?v=11 art direction C3, street life · ?v=12 art direction v1, final (C4 atmosphere) (all frozen) ·
+ *   default: current
  *   ?style=classic|retro|modern|soft|tech (diagnostic: the same page forced into a style)
  *   ?groups=60,60 (fixture: one parcelled territory whose content is in groups of these sizes)
  */
@@ -43,7 +45,7 @@ export default async function KitPage({ searchParams }: PageProps<"/pixel/kit">)
   const profile = one(sp.profile) as ProfileName;
   const time = one(sp.time);
   const seed = Number(one(sp.seed));
-  const v = one(sp.v) === "1" ? 1 : one(sp.v) === "2" ? 2 : one(sp.v) === "3" ? 3 : one(sp.v) === "4" ? 4 : one(sp.v) === "5" ? 5 : one(sp.v) === "6" ? 6 : one(sp.v) === "7" ? 7 : one(sp.v) === "8" ? 8 : one(sp.v) === "9" ? 9 : one(sp.v) === "10" ? 10 : one(sp.v) === "11" ? 11 : 12;
+  const v = one(sp.v) === "1" ? 1 : one(sp.v) === "2" ? 2 : one(sp.v) === "3" ? 3 : one(sp.v) === "4" ? 4 : one(sp.v) === "5" ? 5 : one(sp.v) === "6" ? 6 : one(sp.v) === "7" ? 7 : one(sp.v) === "8" ? 8 : one(sp.v) === "9" ? 9 : one(sp.v) === "10" ? 10 : one(sp.v) === "11" ? 11 : one(sp.v) === "12" ? 12 : 13;
   const common = {
     time: time === "night" || time === "golden" || time === "day" ? (time as TimeOfDay) : undefined,
     people: one(sp.people) === "voxel" ? ("voxel" as const) : ("sprite" as const),
@@ -107,16 +109,20 @@ export default async function KitPage({ searchParams }: PageProps<"/pixel/kit">)
       const page = realPageV11(snap, perturbation);
       return <KitView {...common} fp={page.fp} source={{ v: 11, profile: page.plan }} />;
     }
+    if (v === 12) {
+      const page = realPageV12(snap, perturbation);
+      return <KitView {...common} fp={page.fp} source={{ v: 12, profile: page.plan }} />;
+    }
     const page = realPage(snap, perturbation);
     // Diagnostic (end-to-end validation): the same page forced into another style.
     const st = one(sp.style) as ArchStyle;
-    if (STYLES.includes(st)) return <KitView {...common} fp={forceStyle(page.fp, st)} source={{ v: 12, profile: { ...page.plan, identity: forceStyle(page.plan.identity, st) } }} />;
-    return <KitView {...common} fp={page.fp} source={{ v: 12, profile: page.plan }} />;
+    if (STYLES.includes(st)) return <KitView {...common} fp={forceStyle(page.fp, st)} source={{ v: 13, profile: { ...page.plan, identity: forceStyle(page.plan.identity, st) } }} />;
+    return <KitView {...common} fp={page.fp} source={{ v: 13, profile: page.plan }} />;
   }
   // Fixture (intra-territory composition): one parcelled territory, its content in groups of these sizes.
   const groups = one(sp.groups)?.split(",").map(Number);
-  if (groups && groups.length && groups.every((g) => Number.isInteger(g) && g > 0)) return <KitView {...common} fp={vacantFingerprint()} source={{ v: 12, profile: groupFixture(groups, vacantFingerprint()) }} />;
+  if (groups && groups.length && groups.every((g) => Number.isInteger(g) && g > 0)) return <KitView {...common} fp={vacantFingerprint()} source={{ v: 13, profile: groupFixture(groups, vacantFingerprint()) }} />;
   const name = PROFILES.includes(profile) ? profile : "mixed";
-  const source: KitSource = v === 1 ? { v: 1 } : v === 2 ? { v: 2, profile: name } : v === 3 ? { v: 3, profile: name } : v === 4 ? { v: 4, profile: name } : v === 5 ? { v: 5, profile: name } : v === 6 ? { v: 6, profile: name } : v === 7 ? { v: 7, profile: name } : v === 8 ? { v: 8, profile: name } : v === 9 ? { v: 9, profile: name } : v === 10 ? { v: 10, profile: name } : v === 11 ? { v: 11, profile: name } : { v: 12, profile: name };
+  const source: KitSource = v === 1 ? { v: 1 } : v === 2 ? { v: 2, profile: name } : v === 3 ? { v: 3, profile: name } : v === 4 ? { v: 4, profile: name } : v === 5 ? { v: 5, profile: name } : v === 6 ? { v: 6, profile: name } : v === 7 ? { v: 7, profile: name } : v === 8 ? { v: 8, profile: name } : v === 9 ? { v: 9, profile: name } : v === 10 ? { v: 10, profile: name } : v === 11 ? { v: 11, profile: name } : v === 12 ? { v: 12, profile: name } : { v: 13, profile: name };
   return <KitView {...common} fp={vacantFingerprint()} source={source} />;
 }
