@@ -14,6 +14,9 @@
 >   byte a byte o kit-v9;
 > - com `artDirection: false`, a cidade inteira é o kit-v9;
 > - o kit-v9 reproduz os hashes gravados no freeze.
+>
+> **Art Direction v1 congelada** sobre esta fundação: kit-v12, tag `art-direction-v1`
+> ([PIXEL_ART_DIRECTION_V1.md](PIXEL_ART_DIRECTION_V1.md)). A fundação continua congelada.
 
 ## 1. Pipeline congelado
 

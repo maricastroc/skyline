@@ -4,7 +4,9 @@
 > massing, nos prédios ou na fundação. O resultado da C3 foi congelado como **kit-v11** (`?v=11`),
 > baseline da Art Direction; o atual é `?v=12`.
 >
-> **Sem commit da C4 até a avaliação.**
+> **C4 aprovada e encerrada.** O resultado foi congelado como **kit-v12**, baseline final da
+> **Art Direction v1** ([PIXEL_ART_DIRECTION_V1.md](PIXEL_ART_DIRECTION_V1.md)). As limitações
+> do §10 ficam como backlog e não serão corrigidas nesta fase.
 
 ## Conclusão
 
@@ -164,7 +166,7 @@ Leitura:
 ## 8. Wikipedia × Wikipedia
 
 Mesmo ambiente: air 0,17 / 0,20, mesmo matiz (265°), névoa 0,55 / 0,56. A distância entre os
-dois vetores ambientais é 0,138, contra mediana de 0,828 entre os pares do corpus e 1,040 para
+dois vetores ambientais é 0,138, contra mediana de 1,186 entre os pares do corpus e 1,403 para
 Wikipedia × Paul Graham.
 
 ## 9. Ablações e regressão
@@ -179,7 +181,7 @@ Wikipedia × Paul Graham.
 | papéis da C1 e vida de rua da C3 inalterados | 14/14 |
 | ambiente independente da seed (7 / 8 / 11) · o mesmo às três horas | 14/14 · 14/14 |
 | limites de legibilidade (14 páginas × 3 horas) | 42/42 |
-| sem hostname · família · pequenas edições da página (média) | ✓ · 0,138 < 0,828 · 0,004 |
+| sem hostname · família · pequenas edições da página (média) | ✓ · 0,138 < 1,186 · 0,004 |
 | `test:foundation`, `test:streets`, `test:life` e as seis suítes anteriores | todos ✓ |
 
 As camadas se desligam em ordem: sem C3 não há C4, e sem art direction não há nenhuma das duas.
