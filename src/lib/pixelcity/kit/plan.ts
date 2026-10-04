@@ -39,6 +39,7 @@ import type { Region, RegionKind, Semantics } from "../../semantics/analyze";
 import { chromeFactors, chromeOf, contentImages, contentWeight, observedBlocks } from "../../semantics/hygiene";
 import type { MediaReport } from "../../snapshot/media";
 import type { Content } from "./brief";
+import { structureOf, type Structure } from "./structure";
 
 export type Comp = "landmark" | "marker" | "continuous" | "parcelled" | "archive" | "grid" | "media" | "interactive" | "navigation" | "support" | "structured";
 export type Source = "region" | "remainder" | "page" | "observed";
@@ -74,6 +75,12 @@ export interface Territory {
   /** The content class used for styling (programFor): the strongest of the mix. */
   content: Content;
   why: string[];
+  /**
+   * Internal structure (intra-territory composition pass, structure.ts): one sequence or several
+   * groups, with the evidence. Descriptive only — attached after weight, key, order and mix are
+   * decided, and read by the composition alone.
+   */
+  structure?: Structure;
 }
 
 export interface Plan {
@@ -285,10 +292,14 @@ export function planFromPage(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
         merges.push({ key: keyOf(r) + "#rest", label: `${r.kind} “${(r.title ?? "").slice(0, 30)}”`, reason, weight: rest / total });
         return produced;
       }
-      produced.push(push(r, "remainder", rest, restRaw, m, [`T1 own content of the ${r.kind} “${r.title ?? ""}” outside its ${children.length} child region(s)`], "#rest"));
+      const at = push(r, "remainder", rest, restRaw, m, [`T1 own content of the ${r.kind} “${r.title ?? ""}” outside its ${children.length} child region(s)`], "#rest");
+      out[at].structure = structureOf(doc, [r.node], children.map((c) => c.node));
+      produced.push(at);
       return produced;
     }
-    return [push(r, "region", w, raw, metricsOf(r), [`T1 ${r.kind} region, ${((w / total) * 100).toFixed(1)}% of the page's content weight${children.length ? ` (typed: not opened, holds ${children.length} region(s))` : ""}`])];
+    const at = push(r, "region", w, raw, metricsOf(r), [`T1 ${r.kind} region, ${((w / total) * 100).toFixed(1)}% of the page's content weight${children.length ? ` (typed: not opened, holds ${children.length} region(s))` : ""}`]);
+    out[at].structure = structureOf(doc, [r.node], []);
+    return [at];
   };
   const roots = regions.filter((r) => r.parent < 0).sort((a, b) => a.node - b.node);
   for (const r of roots) emit(r);
@@ -314,10 +325,12 @@ export function planFromPage(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
       );
       const raw = (b.nodes.reduce((s, i) => s + nodes[i].weight, 0) - inner.reduce((s, r) => s + nodes[r.node].weight, 0)) / rawTotal;
       // Identity: selector + ordinal among observed blocks (node ids shift when content changes).
-      push(null, "observed", b.share * total, Math.max(0, raw), m, [`H3 named regions cover ${(coverage * 100).toFixed(0)}% of the content (< ${COVERAGE_MIN * 100}%): observed block — ${b.label}`], `~${blocks.indexOf(b)}`, b.nodes[0], b.label);
+      const at = push(null, "observed", b.share * total, Math.max(0, raw), m, [`H3 named regions cover ${(coverage * 100).toFixed(0)}% of the content (< ${COVERAGE_MIN * 100}%): observed block — ${b.label}`], `~${blocks.indexOf(b)}`, b.nodes[0], b.label);
+      out[at].structure = structureOf(doc, b.nodes, inner.map((r) => r.node));
     }
   } else if (total - coveredW > 0) {
-    push(null, "page", total - coveredW, Math.max(0, 1 - coveredRaw), minus(metricsOf(rootRegion), roots.map(metricsOf)), ["T1 page content outside every detected region"]);
+    const at = push(null, "page", total - coveredW, Math.max(0, 1 - coveredRaw), minus(metricsOf(rootRegion), roots.map(metricsOf)), ["T1 page content outside every detected region"]);
+    out[at].structure = structureOf(doc, [0], roots.map((r) => r.node));
   }
 
   // H2: chrome compression.
