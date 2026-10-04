@@ -25,6 +25,7 @@ import { Kit, type PeopleMode } from "./core";
 import type { Comp, Plan, Territory } from "./plan";
 import { bench, bin, bollards, busShelter, CARRIAGEWAY, hydrant, laneOffset, mailbox, meter, newsBoxes, SIDEWALK_H, streetLamp, streetSurfaces, streetTree, trafficSignal, uniformStreetSurfaces, type Grid } from "./street";
 import { planStreets, RANK, type StreetPlan, type StreetRole, type StreetSegment } from "./street-roles";
+import { lifeCrossings, lifeSidewalks, lifeTraffic, planStreetLife, type Built, type StreetLife } from "./street-life";
 import { allocate, BLOCKS, LOTS, N, type Allocation } from "./territory";
 import { vehicle, type VehicleType } from "./vehicles";
 
@@ -110,6 +111,8 @@ export interface KitOptions {
    * byte-identical to kit-v9 — the ablation earlier passes are checked against.
    */
   artDirection?: boolean;
+  /** Art direction C3, street life (default on). Off: C1's streets with the stamped street layer (kit-v10). */
+  streetLife?: boolean;
   /** Validation: filled with every allocation and building decision (no effect on the output). */
   trace?: KitTrace;
 }
@@ -152,6 +155,8 @@ export interface KitTrace {
   streets?: StreetSegment[];
   /** Part index ranges of the scene after the blocks: sidewalk furniture, crossings (signals), traffic. */
   scene?: { furniture: [number, number]; crossings: [number, number]; traffic: [number, number] };
+  /** Art direction, C3: the life of every sidewalk and carriageway, and why (scene only). */
+  life?: StreetLife;
 }
 
 export const newTrace = (): KitTrace => ({ pieces: [], buildings: [], landmark: null, frontage: [], range: [0, 0] });
@@ -250,10 +255,14 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
   }
 
   let current: { territory: number; comp: Comp; piece: PieceType; block: [number, number] } | null = null;
+  // What the street sees of each building (bookkeeping only: read by street life, never by the blocks).
+  const built: Built[] = [];
   const record = (P: Program, w: number, d: number, fn: () => number) => {
     const from = kit.parts.length;
     const an = kit.anatomies.length;
     const top = fn();
+    const seen = kit.anatomies.slice(an);
+    built.push({ parts: [from, kit.parts.length], anatomy: seen, use: P.use ?? seen[0]?.use ?? programUse(P) });
     if (trace && current) {
       const anatomy = kit.anatomies.slice(an);
       trace.buildings.push({ ...current, P, w, d, parts: [from, kit.parts.length], anatomy, program: { use: P.use ?? anatomy[0]?.use ?? programUse(P), reason: P.useReason ?? "landmark family" } });
@@ -323,13 +332,21 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
     if (roles) trace.streets = roles.segments;
   }
 
+  // Art direction C3: street life from the frontage, the street roles and the page (or the stamp, off).
+  const life = roles && o.streetLife !== false ? planStreetLife({ plan, alloc, roles, grammar, built, parts: kit.parts, lines: LINES, block: B }) : null;
   const f0 = kit.parts.length;
-  furniture(kit, LINES, B, S, palette);
+  if (life) lifeSidewalks(kit, life, LINES, B, S, palette);
+  else furniture(kit, LINES, B, S, palette);
   const f1 = kit.parts.length;
-  intersections(kit, LINES, R, P_, roles);
+  intersections(kit, LINES, R, P_, roles, !life);
+  if (life) lifeCrossings(kit, life, roles!, LINES);
   const f2 = kit.parts.length;
-  traffic(kit, LINES, R, P_, palette, roles);
-  if (trace) trace.scene = { furniture: [f0, f1], crossings: [f1, f2], traffic: [f2, kit.parts.length] };
+  if (life) lifeTraffic(kit, life, LINES, R, palette);
+  else traffic(kit, LINES, R, P_, palette, roles);
+  if (trace) {
+    trace.scene = { furniture: [f0, f1], crossings: [f1, f2], traffic: [f2, kit.parts.length] };
+    if (life) trace.life = life;
+  }
 
   let parts = kit.parts;
   let signs = kit.signs;
@@ -515,7 +532,7 @@ function furniture(kit: Kit, lines: number[], B: number, S: number, palette: Pix
 
 const STREETS = ["MAIN ST", "1ST AVE"];
 
-function intersections(kit: Kit, lines: number[], R: number, P: number, roles: StreetPlan | null) {
+function intersections(kit: Kit, lines: number[], R: number, P: number, roles: StreetPlan | null, centrePeople = true) {
   const traffic = (r: string) => r === "street" || r === "primary";
   const role = (axis: "x" | "z", line: number, span: number) => (roles ? roles.role(axis, line, span) : "primary");
   for (const [ci, cx] of lines.entries())
@@ -540,7 +557,7 @@ function intersections(kit: Kit, lines: number[], R: number, P: number, roles: S
           },
           SIDEWALK_H,
         );
-      if (centre) {
+      if (centre && centrePeople) {
         for (let k = 0; k < 3; k++) kit.person(R / 2 + 0.45 + k * 0.25, R / 2 + 0.6 - (k % 2) * 0.2, { variant: 20 + k, pose: "stand", flip: k % 2 === 0, y: SIDEWALK_H });
         for (let k = 0; k < 2; k++) kit.person(-R / 2 - 0.5 - k * 0.3, R / 2 + 0.55, { variant: 30 + k, pose: "stand", y: SIDEWALK_H });
         // Walking across the eastern approach: on its zebra, or on the raised surface that replaces it.
