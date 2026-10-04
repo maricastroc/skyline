@@ -71,6 +71,11 @@ export interface Program {
   seed: number;
   /** Units in an attached series (rows). */
   units?: number;
+  /**
+   * Index of this series' first unit in a longer series it continues (a grouped frontage cuts one
+   * street row into runs; each run carries on the row's unit sequence). Unset: a series of its own.
+   */
+  unitFrom?: number;
   /** What the building is for (surface grammar); set by the composition, else inferred. */
   use?: Use;
 }
@@ -583,11 +588,15 @@ export function building(kit: Kit, w: number, d: number, P: Program): number {
     }
     case "rows": {
       // An attached series: each unit its own width, height, roof and shop.
-      const n = Math.max(2, P.units ?? Math.round(w / 1.6));
+      // A run continuing a longer series (unitFrom) may be a single unit, and draws its units'
+      // variation from the series' sequence, so cutting a row into runs keeps its texture.
+      const n = Math.max(P.unitFrom === undefined ? 2 : 1, P.units ?? Math.round(w / 1.6));
+      const o = P.unitFrom ?? 0;
       let x = x0;
       let top = 0;
-      for (let i = 0; i < n; i++) {
-        const uw = i === n - 1 ? x1 - x : (w / n) * (0.8 + kit.rand(P.seed, i) * 0.4);
+      for (let k = 0; k < n; k++) {
+        const i = k + o;
+        const uw = k === n - 1 ? x1 - x : (w / n) * (0.8 + kit.rand(P.seed, i) * 0.4);
         const floors = Math.max(1, P.floors + Math.round((kit.rand(P.seed, 20 + i) - 0.5) * 3));
         const roof: RoofFamily = P.roof === "gable" ? (kit.rand(P.seed, 30 + i) < 0.7 ? "gable" : "flat") : kit.rand(P.seed, 30 + i) < 0.25 ? "gable" : P.roof;
         const wall = kit.pick(kit.palette.walls[P.style], P.seed, 40 + i);

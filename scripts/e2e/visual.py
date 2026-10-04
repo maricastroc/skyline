@@ -11,7 +11,7 @@ import json, os, itertools
 import numpy as np
 from PIL import Image
 
-ROOT = "docs/screenshots/e2e/"
+ROOT = os.environ.get("E2E_ROOT", "docs/screenshots/e2e/")
 PAGES = "reference,docs,app,saas,shop,news,portfolio,forum,institution,oldweb,media,directory,reference-2,saas-2".split(",")
 VIEWS = ["city", "street", "close", "flat"]
 
@@ -73,4 +73,4 @@ for view in VIEWS:
     res["views"][view] = entry
     s = entry
     print(f"{view:6} page {s['pageMean']:.2f}" + "".join(f" · {v} same-page {s[v + 'SamePage']['mean']:.2f}" for v in ["seed8", "classic", "modern", "v5", "v4"] if v + "SamePage" in s) + "".join(f" · {v} page-page {s[v + 'PageMean']:.2f}" for v in ["classic", "modern", "v5", "v4"] if v + "PageMean" in s))
-json.dump(res, open("docs/e2e/visual.json", "w"), indent=1)
+json.dump(res, open(os.environ.get("E2E_VISUAL", "docs/e2e/visual.json"), "w"), indent=1)

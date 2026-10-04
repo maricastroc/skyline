@@ -10,6 +10,7 @@ import { realPage as realPageV4 } from "@/lib/pixelcity/kit-v4/real-page";
 import { realPage as realPageV5 } from "@/lib/pixelcity/kit-v5/real-page";
 import { realPage as realPageV6 } from "@/lib/pixelcity/kit-v6/real-page";
 import { forceStyle, STYLES } from "@/lib/pixelcity/diagnostics";
+import { groupFixture } from "@/lib/pixelcity/kit/fixtures";
 import { vacantFingerprint } from "@/lib/pixelcity/vacant-fingerprint";
 import type { DomSnapshot } from "@/lib/snapshot/types";
 
@@ -27,6 +28,7 @@ const PROFILES: ProfileName[] = ["mixed", "portal", "product", "reference"];
  *   ?v=4 semantic hygiene pass · ?v=5 architectural surface grammar · ?v=6 openings depth
  *   (all frozen) · default: current
  *   ?style=classic|retro|modern|soft|tech (diagnostic: the same page forced into a style)
+ *   ?groups=60,60 (fixture: one parcelled territory whose content is in groups of these sizes)
  */
 export default async function KitPage({ searchParams }: PageProps<"/pixel/kit">) {
   const sp = await searchParams;
@@ -82,6 +84,9 @@ export default async function KitPage({ searchParams }: PageProps<"/pixel/kit">)
     if (STYLES.includes(st)) return <KitView {...common} fp={forceStyle(page.fp, st)} source={{ v: 7, profile: { ...page.plan, identity: forceStyle(page.plan.identity, st) } }} />;
     return <KitView {...common} fp={page.fp} source={{ v: 7, profile: page.plan }} />;
   }
+  // Fixture (intra-territory composition): one parcelled territory, its content in groups of these sizes.
+  const groups = one(sp.groups)?.split(",").map(Number);
+  if (groups && groups.length && groups.every((g) => Number.isInteger(g) && g > 0)) return <KitView {...common} fp={vacantFingerprint()} source={{ v: 7, profile: groupFixture(groups, vacantFingerprint()) }} />;
   const name = PROFILES.includes(profile) ? profile : "mixed";
   const source: KitSource = v === 1 ? { v: 1 } : v === 2 ? { v: 2, profile: name } : v === 3 ? { v: 3, profile: name } : v === 4 ? { v: 4, profile: name } : v === 5 ? { v: 5, profile: name } : v === 6 ? { v: 6, profile: name } : { v: 7, profile: name };
   return <KitView {...common} fp={vacantFingerprint()} source={source} />;

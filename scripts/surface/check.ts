@@ -9,6 +9,7 @@ import { generateSurfaceLab, LAB_SETS, labProgram, USES, type LabKit, type LabRe
 import { deriveGrammar } from "../../src/lib/pixelcity/grammar";
 import { buildGamePalette } from "../../src/lib/pixelcity/palette";
 import { realPage } from "../../src/lib/pixelcity/kit/real-page";
+import { withoutStructure } from "../../src/lib/pixelcity/kit/structure";
 import { surfaceTrace, type Anatomy } from "../../src/lib/pixelcity/kit/surface";
 import { generateKitDistrict as v4, newTrace as newTraceV4 } from "../../src/lib/pixelcity/kit-v4/district";
 import { realPage as realPageV4 } from "../../src/lib/pixelcity/kit-v4/real-page";
@@ -224,7 +225,9 @@ console.log("\n# Massing preserved (current kit vs kit-v4, per building)");
     const q = realPageV4(snap(e.id));
     const ta = newTrace();
     const tb = newTraceV4();
-    const a = generateKitDistrict(p.fp, { profile: p.plan, time: "day", seed: 7, trace: ta });
+    // The intra-territory composition pass (later) changes structured parcelled land on purpose;
+    // this compares the surface grammar's own effect, so the descriptor is left out.
+    const a = generateKitDistrict(p.fp, { profile: withoutStructure(p.plan), time: "day", seed: 7, trace: ta });
     const b = v4(q.fp, { profile: q.plan, time: "day", seed: 7, trace: tb });
     if (ta.buildings.length !== tb.buildings.length) structural++;
     for (let i = 0; i < Math.min(ta.buildings.length, tb.buildings.length); i++) {

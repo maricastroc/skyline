@@ -9,7 +9,9 @@
  * (no new building or roof types). What differs between compositions is the ORGANISATION:
  *
  *   continuous   one built mass along the street (perimeter block, L, corner): long text
- *   parcelled    many narrow attached units with shops: feeds and link lists
+ *   parcelled    many narrow attached units with shops: feeds and link lists; when the
+ *                territory's content is organised in groups (structure.ts), its frontage is
+ *                laid out group by group, runs meeting at passages (frontage.ts)
  *   archive      parallel low stacks: indexes, references, directories
  *   grid         identical modules on a regular grid: product / pricing grids
  *   media        podium + tower with screens on open ground: galleries, showcases
@@ -30,6 +32,7 @@ import { Surf } from "../types";
 import { programFor, type Brief } from "./brief";
 import { building, type Family, type Program } from "./buildings";
 import type { Kit } from "./core";
+import type { Run } from "./frontage";
 import { plaza, type RoofFamily } from "./massing";
 import { softMix, type Comp, type Plan, type Territory } from "./plan";
 import type { Use } from "./surface";
@@ -115,6 +118,8 @@ export interface ComposeCtx {
   vf: number;
   /** Called around every building, for the trace / provenance. */
   record: (P: Program, w: number, d: number, fn: () => number) => number;
+  /** Grouped frontage of parcelled pieces whose territory has internal structure (frontage.ts). */
+  frontage?: Map<Piece, Run[][]>;
 }
 
 const COMP_CONTENT: Record<Comp, Brief["content"]> = {
@@ -155,6 +160,61 @@ function prog(ctx: ComposeCtx, t: Territory, comp: Comp, salt: number, corner = 
   return { ...programFor(b, ctx.g, ctx.p, ctx.kit, salt, corner), use: USE[comp] };
 }
 
+/** Width a run gives up on each side where the frontage changes cluster (a passage of 2× this). */
+const HALF_PASSAGE = 0.35;
+
+/**
+ * Parcelled, grouped: the same piece and the same program as the kit-v6 layout (yard, corners,
+ * an attached series of narrow units along each street row, as many units per length — the units
+ * are still the items), but each row is cut into runs, one per spatial cluster of page groups,
+ * and wherever the frontage changes cluster a passage opens (frontage.ts).
+ */
+function groupedParcelled(ctx: ComposeCtx, pc: Piece, t: Territory, comp: Comp, salt: number, rows: Run[][], W: number, D: number) {
+  const { kit } = ctx;
+  const P = prog(ctx, t, comp, salt, pc.corner);
+  const units = Math.max(2, Math.min(6, Math.round(2 + t.repeat / 6)));
+  const roof = P.style === "modern" || P.style === "tech" ? P.roof : "gable";
+  // Each run continues its row's unit sequence (same seed and unit indices as the kit-v6 row), so
+  // the units — the items — are unchanged and the only new thing is the cut between clusters.
+  const lay = (x: number, z: number, rot: number, length: number, depth: number, rowUnits: number, seed: number, runs: Run[]) => {
+    const c = Math.cos(rot);
+    const s = Math.sin(rot);
+    // Units per run by largest remainder (at least one each), in row order.
+    const raw = runs.map((r) => (rowUnits * (r.to - r.from)) / length);
+    const n = raw.map((v) => Math.max(1, Math.floor(v)));
+    let left = Math.max(rowUnits, runs.length) - n.reduce((a, b) => a + b, 0);
+    for (const k of raw.map((v, k) => [v - Math.floor(v), k] as const).sort((p, q) => q[0] - p[0]).map(([, k]) => k)) if (left-- > 0) n[k]++;
+    let from = 0;
+    runs.forEach((r, k) => {
+      const a = r.from + (r.gapStart ? HALF_PASSAGE : 0);
+      const b = r.to - (r.gapEnd ? HALF_PASSAGE : 0);
+      const o = (a + b) / 2 - length / 2;
+      place(ctx, x + o * c, z - o * s, rot, b - a, depth, { ...P, roof, seed, family: "rows", units: n[k], unitFrom: from });
+      from += n[k];
+    });
+  };
+  if (pc.type === "full") {
+    yard(kit, 0, 0, 5.6, 5.6, salt, 2);
+    const edges = [
+      [0, 4.9, 0],
+      [4.9, 0, Math.PI / 2],
+      [0, -4.9, Math.PI],
+      [-4.9, 0, -Math.PI / 2],
+    ] as const;
+    edges.forEach(([x, z, rot], k) => lay(x, z, rot, 5.4, 4.0, units, P.seed + Math.round(rot * 10), rows[k]));
+    for (const [sx, sz] of [
+      [1, 1],
+      [-1, 1],
+      [-1, -1],
+      [1, -1],
+    ])
+      place(ctx, sx * 4.9, sz * 4.9, QROT(sx, sz), 4.0, 4.0, { ...prog(ctx, t, comp, salt + 11 + sx * 3 + sz, true), family: "corner" });
+  } else if (pc.type === "half" || pc.type === "quad") {
+    lay(0, D / 2 - 2.1, 0, W, 4.2, pc.type === "half" ? units : Math.max(2, Math.ceil(units / 2)), P.seed, rows[0]);
+    yard(kit, 0, -2.2, W, D - 4.4, salt, 1);
+  } else place(ctx, 0, 0, 0, W, D, { ...P, family: pc.corner ? "corner" : "walkup" });
+}
+
 /** log₂(1 + k·w): grows with weight, saturates. */
 const lw = (w: number, k: number) => Math.log2(1 + k * w);
 const fl = (ctx: ComposeCtx, f: number, min = 1) => Math.max(min, Math.round(f * ctx.vf));
@@ -189,6 +249,8 @@ export function composePiece(ctx: ComposeCtx, pc: Piece, t: Territory, comp: Com
         return;
       }
       case "parcelled": {
+        const runs = ctx.frontage?.get(pc);
+        if (runs) return groupedParcelled(ctx, pc, t, comp, salt, runs, W, D);
         const P = prog(ctx, t, comp, salt, pc.corner);
         const units = Math.max(2, Math.min(6, Math.round(2 + t.repeat / 6)));
         if (pc.type === "full") {

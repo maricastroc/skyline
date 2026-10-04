@@ -20,6 +20,7 @@ import type { Brief } from "./brief";
 import type { Program } from "./buildings";
 import type { Anatomy } from "./surface";
 import { composeLandmark, composePiece, piecesOfBlock, type LandmarkInfo, type Piece, type PieceType } from "./compose";
+import { planFrontage, type FrontagePlan, type Run } from "./frontage";
 import { Kit, type PeopleMode } from "./core";
 import type { Comp, Plan, Territory } from "./plan";
 import { bench, bin, bollards, busShelter, hydrant, mailbox, meter, newsBoxes, SIDEWALK_H, streetLamp, streetSurfaces, streetTree, trafficSignal, type Grid } from "./street";
@@ -133,11 +134,13 @@ export interface KitTrace {
   pieces: TracePiece[];
   buildings: TraceBuilding[];
   landmark: LandmarkInfo | null;
+  /** Grouped frontages (intra-territory composition): territory → groups, clusters, passages. */
+  frontage: Array<{ territory: number } & Omit<FrontagePlan, "rows">>;
   /** Part index range covered by the blocks (street surfaces, furniture and traffic excluded). */
   range: [number, number];
 }
 
-export const newTrace = (): KitTrace => ({ pieces: [], buildings: [], landmark: null, range: [0, 0] });
+export const newTrace = (): KitTrace => ({ pieces: [], buildings: [], landmark: null, frontage: [], range: [0, 0] });
 
 /** Synthetic profile → plan: each brief once, weights normalised, landmark first. */
 export function planFromProfile(prof: Profile, base: SiteFingerprint): Plan {
@@ -237,7 +240,31 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
     if (trace && current) trace.buildings.push({ ...current, P, w, d, parts: [from, kit.parts.length], anatomy: kit.anatomies.slice(an) });
     return top;
   };
-  const ctx = { kit, g: grammar, p: palette, plan, vf: 0.7 + 0.6 * grammar.verticality, record };
+  // Intra-territory composition: parcelled territories with internal structure lay out their
+  // frontage group by group (pieces in path order). Without structure nothing is planned.
+  const frontage = new Map<Piece, Run[][]>();
+  const parcelledPieces = new Map<number, Array<{ pc: Piece; at: number }>>();
+  for (let i = 0; i < BLOCKS; i++)
+    for (let j = 0; j < BLOCKS; j++)
+      blockPieces[i][j].forEach((pc) => {
+        if (pc.seg < 0 || pc.interior || alloc.segments[pc.seg].comp !== "parcelled") return;
+        const at = pathIndex.get((i * LOTS + Math.floor((pc.x + 7) / 3.5)) * N + (j * LOTS + Math.floor((pc.z + 7) / 3.5))) ?? 0;
+        const ti = alloc.segments[pc.seg].territory;
+        parcelledPieces.set(ti, [...(parcelledPieces.get(ti) ?? []), { pc, at }]);
+      });
+  for (const [ti, list] of [...parcelledPieces].sort((a, b) => a[0] - b[0])) {
+    const fp = planFrontage(
+      plan.territories[ti].structure,
+      list.sort((a, b) => a.at - b.at).map((x) => x.pc),
+    );
+    if (!fp) continue;
+    for (const [pc, runs] of fp.rows) frontage.set(pc, runs);
+    if (trace) {
+      const { groups, clusters, slots, passages, clusterShares, clusterSlots, why } = fp;
+      trace.frontage.push({ territory: ti, groups, clusters, slots, passages, clusterShares, clusterSlots, why });
+    }
+  }
+  const ctx = { kit, g: grammar, p: palette, plan, vf: 0.7 + 0.6 * grammar.verticality, record, frontage };
 
   for (let i = 0; i < BLOCKS; i++)
     for (let j = 0; j < BLOCKS; j++) {

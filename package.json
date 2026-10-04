@@ -14,7 +14,8 @@
     "test:allocation": "tsx scripts/semantic-allocation/check.ts",
     "test:hygiene": "tsx scripts/semantic-hygiene/check.ts",
     "test:surface": "tsx scripts/surface/check.ts",
-    "test:openings": "tsx scripts/openings/check.ts"
+    "test:openings": "tsx scripts/openings/check.ts",
+    "test:composition": "tsx scripts/composition/check.ts"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",

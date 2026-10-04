@@ -7,6 +7,7 @@ import { building, type Program } from "../../src/lib/pixelcity/kit/buildings";
 import { Kit } from "../../src/lib/pixelcity/kit/core";
 import { generateKitDistrict, newTrace } from "../../src/lib/pixelcity/kit/district";
 import { generateSurfaceLab, labProgram, LAB_SETS, USES, type LabKit } from "../../src/lib/pixelcity/kit/lab";
+import { withoutStructure } from "../../src/lib/pixelcity/kit/structure";
 import { decodeOpening, DEPTH_M, FRAME_W, OPENING, punchedOpening, recessPart } from "../../src/lib/pixelcity/kit/openings";
 import { realPage } from "../../src/lib/pixelcity/kit/real-page";
 import { PATTERN_BITS, type Anatomy } from "../../src/lib/pixelcity/kit/surface";
@@ -176,7 +177,8 @@ for (const e of DATASET) {
     const a = v5(p5.fp, { profile: p5.plan, time: mode === "night" ? "night" : "day", seed: 7, flat: mode === "flat" });
     if (sha(JSON.stringify([a.parts, a.signs])) === before.get(`${mode}/${e.id}`)) frozen++;
     for (const q of a.parts) maxV5 = Math.max(maxV5, q.variant ?? 0);
-    const b = generateKitDistrict(p6.fp, { profile: p6.plan, time: mode === "night" ? "night" : "day", seed: 7, flat: mode === "flat" });
+    // Without the intra-territory descriptor (a later pass that changes structured parcelled land).
+    const b = generateKitDistrict(p6.fp, { profile: withoutStructure(p6.plan), time: mode === "night" ? "night" : "day", seed: 7, flat: mode === "flat" });
     if (mode === "flat") {
       if (sha(JSON.stringify([b.parts, b.signs])) === before.get(`flat/${e.id}`)) flatSame++;
       continue;

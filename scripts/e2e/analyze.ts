@@ -354,7 +354,7 @@ const signals = SIGNALS.map((s) => {
 });
 
 const out = { ids, layers: LAYERS, matrix, seedNoise, styleNoise, sameStyle, summary, consecutive, movement, signals, breakdown: Object.fromEntries(pairs.map(([a, b]) => [`${a}~${b}`, Object.fromEntries(LAYERS.map((L) => [L, breakdown(base.get(a)!.fp[L], base.get(b)!.fp[L], scales[L])]))])), fingerprints: Object.fromEntries(ids.map((id) => [id, base.get(id)!.fp])), styleOf: Object.fromEntries(ids.map((id) => [id, base.get(id)!.trace.grammar!.style])) };
-writeFileSync("docs/e2e/metrics.json", JSON.stringify(out, null, 1));
+writeFileSync(process.env.E2E_METRICS ?? "docs/e2e/metrics.json", JSON.stringify(out, null, 1));
 for (const L of LAYERS) {
   const s = summary[L];
   console.log(`${L.padEnd(12)} page ${s.pageMean.toFixed(3)} (min ${s.pageMin.toFixed(3)}) · seed ${s.seedMean.toFixed(3)} (max ${s.seedMax.toFixed(3)}) · style ${s.styleMean.toFixed(3)} · page/seed ${s.pageOverSeed.toFixed(1)} · page/style ${s.pageOverStyle.toFixed(1)} · pairs ≤ seed max ${s.pairsBelowSeedMax}/91 · same-style ${s.sameStyleMean.toFixed(3)} · ρ(sem) ${s.rhoSemantics.toFixed(2)}`);
