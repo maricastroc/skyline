@@ -52,7 +52,7 @@ const MIN_GROUP_CHARS = 20;
 const COVERAGE = 0.6;
 
 /** In-scope nodes of a territory, in document order: the roots' subtrees minus excluded subtrees. */
-function scopeOf(nodes: NNode[], roots: number[], excluded: number[]): number[] {
+export function scopeOf(nodes: NNode[], roots: number[], excluded: number[]): number[] {
   const out: number[] = [];
   const ex = [...excluded].sort((a, b) => a - b);
   for (const r of [...roots].sort((a, b) => a - b)) {

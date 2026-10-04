@@ -39,6 +39,7 @@ import type { Region, RegionKind, Semantics } from "../../semantics/analyze";
 import { chromeFactors, chromeOf, contentImages, contentWeight, observedBlocks } from "../../semantics/hygiene";
 import type { MediaReport } from "../../snapshot/media";
 import type { Content } from "./brief";
+import { itemsOf, type ItemForm } from "./items";
 import { structureOf, type Structure } from "./structure";
 
 export type Comp = "landmark" | "marker" | "continuous" | "parcelled" | "archive" | "grid" | "media" | "interactive" | "navigation" | "support" | "structured";
@@ -81,6 +82,12 @@ export interface Territory {
    * decided, and read by the composition alone.
    */
   structure?: Structure;
+  /**
+   * Item form (program differentiation pass, items.ts): what one repeated item of this content looks
+   * like — links, text, media and controls per item, titled share, group membership. Describes
+   * the page; attached after everything else is decided.
+   */
+  items?: ItemForm;
 }
 
 export interface Plan {
@@ -294,11 +301,13 @@ export function planFromPage(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
       }
       const at = push(r, "remainder", rest, restRaw, m, [`T1 own content of the ${r.kind} “${r.title ?? ""}” outside its ${children.length} child region(s)`], "#rest");
       out[at].structure = structureOf(doc, [r.node], children.map((c) => c.node));
+      out[at].items = itemsOf(doc, [r.node], children.map((c) => c.node), out[at].structure);
       produced.push(at);
       return produced;
     }
     const at = push(r, "region", w, raw, metricsOf(r), [`T1 ${r.kind} region, ${((w / total) * 100).toFixed(1)}% of the page's content weight${children.length ? ` (typed: not opened, holds ${children.length} region(s))` : ""}`]);
     out[at].structure = structureOf(doc, [r.node], []);
+    out[at].items = itemsOf(doc, [r.node], [], out[at].structure);
     return [at];
   };
   const roots = regions.filter((r) => r.parent < 0).sort((a, b) => a.node - b.node);
@@ -327,10 +336,12 @@ export function planFromPage(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
       // Identity: selector + ordinal among observed blocks (node ids shift when content changes).
       const at = push(null, "observed", b.share * total, Math.max(0, raw), m, [`H3 named regions cover ${(coverage * 100).toFixed(0)}% of the content (< ${COVERAGE_MIN * 100}%): observed block — ${b.label}`], `~${blocks.indexOf(b)}`, b.nodes[0], b.label);
       out[at].structure = structureOf(doc, b.nodes, inner.map((r) => r.node));
+      out[at].items = itemsOf(doc, b.nodes, inner.map((r) => r.node), out[at].structure);
     }
   } else if (total - coveredW > 0) {
     const at = push(null, "page", total - coveredW, Math.max(0, 1 - coveredRaw), minus(metricsOf(rootRegion), roots.map(metricsOf)), ["T1 page content outside every detected region"]);
     out[at].structure = structureOf(doc, [0], roots.map((r) => r.node));
+    out[at].items = itemsOf(doc, [0], roots.map((r) => r.node), out[at].structure);
   }
 
   // H2: chrome compression.
