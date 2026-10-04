@@ -26,6 +26,8 @@ import { generateKitDistrict as generateKitDistrictV9, type ProfileName as Profi
 import type { Plan as PlanV9 } from "@/lib/pixelcity/kit-v9/plan";
 import { generateKitDistrict as generateKitDistrictV10, type ProfileName as ProfileNameV10 } from "@/lib/pixelcity/kit-v10/district";
 import type { Plan as PlanV10 } from "@/lib/pixelcity/kit-v10/plan";
+import { generateKitDistrict as generateKitDistrictV11, type ProfileName as ProfileNameV11 } from "@/lib/pixelcity/kit-v11/district";
+import type { Plan as PlanV11 } from "@/lib/pixelcity/kit-v11/plan";
 import type { ViewState } from "./PixelScene";
 
 const PixelScene = dynamic(() => import("./PixelScene"), { ssr: false });
@@ -37,7 +39,7 @@ const CITY: ViewState = { azimuth: 45, zoom: 0.9, pan: [0, 0] };
  * allocation pass, 4 the semantic hygiene pass, 5 the surface grammar pass, 6 the openings depth
  * pass, 7 the intra-territory composition pass (all frozen), 8 the current one.
  */
-export type KitSource = { v: 1 } | { v: 2; profile: ProfileNameV2 | ProfileV2 } | { v: 3; profile: ProfileNameV3 | PlanV3 } | { v: 4; profile: ProfileNameV4 | PlanV4 } | { v: 5; profile: ProfileNameV5 | PlanV5 } | { v: 6; profile: ProfileNameV6 | PlanV6 } | { v: 7; profile: ProfileNameV7 | PlanV7 } | { v: 8; profile: ProfileNameV8 | PlanV8 } | { v: 9; profile: ProfileNameV9 | PlanV9 } | { v: 10; profile: ProfileNameV10 | PlanV10 } | { v: 11; profile: ProfileName | Plan };
+export type KitSource = { v: 1 } | { v: 2; profile: ProfileNameV2 | ProfileV2 } | { v: 3; profile: ProfileNameV3 | PlanV3 } | { v: 4; profile: ProfileNameV4 | PlanV4 } | { v: 5; profile: ProfileNameV5 | PlanV5 } | { v: 6; profile: ProfileNameV6 | PlanV6 } | { v: 7; profile: ProfileNameV7 | PlanV7 } | { v: 8; profile: ProfileNameV8 | PlanV8 } | { v: 9; profile: ProfileNameV9 | PlanV9 } | { v: 10; profile: ProfileNameV10 | PlanV10 } | { v: 11; profile: ProfileNameV11 | PlanV11 } | { v: 12; profile: ProfileName | Plan };
 
 export interface KitViewProps {
   fp: SiteFingerprint;
@@ -80,6 +82,7 @@ export function KitView({ fp, time, people, view, source, flat, seed, provenance
     if (source.v === 8) return { city: generateKitDistrictV8(fp, { time, people, profile: source.profile, flat, seed, provenance }), trace: null };
     if (source.v === 9) return { city: generateKitDistrictV9(fp, { time, people, profile: source.profile, flat, seed, provenance }), trace: null };
     if (source.v === 10) return { city: generateKitDistrictV10(fp, { time, people, profile: source.profile, flat, seed, provenance }), trace: null };
+    if (source.v === 11) return { city: generateKitDistrictV11(fp, { time, people, profile: source.profile, flat, seed, provenance }), trace: null };
     const tr: KitTrace = newTrace();
     const c = generateKitDistrict(fp, { time, people, profile: source.profile, flat, seed, provenance, streetRoles: streets, trace: tr });
     if (!inspect || flat || provenance || streets) return { city: c, trace: tr };
