@@ -52,7 +52,7 @@ export type Pattern = "single" | "paired" | "vertical" | "sparse";
 
 export interface Anatomy {
   use: Use;
-  ground: { kind: GroundKind; height: number; units: number; entrance: "per-unit" | "central" | "axial" | "domestic" | "service" | "none"; transparency: number; awning: Awning; signage: Signage; cornerEntrance: boolean };
+  ground: { kind: GroundKind; height: number; units: number; entrance: "per-unit" | "central" | "axial" | "domestic" | "service" | "secondary" | "none"; transparency: number; awning: Awning; signage: Signage; cornerEntrance: boolean };
   base: { floors: number; treatment: "none" | "rusticated" | "banded" | "glazed" };
   body: { surf: "framed" | "bands" | "curtain"; pattern: Pattern; bay: number; tall: boolean; brick: boolean; accentEnds: boolean; litGroups: boolean };
   crown: { kind: "none" | "cornice" | "parapet" | "attic" | "emphasized"; floors: number; cornice: "heavy" | "light" | "none" };
@@ -101,6 +101,12 @@ export interface AnatomyInput {
   roof: RoofFamily;
   signals: SurfaceSignals;
   rand: (k: number) => number;
+  /**
+   * The volume is one unit of an attached series whose units are too narrow for a ceremonial
+   * entrance each (buildings.ts, CEREMONIAL_SPAN). `main`: the unit that carries the series'
+   * one marked entrance. Read by the institutional ground only.
+   */
+  series?: { main: boolean };
 }
 
 export function anatomyFor(P: Program, a: AnatomyInput): Anatomy {
@@ -146,8 +152,15 @@ export function anatomyFor(P: Program, a: AnatomyInput): Anatomy {
       why.push("ground: one axial, ceremonial entrance on a clean frontage — civic use");
       break;
     case "institutional":
+      // An attached series of narrow units reads as ONE institution: its marked entrance (and
+      // plaque) on the main unit, a plain door on each of the others (the units keep their rhythm).
+      if (a.series && !a.series.main) {
+        ground = { kind: "civic", height: a.groundHeight, units: 1, entrance: "secondary", transparency: 0.25, awning: "none", signage: "none", cornerEntrance: false };
+        why.push("ground: a plain secondary door, mostly closed plinth — institutional row (its marked entrance is on the main unit)");
+        break;
+      }
       ground = { kind: "civic", height: a.groundHeight, units: 1, entrance: "central", transparency: 0.25, awning: "none", signage: "plaque", cornerEntrance: false };
-      why.push("ground: a marked central entrance, mostly closed plinth — institutional use");
+      why.push(a.series ? "ground: the row's one marked entrance, mostly closed plinth — institutional row" : "ground: a marked central entrance, mostly closed plinth — institutional use");
       break;
     case "industrial":
       ground = { kind: "loading", height: a.groundHeight, units: Math.max(1, Math.round(a.span / 1.2)), entrance: "service", transparency: 0.05, awning: "none", signage: "painted", cornerEntrance: false };

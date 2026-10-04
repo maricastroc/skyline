@@ -137,27 +137,48 @@ const COMP_CONTENT: Record<Comp, Brief["content"]> = {
 };
 
 /**
- * What each organisation's buildings are FOR — the surface grammar's first input (surface.ts).
- * The landmark's use follows its family (civic hall / clock tower → civic, towers → office).
+ * What each organisation's buildings are FOR — the surface grammar's first input (surface.ts) —
+ * and why (the trace's `program.reason`). The landmark's use follows its family (civic hall /
+ * clock tower → civic, towers → office). `parcelled` is commercial only because no architectural
+ * program matches what its content is for: the fallback, declared as such.
  */
-const USE: Record<Comp, Use | undefined> = {
-  landmark: undefined,
-  marker: "kiosk",
-  continuous: "residential",
-  parcelled: "commercial",
-  archive: "institutional",
-  grid: "commercial",
-  media: "office",
-  interactive: "kiosk",
-  navigation: "commercial",
-  support: "service",
-  structured: "office",
+const USE: Record<Comp, { use: Use | undefined; reason: string }> = {
+  landmark: { use: undefined, reason: "landmark family" },
+  marker: { use: "kiosk", reason: "composition: brand marker" },
+  continuous: { use: "residential", reason: "composition: continuous text" },
+  parcelled: { use: "commercial", reason: "fallback — no matching architectural program" },
+  archive: { use: "institutional", reason: "region kind: index (toc, references, directory)" },
+  grid: { use: "commercial", reason: "region kind: pricing / product grid" },
+  media: { use: "office", reason: "convention: media showcase" },
+  interactive: { use: "kiosk", reason: "composition: forms and calls to action" },
+  navigation: { use: "commercial", reason: "convention: navigation arcade" },
+  support: { use: "service", reason: "region kind: footer" },
+  structured: { use: "office", reason: "composition: tables" },
 };
+
+/**
+ * Simple index (program differentiation pass, experiment): the territory's items are ≥ 5 single
+ * destinations — one link each, short (< 200 characters), no media, no controls, and no title but
+ * the link itself. That is what `archive` already houses (toc, references, directories), so a
+ * parcelled / grid territory whose content is a simple index takes the same use.
+ */
+export function simpleIndex(t: Territory): boolean {
+  const it = t.items;
+  if (!it || it.source !== "series") return false;
+  return it.count >= 5 && it.linksPerItem >= 0.5 && it.linksPerItem <= 1 && it.charsPerItem < 200 && it.mediaPerItem < 0.5 && it.controlsPerItem < 0.5 && it.titledShare - it.linkTitledShare < 0.5;
+}
+
+/** The use of a territory's buildings in a composition, and its reason. */
+export function assignUse(t: Territory, comp: Comp): { use: Use | undefined; reason: string } {
+  if ((comp === "parcelled" || comp === "grid") && simpleIndex(t)) return { use: "institutional", reason: "simple-index evidence" };
+  return USE[comp];
+}
 
 /** Base program for a segment piece: style, colours, roof, awnings… from the brief grammar. */
 function prog(ctx: ComposeCtx, t: Territory, comp: Comp, salt: number, corner = false): Program {
   const b: Brief = { role: comp === "support" ? "support" : "minor", content: COMP_CONTENT[comp], weight: t.weight, repeat: t.repeat, label: shortLabel(t.label) };
-  return { ...programFor(b, ctx.g, ctx.p, ctx.kit, salt, corner), use: USE[comp] };
+  const u = assignUse(t, comp);
+  return { ...programFor(b, ctx.g, ctx.p, ctx.kit, salt, corner), use: u.use, useReason: u.reason };
 }
 
 /** Width a run gives up on each side where the frontage changes cluster (a passage of 2× this). */

@@ -78,6 +78,8 @@ export interface Program {
   unitFrom?: number;
   /** What the building is for (surface grammar); set by the composition, else inferred. */
   use?: Use;
+  /** Why it has that use (trace only): evidence, the composition's function, a convention or the fallback. */
+  useReason?: string;
 }
 
 type Side = "front" | "right" | "back" | "left";
@@ -308,10 +310,26 @@ function cornerEntrance(kit: Kit, x1: number, z1: number, g: number, P: Program)
   kit.box(x1 - 0.05, g - 0.06, z1 - 0.05, 0.1, 0.06, 0.1, trimOf(P.wall));
 }
 
-/** Ceremonial / institutional entrance on the axis: steps, a recessed portal, a surround. */
-function portal(kit: Kit, span: number, g: number, P: Program, axial: boolean) {
+/** Institutional portal: its designed width, and the share of the frontage it takes below that. */
+const PORTAL_W = 0.9;
+const PORTAL_SHARE = 0.3;
+/** The widest of the portal's three steps overhangs it by 2 × (0.15 + 2 × 0.1). */
+const STEPS_OVER = 0.7;
+/**
+ * Narrowest frontage that holds the institutional entrance as designed AND keeps the plinth
+ * mostly closed: the full-size portal with its steps (0.9 + 0.7 = 1.6) takes at most half of it.
+ * Below it the portal shrinks (under 3.0) and steps, surround and lamps fill the unit, so an
+ * attached series of such units gets one marked entrance for the series, not one per unit.
+ */
+export const CEREMONIAL_SPAN = 2 * (PORTAL_W + STEPS_OVER);
+
+/**
+ * Ceremonial / institutional entrance on the axis: steps, a recessed portal, a surround.
+ * `width`: the portal's width when it is the one entrance of a series (sized for the series).
+ */
+function portal(kit: Kit, span: number, g: number, P: Program, axial: boolean, width?: number) {
   const mid = span / 2;
-  const w = axial ? Math.min(1.6, span * 0.4) : Math.min(0.9, span * 0.3);
+  const w = axial ? Math.min(1.6, span * 0.4) : width ?? Math.min(PORTAL_W, span * PORTAL_SHARE);
   const trim = trimOf(P.wall);
   for (let i = 0; i < 3; i++) kit.span(mid - w / 2 - 0.15 - i * 0.1, mid + w / 2 + 0.15 + i * 0.1, 0, 0.06 * (3 - i), 0, 0.12 + i * 0.12, mix(kit.palette.stone, white, 0.25));
   // The surround (and pediment, plaque) may rise into the floor above: a two-zone entrance.
@@ -325,6 +343,15 @@ function portal(kit: Kit, span: number, g: number, P: Program, axial: boolean) {
   for (const s of [-1, 1]) kit.glow(mid + s * (w / 2 + 0.2), 0.5, 0.06, 0.05, 0.08, 0.05, kit.palette.lamp, kit.night ? 1.4 : 0.15);
 }
 
+/** A plain secondary door on a closed plinth: a leaf under a lintel, no steps, lamps or sign. */
+function plainDoor(kit: Kit, span: number, g: number, P: Program) {
+  const mid = span / 2;
+  const w = Math.min(0.32, span * 0.3);
+  const h = Math.min(0.56, g - 0.14);
+  kit.span(mid - w / 2 - 0.04, mid + w / 2 + 0.04, 0, h + 0.05, -0.02, 0.03, trimOf(P.wall));
+  kit.span(mid - w / 2, mid + w / 2, 0, h, -0.05, 0.0, darkOf(P.wall, 0.5));
+}
+
 /** One service door (roll-up grille) on an otherwise blank wall. */
 function serviceDoor(kit: Kit, span: number, P: Program, at: number) {
   const u = span * at;
@@ -334,7 +361,7 @@ function serviceDoor(kit: Kit, span: number, P: Program, at: number) {
 }
 
 /** The ground floor of one frontage, from the anatomy. `first`: the main street face. */
-function groundFace(kit: Kit, span: number, g: number, P: Program, A: Anatomy, label: string | undefined, k: number, first: boolean, cornerSide: "end" | "start" | "none") {
+function groundFace(kit: Kit, span: number, g: number, P: Program, A: Anatomy, label: string | undefined, k: number, first: boolean, cornerSide: "end" | "start" | "none", portalWidth?: number) {
   // Leave the corner entrance free on both faces that meet at it.
   const u0 = cornerSide === "start" && A.ground.cornerEntrance ? 0.5 : 0.06;
   const u1 = cornerSide === "end" && A.ground.cornerEntrance ? span - 0.5 : span - 0.06;
@@ -358,7 +385,8 @@ function groundFace(kit: Kit, span: number, g: number, P: Program, A: Anatomy, l
       if (first) lobby(kit, Math.max(0.1, span / 2 - 1.4), Math.min(span - 0.1, span / 2 + 1.4), g, P);
       break;
     case "civic":
-      if (first) portal(kit, span, g, P, A.ground.entrance === "axial");
+      if (first && A.ground.entrance === "secondary") plainDoor(kit, span, g, P);
+      else if (first) portal(kit, span, g, P, A.ground.entrance === "axial", portalWidth);
       break;
     case "domestic":
       if (first) for (let i = 0; i < A.ground.units; i++) stoop(kit, (span * (i + 0.5)) / A.ground.units, P);
@@ -497,7 +525,7 @@ function chimneys(kit: Kit, x0: number, x1: number, z0: number, z1: number, H: n
 }
 
 /** The common "street building": ground, base, body, crown and roof zones from the anatomy. */
-function block(kit: Kit, x0: number, x1: number, z0: number, z1: number, floors: number, P: Program, fronts: Side[], opts: { roof?: RoofFamily; wall?: RGB; label?: string; k?: number; cornice?: Vol["cornice"] } = {}) {
+function block(kit: Kit, x0: number, x1: number, z0: number, z1: number, floors: number, P: Program, fronts: Side[], opts: { roof?: RoofFamily; wall?: RGB; label?: string; k?: number; cornice?: Vol["cornice"]; series?: { main: boolean; span: number } } = {}) {
   const g = groundH(P.ground);
   const wall = opts.wall ?? P.wall;
   const H = g + floors * FLOOR;
@@ -508,7 +536,11 @@ function block(kit: Kit, x0: number, x1: number, z0: number, z1: number, floors:
   const Q = { ...P, wall, seed: P.seed + Math.round(lx * 3) * 7919 + Math.round(lz * 3) * 104729 };
   const k = opts.k ?? 0;
   const corner = fronts.length >= 2;
-  const A = anatomyFor(Q, { span: x1 - x0, floors, groundHeight: g, corner, roof, signals: kit.surface, rand: (n) => kit.rand(Q.seed + k, 200 + n) });
+  const A = anatomyFor(Q, { span: x1 - x0, floors, groundHeight: g, corner, roof, signals: kit.surface, rand: (n) => kit.rand(Q.seed + k, 200 + n), ...(opts.series ? { series: { main: opts.series.main } } : {}) });
+  // A secondary unit of an institutional row carries no signage: the series' sign is at its entrance.
+  const secondary = A.ground.entrance === "secondary";
+  // The main unit's portal is sized for the series, within its own frontage.
+  const portalWidth = opts.series?.main && A.ground.kind === "civic" ? Math.min(PORTAL_W, opts.series.span * PORTAL_SHARE, x1 - x0 - 0.2) : undefined;
   kit.anatomies.push(A);
   const zone0 = kit.zone;
   kit.zone = "ground";
@@ -548,11 +580,11 @@ function block(kit: Kit, x0: number, x1: number, z0: number, z1: number, floors:
     face(kit, x0, x1, z0, z1, side, (span) => {
       const cornerSide = !corner ? "none" : side === "front" ? "end" : side === "right" ? "start" : "none";
       kit.zone = "ground";
-      groundFace(kit, span, g, Q, A, i === 0 ? (opts.label ?? P.label) : P.label2, k + i, i === 0, cornerSide);
+      groundFace(kit, span, g, Q, A, i === 0 ? (opts.label ?? P.label) : P.label2, k + i, i === 0, cornerSide, portalWidth);
       kit.zone = "facade";
       if (i === 0) {
-        if (P.signage === "blade" && opts.label !== "" && span > 2) bladeSign(kit, span - 0.25, g + 0.12, opts.label ?? P.label ?? "", P.accent);
-        if (P.signage === "screen" && floors >= 3) screen(kit, span * 0.18, span * 0.82, g + FLOOR * 0.6, g + FLOOR * Math.min(floors - 0.5, 3.2), P.brand ?? P.label, P.accent);
+        if (P.signage === "blade" && opts.label !== "" && span > 2 && !secondary) bladeSign(kit, span - 0.25, g + 0.12, opts.label ?? P.label ?? "", P.accent);
+        if (P.signage === "screen" && floors >= 3 && !secondary) screen(kit, span * 0.18, span * 0.82, g + FLOOR * 0.6, g + FLOOR * Math.min(floors - 0.5, 3.2), P.brand ?? P.label, P.accent);
         // One stack of balconies per flat (~2 tiles), on the façade's own bays.
         if (A.details.some((d) => d.startsWith("balconies"))) balconies(kit, span, g, floors - A.crown.floors, Q, Math.max(2, Math.round(2 / (0.5 + 0.25 * A.body.bay))), A.body.bay);
         if (A.details.some((d) => d.startsWith("fire escape"))) fireEscape(kit, span * (kit.rand(Q.seed + k, 11) < 0.5 ? 0.3 : 0.7), g, floors);
@@ -563,7 +595,7 @@ function block(kit: Kit, x0: number, x1: number, z0: number, z1: number, floors:
   if (top.deck !== null) roofZones(kit, x0, x1, z0, z1, top.deck, Q, A);
   else if (A.roof.service === "chimneys") chimneys(kit, x0, x1, z0, z1, H, Q);
   kit.zone = "sign";
-  if (P.signage === "billboard" && top.deck !== null && (P.label || P.brand)) rooftopBillboard(kit, (x0 + x1) / 2, z1 - 0.5, top.deck, (P.label ?? P.brand)!, P.accent);
+  if (P.signage === "billboard" && top.deck !== null && (P.label || P.brand) && !secondary) rooftopBillboard(kit, (x0 + x1) / 2, z1 - 0.5, top.deck, (P.label ?? P.brand)!, P.accent);
   kit.zone = zone0;
   return top.top;
 }
@@ -592,17 +624,26 @@ export function building(kit: Kit, w: number, d: number, P: Program): number {
       // variation from the series' sequence, so cutting a row into runs keeps its texture.
       const n = Math.max(P.unitFrom === undefined ? 2 : 1, P.units ?? Math.round(w / 1.6));
       const o = P.unitFrom ?? 0;
+      const widths: number[] = [];
+      for (let k = 0, x = x0; k < n; k++) {
+        widths.push(k === n - 1 ? x1 - x : (w / n) * (0.8 + kit.rand(P.seed, k + o) * 0.4));
+        x += widths[k];
+      }
+      // Units too narrow for a ceremonial entrance each: the series has one, on the unit at its middle.
+      let main = 0;
+      for (let k = 0, x = x0; k < n; x += widths[k], k++) if (x <= x0 + w / 2) main = k;
+      const series = w / n < CEREMONIAL_SPAN ? (k: number) => ({ main: k === main, span: w }) : undefined;
       let x = x0;
       let top = 0;
       for (let k = 0; k < n; k++) {
         const i = k + o;
-        const uw = k === n - 1 ? x1 - x : (w / n) * (0.8 + kit.rand(P.seed, i) * 0.4);
+        const uw = widths[k];
         const floors = Math.max(1, P.floors + Math.round((kit.rand(P.seed, 20 + i) - 0.5) * 3));
         const roof: RoofFamily = P.roof === "gable" ? (kit.rand(P.seed, 30 + i) < 0.7 ? "gable" : "flat") : kit.rand(P.seed, 30 + i) < 0.25 ? "gable" : P.roof;
         const wall = kit.pick(kit.palette.walls[P.style], P.seed, 40 + i);
         const label = i === 0 ? P.label : kit.pick(SHOP_WORDS, P.seed, 50 + i);
         const Q: Program = { ...P, awning: kit.pick(["stripes", "solid", "canopy", "none"] as Awning[], P.seed, 60 + i), seed: P.seed * 7 + i, accent: kit.pick(kit.palette.accents, P.seed, 70 + i) };
-        top = Math.max(top, block(kit, x, x + uw - 0.02, z0 + (i % 2 ? 0.12 : 0), z1, floors, Q, ["front"], { roof, wall, label, k: i, cornice: roof === "gable" ? "none" : "light" }));
+        top = Math.max(top, block(kit, x, x + uw - 0.02, z0 + (i % 2 ? 0.12 : 0), z1, floors, Q, ["front"], { roof, wall, label, k: i, cornice: roof === "gable" ? "none" : "light", series: series?.(k) }));
         x += uw;
       }
       return top;

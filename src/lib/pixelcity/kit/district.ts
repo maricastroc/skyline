@@ -18,7 +18,7 @@ import { buildGamePalette } from "../palette";
 import { Surf, type Part, type PixelCity } from "../types";
 import type { Brief } from "./brief";
 import type { Program } from "./buildings";
-import type { Anatomy } from "./surface";
+import { programUse, type Anatomy, type Use } from "./surface";
 import { composeLandmark, composePiece, piecesOfBlock, type LandmarkInfo, type Piece, type PieceType } from "./compose";
 import { planFrontage, type FrontagePlan, type Run } from "./frontage";
 import { Kit, type PeopleMode } from "./core";
@@ -118,6 +118,8 @@ export interface TraceBuilding {
   parts: [number, number];
   /** Surface grammar: the anatomy of every volume the building put up (usually one). */
   anatomy: Anatomy[];
+  /** Program: the building's use and why (simple-index evidence, a composition, a convention, the fallback). */
+  program: { use: Use; reason: string };
 }
 export interface TracePiece {
   territory: number;
@@ -237,7 +239,10 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
     const from = kit.parts.length;
     const an = kit.anatomies.length;
     const top = fn();
-    if (trace && current) trace.buildings.push({ ...current, P, w, d, parts: [from, kit.parts.length], anatomy: kit.anatomies.slice(an) });
+    if (trace && current) {
+      const anatomy = kit.anatomies.slice(an);
+      trace.buildings.push({ ...current, P, w, d, parts: [from, kit.parts.length], anatomy, program: { use: P.use ?? anatomy[0]?.use ?? programUse(P), reason: P.useReason ?? "landmark family" } });
+    }
     return top;
   };
   // Intra-territory composition: parcelled territories with internal structure lay out their
