@@ -50,6 +50,14 @@ const decided = (t: KitTrace | KitTrace9) =>
     frontage: t.frontage,
   });
 const recorded = JSON.parse(readFileSync("scripts/foundation/kit-v9.sha1.json", "utf8")) as Record<string, string>;
+// The blocks of a city. The flat view filters signs, people and glows out AFTER generation, so the
+// trace's indices (which count them) are mapped onto the filtered list.
+const kept = (q: { mesh: string }) => q.mesh !== "sign" && q.mesh !== "sprite" && q.mesh !== "glow";
+const blocksOf = (parts: Array<{ mesh: string }>, range: [number, number], full: Array<{ mesh: string }> | null) => {
+  if (!full) return parts.slice(range[0], range[1]);
+  const from = full.slice(0, range[0]).filter(kept).length;
+  return parts.slice(from, from + full.slice(range[0], range[1]).filter(kept).length);
+};
 let same = 0;
 let plans = 0;
 let reproduced = 0;
@@ -64,8 +72,11 @@ for (const e of DATASET) {
     const tb = newTrace9();
     const a = generateKitDistrict(p.fp, { profile: p.plan, time, seed: 7, flat, trace: ta });
     const b = g9(q.fp, { profile: q.plan, time, seed: 7, flat, trace: tb });
-    const blocksA = sha(JSON.stringify(a.parts.slice(ta.range[0], ta.range[1])));
-    const blocksB = sha(JSON.stringify(b.parts.slice(tb.range[0], tb.range[1])));
+    // For the flat view, the same city unfiltered tells which parts the filter removed.
+    const fullA = flat ? generateKitDistrict(p.fp, { profile: p.plan, time, seed: 7 }).parts : null;
+    const fullB = flat ? g9(q.fp, { profile: q.plan, time, seed: 7 }).parts : null;
+    const blocksA = sha(JSON.stringify(blocksOf(a.parts, ta.range, fullA)));
+    const blocksB = sha(JSON.stringify(blocksOf(b.parts, tb.range, fullB)));
     if (blocksA === blocksB && decided(ta) === decided(tb)) same++;
     else moved.push(`${e.id}/${time}${flat ? "/flat" : ""}`);
     if (recorded[`${e.id}/${time}${flat ? "/flat" : ""}`] === sha(JSON.stringify([b.parts, b.signs]))) reproduced++;

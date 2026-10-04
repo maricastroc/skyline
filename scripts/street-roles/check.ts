@@ -69,16 +69,19 @@ for (const r of runs) {
 }
 check("street surfaces stay inside the street corridors (no part over a block)", outside === runs.length, `${outside}/${runs.length} pages, ${surfaces} surface parts`);
 
-// 4. The sidewalk furniture (trees, lamps, benches, people along the curbs) is kit-v9's, part for part.
+// 4. Street roles alone leave the sidewalk furniture (trees, lamps, benches, people along the curbs)
+//    as kit-v9's, part for part: with street life (C3) off, only the street surfaces moved.
 let furniture = 0;
 for (const r of runs) {
   const q = r9(snap(r.id));
   const tb = newTrace9();
   const b = g9(q.fp, { profile: q.plan, time: "day", seed: 7, trace: tb });
-  const [f0, f1] = r.t.scene!.furniture;
-  if (JSON.stringify(r.c.parts.slice(f0, f1)) === JSON.stringify(b.parts.slice(tb.range[1], tb.range[1] + (f1 - f0)))) furniture++;
+  const ta: KitTrace = newTrace();
+  const a = generateKitDistrict(r.p.fp, { profile: r.p.plan, time: "day", seed: 7, trace: ta, streetLife: false });
+  const [f0, f1] = ta.scene!.furniture;
+  if (JSON.stringify(a.parts.slice(f0, f1)) === JSON.stringify(b.parts.slice(tb.range[1], tb.range[1] + (f1 - f0)))) furniture++;
 }
-check("sidewalk furniture identical to kit-v9 (C3 not started)", furniture === runs.length, `${furniture}/${runs.length}`);
+check("with street life off, sidewalk furniture identical to kit-v9 (C1 moves streets only)", furniture === runs.length, `${furniture}/${runs.length}`);
 
 // 5. Every role is carried by its own signal and used by several pages.
 const usedBy = ROLES.map((role) => runs.filter((r) => inner(r.t).some((s) => s.role === role)).length);
