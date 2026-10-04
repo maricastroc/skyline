@@ -1,0 +1,89 @@
+# Program audit — DRY RUN (trade vs reference split, reverted)
+
+2053 volumes, 14 pages, seed 7, day.
+
+## 1. Corpus distribution
+
+| use | volumes | share | land (lots) | land share |
+|---|---|---|---|---|
+| commercial | 214 | 10% | 405 | 12% |
+| residential | 406 | 20% | 735 | 22% |
+| office | 307 | 15% | 621 | 19% |
+| institutional | 1006 | 49% | 1254 | 38% |
+| service | 116 | 6% | 201 | 6% |
+| kiosk | 0 | 0% | 0 | 0% |
+| civic | 4 | 0% | 52 | 2% |
+| industrial | 0 | 0% | 0 | 0% |
+
+## 2. Origin × composition × use (volumes)
+
+| origin (territory kind) | composition | commercial | residential | office | institutional | service | kiosk | civic | industrial |
+|---|---|---|---|---|---|---|---|---|---|
+| directory | archive |  |  |  | 7 |  |  |  |  |
+| faq | parcelled |  |  |  | 234 |  |  |  |  |
+| features | continuous |  | 68 |  |  |  |  |  |  |
+| features | media |  |  | 30 |  |  |  |  |  |
+| features | parcelled |  |  |  | 88 |  |  |  |  |
+| feed | parcelled |  |  |  | 282 |  |  |  |  |
+| footer | support |  |  |  |  | 116 |  |  |  |
+| gallery | media |  |  | 36 |  |  |  |  |  |
+| hero | landmark |  |  | 3 |  |  |  | 4 |  |
+| infobox | structured |  |  | 2 |  |  |  |  |  |
+| nav | navigation | 44 |  |  |  |  |  |  |  |
+| observed | parcelled |  |  |  | 179 |  |  |  |  |
+| pricing | grid | 131 |  |  | 9 |  |  |  |  |
+| references | archive |  |  |  | 28 |  |  |  |  |
+| remainder | continuous |  | 47 |  |  |  |  |  |  |
+| remainder | media |  |  | 49 |  |  |  |  |  |
+| remainder | parcelled | 32 |  |  | 107 |  |  |  |  |
+| remainder | structured |  |  | 7 |  |  |  |  |  |
+| section | continuous |  | 290 |  |  |  |  |  |  |
+| section | media |  |  | 6 |  |  |  |  |  |
+| section | parcelled | 7 |  |  | 56 |  |  |  |  |
+| section | structured |  |  | 5 |  |  |  |  |  |
+| showcase | media |  |  | 163 |  |  |  |  |  |
+| testimonials | continuous |  | 1 |  |  |  |  |  |  |
+| testimonials | media |  |  | 6 |  |  |  |  |  |
+| toc | archive |  |  |  | 16 |  |  |  |  |
+
+## 3. Per page (volumes)
+
+| page | commercial | residential | office | institutional | service | kiosk | civic | industrial | commercial share |
+|---|---|---|---|---|---|---|---|---|---|
+| reference | 9 | 37 | 16 | 36 | 3 |  | 1 |  | 9% |
+| docs | 4 | 154 | 1 | 13 | 1 |  |  |  | 2% |
+| app | 11 | 9 | 8 | 213 | 6 |  |  |  | 4% |
+| saas | 2 | 48 | 31 |  | 9 |  |  |  | 2% |
+| shop | 120 | 1 | 1 |  | 15 |  |  |  | 88% |
+| news | 21 | 3 | 133 | 13 | 3 |  |  |  | 12% |
+| portfolio |  | 54 | 31 |  | 5 |  | 1 |  | 0% |
+| forum |  |  |  | 234 | 2 |  | 1 |  | 0% |
+| institution | 3 | 30 | 11 | 96 | 25 |  |  |  | 2% |
+| oldweb |  |  |  | 179 |  |  |  |  | 0% |
+| media | 8 | 10 | 39 | 6 | 19 |  |  |  | 10% |
+| directory | 8 |  |  | 165 | 1 |  |  |  | 5% |
+| reference-2 | 5 | 39 | 20 | 28 | 4 |  | 1 |  | 5% |
+| saas-2 | 23 | 21 | 16 | 23 | 23 |  |  |  | 22% |
+
+## 4. Seed dependence
+
+- reference: identical uses for seeds 7, 8, 9
+- docs: identical uses for seeds 7, 8, 9
+- app: identical uses for seeds 7, 8, 9
+- saas: identical uses for seeds 7, 8, 9
+- shop: identical uses for seeds 7, 8, 9
+- news: identical uses for seeds 7, 8, 9
+- portfolio: identical uses for seeds 7, 8, 9
+- forum: identical uses for seeds 7, 8, 9
+- institution: identical uses for seeds 7, 8, 9
+- oldweb: identical uses for seeds 7, 8, 9
+- media: identical uses for seeds 7, 8, 9
+- directory: identical uses for seeds 7, 8, 9
+- reference-2: uses differ by seed
+- saas-2: identical uses for seeds 7, 8, 9
+
+## 5. Uses that never or almost never occur
+
+- kiosk: 0 volume(s) (0.0%)
+- civic: 4 volume(s) (0.2%)
+- industrial: 0 volume(s) (0.0%)
