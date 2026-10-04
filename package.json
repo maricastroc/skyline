@@ -16,7 +16,8 @@
     "test:surface": "tsx scripts/surface/check.ts",
     "test:openings": "tsx scripts/openings/check.ts",
     "test:composition": "tsx scripts/composition/check.ts",
-    "test:program": "tsx scripts/program/check.ts"
+    "test:program": "tsx scripts/program/check.ts",
+    "test:foundation": "tsx scripts/foundation/check.ts"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",
