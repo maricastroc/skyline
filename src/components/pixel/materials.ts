@@ -51,6 +51,8 @@ varying vec3 vObjNormal;
 varying vec3 vWorld;
 varying float vSeed;
 varying float vHighlight;
+varying vec3 vWN;
+varying vec3 vWT;
 `;
 
 const VERT_ANIM = /* glsl */ `
@@ -80,6 +82,15 @@ if (aAnim.y >= 0.0) {
   #endif
   vWorld = (modelMatrix * wp).xyz;
 }
+// World-space face frame for the openings depth: N out of the face, T along fc.x.
+{
+  mat3 fm = mat3(modelMatrix);
+  #ifdef USE_INSTANCING
+    fm = fm * mat3(instanceMatrix);
+  #endif
+  vWN = normalize(fm * normal);
+  vWT = normalize(fm * (abs(normal.x) > 0.5 ? vec3(0.0, 0.0, 1.0) : vec3(1.0, 0.0, 0.0)));
+}
 `;
 
 const FRAG_DECL = /* glsl */ `
@@ -99,7 +110,39 @@ varying vec3 vObjNormal;
 varying vec3 vWorld;
 varying float vSeed;
 varying float vHighlight;
+varying vec3 vWN;
+varying vec3 vWT;
 float pxHash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+// Openings depth (kit/openings.ts). Whole render pixels: w snapped to the pixel size p.
+float pxSnap(float w, float p) { return sign(w) * floor(abs(w) / p + 0.5) * p; }
+// A recessed opening as a parallax box, solved per fragment. p: point in opening coordinates
+// (x from the opening's axis, y up); r: (half width, bottom, top); d: depth; v / l: view and sun
+// directions in the face frame (x along the face, y up, z out of the face); px: world units per
+// render pixel. Returns 0 outside, 1 glass, 3 reveal facing the sun, 4 reveal away from it,
+// 5 sash (one pixel round the glass). g: the glass-plane point seen; shade: cast shadow on glass.
+float pxRecess(vec2 p, vec3 r, float d, vec3 v, vec3 l, vec2 px, out vec2 g, out float shade) {
+  g = p;
+  shade = 1.0;
+  if (abs(p.x) > r.x || p.y < r.y || p.y > r.z) return 0.0;
+  if (d < 0.9 * px.x) return 1.0; // thinner than a pixel at this zoom: flush (no new detail)
+  vec2 o = vec2(pxSnap(d * v.x / max(v.z, 0.08), px.x), pxSnap(d * v.y / max(v.z, 0.08), px.y));
+  g = p - o;
+  bool outX = abs(g.x) > r.x;
+  bool outY = g.y < r.y || g.y > r.z;
+  if (outX || outY) {
+    // The first recess face the view ray meets (fraction of the depth at each crossing).
+    float tx = o.x > 0.0 ? (p.x + r.x) / o.x : o.x < 0.0 ? (r.x - p.x) / -o.x : 2.0;
+    float ty = o.y > 0.0 ? (p.y - r.y) / o.y : o.y < 0.0 ? (r.z - p.y) / -o.y : 2.0;
+    float sun = (outX && (!outY || tx < ty)) ? (o.x > 0.0 ? l.x : -l.x) : (o.y > 0.0 ? l.y : -l.y);
+    return sun > 0.12 ? 3.0 : 4.0;
+  }
+  if (l.z > 0.05) {
+    vec2 e = g + vec2(pxSnap(d * l.x / l.z, px.x), pxSnap(d * l.y / l.z, px.y));
+    if (abs(e.x) > r.x || e.y > r.z || e.y < r.y) shade = 0.6;
+  } else shade = 0.8;
+  if (abs(g.x) > r.x - px.x || g.y < r.y + px.y || g.y > r.z - px.y) return 5.0;
+  return 1.0;
+}
 void pxRevealClip() {
   if (uReveal.y != 0.0) {
     float d = length(vWorld.xz);
@@ -132,6 +175,26 @@ vec3 pxEmitColor = uLit;
   }
   int surf = int(vMeta.x + 0.5);
   float seed = floor(vSeed * 97.0);
+  // Openings depth: view and sun in the face frame, render-pixel size on the face.
+  vec3 pxV = normalize(vec3(viewMatrix[0][2], viewMatrix[1][2], viewMatrix[2][2]));
+  vec3 pxL = vec3(0.0, 1.0, 0.0);
+  #if NUM_DIR_LIGHTS > 0
+    pxL = normalize((vec4(directionalLights[0].direction, 0.0) * viewMatrix).xyz);
+  #endif
+  vec3 fV = vec3(dot(pxV, vWT), pxV.y, dot(pxV, vWN));
+  vec3 fL = vec3(dot(pxL, vWT), pxL.y, dot(pxL, vWN));
+  vec2 fPx = max(vec2(length(vec2(dFdx(fc.x), dFdy(fc.x))), length(vec2(dFdx(fc.y), dFdy(fc.y)))), vec2(1e-4));
+  float fOpen = mod(floor(floor(vMeta.w + 0.5) / 1024.0), 2.0);
+  float fFrame = mod(floor(floor(vMeta.w + 0.5) / 2048.0), 4.0);
+  float fDepth = mod(floor(floor(vMeta.w + 0.5) / 8192.0), 4.0);
+  float fSill = mod(floor(floor(vMeta.w + 0.5) / 32768.0), 2.0);
+  float fDark = mod(floor(floor(vMeta.w + 0.5) / 65536.0), 2.0);
+  float fD = fDepth < 0.5 ? 0.0 : fDepth < 1.5 ? 0.04 : fDepth < 2.5 ? 0.06 : 0.085;
+  bool fSunLit = fL.z > 0.05;
+  // Level of detail: the recess is drawn from Street View inwards (under ~0.024 world units per
+  // render pixel); further out every opening falls back to the flat drawing, so City View is
+  // exactly as before.
+  bool fNear = fOpen > 0.5 && fPx.x < 0.024;
 
   // Windows on office / house / brick facades.
   if (side && (surf == 1 || surf == 2 || surf == 7)) {
@@ -207,7 +270,25 @@ vec3 pxEmitColor = uLit;
   }
   // ── detail kit ──────────────────────────────────────────────────────────────────────
   // Shop glazing: mullions every half tile, a transom, a kick plate; lit interiors at night.
-  if (side && surf == 13) {
+  if (side && surf == 13 && fNear) {
+    // Openings depth: the glazing sits behind pilasters and fascia (real geometry); on the glass,
+    // the shadow they cast, a dark frame, mullions and transom on the glass plane, and an
+    // interior plane (counter line) behind it.
+    vec2 g; float shade;
+    pxRecess(vec2(fc.x - fs.x * 0.5, fc.y), vec3(fs.x * 0.5, 0.0, fs.y), 0.06, vec3(0.0, 0.0, 1.0), fL, fPx, g, shade);
+    float fw = max(fPx.x, pxSnap(0.03, fPx.x));
+    float edge = step(fs.x * 0.5 - fw, abs(fc.x - fs.x * 0.5)) + step(fs.y - fw, fc.y);
+    float mull = step(fract(fc.x / 0.5), fPx.x / 0.5 * 1.5);
+    float transom = step(fs.y - 0.16, fc.y) * step(fc.y, fs.y - 0.16 + max(fPx.y, 0.03));
+    float kick = step(fc.y, 0.07);
+    vec3 frameC = diffuseColor.rgb * 0.62;
+    vec3 g0 = uGlass * 0.8;
+    g0 = mix(g0, g0 * 0.72, step(0.2, fc.y) * step(fc.y, 0.3)); // counter / shelf line inside
+    g0 = mix(g0, g0 * 1.5 + 0.05, 0.5 * step(0.82, fract((fc.x * 0.9 + fc.y * 0.7) / 1.3)));
+    g0 *= shade < 0.99 ? 0.7 : 1.0;
+    if (pxHash(vec2(floor(fc.x / 0.5), seed)) < vMeta.y * uLights) { pxEmit = 0.85; g0 = mix(uLit, uLit * 0.8, step(0.2, fc.y) * step(fc.y, 0.3)); }
+    diffuseColor.rgb = mix(g0, frameC, max(min(mull + transom + edge, 1.0), kick));
+  } else if (side && surf == 13) {
     float mull = step(fract(fc.x / 0.5), 0.09) + step(fs.x - 0.045, fc.x);
     float transom = step(fs.y - 0.14, fc.y) * step(fc.y, fs.y - 0.09);
     float kick = step(fc.y, 0.07);
@@ -252,6 +333,50 @@ vec3 pxEmitColor = uLit;
       if (pat > 0.5 && pat < 1.5) { wx = abs(wx) - bay * 0.22; hw = max(0.055, bay * 0.12); }
       if (pat > 1.5 && pat < 2.5) { hw = max(0.07, bay * 0.17); y0 = 0.04; y1 = 0.46; }
       if (attic > 0.5) { hw = min(hw, 0.09); y0 = 0.17; y1 = 0.33; }
+      if (fNear) {
+        // Openings depth: WALL → FRAME (style) → REVEAL (program depth, lit by its own face) →
+        // GLAZING with sash, mullion and cast shadow. Same opening rectangle as before.
+        vec3 wall = diffuseColor.rgb;
+        vec3 trim = mix(wall, vec3(0.97, 0.95, 0.9), 0.6);
+        vec3 sashC = fDark > 0.5 ? vec3(0.17, 0.18, 0.2) : mix(trim, vec3(1.0), 0.35);
+        vec2 lc = groups > 0.5 ? vec2(floor(bi / 2.0), floor(fc.y / 0.5)) : vec2(bi, floor(fc.y / 0.5));
+        bool on = pxHash(lc + seed) < vMeta.y * uLights;
+        vec2 g; float shade;
+        float part = pxRecess(vec2(wx, fy), vec3(hw, y0, y1), min(fD, 0.55 * hw), fV, fL, fPx, g, shade);
+        float fw = max(fPx.x, pxSnap(0.035, fPx.x));
+        float fh = max(fPx.y, pxSnap(0.035, fPx.y));
+        // On dark walls the reveal is a lighter material (stone / metal lining), or the opening
+        // would vanish into the wall.
+        vec3 rv = dot(wall, vec3(0.299, 0.587, 0.114)) < 0.28 ? mix(wall, trim, 0.5) : wall;
+        if (part > 2.5 && part < 4.5) {
+          vec3 c = rv * (part < 3.5 ? (fSunLit ? 1.1 : 1.45) : (fSunLit ? 0.64 : 0.8));
+          if (on) { c = mix(c, uLit, 0.3); pxEmit = 0.25; }
+          diffuseColor.rgb = c;
+        } else if (part > 0.5) {
+          bool bar = part > 4.5 || (pat < 0.5 && bay > 0.6 && abs(g.x) < max(fPx.x, 0.02));
+          // Sunlit glass reflects the sky; the recess's shadow on it is the strongest depth cue.
+          vec3 c = bar ? sashC : shade > 0.99 ? mix(uGlass, uGlass * 1.45 + 0.05, 0.35) : shade > 0.7 ? uGlass * 0.88 : uGlass * 0.58;
+          if (bar) c *= shade > 0.99 ? 1.0 : 0.8;
+          if (on && !bar) { pxEmit = 1.0; c = uLit; }
+          diffuseColor.rgb = c;
+        } else {
+          // Wall plane: architrave (0), lintel (1), clean (2), minimal (3); sill and its shadow.
+          // Architrave head a little heavier than its sides, when the floor leaves room for it.
+          float head = fFrame < 0.5 && y1 + fh * 1.7 < 0.49 ? fh * 1.7 : fh;
+          float inRing = step(abs(wx), hw + fw) * step(y0 - fh, fy) * step(fy, y1 + head);
+          float lintel = step(abs(wx), hw + fw) * step(y1, fy) * step(fy, y1 + max(fPx.y, pxSnap(0.045, fPx.y)));
+          float sb = fFrame < 0.5 ? y0 - fh : y0;
+          float sh = max(fPx.y, pxSnap(0.03, fPx.y));
+          float sill = fSill * step(abs(wx), hw + 0.06) * step(sb - sh, fy) * step(fy, sb);
+          float sillShadow = fSill * step(abs(wx), hw + 0.06) * step(sb - sh - fPx.y, fy) * step(fy, sb - sh) * (fSunLit && fL.y > 0.2 ? 1.0 : 0.0);
+          if (sill > 0.5) diffuseColor.rgb = trim * 0.88;
+          else if (sillShadow > 0.5) diffuseColor.rgb = wall * 0.78;
+          else if (fFrame < 0.5 && inRing > 0.5) diffuseColor.rgb = trim;
+          // Minimal: a one-pixel metal frame flush with the wall.
+          else if (fFrame > 2.5 && step(abs(wx), hw + fPx.x) * step(y0 - fPx.y, fy) * step(fy, y1 + fPx.y) > 0.5) diffuseColor.rgb = mix(wall, trim, 0.7);
+          else if (fFrame > 0.5 && fFrame < 1.5 && lintel > 0.5) diffuseColor.rgb = trim * 0.95;
+        }
+      } else {
       float inX = step(abs(wx), hw);
       float inY = step(y0, fy) * step(fy, y1);
       float frame = step(abs(wx), hw + 0.035) * step(y0 - 0.035, fy) * step(fy, y1 + 0.035);
@@ -266,10 +391,31 @@ vec3 pxEmitColor = uLit;
         if (pxHash(lc + seed) < vMeta.y * uLights) { pxEmit = 1.0; g = uLit; }
         diffuseColor.rgb = g;
       } else if (frame > 0.5) diffuseColor.rgb = trim;
+      }
     }
   }
   // Ribbon windows between spandrels.
-  if (side && surf == 15) {
+  if (side && surf == 15 && fNear) {
+    // Openings depth: the ribbon recessed under the spandrel — sill reveal below, the
+    // spandrel's shadow on the glass above, mullions on the glass plane.
+    float fy = fract(fc.y / 0.5) * 0.5;
+    vec3 wall = diffuseColor.rgb;
+    vec2 g; float shade;
+    float part = fc.y < fs.y - 0.1 ? pxRecess(vec2(fc.x - fs.x * 0.5, fy), vec3(fs.x * 0.5 - 0.06, 0.15, 0.42), fD, fV, fL, fPx, g, shade) : 0.0;
+    float run = mod(floor(floor(vMeta.w + 0.5) / 512.0), 2.0) > 0.5 ? 2.8 : 0.7;
+    bool on = pxHash(vec2(floor(fc.x / run), floor(fc.y / 0.5)) + seed) < vMeta.y * uLights;
+    if (part > 2.5 && part < 4.5) {
+      vec3 c = wall * (part < 3.5 ? (fSunLit ? 1.1 : 1.45) : (fSunLit ? 0.64 : 0.8));
+      if (on) { c = mix(c, uLit, 0.3); pxEmit = 0.25; }
+      diffuseColor.rgb = c;
+    } else if (part > 0.5) {
+      bool bar = part > 4.5 || step(fract((g.x + fs.x * 0.5) / 0.35), fPx.x / 0.35 * 1.5) > 0.5;
+      vec3 c = bar ? wall * 0.66 : shade > 0.99 ? mix(uGlass, uGlass * 1.45 + 0.05, 0.35) : shade > 0.7 ? uGlass * 0.88 : uGlass * 0.58;
+      if (bar) c *= shade > 0.99 ? 1.0 : 0.8;
+      if (on && !bar) { pxEmit = 1.0; c = uLit; }
+      diffuseColor.rgb = c;
+    } else diffuseColor.rgb *= 1.0 - 0.06 * step(fy, 0.03);
+  } else if (side && surf == 15) {
     float fy = fract(fc.y / 0.5);
     if (step(0.3, fy) * step(fy, 0.84) > 0.5 && fc.y < fs.y - 0.1 && fc.x > 0.06 && fc.x < fs.x - 0.06) {
       vec3 g = mix(uGlass, uGlass * 1.35, step(0.76, fy));

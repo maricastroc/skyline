@@ -1,6 +1,6 @@
 import { SurfaceLabView } from "@/components/pixel/SurfaceLabView";
 import type { ArchStyle, TimeOfDay } from "@/lib/pixelcity/grammar";
-import { LAB_SETS, type LabSet } from "@/lib/pixelcity/kit/lab";
+import { LAB_SETS, type LabLight, type LabSet } from "@/lib/pixelcity/kit/lab";
 import { vacantFingerprint } from "@/lib/pixelcity/vacant-fingerprint";
 
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
@@ -9,7 +9,9 @@ const STYLES: ArchStyle[] = ["classic", "retro", "modern", "soft", "tech"];
 /**
  * Surface Grammar Lab: buildings in isolation, same camera and palette.
  *   ?set=programs|corners|roofs|styles|sizes  ?style=classic|retro|modern|soft|tech
- *   ?v=4 (before the surface grammar)  ?time=day|night  ?flat=1  ?focus=x,z  ?zoom=n  ?legend=1
+ *   ?set=openings  ?light=front|side|shadow (sun override)
+ *   ?v=4 (before the surface grammar)  ?v=5 (before the openings depth)  ?time=day|night  ?flat=1
+ *   ?focus=x,z  ?zoom=n  ?legend=1
  */
 export default async function SurfaceLabPage({ searchParams }: PageProps<"/pixel/surface-lab">) {
   const sp = await searchParams;
@@ -23,7 +25,8 @@ export default async function SurfaceLabPage({ searchParams }: PageProps<"/pixel
       fp={vacantFingerprint()}
       set={set}
       style={style}
-      version={one(sp.v) === "4" ? 4 : 5}
+      version={one(sp.v) === "4" ? 4 : one(sp.v) === "5" ? 5 : 6}
+      light={(["front", "side", "shadow"] as string[]).includes(one(sp.light) ?? "") ? (one(sp.light) as LabLight) : "default"}
       time={time}
       flat={one(sp.flat) === "1"}
       focus={f && f.length === 2 && f.every(Number.isFinite) ? [f[0], f[1]] : undefined}

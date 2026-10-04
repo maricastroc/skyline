@@ -22,6 +22,7 @@ import { Surf } from "../types";
 import type { Kit } from "./core";
 import { clockFace, colonnade, darkOf, plaza, rhythm, trimOf, turret, volume, type RoofFamily, type Vol } from "./massing";
 import { tree } from "./street";
+import { openingBits, SHOPFRONT } from "./openings";
 import { anatomyFor, ATTIC, bodyVariant, LIT_GROUPS, RUSTIC, type Anatomy, type Use } from "./surface";
 
 export const FLOOR = 0.5;
@@ -86,6 +87,8 @@ function face<T>(kit: Kit, x0: number, x1: number, z0: number, z1: number, side:
 const white: RGB = [0.97, 0.96, 0.92];
 const surfOf = (P: Program) => (P.facade === "bands" ? Surf.BANDS : P.facade === "curtain" ? Surf.GLASS : Surf.FRAMED);
 const litOf = (kit: Kit, k = 0.5) => (kit.night ? k : 0);
+/** Shopfront / lobby / entrance glazing: recessed behind its frame (openings depth). */
+const SHOP_GLASS = openingBits(SHOPFRONT);
 
 /* ───────────────────────── ground floors ───────────────────────── */
 
@@ -97,7 +100,7 @@ export function storefront(kit: Kit, u0: number, u1: number, g: number, P: Progr
   const signBg = darkOf(P.accent, 0.35);
   kit.span(u0, u0 + pil, 0, g, -0.02, 0.05, trimOf(P.wall));
   kit.span(u1 - pil, u1, 0, g, -0.02, 0.05, trimOf(P.wall));
-  kit.span(u0 + pil, u1 - pil, 0, g - fascia, -0.05, 0.0, frame, Surf.STORE, { lit: litOf(kit, 0.9) });
+  kit.span(u0 + pil, u1 - pil, 0, g - fascia, -0.05, 0.0, frame, Surf.STORE, { lit: litOf(kit, 0.9), variant: SHOP_GLASS });
   const inner = u1 - u0 - 2 * pil;
   const du = u0 + pil + ((door ? door === "left" : kit.rand(P.seed + k, 3) < 0.5) ? 0.1 : Math.max(0.1, inner - 0.42));
   kit.span(du - 0.03, du + 0.33, 0, 0.48, -0.03, 0.012, trimOf(P.wall));
@@ -153,7 +156,7 @@ export function lobby(kit: Kit, u0: number, u1: number, g: number, P: Program) {
   const trim = trimOf(P.wall);
   kit.span(u0, u0 + 0.14, 0, g, -0.02, 0.05, trim);
   kit.span(u1 - 0.14, u1, 0, g, -0.02, 0.05, trim);
-  kit.span(u0 + 0.14, u1 - 0.14, 0, g - 0.06, -0.06, 0.0, darkOf(P.wall, 0.45), Surf.STORE, { lit: litOf(kit, 0.95) });
+  kit.span(u0 + 0.14, u1 - 0.14, 0, g - 0.06, -0.06, 0.0, darkOf(P.wall, 0.45), Surf.STORE, { lit: litOf(kit, 0.95), variant: SHOP_GLASS });
   const mid = (u0 + u1) / 2;
   kit.cyl(mid, 0, 0.08, 0.42, 0.46, 0.42, mix(kit.palette.glass, white, 0.25));
   kit.box(mid, 0.46, 0.1, 0.5, 0.04, 0.5, trim);
@@ -293,7 +296,7 @@ function cornerEntrance(kit: Kit, x1: number, z1: number, g: number, P: Program)
   const r = 0.42;
   kit.span(x1 - r, x1 + 0.005, 0, g - 0.06, z1 - r, z1 + 0.005, darkOf(P.wall, 0.6));
   kit.frame(x1 - r / 2, z1 - r / 2, Math.PI / 4, () => {
-    kit.span(-0.17, 0.17, 0, 0.5, 0.24, 0.26, darkOf(P.accent, 0.55), Surf.STORE, { lit: litOf(kit, 0.9) });
+    kit.span(-0.17, 0.17, 0, 0.5, 0.24, 0.26, darkOf(P.accent, 0.55), Surf.STORE, { lit: litOf(kit, 0.9), variant: SHOP_GLASS });
     kit.span(-0.21, 0.21, 0.5, 0.56, 0.2, 0.3, trimOf(P.wall));
     kit.glow(0, 0.6, 0.31, 0.06, 0.05, 0.03, kit.palette.lamp, kit.night ? 1.6 : 0.25);
   });
@@ -310,7 +313,7 @@ function portal(kit: Kit, span: number, g: number, P: Program, axial: boolean) {
   const z = kit.zone;
   if (z) kit.zone = "portal";
   kit.span(mid - w / 2 - 0.08, mid + w / 2 + 0.08, 0.18, g + (axial ? 0.25 : 0.06), -0.02, 0.04, trim);
-  kit.span(mid - w / 2, mid + w / 2, 0.18, g - 0.04, -0.06, 0.0, darkOf(P.wall, 0.55), Surf.STORE, { lit: litOf(kit, 0.6) });
+  kit.span(mid - w / 2, mid + w / 2, 0.18, g - 0.04, -0.06, 0.0, darkOf(P.wall, 0.55), Surf.STORE, { lit: litOf(kit, 0.6), variant: SHOP_GLASS });
   if (axial && P.style !== "modern" && P.style !== "tech") kit.part({ mesh: "prism", node: kit.node, x: mid, y: g + 0.25, z: 0.02, w: w + 0.3, h: 0.22, d: 0.12, color: trim });
   if (P.brand || P.label) kit.sign((P.brand ?? P.label)!, mid, g + (axial ? 0.06 : 0.0), 0.05, { bg: darkOf(P.wall, 0.35), texel: 0.026, maxW: w });
   kit.zone = z;
@@ -505,9 +508,11 @@ function block(kit: Kit, x0: number, x1: number, z0: number, z1: number, floors:
   const zone0 = kit.zone;
   kit.zone = "ground";
   const surf = A.body.surf === "bands" ? Surf.BANDS : A.body.surf === "curtain" ? Surf.GLASS : Surf.FRAMED;
-  const bv = bodyVariant(A.body);
+  // Openings depth: the same bits on every zone with openings (curtain walls stay flush: 0).
+  const ob = openingBits(A.opening);
+  const bv = bodyVariant(A.body) + ob;
   // GROUND: the street floor (domestic grounds carry the body's bays, so openings line up).
-  kit.span(x0, x1, 0, g, z0, z1, darkOf(wall, 0.12), A.ground.kind === "domestic" ? Surf.FRAMED : Surf.PLAIN, { variant: A.ground.kind === "domestic" ? bodyVariant({ ...A.body, pattern: "single", tall: false, accentEnds: false }) : 0, lit: litOf(kit, 0.45) });
+  kit.span(x0, x1, 0, g, z0, z1, darkOf(wall, 0.12), A.ground.kind === "domestic" ? Surf.FRAMED : Surf.PLAIN, { variant: A.ground.kind === "domestic" ? bodyVariant({ ...A.body, pattern: "single", tall: false, accentEnds: false }) + ob : 0, lit: litOf(kit, 0.45) });
   course(kit, x0, x1, z0, z1, g, wall, 0.06);
   // BASE / BODY / CROWN, stacked inside the massing's one volume (same outer box).
   const cF = floors - A.crown.floors >= 1 + (A.base.floors ? 1 : 0) ? A.crown.floors : 0;
@@ -516,7 +521,7 @@ function block(kit: Kit, x0: number, x1: number, z0: number, z1: number, floors:
   if (bF) {
     kit.zone = "base";
     const bs = A.base.treatment === "glazed" ? Surf.STORE : surf === Surf.FRAMED ? Surf.FRAMED : surf;
-    kit.span(x0, x1, y, y + bF * FLOOR, z0, z1, A.base.treatment === "rusticated" ? mix(wall, white, 0.12) : wall, bs, { variant: bs === Surf.FRAMED ? bv + (A.base.treatment === "rusticated" ? RUSTIC : 0) : LIT_GROUPS, lit: litOf(kit, bs === Surf.STORE ? 0.45 : 0.5) });
+    kit.span(x0, x1, y, y + bF * FLOOR, z0, z1, A.base.treatment === "rusticated" ? mix(wall, white, 0.12) : wall, bs, { variant: bs === Surf.FRAMED ? bv + (A.base.treatment === "rusticated" ? RUSTIC : 0) : bs === Surf.STORE ? LIT_GROUPS + SHOP_GLASS : LIT_GROUPS + ob, lit: litOf(kit, bs === Surf.STORE ? 0.45 : 0.5) });
     y += bF * FLOOR;
     course(kit, x0, x1, z0, z1, y, wall, A.base.treatment === "rusticated" ? 0.08 : 0.05);
   }
@@ -640,10 +645,10 @@ export function building(kit: Kit, w: number, d: number, P: Program): number {
           for (let u = 0.1, k = 0; u < span - 2; u += 2.6, k++) storefront(kit, u, u + 2.4, g, { ...P, awning: kit.pick(["solid", "canopy", "stripes"] as Awning[], P.seed, k) }, "shop", kit.pick(SHOP_WORDS, P.seed, k), k);
         });
       }
-      const top = volume(kit, { x0, x1, z0: sz0, z1, y0: g, y1: H, wall: P.wall, surf: Surf.BANDS, lit: litOf(kit), roof: "flat", roofColor: P.roofColor, cornice: "none" });
-      kit.span(x1 - 0.9, x1 - 0.1, 0, H + 0.6, sz0 - 0.3, sz0 + 0.5, darkOf(P.wall, 0.1));
       const A = anatomyFor(P, { span: w, floors: P.floors, groundHeight: g, corner: false, roof: "flat", signals: kit.surface, rand: (n) => kit.rand(P.seed, 200 + n) });
       kit.anatomies.push(A);
+      const top = volume(kit, { x0, x1, z0: sz0, z1, y0: g, y1: H, wall: P.wall, surf: Surf.BANDS, variant: openingBits(A.opening), lit: litOf(kit), roof: "flat", roofColor: P.roofColor, cornice: "none" });
+      kit.span(x1 - 0.9, x1 - 0.1, 0, H + 0.6, sz0 - 0.3, sz0 + 0.5, darkOf(P.wall, 0.1));
       if (top.deck !== null) roofZones(kit, x0, x1 - 1, sz0, z1, top.deck, P, A);
       if (z0 < sz0 - 0.5) plaza(kit, x0, x1, z0, sz0 - 0.3, P.seed, false);
       return H + 0.6;
@@ -652,9 +657,9 @@ export function building(kit: Kit, w: number, d: number, P: Program): number {
       const g = 0.8;
       const pod = g + 2 * FLOOR;
       kit.span(x0, x1, 0, g, z0, z1, darkOf(P.wall, 0.25));
-      const pt = volume(kit, { x0, x1, z0, z1, y0: g, y1: pod, wall: P.wall, surf: Surf.BANDS, lit: litOf(kit, 0.6), roof: "terrace", roofColor: P.roofColor, cornice: "light" });
       const A = anatomyFor(P, { span: w, floors: P.floors, groundHeight: g, corner: false, roof: "flat", signals: kit.surface, rand: (n) => kit.rand(P.seed, 200 + n) });
       kit.anatomies.push(A);
+      const pt = volume(kit, { x0, x1, z0, z1, y0: g, y1: pod, wall: P.wall, surf: Surf.BANDS, variant: openingBits(A.opening), lit: litOf(kit, 0.6), roof: "terrace", roofColor: P.roofColor, cornice: "light" });
       face(kit, x0, x1, z0, z1, "front", (span) => groundFace(kit, span, g, P, A, P.label, 0, true, "none"));
       // A second ground on the side street (mixed use: a lobby in front, shops round the side).
       if (P.ground2) {
@@ -692,7 +697,7 @@ export function building(kit: Kit, w: number, d: number, P: Program): number {
       for (let t = 0; t < tiers; t++) {
         const f = Math.max(2, Math.round((P.floors / tiers) * (t === 0 ? 1.2 : t === 1 ? 1 : 0.8)));
         const last = t === tiers - 1;
-        const v = volume(kit, { x0: x0 + inset, x1: x1 - inset, z0: z0 + inset, z1: z1 - inset, y0: y, y1: y + f * FLOOR, wall: P.wall, surf: surfOf(P), variant: P.rhythm, lit: litOf(kit), roof: last ? P.roof : "terrace", roofColor: P.roofColor, cornice: P.style === "classic" ? "heavy" : "light" });
+        const v = volume(kit, { x0: x0 + inset, x1: x1 - inset, z0: z0 + inset, z1: z1 - inset, y0: y, y1: y + f * FLOOR, wall: P.wall, surf: surfOf(P), variant: P.rhythm + openingBits(A.opening), lit: litOf(kit), roof: last ? P.roof : "terrace", roofColor: P.roofColor, cornice: P.style === "classic" ? "heavy" : "light" });
         if (!last && v.deck !== null) for (let x = x0 + inset + 0.3; x < x1 - inset - 0.2; x += 0.7) kit.box(x, v.deck, z1 - inset - 0.25, 0.2, 0.16, 0.2, kit.palette.leaves[(((t + Math.round(x)) % 2) + 2) % 2]);
         y += f * FLOOR + 0.12;
         inset += Math.min(w, d) * 0.14;

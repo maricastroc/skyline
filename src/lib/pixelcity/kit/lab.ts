@@ -8,6 +8,8 @@
  *   roofs     uses × roof conditions (small flat, large flat, pitched), seen from above
  *   styles    one use × the five styles: does style only change the expression?
  *   sizes     uses × (narrow and low, wide and tall)
+ *   openings  five uses × four styles on one small box (openings depth pass); with `light`
+ *             the same façades front-lit, side-lit (grazing) or in shadow
  *
  * `build` is injected so the frozen kit-v4 can render the same programs (BEFORE).
  */
@@ -20,8 +22,15 @@ import type { Awning, Family, Ground, Program, Signage, Topside } from "./buildi
 import type { RoofFamily } from "./massing";
 import type { Anatomy, Use } from "./surface";
 
-export type LabSet = "programs" | "corners" | "roofs" | "styles" | "sizes";
-export const LAB_SETS: LabSet[] = ["programs", "corners", "roofs", "styles", "sizes"];
+export type LabSet = "programs" | "corners" | "roofs" | "styles" | "sizes" | "openings";
+export const LAB_SETS: LabSet[] = ["programs", "corners", "roofs", "styles", "sizes", "openings"];
+/** Sun override for the lab (world direction towards the sun; the camera looks at +z and +x faces). */
+export type LabLight = "default" | "front" | "side" | "shadow";
+const SUN: Record<Exclude<LabLight, "default">, [number, number, number]> = {
+  front: [0.2, 0.7, 1.0],
+  side: [-1.0, 0.55, 0.18],
+  shadow: [-0.3, 0.8, -0.7],
+};
 
 /** What a lab needs from a kit version. */
 export interface LabKit {
@@ -88,6 +97,10 @@ function cells(set: LabSet, p: GamePalette, style: ArchStyle): { cols: number; c
     case "styles":
       for (const u of ["residential", "commercial", "office"] as Use[]) (["classic", "retro", "modern", "soft", "tech"] as ArchStyle[]).forEach((st, i) => out.push({ label: `${u} · ${st}`, P: labProgram(u, st, p, { seed: i }), w: 6, d: 5 }));
       return { cols: 5, cells: out };
+    case "openings":
+      for (const st of ["classic", "retro", "modern", "tech"] as ArchStyle[])
+        (["residential", "commercial", "office", "civic", "industrial"] as Use[]).forEach((u, i) => out.push({ label: `${u} · ${st}`, P: labProgram(u, st, p, { seed: i, floors: 4 }), w: 5, d: 4 }));
+      return { cols: 5, cells: out };
     case "sizes":
       for (const [w, d, floors] of [
         [3, 4, 3],
@@ -104,10 +117,11 @@ export interface LabResult {
 }
 
 /** The lab as an ordinary PixelCity. Cells sit on paved pads, fronts facing +z. */
-export function generateSurfaceLab(kitApi: LabKit, base: SiteFingerprint, o: { set: LabSet; style?: ArchStyle; time?: TimeOfDay; flat?: boolean }): LabResult {
+export function generateSurfaceLab(kitApi: LabKit, base: SiteFingerprint, o: { set: LabSet; style?: ArchStyle; time?: TimeOfDay; flat?: boolean; light?: LabLight }): LabResult {
   const g0 = deriveGrammar(base);
   const grammar = { ...g0, time: o.time ?? "day" };
-  const palette = buildGamePalette(base, grammar);
+  const p0 = buildGamePalette(base, grammar);
+  const palette = o.light && o.light !== "default" ? { ...p0, sun: { ...p0.sun, dir: SUN[o.light] } } : p0;
   const kit = new kitApi.Kit(palette, 7);
   const { cols, cells: list } = cells(o.set, palette, o.style ?? "classic");
   const pitch = 11;

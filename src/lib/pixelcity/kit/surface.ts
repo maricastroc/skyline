@@ -26,6 +26,7 @@
 import type { ArchStyle } from "../grammar";
 import type { Awning, Family, Ground, Program, Signage } from "./buildings";
 import type { RoofFamily } from "./massing";
+import { openingFor, type OpeningTreatment } from "./openings";
 
 export type Use = "residential" | "commercial" | "office" | "civic" | "institutional" | "industrial" | "service" | "kiosk";
 
@@ -68,6 +69,8 @@ export interface Anatomy {
   /** What the style expressed. */
   style: string;
   why: string[];
+  /** Openings depth pass: how the façade's openings are recessed and framed (openings.ts). */
+  opening: OpeningTreatment;
 }
 
 const PITCHED = new Set<RoofFamily>(["gable", "mansard", "sawtooth", "dome", "spire", "crown"]);
@@ -310,7 +313,9 @@ export function anatomyFor(P: Program, a: AnatomyInput): Anatomy {
   if (occupied === "none" && !pitched) absent.push(`roof not occupied: ${occupiable ? `${P.topside} topside, ${st} style` : `${use} roof is not occupiable`}`);
   if (ground.awning !== "none" && (st === "classic" || st === "retro" || st === "soft")) variation.push(`awning ${ground.awning} (style's equivalents)`);
   const style = `${st}: ${crown.cornice !== "none" ? `${crown.cornice} cornice` : crown.kind}, ${body.pattern}${body.brick ? " brick" : ""}${ground.awning !== "none" ? `, ${ground.awning} awnings` : ""}`;
-  return { use, ground, base, body, crown, roof: { edge, service, occupied, energy, architectural: a.roof }, corner, details, signals, variation, absent, style, why };
+  const A: Anatomy = { use, ground, base, body, crown, roof: { edge, service, occupied, energy, architectural: a.roof }, corner, details, signals, variation, absent, style, why, opening: undefined as unknown as OpeningTreatment };
+  A.opening = openingFor(A);
+  return A;
 }
 
 /** FRAMED / BANDS variant bits for a zone (see materials.ts). */
@@ -337,6 +342,7 @@ export interface SurfaceTrace {
   absent: string[];
   pageSignalsUsed: string[];
   styleExpression: string;
+  openingTreatment: string;
 }
 
 export function surfaceTrace(A: Anatomy): SurfaceTrace {
@@ -354,5 +360,6 @@ export function surfaceTrace(A: Anatomy): SurfaceTrace {
     absent: A.absent,
     pageSignalsUsed: A.signals,
     styleExpression: A.style,
+    openingTreatment: `${A.opening.glazing}; depth ${A.opening.depth}; frame ${A.opening.frame}${A.opening.sill ? " + sill" : ""}; ${A.opening.sash} sash — ${A.opening.source.join("; ")}`,
   };
 }
