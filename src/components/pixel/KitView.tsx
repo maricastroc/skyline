@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import type { SiteFingerprint } from "@/lib/fingerprint/fingerprint";
 import type { TimeOfDay } from "@/lib/pixelcity/grammar";
 import type { PeopleMode } from "@/lib/pixelcity/kit/core";
-import { debugColor, generateKitDistrict, newTrace, type KitTrace, type ProfileName } from "@/lib/pixelcity/kit/district";
+import { debugColor, generateKitDistrict, newTrace, ROLE_COLOR, type KitTrace, type ProfileName } from "@/lib/pixelcity/kit/district";
 import type { Plan } from "@/lib/pixelcity/kit/plan";
 import { surfaceTrace } from "@/lib/pixelcity/kit/surface";
 import { generateKitDistrict as generateKitDistrictV1 } from "@/lib/pixelcity/kit-v1/district";
@@ -51,13 +51,15 @@ export interface KitViewProps {
   provenance?: boolean;
   /** Surface inspector (current generator only): click a building to read its anatomy and why. */
   inspect?: boolean;
+  /** Street-role view (current generator only, art direction C1): streets in their role colours, plus a legend. */
+  streets?: boolean;
   /** Street / close views: world point to look at and zoom (defaults: the view's own). */
   focus?: [number, number];
   zoom?: number;
 }
 
 /** The prototype district in the regular scene, camera and post — no UI (except the provenance legend). */
-export function KitView({ fp, time, people, view, source, flat, seed, provenance, inspect, focus, zoom }: KitViewProps) {
+export function KitView({ fp, time, people, view, source, flat, seed, provenance, inspect, streets, focus, zoom }: KitViewProps) {
   const [picked, setPicked] = useState<number | null>(null);
   const { city, trace } = useMemo(() => {
     if (source.v === 1) {
@@ -76,20 +78,21 @@ export function KitView({ fp, time, people, view, source, flat, seed, provenance
     if (source.v === 8) return { city: generateKitDistrictV8(fp, { time, people, profile: source.profile, flat, seed, provenance }), trace: null };
     if (source.v === 9) return { city: generateKitDistrictV9(fp, { time, people, profile: source.profile, flat, seed, provenance }), trace: null };
     const tr: KitTrace = newTrace();
-    const c = generateKitDistrict(fp, { time, people, profile: source.profile, flat, seed, provenance, trace: tr });
-    if (!inspect || flat || provenance) return { city: c, trace: tr };
+    const c = generateKitDistrict(fp, { time, people, profile: source.profile, flat, seed, provenance, streetRoles: streets, trace: tr });
+    if (!inspect || flat || provenance || streets) return { city: c, trace: tr };
     // Inspector: each building's parts answer picking as that building (node = trace index).
     const parts = c.parts.map((q) => ({ ...q, node: -1 }));
     tr.buildings.forEach((b, i) => {
       for (let k = b.parts[0]; k < b.parts[1]; k++) parts[k].node = i;
     });
     return { city: { ...c, parts }, trace: tr };
-  }, [fp, time, people, source, flat, seed, provenance, inspect]);
+  }, [fp, time, people, source, flat, seed, provenance, inspect, streets]);
   const sel = inspect && picked !== null ? trace?.buildings[picked] : undefined;
   return (
     <div className="kit-stage" data-ready="1" style={{ position: "absolute", inset: 0 }}>
       <PixelScene city={city} view={CITY} mode={view === "city" ? "city" : "explore"} focus={focus ?? (view === "close" ? [1.2, 3.2] : [0, 0])} exploreZoom={zoom ?? (view === "close" ? 3.2 : 1.75)} interactive onPick={inspect ? setPicked : undefined} highlight={sel ? [picked!, picked! + 1] : null} />
       {provenance && trace?.plan && trace.alloc ? <Legend trace={trace} /> : null}
+      {streets && trace?.streets ? <StreetLegend trace={trace} /> : null}
       {inspect ? (
         <div style={{ position: "absolute", right: 12, top: 12, width: 440, maxHeight: "94%", overflow: "auto", background: "rgba(14,14,18,0.88)", color: "#e8e8ea", font: "11px/1.4 ui-monospace, Menlo, monospace", padding: 10, borderRadius: 4 }}>
           {sel ? (
@@ -175,6 +178,24 @@ function Legend({ trace }: { trace: KitTrace }) {
           ))}
         {trace.landmark ? <div style={{ marginTop: 6 }}>landmark: {trace.landmark.family} ({trace.landmark.role}), {trace.landmark.floors} floors, {trace.landmark.piece}</div> : <div style={{ marginTop: 6 }}>no landmark</div>}
       </div>
+    </div>
+  );
+}
+
+/** Street roles: colour, count of the 24 inner segments and of the 16 on the outer ring. */
+function StreetLegend({ trace }: { trace: KitTrace }) {
+  const segs = trace.streets ?? [];
+  const roles = ["primary", "street", "lane", "pedestrian"] as const;
+  const css = (c: readonly number[]) => `rgb(${c.map((v) => Math.round(v * 255)).join(",")})`;
+  return (
+    <div style={{ position: "absolute", left: 12, top: 12, background: "rgba(14,14,18,0.86)", color: "#e8e8ea", font: "12px/1.5 ui-monospace, Menlo, monospace", padding: "8px 10px", borderRadius: 4 }}>
+      <div style={{ color: "#ffcf5a" }}>street roles · inner / outer</div>
+      {roles.map((r) => (
+        <div key={r}>
+          <span style={{ display: "inline-block", width: 10, height: 10, marginRight: 6, background: css(ROLE_COLOR[r]) }} />
+          {r.padEnd(10)} {segs.filter((s) => s.role === r && s.line > 0 && s.line < 4).length} / {segs.filter((s) => s.role === r && (s.line === 0 || s.line === 4)).length}
+        </div>
+      ))}
     </div>
   );
 }

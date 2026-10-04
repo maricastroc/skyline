@@ -27,6 +27,7 @@ const PROFILES: ProfileName[] = ["mixed", "portal", "product", "reference"];
  *   ?page=<id> (a frozen real page, docs/real-pages/snapshots)  &perturb=text-10|…  &seed=<n>
  *   ?debug=provenance (territories in debug colours + legend; current generator)
  *   ?debug=surface (click a building: its anatomy, why each zone, what is absent and why)
+ *   ?debug=streets (art direction C1: every street in its role's colour + legend; current generator)
  *   ?v=1 first kit · ?v=2 massing pass with cycled minors · ?v=3 semantic allocation pass ·
  *   ?v=4 semantic hygiene pass · ?v=5 architectural surface grammar · ?v=6 openings depth ·
  *   ?v=7 intra-territory composition · ?v=8 simple-index program experiment ·
@@ -48,6 +49,7 @@ export default async function KitPage({ searchParams }: PageProps<"/pixel/kit">)
     seed: Number.isFinite(seed) && seed > 0 ? seed : undefined,
     provenance: one(sp.debug) === "provenance",
     inspect: one(sp.debug) === "surface",
+    streets: one(sp.debug) === "streets",
     focus: (() => {
       const f = one(sp.focus)?.split(",").map(Number);
       return f && f.length === 2 && f.every(Number.isFinite) ? ([f[0], f[1]] as [number, number]) : undefined;

@@ -23,7 +23,8 @@ import { composeLandmark, composePiece, piecesOfBlock, type LandmarkInfo, type P
 import { planFrontage, type FrontagePlan, type Run } from "./frontage";
 import { Kit, type PeopleMode } from "./core";
 import type { Comp, Plan, Territory } from "./plan";
-import { bench, bin, bollards, busShelter, hydrant, mailbox, meter, newsBoxes, SIDEWALK_H, streetLamp, streetSurfaces, streetTree, trafficSignal, type Grid } from "./street";
+import { bench, bin, bollards, busShelter, CARRIAGEWAY, hydrant, laneOffset, mailbox, meter, newsBoxes, SIDEWALK_H, streetLamp, streetSurfaces, streetTree, trafficSignal, uniformStreetSurfaces, type Grid } from "./street";
+import { planStreets, RANK, type StreetPlan, type StreetRole, type StreetSegment } from "./street-roles";
 import { allocate, BLOCKS, LOTS, N, type Allocation } from "./territory";
 import { vehicle, type VehicleType } from "./vehicles";
 
@@ -102,6 +103,13 @@ export interface KitOptions {
   flat?: boolean;
   /** Provenance view: every territory in its own debug colour, labelled (dev only). */
   provenance?: boolean;
+  /** Street-role view (art direction, C1): the city in grey, every street in its role's colour (dev only). */
+  streetRoles?: boolean;
+  /**
+   * Art direction layer (default on). Off: the foundation's uniform streets, signals and traffic,
+   * byte-identical to kit-v9 — the ablation earlier passes are checked against.
+   */
+  artDirection?: boolean;
   /** Validation: filled with every allocation and building decision (no effect on the output). */
   trace?: KitTrace;
 }
@@ -140,6 +148,10 @@ export interface KitTrace {
   frontage: Array<{ territory: number } & Omit<FrontagePlan, "rows">>;
   /** Part index range covered by the blocks (street surfaces, furniture and traffic excluded). */
   range: [number, number];
+  /** Art direction, C1: the role of every street segment and why (scene only; nothing upstream reads it). */
+  streets?: StreetSegment[];
+  /** Part index ranges of the scene after the blocks: sidewalk furniture, crossings (signals), traffic. */
+  scene?: { furniture: [number, number]; crossings: [number, number]; traffic: [number, number] };
 }
 
 export const newTrace = (): KitTrace => ({ pieces: [], buildings: [], landmark: null, frontage: [], range: [0, 0] });
@@ -209,10 +221,13 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
 
   const grid: Grid = { lines: LINES, road: R, side: S, block: B, ext: 14 };
   const ground: Part[] = [{ mesh: "box", node: -1, x: 0, y: -0.3, z: 0, w: 3000, h: 0.3, d: 3000, rotY: 0, color: palette.sidewalk.map((v) => v * 0.9) as RGB, surf: Surf.PAVING, lit: 0, delay: 0 }];
-  streetSurfaces(kit, grid);
+  const alloc = allocate(plan);
+  // Art direction (downstream of the foundation): street roles read from the allocation.
+  const roles = o.artDirection === false ? null : planStreets(plan, alloc);
+  if (roles) streetSurfaces(kit, grid, roles);
+  else uniformStreetSurfaces(kit, grid);
   const blocksFrom = kit.parts.length;
 
-  const alloc = allocate(plan);
   // The hero's landmark goes on its largest piece (earliest along the path on ties).
   const pieceRank: Record<PieceType, number> = { full: 3, half: 2, quad: 1, lot: 0 };
   const pathIndex = new Map(alloc.path.map(([x, y], k) => [x * N + y, k]));
@@ -305,11 +320,16 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
     trace.plan = plan;
     trace.alloc = alloc;
     trace.range = [blocksFrom, kit.parts.length];
+    if (roles) trace.streets = roles.segments;
   }
 
+  const f0 = kit.parts.length;
   furniture(kit, LINES, B, S, palette);
-  intersections(kit, LINES, R, P_);
-  traffic(kit, LINES, R, P_, palette);
+  const f1 = kit.parts.length;
+  intersections(kit, LINES, R, P_, roles);
+  const f2 = kit.parts.length;
+  traffic(kit, LINES, R, P_, palette, roles);
+  if (trace) trace.scene = { furniture: [f0, f1], crossings: [f1, f2], traffic: [f2, kit.parts.length] };
 
   let parts = kit.parts;
   let signs = kit.signs;
@@ -317,6 +337,9 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
     const r = provenance(kit, plan, alloc, trace);
     parts = r.parts;
     signs = r.signs;
+  } else if (o.streetRoles && roles) {
+    parts = streetRoleView(kit, roles);
+    signs = [];
   } else if (o.flat) {
     const grey: RGB = [0.62, 0.62, 0.66];
     parts = parts.filter((q) => q.mesh !== "sign" && q.mesh !== "sprite" && q.mesh !== "glow").map((q) => ({ ...q, color: q.y + q.h > SIDEWALK_H + 0.3 ? grey : q.color, surf: Surf.PLAIN, variant: 0, lit: 0 }));
@@ -407,6 +430,30 @@ function provenance(kit: Kit, plan: Plan, alloc: Allocation, trace: KitTrace) {
   return { parts: [...parts, ...signKit.parts], signs: signKit.signs };
 }
 
+/** Debug colours of the street roles (street-role view and its legend). */
+export const ROLE_COLOR: Record<StreetRole, RGB> = { primary: [0.88, 0.26, 0.2], street: [0.27, 0.47, 0.86], lane: [0.96, 0.74, 0.18], pedestrian: [0.3, 0.74, 0.42] };
+
+/**
+ * Street-role view: everything in two greys (built ≠ ground), no signs, people or glow; over each
+ * road band, a flat strip in its segment's role colour (crossings in the role that wins there).
+ */
+function streetRoleView(kit: Kit, roles: StreetPlan): Part[] {
+  const parts: Part[] = kit.parts
+    .filter((q) => q.mesh !== "sign" && q.mesh !== "sprite" && q.mesh !== "glow")
+    .map((q) => ({ ...q, color: q.y + q.h > SIDEWALK_H + 0.3 ? ([0.7, 0.7, 0.73] as RGB) : ([0.86, 0.86, 0.84] as RGB), surf: Surf.PLAIN, variant: 0, lit: 0 }));
+  const H = R / 2;
+  const strip = (x0: number, x1: number, z0: number, z1: number, c: RGB) => parts.push({ mesh: "box", node: -1, x: (x0 + x1) / 2, y: SIDEWALK_H + 0.02, z: (z0 + z1) / 2, w: x1 - x0, h: 0.03, d: z1 - z0, rotY: 0, color: c, surf: Surf.PLAIN, lit: 0, delay: 0 });
+  for (const sg of roles.segments) {
+    const c = LINES[sg.line];
+    const a = LINES[sg.span] + H;
+    const b = LINES[sg.span + 1] - H;
+    if (sg.axis === "x") strip(a, b, c - H, c + H, ROLE_COLOR[sg.role]);
+    else strip(c - H, c + H, a, b, ROLE_COLOR[sg.role]);
+  }
+  for (const [i, cx] of LINES.entries()) for (const [j, cz] of LINES.entries()) strip(cx - H, cx + H, cz - H, cz + H, ROLE_COLOR[roles.crossing(i, j)].map((v) => v * 0.8) as RGB);
+  return parts;
+}
+
 /* ───────────────────────── streets: furniture, signals, traffic ───────────────────────── */
 
 function furniture(kit: Kit, lines: number[], B: number, S: number, palette: PixelCity["palette"]) {
@@ -468,56 +515,90 @@ function furniture(kit: Kit, lines: number[], B: number, S: number, palette: Pix
 
 const STREETS = ["MAIN ST", "1ST AVE"];
 
-function intersections(kit: Kit, lines: number[], R: number, P: number) {
+function intersections(kit: Kit, lines: number[], R: number, P: number, roles: StreetPlan | null) {
+  const traffic = (r: string) => r === "street" || r === "primary";
+  const role = (axis: "x" | "z", line: number, span: number) => (roles ? roles.role(axis, line, span) : "primary");
   for (const [ci, cx] of lines.entries())
     for (const [cj, cz] of lines.entries()) {
       if (Math.abs(cx) > P || Math.abs(cz) > P) continue;
       const o = R / 2 + 0.3;
       const goX = (ci + cj) % 2 === 0;
       const centre = ci === 2 && cj === 2;
-      kit.frame(
-        cx,
-        cz,
-        0,
-        () => {
-          trafficSignal(kit, o, o, 0, !goX, centre ? STREETS[0] : undefined);
-          trafficSignal(kit, -o, o, -Math.PI / 2, goX);
-          trafficSignal(kit, -o, -o, Math.PI, !goX);
-          trafficSignal(kit, o, -o, Math.PI / 2, goX, centre ? STREETS[1] : undefined);
-        },
-        SIDEWALK_H,
-      );
+      // Signals only where two streets with traffic cross (a lane gives way; a promenade has none).
+      const alongX = traffic(role("x", cj, ci - 1)) || traffic(role("x", cj, ci));
+      const alongZ = traffic(role("z", ci, cj - 1)) || traffic(role("z", ci, cj));
+      if (alongX && alongZ)
+        kit.frame(
+          cx,
+          cz,
+          0,
+          () => {
+            trafficSignal(kit, o, o, 0, !goX, centre ? STREETS[0] : undefined);
+            trafficSignal(kit, -o, o, -Math.PI / 2, goX);
+            trafficSignal(kit, -o, -o, Math.PI, !goX);
+            trafficSignal(kit, o, -o, Math.PI / 2, goX, centre ? STREETS[1] : undefined);
+          },
+          SIDEWALK_H,
+        );
       if (centre) {
         for (let k = 0; k < 3; k++) kit.person(R / 2 + 0.45 + k * 0.25, R / 2 + 0.6 - (k % 2) * 0.2, { variant: 20 + k, pose: "stand", flip: k % 2 === 0, y: SIDEWALK_H });
         for (let k = 0; k < 2; k++) kit.person(-R / 2 - 0.5 - k * 0.3, R / 2 + 0.55, { variant: 30 + k, pose: "stand", y: SIDEWALK_H });
-        for (let k = 0; k < 3; k++) kit.person(R / 2 + 0.4, -0.8 + k * 0.6, { variant: 36 + k, pose: k % 2 ? "walkA" : "walkB", flip: k === 1, y: 0.05 });
+        // Walking across the eastern approach: on its zebra, or on the raised surface that replaces it.
+        const east = role("x", cj, ci);
+        for (let k = 0; k < 3; k++) kit.person(R / 2 + 0.4, -0.8 + k * 0.6, { variant: 36 + k, pose: k % 2 ? "walkA" : "walkB", flip: k === 1, y: traffic(east) ? 0.05 : SIDEWALK_H });
       }
     }
 }
 
-function traffic(kit: Kit, lines: number[], R: number, P: number, palette: PixelCity["palette"]) {
+/**
+ * Traffic: the same draws as before C1, each car then kept on its street's carriageway (two
+ * lanes, one-way single file on a lane, none on a promenade). Cars follow the street role; they
+ * never decide it.
+ */
+function traffic(kit: Kit, lines: number[], R: number, P: number, palette: PixelCity["palette"], roles: StreetPlan | null) {
   const carColors: RGB[] = [palette.accents[0], palette.accents[1], [0.92, 0.92, 0.9], [0.2, 0.22, 0.26], [0.75, 0.2, 0.18], [0.55, 0.6, 0.66]];
   const types: VehicleType[] = ["sedan", "hatch", "sedan", "van", "hatch", "taxi"];
   let vi = 0;
-  for (const c of lines)
+  for (const [line, c] of lines.entries())
     for (let k = 0; k < lines.length - 1; k++) {
       const a = lines[k] + R / 2 + 1.6;
       const b = lines[k + 1] - R / 2 - 1.6;
+      const ox = (side: number) => (roles ? laneOffset(roles.role("x", line, k), side) : side * (R / 2 - 0.32));
+      const oz = (side: number) => (roles ? laneOffset(roles.role("z", line, k), side) : side * (R / 2 - 0.32));
       for (const side of [-1, 1])
         for (let t = a; t < b; t += 1.25) {
           if (kit.rand(vi++, 3) > 0.5) continue;
           if (c === P && side > 0 && Math.abs(t + P / 2) < 2) continue;
           const type = kit.pick(types, vi, 4);
           const color = type === "taxi" ? ([0.98, 0.78, 0.18] as RGB) : kit.pick(carColors, vi, 5);
-          const lane = c + side * (R / 2 - 0.32);
-          vehicle(kit, t, lane, side > 0 ? 0 : Math.PI, type, color);
-          vehicle(kit, lane, t, side > 0 ? -Math.PI / 2 : Math.PI / 2, kit.pick(types, vi, 6), kit.pick(carColors, vi, 7));
+          const x = ox(side);
+          const z = oz(side);
+          if (x !== null) vehicle(kit, t, c + x, side > 0 ? 0 : Math.PI, type, color);
+          if (z !== null) vehicle(kit, c + z, t, side > 0 ? -Math.PI / 2 : Math.PI / 2, kit.pick(types, vi, 6), kit.pick(carColors, vi, 7));
         }
     }
-  vehicle(kit, R / 2 + 1.6, -0.62, Math.PI, "sedan", palette.accents[2]);
-  vehicle(kit, R / 2 + 2.8, -0.62, Math.PI, "taxi", [0.98, 0.78, 0.18]);
-  vehicle(kit, -0.62, -0.4, -Math.PI / 2, "hatch", [0.2, 0.55, 0.85]);
-  vehicle(kit, -P / 2, P + R / 2 - 0.45, 0, "bus", palette.accents[1]);
-  vehicle(kit, P / 2 + 1.5, R / 2 - 0.9, 0, "truck", palette.accents[0], "FRESH");
-  kit.person(P / 2 + 0.55, R / 2 - 0.35, { variant: 44, pose: "walkA", y: 0.05 });
+  if (!roles) {
+    // The foundation's placed vehicles (art direction off).
+    vehicle(kit, R / 2 + 1.6, -0.62, Math.PI, "sedan", palette.accents[2]);
+    vehicle(kit, R / 2 + 2.8, -0.62, Math.PI, "taxi", [0.98, 0.78, 0.18]);
+    vehicle(kit, -0.62, -0.4, -Math.PI / 2, "hatch", [0.2, 0.55, 0.85]);
+    vehicle(kit, -P / 2, P + R / 2 - 0.45, 0, "bus", palette.accents[1]);
+    vehicle(kit, P / 2 + 1.5, R / 2 - 0.9, 0, "truck", palette.accents[0], "FRESH");
+    kit.person(P / 2 + 0.55, R / 2 - 0.35, { variant: 44, pose: "walkA", y: 0.05 });
+    return;
+  }
+  // Placed vehicles around the central crossing, on their streets' carriageways.
+  const at = (axis: "x" | "z", line: number, span: number, side: number) => laneOffset(roles.role(axis, line, span), side);
+  const w = at("x", 2, 2, -1);
+  if (w !== null) {
+    vehicle(kit, R / 2 + 1.6, w, Math.PI, "sedan", palette.accents[2]);
+    vehicle(kit, R / 2 + 2.8, w, Math.PI, "taxi", [0.98, 0.78, 0.18]);
+  }
+  const hz = at("z", 2, 1, -1);
+  if (hz !== null && RANK[roles.crossing(2, 2)] > RANK.lane) vehicle(kit, hz, -0.4, -Math.PI / 2, "hatch", [0.2, 0.55, 0.85]);
+  const bus = at("x", 3, 1, 1);
+  if (bus !== null) vehicle(kit, -P / 2, P + bus, 0, "bus", palette.accents[1]);
+  const truck = at("x", 2, 2, 1);
+  if (truck !== null) vehicle(kit, P / 2 + 1.5, truck, 0, "truck", palette.accents[0], "FRESH");
+  kit.person(P / 2 + 0.55, R / 2 - 0.35, { variant: 44, pose: "walkA", y: R / 2 - 0.35 < CARRIAGEWAY[roles.role("x", 2, 2)] ? 0.05 : SIDEWALK_H });
 }
