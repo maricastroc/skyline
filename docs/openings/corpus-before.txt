@@ -1,0 +1,64 @@
+# Corpus fingerprint before the openings depth pass (kit-v5 = surface grammar pass)
+seed 7 · 1440×900 @2x · KitView CITY / street (1.75) / close (3.2)
+
+## kit-v5 cities, normal
+v5-normal reference    b637599e4203e0c940d89b42988214ca724f8a8a parts 14116
+v5-normal docs         d877e32fa96f1cb0f75b8676a6ce4406cee16edf parts 18531
+v5-normal app          4f39bd6491784a56fda739ab0c9714b4f7be8a38 parts 17303
+v5-normal saas         56222b522f12898d8c07c34d90e2b6dff41029ef parts 15522
+v5-normal shop         490c3298719e6e56f6a9c99f69baf9c0736237a5 parts 14438
+v5-normal news         d21300ea3e448b17c95fb75d1502b28278a64c5b parts 15400
+v5-normal portfolio    68bfda956269f837f379814fd75924b65ec66363 parts 15883
+v5-normal forum        595379e29a424596015ab85fda77e972a5bc2b47 parts 19122
+v5-normal institution  3fc0770e8e8dc8bb929773e80c3299a52dd6d83e parts 16231
+v5-normal oldweb       a990c1d83ab3cf0726174899a783da3da365c379 parts 18406
+v5-normal media        5239412b0bccc48d5c3639b2291d45dc1e8f4cc1 parts 13402
+v5-normal directory    cc2ca250be3e28722ba859424bc77f2f32dd124d parts 16952
+v5-normal reference-2  5203bb4bc16b597e2f6eab68307f92b90a81a9a9 parts 14257
+v5-normal saas-2       26b73e3b45620b2f9daf3099657e4936962a4ee2 parts 13378
+
+## kit-v5 cities, flat
+v5-flat reference    8af28c43d15f15999ab5e1e48834b37a472a01e1 parts 11125
+v5-flat docs         301deb127bad73abf7520792d5c4a5f5a695e73b parts 15212
+v5-flat app          22f22a2e4f5a7eb75f09cfa7d2a6dcab01dabbcf parts 13851
+v5-flat saas         5fc0cc9d6444bbf6023d9670e7e1bef9e1e0cba9 parts 12475
+v5-flat shop         36ccbf5ce3ac7b0015193f5567409876a8abe713 parts 11076
+v5-flat news         3e7cc0314b9b946bbaed778faff0d7c327e23200 parts 12421
+v5-flat portfolio    990f932171f226c5a3dedf9c3829de93deb26ef1 parts 12739
+v5-flat forum        479e15a14ae030f6f75a9f2d09ab001656c07f44 parts 14950
+v5-flat institution  cb43c9f3d8a6a59b4a49b01d08da4cf562d2d91c parts 12802
+v5-flat oldweb       b049102572fd29e5a205314cdc597daacbe388f5 parts 15143
+v5-flat media        016720218dcb3a8cbad2e13618f38f0aa9265dde parts 10392
+v5-flat directory    aab028791e26a8ed932ba49b97c06c16db850fda parts 13625
+v5-flat reference-2  f4020f62e2073511d2a2ef9ce98d9af5b794cda9 parts 11304
+v5-flat saas-2       06b1a3125451858d34ac468fbd841d8e3f5d8119 parts 10443
+
+## kit-v5 cities, night
+v5-night reference    ddaf027f7e65856a1774b094d9c75a5bf36ad6f9 parts 14118
+v5-night docs         566b8098dbc0786e169b63e8a4a33cbdb23bcdfd parts 18531
+v5-night app          4a5bd773e0f7564165f3895d38f4851250fa0e16 parts 17303
+v5-night saas         352a9f4c5dd3ad39e323bd25081fc419c9feeebc parts 15522
+v5-night shop         e5e28a3af9c000d809431a0d4f1bb87fb9d3d1dd parts 14438
+v5-night news         b0dd454a494d1a7bb8864b8231fe5fdbece5c541 parts 15400
+v5-night portfolio    7696c5079d0226c3f2a67e5835caa56cd526943b parts 15885
+v5-night forum        010a8d8bb4e9c149924463860c81fe9d6ae3e0c5 parts 19124
+v5-night institution  5b405a8e6c8e9cae0ab7f985b2e4fe6200dbc3cf parts 16231
+v5-night oldweb       c050a7733828e7098556c0948052d34893d8f0b4 parts 18406
+v5-night media        144350660d747615625e31964c8715c42e57ca0a parts 13402
+v5-night directory    d8008a448c5f3b79124acde4ddf4209b2f9e121f parts 16952
+v5-night reference-2  db58945a86f467ca6104a39e9de373c897f6cc85 parts 14259
+v5-night saas-2       e7669b8fba983ee15535e7ff716b6ad457113949 parts 13378
+
+## Surface Lab with the kit-v5 buildings (style classic, day)
+v5-lab programs  279878e91289a33963ae098e9d8b2a2f213bff38
+v5-lab corners   b2ad5e5c63199401e3f125f06b1205aa8f6dee33
+v5-lab roofs     ec5ee113407adfe34ecfde3559e681c5f013763a
+v5-lab styles    51044b9a254cd370114cd711183f2bad4eeea508
+v5-lab sizes     8c199805182dc898eb729eb2db46509a7cbbc6f3
+v5-lab openings  db503d52827993cbeb6edecc4ed9bd86a8aa476b
+
+max part variant in kit-v5 cities: 788 (the openings depth bits start at 1024)
+
+## previous tables
+docs/surface/tables.md 25476a7a6e331b7ec3dd3ad2fa640d7251134135
+docs/semantic-hygiene/tables.md ee82f8c9e6e46b837628975508d0b807b44efb4a
