@@ -20,7 +20,8 @@
     "test:foundation": "tsx scripts/foundation/check.ts",
     "test:streets": "tsx scripts/street-roles/check.ts",
     "test:life": "tsx scripts/street-life/check.ts",
-    "test:atmosphere": "tsx scripts/atmosphere/check.ts"
+    "test:atmosphere": "tsx scripts/atmosphere/check.ts",
+    "test:art-direction": "tsx scripts/art-direction/check.ts"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",
