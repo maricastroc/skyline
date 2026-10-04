@@ -16,6 +16,8 @@ import { generateKitDistrict as generateKitDistrictV4, type ProfileName as Profi
 import type { Plan as PlanV4 } from "@/lib/pixelcity/kit-v4/plan";
 import { generateKitDistrict as generateKitDistrictV5, type ProfileName as ProfileNameV5 } from "@/lib/pixelcity/kit-v5/district";
 import type { Plan as PlanV5 } from "@/lib/pixelcity/kit-v5/plan";
+import { generateKitDistrict as generateKitDistrictV6, type ProfileName as ProfileNameV6 } from "@/lib/pixelcity/kit-v6/district";
+import type { Plan as PlanV6 } from "@/lib/pixelcity/kit-v6/plan";
 import type { ViewState } from "./PixelScene";
 
 const PixelScene = dynamic(() => import("./PixelScene"), { ssr: false });
@@ -24,10 +26,10 @@ const CITY: ViewState = { azimuth: 45, zoom: 0.9, pan: [0, 0] };
 
 /**
  * Which generator: 1 the first kit, 2 the massing pass with cycled minors, 3 the semantic
- * allocation pass, 4 the semantic hygiene pass, 5 the surface grammar pass (all frozen), 6 the
- * current one (+ openings depth).
+ * allocation pass, 4 the semantic hygiene pass, 5 the surface grammar pass, 6 the openings depth
+ * pass (all frozen), 7 the current one.
  */
-export type KitSource = { v: 1 } | { v: 2; profile: ProfileNameV2 | ProfileV2 } | { v: 3; profile: ProfileNameV3 | PlanV3 } | { v: 4; profile: ProfileNameV4 | PlanV4 } | { v: 5; profile: ProfileNameV5 | PlanV5 } | { v: 6; profile: ProfileName | Plan };
+export type KitSource = { v: 1 } | { v: 2; profile: ProfileNameV2 | ProfileV2 } | { v: 3; profile: ProfileNameV3 | PlanV3 } | { v: 4; profile: ProfileNameV4 | PlanV4 } | { v: 5; profile: ProfileNameV5 | PlanV5 } | { v: 6; profile: ProfileNameV6 | PlanV6 } | { v: 7; profile: ProfileName | Plan };
 
 export interface KitViewProps {
   fp: SiteFingerprint;
@@ -63,6 +65,7 @@ export function KitView({ fp, time, people, view, source, flat, seed, provenance
     if (source.v === 3) return { city: generateKitDistrictV3(fp, { time, people, profile: source.profile, flat, seed, provenance }), trace: null };
     if (source.v === 4) return { city: generateKitDistrictV4(fp, { time, people, profile: source.profile, flat, seed, provenance }), trace: null };
     if (source.v === 5) return { city: generateKitDistrictV5(fp, { time, people, profile: source.profile, flat, seed, provenance }), trace: null };
+    if (source.v === 6) return { city: generateKitDistrictV6(fp, { time, people, profile: source.profile, flat, seed, provenance }), trace: null };
     const tr: KitTrace = newTrace();
     const c = generateKitDistrict(fp, { time, people, profile: source.profile, flat, seed, provenance, trace: tr });
     if (!inspect || flat || provenance) return { city: c, trace: tr };

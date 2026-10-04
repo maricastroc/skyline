@@ -1,0 +1,57 @@
+# Corpus fingerprint at the start of the end-to-end differentiation validation (kit-v6 = openings depth)
+seed 7 · 1440×900 @2x · KitView CITY / street (1.75) / close (3.2)
+
+## kit-v6 cities, normal
+v6-normal reference    a92cf219bde4b6d896eecaf0ba58020212aa72a1 parts 14116
+v6-normal docs         a5e262fef42c43c7c6890ec4864e50c7936d5862 parts 18531
+v6-normal app          8b2b881a33addadc97b3a9a60c0ceb9f695e6609 parts 17303
+v6-normal saas         1408b53b941b93cb754e3f1454b28e61c47fc64a parts 15522
+v6-normal shop         a0aedcb100dcb4bf904d4e973b892bdc950fcaf6 parts 14438
+v6-normal news         d60f2d162687aa42a4752163c4c08d08ff760903 parts 15400
+v6-normal portfolio    59f421dd47b46d315da7952d07be729d23411dec parts 15883
+v6-normal forum        a521fec319f11eb989079082870ce3ac3c935f2a parts 19122
+v6-normal institution  7952a6a5d0b3572d962150bf4503d9ae910e6d6a parts 16231
+v6-normal oldweb       6436e1ca53dc3ea4bcb80935ff6382b52d945536 parts 18406
+v6-normal media        26d71a3f467ebace6dc66fce2f806393c247a309 parts 13402
+v6-normal directory    7c779bd4483c8163618ef484b40548a201ed292c parts 16952
+v6-normal reference-2  e8ce36a1ff3164b306082220325c0896337c219f parts 14257
+v6-normal saas-2       558f1d809e6dfe03ce8e2d7899c89d91481e18f5 parts 13378
+
+## kit-v6 cities, flat
+v6-flat reference    8af28c43d15f15999ab5e1e48834b37a472a01e1 parts 11125
+v6-flat docs         301deb127bad73abf7520792d5c4a5f5a695e73b parts 15212
+v6-flat app          22f22a2e4f5a7eb75f09cfa7d2a6dcab01dabbcf parts 13851
+v6-flat saas         5fc0cc9d6444bbf6023d9670e7e1bef9e1e0cba9 parts 12475
+v6-flat shop         36ccbf5ce3ac7b0015193f5567409876a8abe713 parts 11076
+v6-flat news         3e7cc0314b9b946bbaed778faff0d7c327e23200 parts 12421
+v6-flat portfolio    990f932171f226c5a3dedf9c3829de93deb26ef1 parts 12739
+v6-flat forum        479e15a14ae030f6f75a9f2d09ab001656c07f44 parts 14950
+v6-flat institution  cb43c9f3d8a6a59b4a49b01d08da4cf562d2d91c parts 12802
+v6-flat oldweb       b049102572fd29e5a205314cdc597daacbe388f5 parts 15143
+v6-flat media        016720218dcb3a8cbad2e13618f38f0aa9265dde parts 10392
+v6-flat directory    aab028791e26a8ed932ba49b97c06c16db850fda parts 13625
+v6-flat reference-2  f4020f62e2073511d2a2ef9ce98d9af5b794cda9 parts 11304
+v6-flat saas-2       06b1a3125451858d34ac468fbd841d8e3f5d8119 parts 10443
+
+## kit-v6 cities, night
+v6-night reference    9dd0465e7e50238fe0c8df90e7d07491009cb77a parts 14118
+v6-night docs         42bdf91f47b0612c58aea7446f49aafdc40ab4d8 parts 18531
+v6-night app          4bf2595a74210e617aedab23db15e6ef9931f74f parts 17303
+v6-night saas         a5a771d493a5979f93ef0c861da130d766e1ea4b parts 15522
+v6-night shop         9a2fbbebfa2fd0da0ff9901437621d195fdbcd31 parts 14438
+v6-night news         ecb6d50c5d8712a5d331f7d7b5b87119d1b07014 parts 15400
+v6-night portfolio    d15ba8dd7bbba95403d48724cc1999db1ea79f61 parts 15885
+v6-night forum        9c91e29bf615d8f58ff37923e5ba8aa53e125991 parts 19124
+v6-night institution  3e02ce592f239292ab36954e105fe2f4b8751b4f parts 16231
+v6-night oldweb       923949453d152f945f0453640a69f0c8ef8b38a6 parts 18406
+v6-night media        b1430baa0a44f25ff21f0e6b0d04798f6c8b6618 parts 13402
+v6-night directory    697bb003629aa4ded5c277012e42aeefe0f9e2d9 parts 16952
+v6-night reference-2  518754f02f7e416f1f8738b604011f760a78b009 parts 14259
+v6-night saas-2       daabf93b33bf759c3d5a7db974a067f2179a0c01 parts 13378
+
+current kit identical to kit-v6: 42/42
+
+## previous tables
+docs/openings/tables.md 5f94ea9cee94c8be1e5fb73ac68dfd6df1191577
+docs/surface/tables.md 25476a7a6e331b7ec3dd3ad2fa640d7251134135
+docs/semantic-hygiene/tables.md ee82f8c9e6e46b837628975508d0b807b44efb4a
