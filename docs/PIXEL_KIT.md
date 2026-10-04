@@ -1,5 +1,8 @@
 # Pixel city: kit de detalhe (protótipo)
 
+> **Status:** SEMANTIC / ARCHITECTURAL FOUNDATION V1: FROZEN (kit-v9) — ver
+> [PIXEL_FOUNDATION_V1.md](PIXEL_FOUNDATION_V1.md).
+
 > Pergunta: até onde a arquitetura atual (`Part` + instancing + geometria procedural) chega
 > perto de uma cidade isométrica ilustrada, densa e legível, sem sprites nos prédios?
 > Resposta curta: **bem perto.** O protótipo usa as mesmas primitivas, o mesmo renderer, a
