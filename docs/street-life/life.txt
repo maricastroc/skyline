@@ -1,0 +1,606 @@
+page          movement green │ footfall canopy traffic │ people  trees  cars  bus │ stamp (kit-v10): people trees cars
+IKEA              0.28   0.56 │     0.80   0.29    0.31 │    708    204   241    6 │                    296   269  470
+Paul Graham       0.35   0.16 │     0.28   0.03    0.17 │    249     18    57    0 │                    296   269  280
+craigslist        1.00   0.14 │     0.31   0.15    0.48 │    263    101   298    2 │                    296   269  326
+GOV.UK            0.68   0.53 │     0.41   0.27    0.40 │    363    194   285    1 │                    296   269  370
+Wikipedia         0.86   0.19 │     0.54   0.23    0.56 │    469    158   387    5 │                    296   269  443
+Wikipedia 2       0.89   0.19 │     0.47   0.26    0.58 │    408    186   444    7 │                    296   269  434
+NASA              0.36   0.67 │     0.69   0.44    0.18 │    725    317   131    6 │                    296   269  229
+Linear            0.11   0.69 │     0.67   0.48    0.17 │    655    338   130    7 │                    296   269  348
+Python Docs       0.08   0.17 │     0.71   0.16    0.20 │    606    112   165    1 │                    296   269  490
+
+footfall, canopy: means over the 64 sidewalks · traffic: mean over the 40 carriageways · people and trees: sidewalks and crossings
+
+## IKEA (shop) · movement 0.28 (grammar.traffic ← link density) · green 0.56 (grammar.parks ← whitespace, coverage)
+  block 0,0 side 0 → x1.0  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 0,0 side 1 → z1.0  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 0,0 side 2 → x0.0  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 0,0 side 3 → z0.0  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 0,1 side 0 → x2.0  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 0,1 side 1 → z1.1 [bus stop]  primary: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×0.85 = 0.81, canopy 1×(½·0.56 + ½·0.30) = 0.43
+  block 0,1 side 2 → x1.0  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 0,1 side 3 → z0.1  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 0,2 side 0 → x3.0 [bus stop]  primary: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×0.85 = 0.81, canopy 1×(½·0.56 + ½·0.30) = 0.43
+  block 0,2 side 1 → z1.2  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 0,2 side 2 → x2.0  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 0,2 side 3 → z0.2  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 0,3 side 0 → x4.0  lane: front storefront/yard/service (activity 0.54, plantable 0.43) → footfall 0.54×1.15 = 0.62, canopy 0×(½·0.56 + ½·0.43) = 0.00
+  block 0,3 side 1 → z1.3  street: front service/storefront (activity 0.52, plantable 0.20) → footfall 0.52×1 = 0.52, canopy 0.6×(½·0.56 + ½·0.20) = 0.23
+  block 0,3 side 2 → x3.0  primary: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×0.85 = 0.81, canopy 1×(½·0.56 + ½·0.30) = 0.43
+  block 0,3 side 3 → z0.3  lane: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1.15 = 1.00, canopy 0×(½·0.56 + ½·0.30) = 0.00
+  block 1,0 side 0 → x1.1  primary: front storefront/yard (activity 0.75, plantable 0.48) → footfall 0.75×0.85 = 0.64, canopy 1×(½·0.56 + ½·0.48) = 0.52
+  block 1,0 side 1 → z2.0  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 1,0 side 2 → x0.1  street: front storefront/yard (activity 0.75, plantable 0.48) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.56 + ½·0.48) = 0.31
+  block 1,0 side 3 → z1.0  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 1,1 side 0 → x2.1 [bus stop]  primary: front square (activity 0.80, plantable 0.80) → footfall 0.80×0.85 = 0.68, canopy 1×(½·0.56 + ½·0.80) = 0.68
+  block 1,1 side 1 → z2.1  street: front square (activity 0.80, plantable 0.80) → footfall 0.80×1 = 0.80, canopy 0.6×(½·0.56 + ½·0.80) = 0.41
+  block 1,1 side 2 → x1.1 [bus stop]  primary: front square (activity 0.80, plantable 0.80) → footfall 0.80×0.85 = 0.68, canopy 1×(½·0.56 + ½·0.80) = 0.68
+  block 1,1 side 3 → z1.1  primary: front square (activity 0.80, plantable 0.80) → footfall 0.80×0.85 = 0.68, canopy 1×(½·0.56 + ½·0.80) = 0.68
+  block 1,2 side 0 → x3.1 [bus stop]  primary: front storefront/yard (activity 0.75, plantable 0.48) → footfall 0.75×0.85 = 0.64, canopy 1×(½·0.56 + ½·0.48) = 0.52
+  block 1,2 side 1 → z2.2  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 1,2 side 2 → x2.1  primary: front storefront/yard (activity 0.75, plantable 0.48) → footfall 0.75×0.85 = 0.64, canopy 1×(½·0.56 + ½·0.48) = 0.52
+  block 1,2 side 3 → z1.2  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 1,3 side 0 → x4.1  lane: front service (activity 0.10, plantable 0.10) → footfall 0.10×1.15 = 0.11, canopy 0×(½·0.56 + ½·0.10) = 0.00
+  block 1,3 side 1 → z2.3  lane: front service (activity 0.10, plantable 0.10) → footfall 0.10×1.15 = 0.11, canopy 0×(½·0.56 + ½·0.10) = 0.00
+  block 1,3 side 2 → x3.1  primary: front service (activity 0.10, plantable 0.10) → footfall 0.10×0.85 = 0.09, canopy 1×(½·0.56 + ½·0.10) = 0.33
+  block 1,3 side 3 → z1.3  street: front service (activity 0.10, plantable 0.10) → footfall 0.10×1 = 0.10, canopy 0.6×(½·0.56 + ½·0.10) = 0.20
+  block 2,0 side 0 → x1.2  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 2,0 side 1 → z3.0  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 2,0 side 2 → x0.2  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 2,0 side 3 → z2.0  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 2,1 side 0 → x2.2  street: front storefront/yard (activity 0.55, plantable 0.65) → footfall 0.55×1 = 0.55, canopy 0.6×(½·0.56 + ½·0.65) = 0.36
+  block 2,1 side 1 → z3.1  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 2,1 side 2 → x1.2  street: front storefront/domestic/square (activity 0.74, plantable 0.60) → footfall 0.74×1 = 0.74, canopy 0.6×(½·0.56 + ½·0.60) = 0.35
+  block 2,1 side 3 → z2.1  street: front square/yard (activity 0.47, plantable 0.90) → footfall 0.47×1 = 0.47, canopy 0.6×(½·0.56 + ½·0.90) = 0.44
+  block 2,2 side 0 → x3.2 [bus stop]  primary: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×0.85 = 0.81, canopy 1×(½·0.56 + ½·0.30) = 0.43
+  block 2,2 side 1 → z3.2  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 2,2 side 2 → x2.2  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 2,2 side 3 → z2.2  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 2,3 side 0 → x4.2  street: front service/yard/storefront (activity 0.54, plantable 0.43) → footfall 0.54×1 = 0.54, canopy 0.6×(½·0.56 + ½·0.43) = 0.30
+  block 2,3 side 1 → z3.3  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 2,3 side 2 → x3.2  primary: front storefront/service (activity 0.51, plantable 0.20) → footfall 0.51×0.85 = 0.44, canopy 1×(½·0.56 + ½·0.20) = 0.38
+  block 2,3 side 3 → z2.3  lane: front service (activity 0.10, plantable 0.10) → footfall 0.10×1.15 = 0.11, canopy 0×(½·0.56 + ½·0.10) = 0.00
+  block 3,0 side 0 → x1.3  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 3,0 side 1 → z4.0  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 3,0 side 2 → x0.3  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 3,0 side 3 → z3.0  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 3,1 side 0 → x2.3  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 3,1 side 1 → z4.1  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 3,1 side 2 → x1.3  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 3,1 side 3 → z3.1  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 3,2 side 0 → x3.3  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 3,2 side 1 → z4.2  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 3,2 side 2 → x2.3  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 3,2 side 3 → z3.2  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 3,3 side 0 → x4.3  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 3,3 side 1 → z4.3  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 3,3 side 2 → x3.3  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+  block 3,3 side 3 → z3.3  street: front storefront (activity 0.95, plantable 0.30) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.56 + ½·0.30) = 0.26
+
+## Paul Graham (oldweb) · movement 0.35 (grammar.traffic ← link density) · green 0.16 (grammar.parks ← whitespace, coverage)
+  block 0,0 side 0 → x1.0  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 0,0 side 1 → z1.0  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 0,0 side 2 → x0.0  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 0,0 side 3 → z0.0  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 0,1 side 0 → x2.0  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 0,1 side 1 → z1.1  street: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.16 + ½·0.80) = 0.29
+  block 0,1 side 2 → x1.0  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 0,1 side 3 → z0.1  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 0,2 side 0 → x3.0  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 0,2 side 1 → z1.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 0,2 side 2 → x2.0  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 0,2 side 3 → z0.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 0,3 side 0 → x4.0  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 0,3 side 1 → z1.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 0,3 side 2 → x3.0  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 0,3 side 3 → z0.3  lane: front civic/yard (activity 0.23, plantable 0.85) → footfall 0.23×1.15 = 0.26, canopy 0×(½·0.16 + ½·0.85) = 0.00
+  block 1,0 side 0 → x1.1  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 1,0 side 1 → z2.0  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 1,0 side 2 → x0.1  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 1,0 side 3 → z1.0  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 1,1 side 0 → x2.1  street: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.16 + ½·0.80) = 0.29
+  block 1,1 side 1 → z2.1  street: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.16 + ½·0.80) = 0.29
+  block 1,1 side 2 → x1.1  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 1,1 side 3 → z1.1  street: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.16 + ½·0.80) = 0.29
+  block 1,2 side 0 → x3.1  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 1,2 side 1 → z2.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 1,2 side 2 → x2.1  street: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.16 + ½·0.80) = 0.29
+  block 1,2 side 3 → z1.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 1,3 side 0 → x4.1  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 1,3 side 1 → z2.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 1,3 side 2 → x3.1  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 1,3 side 3 → z1.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 2,0 side 0 → x1.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 2,0 side 1 → z3.0  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 2,0 side 2 → x0.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 2,0 side 3 → z2.0  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 2,1 side 0 → x2.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 2,1 side 1 → z3.1  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 2,1 side 2 → x1.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 2,1 side 3 → z2.1  street: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.16 + ½·0.80) = 0.29
+  block 2,2 side 0 → x3.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 2,2 side 1 → z3.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 2,2 side 2 → x2.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 2,2 side 3 → z2.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 2,3 side 0 → x4.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 2,3 side 1 → z3.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 2,3 side 2 → x3.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 2,3 side 3 → z2.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 3,0 side 0 → x1.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 3,0 side 1 → z4.0  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 3,0 side 2 → x0.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 3,0 side 3 → z3.0  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 3,1 side 0 → x2.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 3,1 side 1 → z4.1  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 3,1 side 2 → x1.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 3,1 side 3 → z3.1  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 3,2 side 0 → x3.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 3,2 side 1 → z4.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 3,2 side 2 → x2.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 3,2 side 3 → z3.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 3,3 side 0 → x4.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 3,3 side 1 → z4.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 3,3 side 2 → x3.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+  block 3,3 side 3 → z3.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.16 + ½·0.80) = 0.00
+
+## craigslist (directory) · movement 1.00 (grammar.traffic ← link density) · green 0.14 (grammar.parks ← whitespace, coverage)
+  block 0,0 side 0 → x1.0  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 0,0 side 1 → z1.0  street: front civic/yard/arcade (activity 0.45, plantable 0.55) → footfall 0.45×1 = 0.45, canopy 0.6×(½·0.14 + ½·0.55) = 0.21
+  block 0,0 side 2 → x0.0  lane: front arcade/storefront (activity 0.70, plantable 0.28) → footfall 0.70×1.15 = 0.80, canopy 0×(½·0.14 + ½·0.28) = 0.00
+  block 0,0 side 3 → z0.0  lane: front storefront/yard/civic (activity 0.34, plantable 0.73) → footfall 0.34×1.15 = 0.39, canopy 0×(½·0.14 + ½·0.73) = 0.00
+  block 0,1 side 0 → x2.0  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 0,1 side 1 → z1.1  street: front civic/yard (activity 0.20, plantable 0.90) → footfall 0.20×1 = 0.20, canopy 0.6×(½·0.14 + ½·0.90) = 0.31
+  block 0,1 side 2 → x1.0  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 0,1 side 3 → z0.1  lane: front civic/yard (activity 0.23, plantable 0.85) → footfall 0.23×1.15 = 0.26, canopy 0×(½·0.14 + ½·0.85) = 0.00
+  block 0,2 side 0 → x3.0  primary: front civic (activity 0.25, plantable 0.80) → footfall 0.25×0.85 = 0.21, canopy 1×(½·0.14 + ½·0.80) = 0.47
+  block 0,2 side 1 → z1.2  street: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.14 + ½·0.80) = 0.28
+  block 0,2 side 2 → x2.0  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 0,2 side 3 → z0.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 0,3 side 0 → x4.0  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 0,3 side 1 → z1.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 0,3 side 2 → x3.0  primary: front civic (activity 0.25, plantable 0.80) → footfall 0.25×0.85 = 0.21, canopy 1×(½·0.14 + ½·0.80) = 0.47
+  block 0,3 side 3 → z0.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 1,0 side 0 → x1.1  primary: front yard/arcade (activity 0.42, plantable 0.60) → footfall 0.42×0.85 = 0.36, canopy 1×(½·0.14 + ½·0.60) = 0.37
+  block 1,0 side 1 → z2.0  lane: front yard/arcade (activity 0.42, plantable 0.60) → footfall 0.42×1.15 = 0.49, canopy 0×(½·0.14 + ½·0.60) = 0.00
+  block 1,0 side 2 → x0.1  lane: front yard/arcade (activity 0.42, plantable 0.60) → footfall 0.42×1.15 = 0.49, canopy 0×(½·0.14 + ½·0.60) = 0.00
+  block 1,0 side 3 → z1.0  street: front yard/arcade (activity 0.42, plantable 0.60) → footfall 0.42×1 = 0.42, canopy 0.6×(½·0.14 + ½·0.60) = 0.22
+  block 1,1 side 0 → x2.1  street: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.14 + ½·0.80) = 0.28
+  block 1,1 side 1 → z2.1  street: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.14 + ½·0.80) = 0.28
+  block 1,1 side 2 → x1.1  primary: front civic (activity 0.25, plantable 0.80) → footfall 0.25×0.85 = 0.21, canopy 1×(½·0.14 + ½·0.80) = 0.47
+  block 1,1 side 3 → z1.1  street: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.14 + ½·0.80) = 0.28
+  block 1,2 side 0 → x3.1  primary: front civic/yard (activity 0.20, plantable 0.90) → footfall 0.20×0.85 = 0.17, canopy 1×(½·0.14 + ½·0.90) = 0.52
+  block 1,2 side 1 → z2.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 1,2 side 2 → x2.1  street: front civic/yard (activity 0.23, plantable 0.85) → footfall 0.23×1 = 0.23, canopy 0.6×(½·0.14 + ½·0.85) = 0.30
+  block 1,2 side 3 → z1.2  street: front civic/yard (activity 0.23, plantable 0.85) → footfall 0.23×1 = 0.23, canopy 0.6×(½·0.14 + ½·0.85) = 0.30
+  block 1,3 side 0 → x4.1  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 1,3 side 1 → z2.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 1,3 side 2 → x3.1  primary: front civic (activity 0.25, plantable 0.80) → footfall 0.25×0.85 = 0.21, canopy 1×(½·0.14 + ½·0.80) = 0.47
+  block 1,3 side 3 → z1.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 2,0 side 0 → x1.2 [bus stop]  primary: front arcade (activity 0.70, plantable 0.20) → footfall 0.70×0.85 = 0.59, canopy 1×(½·0.14 + ½·0.20) = 0.17
+  block 2,0 side 1 → z3.0 [bus stop]  primary: front arcade/civic (activity 0.59, plantable 0.35) → footfall 0.59×0.85 = 0.50, canopy 1×(½·0.14 + ½·0.35) = 0.25
+  block 2,0 side 2 → x0.2  lane: front civic/arcade (activity 0.47, plantable 0.50) → footfall 0.47×1.15 = 0.55, canopy 0×(½·0.14 + ½·0.50) = 0.00
+  block 2,0 side 3 → z2.0  lane: front arcade (activity 0.70, plantable 0.20) → footfall 0.70×1.15 = 0.80, canopy 0×(½·0.14 + ½·0.20) = 0.00
+  block 2,1 side 0 → x2.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 2,1 side 1 → z3.1  primary: front civic/yard (activity 0.23, plantable 0.85) → footfall 0.23×0.85 = 0.19, canopy 1×(½·0.14 + ½·0.85) = 0.50
+  block 2,1 side 2 → x1.2  primary: front civic/yard (activity 0.23, plantable 0.85) → footfall 0.23×0.85 = 0.19, canopy 1×(½·0.14 + ½·0.85) = 0.50
+  block 2,1 side 3 → z2.1  street: front civic/yard (activity 0.20, plantable 0.90) → footfall 0.20×1 = 0.20, canopy 0.6×(½·0.14 + ½·0.90) = 0.31
+  block 2,2 side 0 → x3.2  primary: front civic (activity 0.25, plantable 0.80) → footfall 0.25×0.85 = 0.21, canopy 1×(½·0.14 + ½·0.80) = 0.47
+  block 2,2 side 1 → z3.2  primary: front civic (activity 0.25, plantable 0.80) → footfall 0.25×0.85 = 0.21, canopy 1×(½·0.14 + ½·0.80) = 0.47
+  block 2,2 side 2 → x2.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 2,2 side 3 → z2.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 2,3 side 0 → x4.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 2,3 side 1 → z3.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 2,3 side 2 → x3.2  primary: front civic (activity 0.25, plantable 0.80) → footfall 0.25×0.85 = 0.21, canopy 1×(½·0.14 + ½·0.80) = 0.47
+  block 2,3 side 3 → z2.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 3,0 side 0 → x1.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 3,0 side 1 → z4.0  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 3,0 side 2 → x0.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 3,0 side 3 → z3.0  primary: front civic (activity 0.25, plantable 0.80) → footfall 0.25×0.85 = 0.21, canopy 1×(½·0.14 + ½·0.80) = 0.47
+  block 3,1 side 0 → x2.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 3,1 side 1 → z4.1  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 3,1 side 2 → x1.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 3,1 side 3 → z3.1  primary: front civic (activity 0.25, plantable 0.80) → footfall 0.25×0.85 = 0.21, canopy 1×(½·0.14 + ½·0.80) = 0.47
+  block 3,2 side 0 → x3.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 3,2 side 1 → z4.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 3,2 side 2 → x2.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 3,2 side 3 → z3.2  primary: front civic (activity 0.25, plantable 0.80) → footfall 0.25×0.85 = 0.21, canopy 1×(½·0.14 + ½·0.80) = 0.47
+  block 3,3 side 0 → x4.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 3,3 side 1 → z4.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 3,3 side 2 → x3.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+  block 3,3 side 3 → z3.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.14 + ½·0.80) = 0.00
+
+## GOV.UK (institution) · movement 0.68 (grammar.traffic ← link density) · green 0.53 (grammar.parks ← whitespace, coverage)
+  block 0,0 side 0 → x1.0  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.53 + ½·0.80) = 0.00
+  block 0,0 side 1 → z1.0  street: front civic/yard/lobby (activity 0.47, plantable 0.70) → footfall 0.47×1 = 0.47, canopy 0.6×(½·0.53 + ½·0.70) = 0.37
+  block 0,0 side 2 → x0.0  pedestrian: front lobby (activity 0.75, plantable 0.50) → footfall 0.75×1.3 = 0.98, canopy 0.8×(½·0.53 + ½·0.50) = 0.41
+  block 0,0 side 3 → z0.0  street: front lobby/yard/civic (activity 0.47, plantable 0.70) → footfall 0.47×1 = 0.47, canopy 0.6×(½·0.53 + ½·0.70) = 0.37
+  block 0,1 side 0 → x2.0  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.53 + ½·0.80) = 0.00
+  block 0,1 side 1 → z1.1  primary: front civic (activity 0.25, plantable 0.80) → footfall 0.25×0.85 = 0.21, canopy 1×(½·0.53 + ½·0.80) = 0.67
+  block 0,1 side 2 → x1.0  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.53 + ½·0.80) = 0.00
+  block 0,1 side 3 → z0.1  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.53 + ½·0.80) = 0.00
+  block 0,2 side 0 → x3.0  primary: front civic (activity 0.25, plantable 0.80) → footfall 0.25×0.85 = 0.21, canopy 1×(½·0.53 + ½·0.80) = 0.67
+  block 0,2 side 1 → z1.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.53 + ½·0.80) = 0.00
+  block 0,2 side 2 → x2.0  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.53 + ½·0.80) = 0.00
+  block 0,2 side 3 → z0.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.53 + ½·0.80) = 0.00
+  block 0,3 side 0 → x4.0  lane: front service (activity 0.10, plantable 0.10) → footfall 0.10×1.15 = 0.11, canopy 0×(½·0.53 + ½·0.10) = 0.00
+  block 0,3 side 1 → z1.3  lane: front service/yard/domestic (activity 0.15, plantable 0.55) → footfall 0.15×1.15 = 0.17, canopy 0×(½·0.53 + ½·0.55) = 0.00
+  block 0,3 side 2 → x3.0  primary: front service (activity 0.10, plantable 0.10) → footfall 0.10×0.85 = 0.09, canopy 1×(½·0.53 + ½·0.10) = 0.32
+  block 0,3 side 3 → z0.3  lane: front service/yard (activity 0.13, plantable 0.55) → footfall 0.13×1.15 = 0.14, canopy 0×(½·0.53 + ½·0.55) = 0.00
+  block 1,0 side 0 → x1.1 [bus stop]  primary: front square/lobby (activity 0.78, plantable 0.65) → footfall 0.78×0.85 = 0.66, canopy 1×(½·0.53 + ½·0.65) = 0.59
+  block 1,0 side 1 → z2.0  pedestrian: front lobby/square (activity 0.79, plantable 0.73) → footfall 0.79×1.3 = 1.00, canopy 0.8×(½·0.53 + ½·0.73) = 0.50
+  block 1,0 side 2 → x0.1  pedestrian: front square/lobby (activity 0.78, plantable 0.65) → footfall 0.78×1.3 = 1.00, canopy 0.8×(½·0.53 + ½·0.65) = 0.47
+  block 1,0 side 3 → z1.0  street: front lobby/square (activity 0.76, plantable 0.57) → footfall 0.76×1 = 0.76, canopy 0.6×(½·0.53 + ½·0.57) = 0.33
+  block 1,1 side 0 → x2.1  primary: front civic (activity 0.30, plantable 0.80) → footfall 0.30×0.85 = 0.26, canopy 1×(½·0.53 + ½·0.80) = 0.67
+  block 1,1 side 1 → z2.1  street: front civic (activity 0.29, plantable 0.80) → footfall 0.29×1 = 0.29, canopy 0.6×(½·0.53 + ½·0.80) = 0.40
+  block 1,1 side 2 → x1.1  primary: front civic/square (activity 0.66, plantable 0.80) → footfall 0.66×0.85 = 0.56, canopy 1×(½·0.53 + ½·0.80) = 0.67
+  block 1,1 side 3 → z1.1  primary: front square/civic (activity 0.43, plantable 0.80) → footfall 0.43×0.85 = 0.36, canopy 1×(½·0.53 + ½·0.80) = 0.67
+  block 1,2 side 0 → x3.1  primary: front civic (activity 0.25, plantable 0.80) → footfall 0.25×0.85 = 0.21, canopy 1×(½·0.53 + ½·0.80) = 0.67
+  block 1,2 side 1 → z2.2  street: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.53 + ½·0.80) = 0.40
+  block 1,2 side 2 → x2.1  primary: front civic (activity 0.25, plantable 0.80) → footfall 0.25×0.85 = 0.21, canopy 1×(½·0.53 + ½·0.80) = 0.67
+  block 1,2 side 3 → z1.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.53 + ½·0.80) = 0.00
+  block 1,3 side 0 → x4.1  lane: front service (activity 0.10, plantable 0.10) → footfall 0.10×1.15 = 0.11, canopy 0×(½·0.53 + ½·0.10) = 0.00
+  block 1,3 side 1 → z2.3  lane: front service (activity 0.10, plantable 0.10) → footfall 0.10×1.15 = 0.11, canopy 0×(½·0.53 + ½·0.10) = 0.00
+  block 1,3 side 2 → x3.1  primary: front service (activity 0.10, plantable 0.10) → footfall 0.10×0.85 = 0.09, canopy 1×(½·0.53 + ½·0.10) = 0.32
+  block 1,3 side 3 → z1.3  lane: front service (activity 0.10, plantable 0.10) → footfall 0.10×1.15 = 0.11, canopy 0×(½·0.53 + ½·0.10) = 0.00
+  block 2,0 side 0 → x1.2  street: front lobby/storefront (activity 0.75, plantable 0.45) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.53 + ½·0.45) = 0.30
+  block 2,0 side 1 → z3.0  street: front storefront/domestic (activity 0.50, plantable 0.65) → footfall 0.50×1 = 0.50, canopy 0.6×(½·0.53 + ½·0.65) = 0.36
+  block 2,0 side 2 → x0.2  street: front storefront/domestic/lobby (activity 0.63, plantable 0.57) → footfall 0.63×1 = 0.63, canopy 0.6×(½·0.53 + ½·0.57) = 0.33
+  block 2,0 side 3 → z2.0  pedestrian: front lobby (activity 0.75, plantable 0.50) → footfall 0.75×1.3 = 0.98, canopy 0.8×(½·0.53 + ½·0.50) = 0.41
+  block 2,1 side 0 → x2.2  street: front storefront/domestic/civic (activity 0.50, plantable 0.60) → footfall 0.50×1 = 0.50, canopy 0.6×(½·0.53 + ½·0.60) = 0.34
+  block 2,1 side 1 → z3.1  street: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.53 + ½·0.80) = 0.40
+  block 2,1 side 2 → x1.2  street: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.53 + ½·0.80) = 0.40
+  block 2,1 side 3 → z2.1  street: front civic/storefront (activity 0.50, plantable 0.55) → footfall 0.50×1 = 0.50, canopy 0.6×(½·0.53 + ½·0.55) = 0.33
+  block 2,2 side 0 → x3.2  primary: front civic (activity 0.25, plantable 0.80) → footfall 0.25×0.85 = 0.21, canopy 1×(½·0.53 + ½·0.80) = 0.67
+  block 2,2 side 1 → z3.2  street: front civic/yard (activity 0.23, plantable 0.85) → footfall 0.23×1 = 0.23, canopy 0.6×(½·0.53 + ½·0.85) = 0.42
+  block 2,2 side 2 → x2.2  street: front civic/domestic/storefront (activity 0.50, plantable 0.60) → footfall 0.50×1 = 0.50, canopy 0.6×(½·0.53 + ½·0.60) = 0.34
+  block 2,2 side 3 → z2.2  street: front storefront/yard/civic (activity 0.47, plantable 0.60) → footfall 0.47×1 = 0.47, canopy 0.6×(½·0.53 + ½·0.60) = 0.34
+  block 2,3 side 0 → x4.2  lane: front service (activity 0.10, plantable 0.10) → footfall 0.10×1.15 = 0.11, canopy 0×(½·0.53 + ½·0.10) = 0.00
+  block 2,3 side 1 → z3.3  street: front service (activity 0.10, plantable 0.10) → footfall 0.10×1 = 0.10, canopy 0.6×(½·0.53 + ½·0.10) = 0.19
+  block 2,3 side 2 → x3.2  primary: front service (activity 0.10, plantable 0.10) → footfall 0.10×0.85 = 0.09, canopy 1×(½·0.53 + ½·0.10) = 0.32
+  block 2,3 side 3 → z2.3  lane: front service (activity 0.10, plantable 0.10) → footfall 0.10×1.15 = 0.11, canopy 0×(½·0.53 + ½·0.10) = 0.00
+  block 3,0 side 0 → x1.3  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.53 + ½·0.30) = 0.25
+  block 3,0 side 1 → z4.0  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.53 + ½·0.30) = 0.25
+  block 3,0 side 2 → x0.3  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.53 + ½·0.30) = 0.25
+  block 3,0 side 3 → z3.0  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.53 + ½·0.30) = 0.25
+  block 3,1 side 0 → x2.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.53 + ½·0.80) = 0.00
+  block 3,1 side 1 → z4.1  street: front civic/domestic/storefront (activity 0.38, plantable 0.72) → footfall 0.38×1 = 0.38, canopy 0.6×(½·0.53 + ½·0.72) = 0.38
+  block 3,1 side 2 → x1.3  street: front storefront/domestic (activity 0.63, plantable 0.48) → footfall 0.63×1 = 0.63, canopy 0.6×(½·0.53 + ½·0.48) = 0.30
+  block 3,1 side 3 → z3.1  street: front storefront/civic (activity 0.50, plantable 0.55) → footfall 0.50×1 = 0.50, canopy 0.6×(½·0.53 + ½·0.55) = 0.33
+  block 3,2 side 0 → x3.3  street: front storefront/civic (activity 0.50, plantable 0.55) → footfall 0.50×1 = 0.50, canopy 0.6×(½·0.53 + ½·0.55) = 0.33
+  block 3,2 side 1 → z4.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.53 + ½·0.80) = 0.00
+  block 3,2 side 2 → x2.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.53 + ½·0.80) = 0.00
+  block 3,2 side 3 → z3.2  street: front civic/yard/storefront (activity 0.47, plantable 0.60) → footfall 0.47×1 = 0.47, canopy 0.6×(½·0.53 + ½·0.60) = 0.34
+  block 3,3 side 0 → x4.3  lane: front service/arcade (activity 0.61, plantable 0.17) → footfall 0.61×1.15 = 0.70, canopy 0×(½·0.53 + ½·0.17) = 0.00
+  block 3,3 side 1 → z4.3  lane: front arcade/storefront (activity 0.78, plantable 0.23) → footfall 0.78×1.15 = 0.89, canopy 0×(½·0.53 + ½·0.23) = 0.00
+  block 3,3 side 2 → x3.3  street: front storefront/domestic (activity 0.63, plantable 0.48) → footfall 0.63×1 = 0.63, canopy 0.6×(½·0.53 + ½·0.48) = 0.30
+  block 3,3 side 3 → z3.3  street: front storefront/service (activity 0.43, plantable 0.20) → footfall 0.43×1 = 0.43, canopy 0.6×(½·0.53 + ½·0.20) = 0.22
+
+## Wikipedia (reference) · movement 0.86 (grammar.traffic ← link density) · green 0.19 (grammar.parks ← whitespace, coverage)
+  block 0,0 side 0 → x1.0  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.19 + ½·0.30) = 0.15
+  block 0,0 side 1 → z1.0  street: front storefront/domestic (activity 0.38, plantable 0.82) → footfall 0.38×1 = 0.38, canopy 0.6×(½·0.19 + ½·0.82) = 0.30
+  block 0,0 side 2 → x0.0  street: front domestic (activity 0.25, plantable 1.00) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.19 + ½·1.00) = 0.36
+  block 0,0 side 3 → z0.0  street: front domestic/storefront (activity 0.38, plantable 0.82) → footfall 0.38×1 = 0.38, canopy 0.6×(½·0.19 + ½·0.82) = 0.30
+  block 0,1 side 0 → x2.0  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.19 + ½·0.30) = 0.15
+  block 0,1 side 1 → z1.1  primary: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×0.85 = 0.64, canopy 1×(½·0.19 + ½·0.30) = 0.24
+  block 0,1 side 2 → x1.0  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.19 + ½·0.30) = 0.15
+  block 0,1 side 3 → z0.1  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.19 + ½·0.30) = 0.15
+  block 0,2 side 0 → x3.0  primary: front lobby/civic/storefront (activity 0.50, plantable 0.60) → footfall 0.50×0.85 = 0.42, canopy 1×(½·0.19 + ½·0.60) = 0.39
+  block 0,2 side 1 → z1.2  street: front storefront/civic/domestic (activity 0.50, plantable 0.60) → footfall 0.50×1 = 0.50, canopy 0.6×(½·0.19 + ½·0.60) = 0.24
+  block 0,2 side 2 → x2.0  street: front storefront/lobby (activity 0.75, plantable 0.45) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.19 + ½·0.45) = 0.19
+  block 0,2 side 3 → z0.2  street: front lobby (activity 0.75, plantable 0.50) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.19 + ½·0.50) = 0.21
+  block 0,3 side 0 → x4.0  lane: front storefront/service (activity 0.49, plantable 0.20) → footfall 0.49×1.15 = 0.57, canopy 0×(½·0.19 + ½·0.20) = 0.00
+  block 0,3 side 1 → z1.3  primary: front square/service/storefront (activity 0.66, plantable 0.38) → footfall 0.66×0.85 = 0.56, canopy 1×(½·0.19 + ½·0.38) = 0.28
+  block 0,3 side 2 → x3.0 [bus stop]  primary: front storefront (activity 0.88, plantable 0.30) → footfall 0.88×0.85 = 0.75, canopy 1×(½·0.19 + ½·0.30) = 0.24
+  block 0,3 side 3 → z0.3  lane: front storefront (activity 0.88, plantable 0.30) → footfall 0.88×1.15 = 1.00, canopy 0×(½·0.19 + ½·0.30) = 0.00
+  block 1,0 side 0 → x1.1  primary: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×0.85 = 0.64, canopy 1×(½·0.19 + ½·0.30) = 0.24
+  block 1,0 side 1 → z2.0  street: front storefront/lobby (activity 0.75, plantable 0.40) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.19 + ½·0.40) = 0.18
+  block 1,0 side 2 → x0.1  street: front lobby/domestic/storefront (activity 0.63, plantable 0.57) → footfall 0.63×1 = 0.63, canopy 0.6×(½·0.19 + ½·0.57) = 0.23
+  block 1,0 side 3 → z1.0  street: front storefront/domestic (activity 0.63, plantable 0.48) → footfall 0.63×1 = 0.63, canopy 0.6×(½·0.19 + ½·0.48) = 0.20
+  block 1,1 side 0 → x2.1 [bus stop]  primary: front square (activity 0.80, plantable 0.80) → footfall 0.80×0.85 = 0.68, canopy 1×(½·0.19 + ½·0.80) = 0.49
+  block 1,1 side 1 → z2.1  street: front square (activity 0.80, plantable 0.80) → footfall 0.80×1 = 0.80, canopy 0.6×(½·0.19 + ½·0.80) = 0.30
+  block 1,1 side 2 → x1.1 [bus stop]  primary: front square (activity 0.80, plantable 0.80) → footfall 0.80×0.85 = 0.68, canopy 1×(½·0.19 + ½·0.80) = 0.49
+  block 1,1 side 3 → z1.1 [bus stop]  primary: front square (activity 0.80, plantable 0.80) → footfall 0.80×0.85 = 0.68, canopy 1×(½·0.19 + ½·0.80) = 0.49
+  block 1,2 side 0 → x3.1  street: front storefront/domestic (activity 0.38, plantable 0.82) → footfall 0.38×1 = 0.38, canopy 0.6×(½·0.19 + ½·0.82) = 0.30
+  block 1,2 side 1 → z2.2  street: front domestic (activity 0.25, plantable 1.00) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.19 + ½·1.00) = 0.36
+  block 1,2 side 2 → x2.1  primary: front domestic/storefront (activity 0.38, plantable 0.82) → footfall 0.38×0.85 = 0.32, canopy 1×(½·0.19 + ½·0.82) = 0.51
+  block 1,2 side 3 → z1.2  street: front storefront/domestic (activity 0.63, plantable 0.48) → footfall 0.63×1 = 0.63, canopy 0.6×(½·0.19 + ½·0.48) = 0.20
+  block 1,3 side 0 → x4.1  street: front square/lobby (activity 0.76, plantable 0.57) → footfall 0.76×1 = 0.76, canopy 0.6×(½·0.19 + ½·0.57) = 0.23
+  block 1,3 side 1 → z2.3  street: front lobby (activity 0.75, plantable 0.50) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.19 + ½·0.50) = 0.21
+  block 1,3 side 2 → x3.1  street: front lobby/arcade (activity 0.78, plantable 0.42) → footfall 0.78×1 = 0.78, canopy 0.6×(½·0.19 + ½·0.42) = 0.18
+  block 1,3 side 3 → z1.3 [bus stop]  primary: front arcade/storefront (activity 0.88, plantable 0.23) → footfall 0.88×0.85 = 0.75, canopy 1×(½·0.19 + ½·0.23) = 0.21
+  block 2,0 side 0 → x1.2  street: front domestic/storefront (activity 0.41, plantable 0.82) → footfall 0.41×1 = 0.41, canopy 0.6×(½·0.19 + ½·0.82) = 0.30
+  block 2,0 side 1 → z3.0  street: front storefront (activity 0.88, plantable 0.30) → footfall 0.88×1 = 0.88, canopy 0.6×(½·0.19 + ½·0.30) = 0.15
+  block 2,0 side 2 → x0.2  street: front storefront/domestic (activity 0.41, plantable 0.82) → footfall 0.41×1 = 0.41, canopy 0.6×(½·0.19 + ½·0.82) = 0.30
+  block 2,0 side 3 → z2.0  street: front domestic (activity 0.25, plantable 1.00) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.19 + ½·1.00) = 0.36
+  block 2,1 side 0 → x2.2  street: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.19 + ½·0.80) = 0.30
+  block 2,1 side 1 → z3.1  street: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.19 + ½·0.80) = 0.30
+  block 2,1 side 2 → x1.2  street: front civic/square (activity 0.53, plantable 0.80) → footfall 0.53×1 = 0.53, canopy 0.6×(½·0.19 + ½·0.80) = 0.30
+  block 2,1 side 3 → z2.1  street: front square/civic (activity 0.39, plantable 0.80) → footfall 0.39×1 = 0.39, canopy 0.6×(½·0.19 + ½·0.80) = 0.30
+  block 2,2 side 0 → x3.2  street: front domestic (activity 0.25, plantable 1.00) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.19 + ½·1.00) = 0.36
+  block 2,2 side 1 → z3.2  street: front domestic/civic (activity 0.25, plantable 0.95) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.19 + ½·0.95) = 0.34
+  block 2,2 side 2 → x2.2  street: front civic/yard (activity 0.23, plantable 0.85) → footfall 0.23×1 = 0.23, canopy 0.6×(½·0.19 + ½·0.85) = 0.31
+  block 2,2 side 3 → z2.2  street: front civic/domestic (activity 0.25, plantable 0.95) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.19 + ½·0.95) = 0.34
+  block 2,3 side 0 → x4.2  street: front lobby (activity 0.75, plantable 0.50) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.19 + ½·0.50) = 0.21
+  block 2,3 side 1 → z3.3  street: front lobby/arcade (activity 0.75, plantable 0.42) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.19 + ½·0.42) = 0.18
+  block 2,3 side 2 → x3.2  street: front arcade/yard (activity 0.60, plantable 0.40) → footfall 0.60×1 = 0.60, canopy 0.6×(½·0.19 + ½·0.40) = 0.18
+  block 2,3 side 3 → z2.3  street: front yard/lobby (activity 0.60, plantable 0.63) → footfall 0.60×1 = 0.60, canopy 0.6×(½·0.19 + ½·0.63) = 0.24
+  block 3,0 side 0 → x1.3  street: front storefront/domestic (activity 0.66, plantable 0.48) → footfall 0.66×1 = 0.66, canopy 0.6×(½·0.19 + ½·0.48) = 0.20
+  block 3,0 side 1 → z4.0  lane: front storefront/yard (activity 0.69, plantable 0.48) → footfall 0.69×1.15 = 0.80, canopy 0×(½·0.19 + ½·0.48) = 0.00
+  block 3,0 side 2 → x0.3  lane: front storefront (activity 0.88, plantable 0.30) → footfall 0.88×1.15 = 1.00, canopy 0×(½·0.19 + ½·0.30) = 0.00
+  block 3,0 side 3 → z3.0  street: front storefront/yard (activity 0.63, plantable 0.48) → footfall 0.63×1 = 0.63, canopy 0.6×(½·0.19 + ½·0.48) = 0.20
+  block 3,1 side 0 → x2.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.19 + ½·0.80) = 0.00
+  block 3,1 side 1 → z4.1  street: front civic/storefront (activity 0.50, plantable 0.55) → footfall 0.50×1 = 0.50, canopy 0.6×(½·0.19 + ½·0.55) = 0.22
+  block 3,1 side 2 → x1.3  street: front storefront/domestic (activity 0.63, plantable 0.48) → footfall 0.63×1 = 0.63, canopy 0.6×(½·0.19 + ½·0.48) = 0.20
+  block 3,1 side 3 → z3.1  street: front storefront/domestic/civic (activity 0.38, plantable 0.73) → footfall 0.38×1 = 0.38, canopy 0.6×(½·0.19 + ½·0.73) = 0.27
+  block 3,2 side 0 → x3.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.19 + ½·0.80) = 0.00
+  block 3,2 side 1 → z4.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.19 + ½·0.80) = 0.00
+  block 3,2 side 2 → x2.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.19 + ½·0.80) = 0.00
+  block 3,2 side 3 → z3.2  street: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.19 + ½·0.80) = 0.30
+  block 3,3 side 0 → x4.3  street: front lobby/civic (activity 0.63, plantable 0.57) → footfall 0.63×1 = 0.63, canopy 0.6×(½·0.19 + ½·0.57) = 0.23
+  block 3,3 side 1 → z4.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.19 + ½·0.80) = 0.00
+  block 3,3 side 2 → x3.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.19 + ½·0.80) = 0.00
+  block 3,3 side 3 → z3.3  street: front civic/lobby (activity 0.50, plantable 0.65) → footfall 0.50×1 = 0.50, canopy 0.6×(½·0.19 + ½·0.65) = 0.25
+
+## Wikipedia 2 (reference-2) · movement 0.89 (grammar.traffic ← link density) · green 0.19 (grammar.parks ← whitespace, coverage)
+  block 0,0 side 0 → x1.0  street: front storefront/domestic (activity 0.63, plantable 0.48) → footfall 0.63×1 = 0.63, canopy 0.6×(½·0.19 + ½·0.48) = 0.20
+  block 0,0 side 1 → z1.0  street: front storefront/domestic (activity 0.38, plantable 0.82) → footfall 0.38×1 = 0.38, canopy 0.6×(½·0.19 + ½·0.82) = 0.30
+  block 0,0 side 2 → x0.0  street: front domestic (activity 0.25, plantable 1.00) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.19 + ½·1.00) = 0.36
+  block 0,0 side 3 → z0.0  street: front domestic/storefront (activity 0.38, plantable 0.82) → footfall 0.38×1 = 0.38, canopy 0.6×(½·0.19 + ½·0.82) = 0.30
+  block 0,1 side 0 → x2.0  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.19 + ½·0.30) = 0.15
+  block 0,1 side 1 → z1.1  primary: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×0.85 = 0.64, canopy 1×(½·0.19 + ½·0.30) = 0.24
+  block 0,1 side 2 → x1.0  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.19 + ½·0.30) = 0.15
+  block 0,1 side 3 → z0.1  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.19 + ½·0.30) = 0.15
+  block 0,2 side 0 → x3.0  primary: front storefront/domestic (activity 0.63, plantable 0.48) → footfall 0.63×0.85 = 0.53, canopy 1×(½·0.19 + ½·0.48) = 0.33
+  block 0,2 side 1 → z1.2  street: front storefront/domestic (activity 0.38, plantable 0.82) → footfall 0.38×1 = 0.38, canopy 0.6×(½·0.19 + ½·0.82) = 0.30
+  block 0,2 side 2 → x2.0  street: front domestic (activity 0.25, plantable 1.00) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.19 + ½·1.00) = 0.36
+  block 0,2 side 3 → z0.2  street: front domestic/storefront (activity 0.38, plantable 0.82) → footfall 0.38×1 = 0.38, canopy 0.6×(½·0.19 + ½·0.82) = 0.30
+  block 0,3 side 0 → x4.0  lane: front service/arcade (activity 0.29, plantable 0.13) → footfall 0.29×1.15 = 0.33, canopy 0×(½·0.19 + ½·0.13) = 0.00
+  block 0,3 side 1 → z1.3 [bus stop]  primary: front arcade/storefront (activity 0.86, plantable 0.28) → footfall 0.86×0.85 = 0.73, canopy 1×(½·0.19 + ½·0.28) = 0.23
+  block 0,3 side 2 → x3.0 [bus stop]  primary: front storefront (activity 0.85, plantable 0.30) → footfall 0.85×0.85 = 0.72, canopy 1×(½·0.19 + ½·0.30) = 0.24
+  block 0,3 side 3 → z0.3  lane: front storefront/service (activity 0.47, plantable 0.20) → footfall 0.47×1.15 = 0.55, canopy 0×(½·0.19 + ½·0.20) = 0.00
+  block 1,0 side 0 → x1.1  primary: front domestic (activity 0.25, plantable 1.00) → footfall 0.25×0.85 = 0.21, canopy 1×(½·0.19 + ½·1.00) = 0.59
+  block 1,0 side 1 → z2.0  street: front domestic (activity 0.25, plantable 1.00) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.19 + ½·1.00) = 0.36
+  block 1,0 side 2 → x0.1  street: front domestic (activity 0.25, plantable 1.00) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.19 + ½·1.00) = 0.36
+  block 1,0 side 3 → z1.0  street: front domestic (activity 0.25, plantable 1.00) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.19 + ½·1.00) = 0.36
+  block 1,1 side 0 → x2.1 [bus stop]  primary: front square (activity 0.80, plantable 0.80) → footfall 0.80×0.85 = 0.68, canopy 1×(½·0.19 + ½·0.80) = 0.49
+  block 1,1 side 1 → z2.1  street: front square (activity 0.80, plantable 0.80) → footfall 0.80×1 = 0.80, canopy 0.6×(½·0.19 + ½·0.80) = 0.30
+  block 1,1 side 2 → x1.1 [bus stop]  primary: front square (activity 0.80, plantable 0.80) → footfall 0.80×0.85 = 0.68, canopy 1×(½·0.19 + ½·0.80) = 0.49
+  block 1,1 side 3 → z1.1 [bus stop]  primary: front square (activity 0.80, plantable 0.80) → footfall 0.80×0.85 = 0.68, canopy 1×(½·0.19 + ½·0.80) = 0.49
+  block 1,2 side 0 → x3.1  street: front storefront (activity 0.80, plantable 0.30) → footfall 0.80×1 = 0.80, canopy 0.6×(½·0.19 + ½·0.30) = 0.15
+  block 1,2 side 1 → z2.2  street: front storefront/domestic (activity 0.40, plantable 0.82) → footfall 0.40×1 = 0.40, canopy 0.6×(½·0.19 + ½·0.82) = 0.30
+  block 1,2 side 2 → x2.1  primary: front domestic (activity 0.25, plantable 1.00) → footfall 0.25×0.85 = 0.21, canopy 1×(½·0.19 + ½·1.00) = 0.59
+  block 1,2 side 3 → z1.2  street: front domestic/storefront (activity 0.38, plantable 0.82) → footfall 0.38×1 = 0.38, canopy 0.6×(½·0.19 + ½·0.82) = 0.30
+  block 1,3 side 0 → x4.1  lane: front arcade/civic (activity 0.40, plantable 0.65) → footfall 0.40×1.15 = 0.46, canopy 0×(½·0.19 + ½·0.65) = 0.00
+  block 1,3 side 1 → z2.3  street: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.19 + ½·0.80) = 0.30
+  block 1,3 side 2 → x3.1  street: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.19 + ½·0.80) = 0.30
+  block 1,3 side 3 → z1.3  primary: front civic/arcade (activity 0.40, plantable 0.65) → footfall 0.40×0.85 = 0.34, canopy 1×(½·0.19 + ½·0.65) = 0.42
+  block 2,0 side 0 → x1.2  primary: front domestic/storefront (activity 0.38, plantable 0.82) → footfall 0.38×0.85 = 0.32, canopy 1×(½·0.19 + ½·0.82) = 0.51
+  block 2,0 side 1 → z3.0  street: front storefront/domestic (activity 0.63, plantable 0.48) → footfall 0.63×1 = 0.63, canopy 0.6×(½·0.19 + ½·0.48) = 0.20
+  block 2,0 side 2 → x0.2  street: front storefront/domestic (activity 0.38, plantable 0.82) → footfall 0.38×1 = 0.38, canopy 0.6×(½·0.19 + ½·0.82) = 0.30
+  block 2,0 side 3 → z2.0  street: front domestic (activity 0.25, plantable 1.00) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.19 + ½·1.00) = 0.36
+  block 2,1 side 0 → x2.2  street: front civic/square (activity 0.53, plantable 0.80) → footfall 0.53×1 = 0.53, canopy 0.6×(½·0.19 + ½·0.80) = 0.30
+  block 2,1 side 1 → z3.1 [bus stop]  primary: front square (activity 0.80, plantable 0.80) → footfall 0.80×0.85 = 0.68, canopy 1×(½·0.19 + ½·0.80) = 0.49
+  block 2,1 side 2 → x1.2 [bus stop]  primary: front square (activity 0.80, plantable 0.80) → footfall 0.80×0.85 = 0.68, canopy 1×(½·0.19 + ½·0.80) = 0.49
+  block 2,1 side 3 → z2.1  street: front square/civic (activity 0.53, plantable 0.80) → footfall 0.53×1 = 0.53, canopy 0.6×(½·0.19 + ½·0.80) = 0.30
+  block 2,2 side 0 → x3.2  street: front storefront/yard/civic (activity 0.52, plantable 0.60) → footfall 0.52×1 = 0.52, canopy 0.6×(½·0.19 + ½·0.60) = 0.24
+  block 2,2 side 1 → z3.2  street: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.19 + ½·0.80) = 0.30
+  block 2,2 side 2 → x2.2  street: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.19 + ½·0.80) = 0.30
+  block 2,2 side 3 → z2.2  street: front civic/storefront (activity 0.40, plantable 0.68) → footfall 0.40×1 = 0.40, canopy 0.6×(½·0.19 + ½·0.68) = 0.26
+  block 2,3 side 0 → x4.2  street: front civic/lobby (activity 0.50, plantable 0.65) → footfall 0.50×1 = 0.50, canopy 0.6×(½·0.19 + ½·0.65) = 0.25
+  block 2,3 side 1 → z3.3  street: front lobby (activity 0.75, plantable 0.50) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.19 + ½·0.50) = 0.21
+  block 2,3 side 2 → x3.2  street: front lobby (activity 0.75, plantable 0.50) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.19 + ½·0.50) = 0.21
+  block 2,3 side 3 → z2.3  street: front lobby/civic (activity 0.63, plantable 0.57) → footfall 0.63×1 = 0.63, canopy 0.6×(½·0.19 + ½·0.57) = 0.23
+  block 3,0 side 0 → x1.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.19 + ½·0.80) = 0.00
+  block 3,0 side 1 → z4.0  street: front civic/lobby (activity 0.38, plantable 0.73) → footfall 0.38×1 = 0.38, canopy 0.6×(½·0.19 + ½·0.73) = 0.27
+  block 3,0 side 2 → x0.3  pedestrian: front lobby/storefront (activity 0.75, plantable 0.45) → footfall 0.75×1.3 = 0.98, canopy 0.8×(½·0.19 + ½·0.45) = 0.26
+  block 3,0 side 3 → z3.0  street: front storefront/civic (activity 0.38, plantable 0.68) → footfall 0.38×1 = 0.38, canopy 0.6×(½·0.19 + ½·0.68) = 0.26
+  block 3,1 side 0 → x2.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.19 + ½·0.80) = 0.00
+  block 3,1 side 1 → z4.1  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.19 + ½·0.80) = 0.00
+  block 3,1 side 2 → x1.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.19 + ½·0.80) = 0.00
+  block 3,1 side 3 → z3.1  primary: front civic (activity 0.25, plantable 0.80) → footfall 0.25×0.85 = 0.21, canopy 1×(½·0.19 + ½·0.80) = 0.49
+  block 3,2 side 0 → x3.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.19 + ½·0.80) = 0.00
+  block 3,2 side 1 → z4.2  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.19 + ½·0.80) = 0.00
+  block 3,2 side 2 → x2.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.19 + ½·0.80) = 0.00
+  block 3,2 side 3 → z3.2  street: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.19 + ½·0.80) = 0.30
+  block 3,3 side 0 → x4.3  street: front lobby (activity 0.75, plantable 0.50) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.19 + ½·0.50) = 0.21
+  block 3,3 side 1 → z4.3  street: front lobby/civic (activity 0.63, plantable 0.57) → footfall 0.63×1 = 0.63, canopy 0.6×(½·0.19 + ½·0.57) = 0.23
+  block 3,3 side 2 → x3.3  lane: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1.15 = 0.29, canopy 0×(½·0.19 + ½·0.80) = 0.00
+  block 3,3 side 3 → z3.3  street: front civic/lobby (activity 0.63, plantable 0.57) → footfall 0.63×1 = 0.63, canopy 0.6×(½·0.19 + ½·0.57) = 0.23
+
+## NASA (media) · movement 0.36 (grammar.traffic ← link density) · green 0.67 (grammar.parks ← whitespace, coverage)
+  block 0,0 side 0 → x1.0  pedestrian: front square/lobby (activity 0.78, plantable 0.65) → footfall 0.78×1.3 = 1.00, canopy 0.8×(½·0.67 + ½·0.65) = 0.53
+  block 0,0 side 1 → z1.0  pedestrian: front lobby/square (activity 0.79, plantable 0.73) → footfall 0.79×1.3 = 1.00, canopy 0.8×(½·0.67 + ½·0.73) = 0.56
+  block 0,0 side 2 → x0.0  pedestrian: front square/lobby (activity 0.78, plantable 0.65) → footfall 0.78×1.3 = 1.00, canopy 0.8×(½·0.67 + ½·0.65) = 0.53
+  block 0,0 side 3 → z0.0  pedestrian: front lobby/square (activity 0.76, plantable 0.57) → footfall 0.76×1.3 = 0.99, canopy 0.8×(½·0.67 + ½·0.57) = 0.50
+  block 0,1 side 0 → x2.0  pedestrian: front square/lobby (activity 0.78, plantable 0.65) → footfall 0.78×1.3 = 1.00, canopy 0.8×(½·0.67 + ½·0.65) = 0.53
+  block 0,1 side 1 → z1.1 [bus stop]  primary: front lobby/square (activity 0.79, plantable 0.73) → footfall 0.79×0.85 = 0.67, canopy 1×(½·0.67 + ½·0.73) = 0.70
+  block 0,1 side 2 → x1.0  pedestrian: front square/lobby (activity 0.78, plantable 0.65) → footfall 0.78×1.3 = 1.00, canopy 0.8×(½·0.67 + ½·0.65) = 0.53
+  block 0,1 side 3 → z0.1  pedestrian: front lobby/square (activity 0.76, plantable 0.57) → footfall 0.76×1.3 = 0.99, canopy 0.8×(½·0.67 + ½·0.57) = 0.50
+  block 0,2 side 0 → x3.0  primary: front square/lobby (activity 0.78, plantable 0.65) → footfall 0.78×0.85 = 0.66, canopy 1×(½·0.67 + ½·0.65) = 0.66
+  block 0,2 side 1 → z1.2  street: front lobby/square (activity 0.79, plantable 0.73) → footfall 0.79×1 = 0.79, canopy 0.6×(½·0.67 + ½·0.73) = 0.42
+  block 0,2 side 2 → x2.0  pedestrian: front square/lobby (activity 0.78, plantable 0.65) → footfall 0.78×1.3 = 1.00, canopy 0.8×(½·0.67 + ½·0.65) = 0.53
+  block 0,2 side 3 → z0.2  pedestrian: front lobby/square (activity 0.76, plantable 0.57) → footfall 0.76×1.3 = 0.99, canopy 0.8×(½·0.67 + ½·0.57) = 0.50
+  block 0,3 side 0 → x4.0  pedestrian: front square (activity 0.80, plantable 0.80) → footfall 0.80×1.3 = 1.00, canopy 0.8×(½·0.67 + ½·0.80) = 0.59
+  block 0,3 side 1 → z1.3  street: front square (activity 0.80, plantable 0.80) → footfall 0.80×1 = 0.80, canopy 0.6×(½·0.67 + ½·0.80) = 0.44
+  block 0,3 side 2 → x3.0 [bus stop]  primary: front square (activity 0.80, plantable 0.80) → footfall 0.80×0.85 = 0.68, canopy 1×(½·0.67 + ½·0.80) = 0.74
+  block 0,3 side 3 → z0.3  pedestrian: front square (activity 0.80, plantable 0.80) → footfall 0.80×1.3 = 1.00, canopy 0.8×(½·0.67 + ½·0.80) = 0.59
+  block 1,0 side 0 → x1.1  street: front lobby (activity 0.75, plantable 0.50) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.67 + ½·0.50) = 0.35
+  block 1,0 side 1 → z2.0  pedestrian: front lobby (activity 0.75, plantable 0.50) → footfall 0.75×1.3 = 0.98, canopy 0.8×(½·0.67 + ½·0.50) = 0.47
+  block 1,0 side 2 → x0.1  pedestrian: front lobby (activity 0.75, plantable 0.50) → footfall 0.75×1.3 = 0.98, canopy 0.8×(½·0.67 + ½·0.50) = 0.47
+  block 1,0 side 3 → z1.0  pedestrian: front lobby (activity 0.75, plantable 0.50) → footfall 0.75×1.3 = 0.98, canopy 0.8×(½·0.67 + ½·0.50) = 0.47
+  block 1,1 side 0 → x2.1  primary: front civic (activity 0.30, plantable 0.80) → footfall 0.30×0.85 = 0.26, canopy 1×(½·0.67 + ½·0.80) = 0.74
+  block 1,1 side 1 → z2.1  street: front civic/storefront (activity 0.45, plantable 0.68) → footfall 0.45×1 = 0.45, canopy 0.6×(½·0.67 + ½·0.68) = 0.40
+  block 1,1 side 2 → x1.1  street: front square/domestic/storefront (activity 0.51, plantable 0.77) → footfall 0.51×1 = 0.51, canopy 0.6×(½·0.67 + ½·0.77) = 0.43
+  block 1,1 side 3 → z1.1  primary: front storefront/civic (activity 0.41, plantable 0.68) → footfall 0.41×0.85 = 0.35, canopy 1×(½·0.67 + ½·0.68) = 0.67
+  block 1,2 side 0 → x3.1 [bus stop]  primary: front lobby/storefront (activity 0.85, plantable 0.40) → footfall 0.85×0.85 = 0.72, canopy 1×(½·0.67 + ½·0.40) = 0.54
+  block 1,2 side 1 → z2.2  street: front storefront/yard/domestic (activity 0.52, plantable 0.65) → footfall 0.52×1 = 0.52, canopy 0.6×(½·0.67 + ½·0.65) = 0.40
+  block 1,2 side 2 → x2.1 [bus stop]  primary: front storefront/domestic (activity 0.63, plantable 0.48) → footfall 0.63×0.85 = 0.53, canopy 1×(½·0.67 + ½·0.48) = 0.57
+  block 1,2 side 3 → z1.2  street: front storefront/domestic/lobby (activity 0.63, plantable 0.53) → footfall 0.63×1 = 0.63, canopy 0.6×(½·0.67 + ½·0.53) = 0.36
+  block 1,3 side 0 → x4.1  lane: front storefront/yard/service (activity 0.34, plantable 0.60) → footfall 0.34×1.15 = 0.39, canopy 0×(½·0.67 + ½·0.60) = 0.00
+  block 1,3 side 1 → z2.3  lane: front service (activity 0.10, plantable 0.10) → footfall 0.10×1.15 = 0.11, canopy 0×(½·0.67 + ½·0.10) = 0.00
+  block 1,3 side 2 → x3.1  primary: front service/yard (activity 0.11, plantable 0.33) → footfall 0.11×0.85 = 0.10, canopy 1×(½·0.67 + ½·0.33) = 0.50
+  block 1,3 side 3 → z1.3  street: front service/yard/storefront (activity 0.54, plantable 0.43) → footfall 0.54×1 = 0.54, canopy 0.6×(½·0.67 + ½·0.43) = 0.33
+  block 2,0 side 0 → x1.2  street: front square/lobby (activity 0.78, plantable 0.65) → footfall 0.78×1 = 0.78, canopy 0.6×(½·0.67 + ½·0.65) = 0.40
+  block 2,0 side 1 → z3.0  pedestrian: front lobby/square (activity 0.79, plantable 0.73) → footfall 0.79×1.3 = 1.00, canopy 0.8×(½·0.67 + ½·0.73) = 0.56
+  block 2,0 side 2 → x0.2  pedestrian: front square/lobby (activity 0.78, plantable 0.65) → footfall 0.78×1.3 = 1.00, canopy 0.8×(½·0.67 + ½·0.65) = 0.53
+  block 2,0 side 3 → z2.0  pedestrian: front lobby/square (activity 0.76, plantable 0.57) → footfall 0.76×1.3 = 0.99, canopy 0.8×(½·0.67 + ½·0.57) = 0.50
+  block 2,1 side 0 → x2.2  street: front arcade/civic (activity 0.42, plantable 0.65) → footfall 0.42×1 = 0.42, canopy 0.6×(½·0.67 + ½·0.65) = 0.40
+  block 2,1 side 1 → z3.1  street: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.67 + ½·0.80) = 0.44
+  block 2,1 side 2 → x1.2  street: front civic (activity 0.25, plantable 0.80) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.67 + ½·0.80) = 0.44
+  block 2,1 side 3 → z2.1  street: front civic/yard/arcade (activity 0.40, plantable 0.70) → footfall 0.40×1 = 0.40, canopy 0.6×(½·0.67 + ½·0.70) = 0.41
+  block 2,2 side 0 → x3.2 [bus stop]  primary: front storefront/domestic (activity 0.68, plantable 0.48) → footfall 0.68×0.85 = 0.57, canopy 1×(½·0.67 + ½·0.48) = 0.57
+  block 2,2 side 1 → z3.2  street: front storefront/arcade (activity 0.90, plantable 0.22) → footfall 0.90×1 = 0.90, canopy 0.6×(½·0.67 + ½·0.22) = 0.27
+  block 2,2 side 2 → x2.2  street: front arcade (activity 0.95, plantable 0.20) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.67 + ½·0.20) = 0.26
+  block 2,2 side 3 → z2.2  street: front arcade/storefront (activity 0.95, plantable 0.23) → footfall 0.95×1 = 0.95, canopy 0.6×(½·0.67 + ½·0.23) = 0.27
+  block 2,3 side 0 → x4.2  lane: front service (activity 0.10, plantable 0.10) → footfall 0.10×1.15 = 0.11, canopy 0×(½·0.67 + ½·0.10) = 0.00
+  block 2,3 side 1 → z3.3  street: front service (activity 0.10, plantable 0.10) → footfall 0.10×1 = 0.10, canopy 0.6×(½·0.67 + ½·0.10) = 0.23
+  block 2,3 side 2 → x3.2  primary: front service (activity 0.10, plantable 0.10) → footfall 0.10×0.85 = 0.09, canopy 1×(½·0.67 + ½·0.10) = 0.39
+  block 2,3 side 3 → z2.3  lane: front service (activity 0.10, plantable 0.10) → footfall 0.10×1.15 = 0.11, canopy 0×(½·0.67 + ½·0.10) = 0.00
+  block 3,0 side 0 → x1.3  pedestrian: front lobby (activity 0.75, plantable 0.50) → footfall 0.75×1.3 = 0.98, canopy 0.8×(½·0.67 + ½·0.50) = 0.47
+  block 3,0 side 1 → z4.0  pedestrian: front lobby (activity 0.75, plantable 0.50) → footfall 0.75×1.3 = 0.98, canopy 0.8×(½·0.67 + ½·0.50) = 0.47
+  block 3,0 side 2 → x0.3  pedestrian: front lobby (activity 0.75, plantable 0.50) → footfall 0.75×1.3 = 0.98, canopy 0.8×(½·0.67 + ½·0.50) = 0.47
+  block 3,0 side 3 → z3.0  pedestrian: front lobby (activity 0.75, plantable 0.50) → footfall 0.75×1.3 = 0.98, canopy 0.8×(½·0.67 + ½·0.50) = 0.47
+  block 3,1 side 0 → x2.3  pedestrian: front square/lobby (activity 0.76, plantable 0.57) → footfall 0.76×1.3 = 0.99, canopy 0.8×(½·0.67 + ½·0.57) = 0.50
+  block 3,1 side 1 → z4.1  pedestrian: front lobby (activity 0.75, plantable 0.50) → footfall 0.75×1.3 = 0.98, canopy 0.8×(½·0.67 + ½·0.50) = 0.47
+  block 3,1 side 2 → x1.3  pedestrian: front lobby (activity 0.75, plantable 0.50) → footfall 0.75×1.3 = 0.98, canopy 0.8×(½·0.67 + ½·0.50) = 0.47
+  block 3,1 side 3 → z3.1  street: front lobby/storefront (activity 0.79, plantable 0.45) → footfall 0.79×1 = 0.79, canopy 0.6×(½·0.67 + ½·0.45) = 0.34
+  block 3,2 side 0 → x3.3 [bus stop]  primary: front square/storefront (activity 0.82, plantable 0.68) → footfall 0.82×0.85 = 0.70, canopy 1×(½·0.67 + ½·0.68) = 0.67
+  block 3,2 side 1 → z4.2  pedestrian: front square (activity 0.80, plantable 0.80) → footfall 0.80×1.3 = 1.00, canopy 0.8×(½·0.67 + ½·0.80) = 0.59
+  block 3,2 side 2 → x2.3  pedestrian: front square (activity 0.80, plantable 0.80) → footfall 0.80×1.3 = 1.00, canopy 0.8×(½·0.67 + ½·0.80) = 0.59
+  block 3,2 side 3 → z3.2  street: front square/storefront (activity 0.85, plantable 0.55) → footfall 0.85×1 = 0.85, canopy 0.6×(½·0.67 + ½·0.55) = 0.37
+  block 3,3 side 0 → x4.3  lane: front service (activity 0.10, plantable 0.10) → footfall 0.10×1.15 = 0.11, canopy 0×(½·0.67 + ½·0.10) = 0.00
+  block 3,3 side 1 → z4.3  lane: front service/yard (activity 0.11, plantable 0.33) → footfall 0.11×1.15 = 0.13, canopy 0×(½·0.67 + ½·0.33) = 0.00
+  block 3,3 side 2 → x3.3  primary: front service/yard/storefront (activity 0.31, plantable 0.38) → footfall 0.31×0.85 = 0.27, canopy 1×(½·0.67 + ½·0.38) = 0.52
+  block 3,3 side 3 → z3.3  street: front square/storefront/yard/service (activity 0.49, plantable 0.55) → footfall 0.49×1 = 0.49, canopy 0.6×(½·0.67 + ½·0.55) = 0.37
+
+## Linear (saas) · movement 0.11 (grammar.traffic ← link density) · green 0.69 (grammar.parks ← whitespace, coverage)
+  block 0,0 side 0 → x1.0  pedestrian: front square/lobby (activity 0.78, plantable 0.65) → footfall 0.78×1.3 = 1.00, canopy 0.8×(½·0.69 + ½·0.65) = 0.54
+  block 0,0 side 1 → z1.0  street: front lobby/square (activity 0.77, plantable 0.65) → footfall 0.77×1 = 0.77, canopy 0.6×(½·0.69 + ½·0.65) = 0.40
+  block 0,0 side 2 → x0.0  pedestrian: front square (activity 0.80, plantable 0.80) → footfall 0.80×1.3 = 1.00, canopy 0.8×(½·0.69 + ½·0.80) = 0.60
+  block 0,0 side 3 → z0.0  pedestrian: front square (activity 0.80, plantable 0.80) → footfall 0.80×1.3 = 1.00, canopy 0.8×(½·0.69 + ½·0.80) = 0.60
+  block 0,1 side 0 → x2.0  pedestrian: front square/storefront (activity 0.82, plantable 0.68) → footfall 0.82×1.3 = 1.00, canopy 0.8×(½·0.69 + ½·0.68) = 0.55
+  block 0,1 side 1 → z1.1  primary: front square/lobby (activity 0.78, plantable 0.65) → footfall 0.78×0.85 = 0.66, canopy 1×(½·0.69 + ½·0.65) = 0.67
+  block 0,1 side 2 → x1.0  pedestrian: front lobby (activity 0.75, plantable 0.50) → footfall 0.75×1.3 = 0.98, canopy 0.8×(½·0.69 + ½·0.50) = 0.48
+  block 0,1 side 3 → z0.1  pedestrian: front lobby/storefront (activity 0.79, plantable 0.45) → footfall 0.79×1.3 = 1.00, canopy 0.8×(½·0.69 + ½·0.45) = 0.46
+  block 0,2 side 0 → x3.0 [bus stop]  primary: front square (activity 0.80, plantable 0.80) → footfall 0.80×0.85 = 0.68, canopy 1×(½·0.69 + ½·0.80) = 0.74
+  block 0,2 side 1 → z1.2  pedestrian: front square (activity 0.80, plantable 0.80) → footfall 0.80×1.3 = 1.00, canopy 0.8×(½·0.69 + ½·0.80) = 0.60
+  block 0,2 side 2 → x2.0  pedestrian: front square (activity 0.80, plantable 0.80) → footfall 0.80×1.3 = 1.00, canopy 0.8×(½·0.69 + ½·0.80) = 0.60
+  block 0,2 side 3 → z0.2  pedestrian: front square (activity 0.80, plantable 0.80) → footfall 0.80×1.3 = 1.00, canopy 0.8×(½·0.69 + ½·0.80) = 0.60
+  block 0,3 side 0 → x4.0  lane: front service (activity 0.10, plantable 0.10) → footfall 0.10×1.15 = 0.11, canopy 0×(½·0.69 + ½·0.10) = 0.00
+  block 0,3 side 1 → z1.3  primary: front service/yard/domestic (activity 0.15, plantable 0.55) → footfall 0.15×0.85 = 0.13, canopy 1×(½·0.69 + ½·0.55) = 0.62
+  block 0,3 side 2 → x3.0  primary: front service (activity 0.10, plantable 0.10) → footfall 0.10×0.85 = 0.09, canopy 1×(½·0.69 + ½·0.10) = 0.39
+  block 0,3 side 3 → z0.3  lane: front service/yard (activity 0.13, plantable 0.55) → footfall 0.13×1.15 = 0.14, canopy 0×(½·0.69 + ½·0.55) = 0.00
+  block 1,0 side 0 → x1.1  primary: front domestic (activity 0.25, plantable 1.00) → footfall 0.25×0.85 = 0.21, canopy 1×(½·0.69 + ½·1.00) = 0.84
+  block 1,0 side 1 → z2.0  street: front domestic/storefront (activity 0.38, plantable 0.82) → footfall 0.38×1 = 0.38, canopy 0.6×(½·0.69 + ½·0.82) = 0.45
+  block 1,0 side 2 → x0.1  street: front storefront/domestic (activity 0.66, plantable 0.48) → footfall 0.66×1 = 0.66, canopy 0.6×(½·0.69 + ½·0.48) = 0.35
+  block 1,0 side 3 → z1.0  street: front square/domestic (activity 0.39, plantable 0.95) → footfall 0.39×1 = 0.39, canopy 0.6×(½·0.69 + ½·0.95) = 0.49
+  block 1,1 side 0 → x2.1 [bus stop]  primary: front square (activity 0.80, plantable 0.80) → footfall 0.80×0.85 = 0.68, canopy 1×(½·0.69 + ½·0.80) = 0.74
+  block 1,1 side 1 → z2.1  street: front square (activity 0.80, plantable 0.80) → footfall 0.80×1 = 0.80, canopy 0.6×(½·0.69 + ½·0.80) = 0.45
+  block 1,1 side 2 → x1.1 [bus stop]  primary: front square (activity 0.80, plantable 0.80) → footfall 0.80×0.85 = 0.68, canopy 1×(½·0.69 + ½·0.80) = 0.74
+  block 1,1 side 3 → z1.1 [bus stop]  primary: front square (activity 0.80, plantable 0.80) → footfall 0.80×0.85 = 0.68, canopy 1×(½·0.69 + ½·0.80) = 0.74
+  block 1,2 side 0 → x3.1  street: front square/domestic (activity 0.39, plantable 0.95) → footfall 0.39×1 = 0.39, canopy 0.6×(½·0.69 + ½·0.95) = 0.49
+  block 1,2 side 1 → z2.2  street: front domestic (activity 0.25, plantable 1.00) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.69 + ½·1.00) = 0.51
+  block 1,2 side 2 → x2.1  primary: front domestic/square (activity 0.39, plantable 0.95) → footfall 0.39×0.85 = 0.33, canopy 1×(½·0.69 + ½·0.95) = 0.82
+  block 1,2 side 3 → z1.2  pedestrian: front square/storefront (activity 0.85, plantable 0.55) → footfall 0.85×1.3 = 1.00, canopy 0.8×(½·0.69 + ½·0.55) = 0.50
+  block 1,3 side 0 → x4.1  street: front service/domestic/storefront (activity 0.30, plantable 0.38) → footfall 0.30×1 = 0.30, canopy 0.6×(½·0.69 + ½·0.38) = 0.32
+  block 1,3 side 1 → z2.3  street: front storefront/lobby (activity 0.75, plantable 0.45) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.69 + ½·0.45) = 0.34
+  block 1,3 side 2 → x3.1  street: front lobby/domestic/arcade (activity 0.72, plantable 0.47) → footfall 0.72×1 = 0.72, canopy 0.6×(½·0.69 + ½·0.47) = 0.35
+  block 1,3 side 3 → z1.3 [bus stop]  primary: front arcade/service (activity 0.74, plantable 0.18) → footfall 0.74×0.85 = 0.63, canopy 1×(½·0.69 + ½·0.18) = 0.43
+  block 2,0 side 0 → x1.2  primary: front domestic/lobby (activity 0.38, plantable 0.88) → footfall 0.38×0.85 = 0.32, canopy 1×(½·0.69 + ½·0.88) = 0.78
+  block 2,0 side 1 → z3.0  pedestrian: front lobby (activity 0.75, plantable 0.50) → footfall 0.75×1.3 = 0.98, canopy 0.8×(½·0.69 + ½·0.50) = 0.48
+  block 2,0 side 2 → x0.2  street: front lobby/domestic (activity 0.38, plantable 0.88) → footfall 0.38×1 = 0.38, canopy 0.6×(½·0.69 + ½·0.88) = 0.47
+  block 2,0 side 3 → z2.0  street: front domestic (activity 0.25, plantable 1.00) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.69 + ½·1.00) = 0.51
+  block 2,1 side 0 → x2.2  street: front lobby/square (activity 0.77, plantable 0.65) → footfall 0.77×1 = 0.77, canopy 0.6×(½·0.69 + ½·0.65) = 0.40
+  block 2,1 side 1 → z3.1 [bus stop]  primary: front square (activity 0.80, plantable 0.80) → footfall 0.80×0.85 = 0.68, canopy 1×(½·0.69 + ½·0.80) = 0.74
+  block 2,1 side 2 → x1.2 [bus stop]  primary: front square (activity 0.80, plantable 0.80) → footfall 0.80×0.85 = 0.68, canopy 1×(½·0.69 + ½·0.80) = 0.74
+  block 2,1 side 3 → z2.1  street: front square/lobby (activity 0.78, plantable 0.65) → footfall 0.78×1 = 0.78, canopy 0.6×(½·0.69 + ½·0.65) = 0.40
+  block 2,2 side 0 → x3.2  street: front storefront/lobby (activity 0.75, plantable 0.45) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.69 + ½·0.45) = 0.34
+  block 2,2 side 1 → z3.2  street: front lobby (activity 0.75, plantable 0.50) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.69 + ½·0.50) = 0.36
+  block 2,2 side 2 → x2.2  street: front lobby (activity 0.75, plantable 0.50) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.69 + ½·0.50) = 0.36
+  block 2,2 side 3 → z2.2  street: front lobby/domestic/storefront (activity 0.63, plantable 0.57) → footfall 0.63×1 = 0.63, canopy 0.6×(½·0.69 + ½·0.57) = 0.38
+  block 2,3 side 0 → x4.2  street: front storefront/domestic (activity 0.38, plantable 0.82) → footfall 0.38×1 = 0.38, canopy 0.6×(½·0.69 + ½·0.82) = 0.45
+  block 2,3 side 1 → z3.3  street: front domestic (activity 0.25, plantable 1.00) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.69 + ½·1.00) = 0.51
+  block 2,3 side 2 → x3.2  street: front domestic/storefront (activity 0.38, plantable 0.82) → footfall 0.38×1 = 0.38, canopy 0.6×(½·0.69 + ½·0.82) = 0.45
+  block 2,3 side 3 → z2.3  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.69 + ½·0.30) = 0.30
+  block 3,0 side 0 → x1.3  pedestrian: front square/storefront (activity 0.81, plantable 0.55) → footfall 0.81×1.3 = 1.00, canopy 0.8×(½·0.69 + ½·0.55) = 0.50
+  block 3,0 side 1 → z4.0  street: front storefront/domestic/square (activity 0.65, plantable 0.73) → footfall 0.65×1 = 0.65, canopy 0.6×(½·0.69 + ½·0.73) = 0.42
+  block 3,0 side 2 → x0.3  pedestrian: front square/storefront/lobby (activity 0.81, plantable 0.60) → footfall 0.81×1.3 = 1.00, canopy 0.8×(½·0.69 + ½·0.60) = 0.52
+  block 3,0 side 3 → z3.0  pedestrian: front lobby/square (activity 0.77, plantable 0.65) → footfall 0.77×1.3 = 1.00, canopy 0.8×(½·0.69 + ½·0.65) = 0.54
+  block 3,1 side 0 → x2.3  street: front storefront/domestic/square (activity 0.65, plantable 0.73) → footfall 0.65×1 = 0.65, canopy 0.6×(½·0.69 + ½·0.73) = 0.42
+  block 3,1 side 1 → z4.1  pedestrian: front square/storefront (activity 0.85, plantable 0.55) → footfall 0.85×1.3 = 1.00, canopy 0.8×(½·0.69 + ½·0.55) = 0.50
+  block 3,1 side 2 → x1.3  pedestrian: front square/storefront (activity 0.82, plantable 0.68) → footfall 0.82×1.3 = 1.00, canopy 0.8×(½·0.69 + ½·0.68) = 0.55
+  block 3,1 side 3 → z3.1  primary: front square/domestic/storefront (activity 0.65, plantable 0.72) → footfall 0.65×0.85 = 0.55, canopy 1×(½·0.69 + ½·0.72) = 0.71
+  block 3,2 side 0 → x3.3  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.69 + ½·0.30) = 0.30
+  block 3,2 side 1 → z4.2  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.69 + ½·0.30) = 0.30
+  block 3,2 side 2 → x2.3  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.69 + ½·0.30) = 0.30
+  block 3,2 side 3 → z3.2  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.69 + ½·0.30) = 0.30
+  block 3,3 side 0 → x4.3  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.69 + ½·0.30) = 0.30
+  block 3,3 side 1 → z4.3  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.69 + ½·0.30) = 0.30
+  block 3,3 side 2 → x3.3  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.69 + ½·0.30) = 0.30
+  block 3,3 side 3 → z3.3  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.69 + ½·0.30) = 0.30
+
+## Python Docs (docs) · movement 0.08 (grammar.traffic ← link density) · green 0.17 (grammar.parks ← whitespace, coverage)
+  block 0,0 side 0 → x1.0  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 0,0 side 1 → z1.0  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 0,0 side 2 → x0.0  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 0,0 side 3 → z0.0  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 0,1 side 0 → x2.0  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 0,1 side 1 → z1.1  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 0,1 side 2 → x1.0  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 0,1 side 3 → z0.1  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 0,2 side 0 → x3.0 [bus stop]  primary: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×0.85 = 0.64, canopy 1×(½·0.17 + ½·0.30) = 0.24
+  block 0,2 side 1 → z1.2  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 0,2 side 2 → x2.0  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 0,2 side 3 → z0.2  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 0,3 side 0 → x4.0  street: front storefront/domestic (activity 0.63, plantable 0.48) → footfall 0.63×1 = 0.63, canopy 0.6×(½·0.17 + ½·0.48) = 0.19
+  block 0,3 side 1 → z1.3  street: front storefront/civic (activity 0.50, plantable 0.55) → footfall 0.50×1 = 0.50, canopy 0.6×(½·0.17 + ½·0.55) = 0.22
+  block 0,3 side 2 → x3.0  primary: front civic/service/arcade (activity 0.45, plantable 0.33) → footfall 0.45×0.85 = 0.38, canopy 1×(½·0.17 + ½·0.33) = 0.25
+  block 0,3 side 3 → z0.3  lane: front arcade/storefront (activity 0.73, plantable 0.28) → footfall 0.73×1.15 = 0.83, canopy 0×(½·0.17 + ½·0.28) = 0.00
+  block 1,0 side 0 → x1.1  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 1,0 side 1 → z2.0  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 1,0 side 2 → x0.1  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 1,0 side 3 → z1.0  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 1,1 side 0 → x2.1  street: front lobby (activity 0.75, plantable 0.50) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.50) = 0.20
+  block 1,1 side 1 → z2.1  street: front lobby/storefront (activity 0.74, plantable 0.45) → footfall 0.74×1 = 0.74, canopy 0.6×(½·0.17 + ½·0.45) = 0.19
+  block 1,1 side 2 → x1.1  street: front storefront/yard (activity 0.58, plantable 0.48) → footfall 0.58×1 = 0.58, canopy 0.6×(½·0.17 + ½·0.48) = 0.19
+  block 1,1 side 3 → z1.1  street: front storefront/lobby (activity 0.74, plantable 0.45) → footfall 0.74×1 = 0.74, canopy 0.6×(½·0.17 + ½·0.45) = 0.19
+  block 1,2 side 0 → x3.1  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 1,2 side 1 → z2.2  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 1,2 side 2 → x2.1  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 1,2 side 3 → z1.2  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 1,3 side 0 → x4.1  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 1,3 side 1 → z2.3  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 1,3 side 2 → x3.1  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 1,3 side 3 → z1.3  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 2,0 side 0 → x1.2  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 2,0 side 1 → z3.0  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 2,0 side 2 → x0.2  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 2,0 side 3 → z2.0  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 2,1 side 0 → x2.2  street: front storefront/yard (activity 0.59, plantable 0.48) → footfall 0.59×1 = 0.59, canopy 0.6×(½·0.17 + ½·0.48) = 0.19
+  block 2,1 side 1 → z3.1  street: front storefront (activity 0.72, plantable 0.30) → footfall 0.72×1 = 0.72, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 2,1 side 2 → x1.2  street: front storefront/yard (activity 0.58, plantable 0.48) → footfall 0.58×1 = 0.58, canopy 0.6×(½·0.17 + ½·0.48) = 0.19
+  block 2,1 side 3 → z2.1  street: front storefront/yard (activity 0.59, plantable 0.48) → footfall 0.59×1 = 0.59, canopy 0.6×(½·0.17 + ½·0.48) = 0.19
+  block 2,2 side 0 → x3.2  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 2,2 side 1 → z3.2  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 2,2 side 2 → x2.2  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 2,2 side 3 → z2.2  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 2,3 side 0 → x4.2  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 2,3 side 1 → z3.3  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 2,3 side 2 → x3.2  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 2,3 side 3 → z2.3  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 3,0 side 0 → x1.3  street: front storefront/domestic (activity 0.38, plantable 0.82) → footfall 0.38×1 = 0.38, canopy 0.6×(½·0.17 + ½·0.82) = 0.30
+  block 3,0 side 1 → z4.0  street: front domestic (activity 0.25, plantable 1.00) → footfall 0.25×1 = 0.25, canopy 0.6×(½·0.17 + ½·1.00) = 0.35
+  block 3,0 side 2 → x0.3  street: front domestic/storefront (activity 0.38, plantable 0.82) → footfall 0.38×1 = 0.38, canopy 0.6×(½·0.17 + ½·0.82) = 0.30
+  block 3,0 side 3 → z3.0  street: front storefront/domestic (activity 0.63, plantable 0.48) → footfall 0.63×1 = 0.63, canopy 0.6×(½·0.17 + ½·0.48) = 0.19
+  block 3,1 side 0 → x2.3  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 3,1 side 1 → z4.1  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 3,1 side 2 → x1.3  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 3,1 side 3 → z3.1  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 3,2 side 0 → x3.3  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 3,2 side 1 → z4.2  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 3,2 side 2 → x2.3  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 3,2 side 3 → z3.2  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 3,3 side 0 → x4.3  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 3,3 side 1 → z4.3  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 3,3 side 2 → x3.3  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14
+  block 3,3 side 3 → z3.3  street: front storefront (activity 0.75, plantable 0.30) → footfall 0.75×1 = 0.75, canopy 0.6×(½·0.17 + ½·0.30) = 0.14

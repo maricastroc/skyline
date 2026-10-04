@@ -1,0 +1,9 @@
+# kit-v10 (C1, before C3)
+furniture  parts per page 3392/3392/3392/3392/3392/3392/3392/3392  identical in all 8 pages: 3392 (100% of a page's furniture)
+crossings  parts per page 308/84/244/276/308/308/308/308  identical in all 8 pages: 78 (29% of a page's crossings)
+traffic    parts per page 5198/3112/3613/4096/4893/2533/3848/5412  identical in all 8 pages: 136 (3% of a page's traffic)
+
+# current (C3)
+furniture  parts per page 4030/1642/2301/3097/3211/4753/4651/3291  identical in all 8 pages: 5 (0% of a page's furniture)
+crossings  parts per page 720/196/372/442/572/600/610/664  identical in all 8 pages: 68 (13% of a page's crossings)
+traffic    parts per page 2672/635/3276/3168/4264/1455/1449/1819  identical in all 8 pages: 0 (0% of a page's traffic)
