@@ -1,0 +1,33 @@
+== city
+  ρ(pixels, layer): semantics 0.49 · semantics (plan structure) 0.56 · territory 0.53 · composition 0.51 · massing 0.40 · surface 0.47 · expression 0.59
+  v4      page↔page 1.17 · ρ(semantics plan) 0.58 · ρ(massing) 0.43 · ρ(surface) 0.48
+  classic page↔page 1.06 · ρ(semantics plan) 0.70 · ρ(massing) 0.54 · ρ(surface) 0.51
+  seed noise mean 0.42 max 0.61 (max from docs) · page pairs ≤ seed max: 1/91 [('reference', 'reference-2', 0.51)]
+  style → classic: mean 0.85 over 10 pages not already classic (max 1.40 forum)
+  style → modern: mean 0.68 over 8 pages not already modern (max 1.15 directory)
+  closest: reference~reference-2 0.51, portfolio~institution 0.62, forum~institution 0.62, reference~news 0.67, portfolio~media 0.69
+  farthest: shop~forum 1.57, docs~news 1.72, docs~shop 1.74, shop~oldweb 2.06, shop~directory 2.08
+== street
+  ρ(pixels, layer): semantics 0.28 · semantics (plan structure) 0.27 · territory 0.15 · composition 0.17 · massing 0.43 · surface 0.18 · expression 0.30
+  v4      page↔page 1.10 · ρ(semantics plan) 0.18 · ρ(massing) 0.32 · ρ(surface) 0.17
+  v5      page↔page 1.07 · ρ(semantics plan) 0.28 · ρ(massing) 0.42 · ρ(surface) 0.25
+  classic page↔page 1.03 · ρ(semantics plan) 0.48 · ρ(massing) 0.55 · ρ(surface) 0.37
+  seed noise mean 0.48 max 0.68 (max from app) · page pairs ≤ seed max: 4/91 [('reference', 'reference-2', 0.51), ('news', 'reference-2', 0.51), ('portfolio', 'media', 0.64), ('reference-2', 'saas-2', 0.67)]
+  style → classic: mean 0.75 over 10 pages not already classic (max 1.17 forum)
+  style → modern: mean 0.57 over 8 pages not already modern (max 1.02 directory)
+  closest: news~reference-2 0.51, reference~reference-2 0.51, portfolio~media 0.64, reference-2~saas-2 0.67, news~saas-2 0.71
+  farthest: docs~news 1.43, institution~oldweb 1.44, docs~saas-2 1.49, docs~shop 1.50, shop~directory 1.63
+== close
+  ρ(pixels, layer): semantics 0.21 · semantics (plan structure) 0.22 · territory 0.17 · composition 0.21 · massing 0.19 · surface 0.20 · expression 0.24
+  v4      page↔page 1.10 · ρ(semantics plan) 0.27 · ρ(massing) 0.19 · ρ(surface) 0.18
+  v5      page↔page 1.05 · ρ(semantics plan) 0.27 · ρ(massing) 0.18 · ρ(surface) 0.25
+  classic page↔page 1.03 · ρ(semantics plan) 0.27 · ρ(massing) 0.29 · ρ(surface) 0.19
+  seed noise mean 0.52 max 0.89 (max from news) · page pairs ≤ seed max: 25/91 [('reference', 'news', 0.87), ('reference', 'oldweb', 0.83), ('reference', 'media', 0.61), ('reference', 'directory', 0.85), ('reference', 'reference-2', 0.66), ('docs', 'forum', 0.89), ('app', 'media', 0.85), ('saas', 'news', 0.79), ('saas', 'forum', 0.75), ('saas', 'reference-2', 0.74), ('saas', 'saas-2', 0.68), ('shop', 'portfolio', 0.87), ('shop', 'forum', 0.83), ('shop', 'institution', 0.86), ('shop', 'reference-2', 0.85), ('news', 'media', 0.84), ('news', 'reference-2', 0.76), ('news', 'saas-2', 0.63), ('portfolio', 'institution', 0.73), ('forum', 'institution', 0.78), ('forum', 'oldweb', 0.73), ('institution', 'oldweb', 0.88), ('oldweb', 'directory', 0.88), ('media', 'reference-2', 0.8), ('reference-2', 'saas-2', 0.88)]
+  style → classic: mean 0.64 over 10 pages not already classic (max 1.08 app)
+  style → modern: mean 0.47 over 8 pages not already modern (max 0.86 directory)
+  closest: reference~media 0.61, news~saas-2 0.63, reference~reference-2 0.66, saas~saas-2 0.68, portfolio~institution 0.73
+  farthest: app~shop 1.29, docs~reference-2 1.30, docs~media 1.33, docs~saas-2 1.34, docs~news 1.39
+== flat
+  ρ(pixels, layer): semantics 0.63 · semantics (plan structure) 0.60 · territory 0.44 · composition 0.52 · massing 0.68 · surface 0.54 · expression 0.34
+  closest: reference~reference-2 0.55, oldweb~directory 0.55, portfolio~media 0.57, portfolio~reference-2 0.59, reference-2~saas-2 0.60
+  farthest: portfolio~forum 1.93, saas~oldweb 1.99, portfolio~directory 1.99, oldweb~media 2.03, portfolio~oldweb 2.08
