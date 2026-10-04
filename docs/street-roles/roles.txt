@@ -1,0 +1,633 @@
+page          inner (24): primary street lane pedestrian   outer (16): primary street lane pedestrian
+IKEA                             6     17    1          0                      0     13    3          0
+Paul Graham                      0      3   21          0                      0      0   16          0
+craigslist                       8      5   11          0                      0      0   16          0
+GOV.UK                           6     11    6          1                      0      5    9          2
+Wikipedia                        5     17    2          0                      0     10    6          0
+Wikipedia 2                      7     14    3          0                      0     10    5          1
+NASA                             6     10    1          7                      0      0    4         12
+Linear                           7     12    0          5                      0      8    2          6
+Python Docs                      1     23    0          0                      0     15    1          0
+app                              1     17    6          0                      0      1   14          1
+news                             3      5    0         16                      0      2    2         12
+portfolio                        6     13    0          5                      0      8    1          7
+forum                            1      2   21          0                      0      0   16          0
+saas-2                          11      5    5          3                      0      4    9          3
+
+P primary · s street · l lane · · pedestrian
+
+## IKEA (shop)
+along x, lines 0–4: ssss | sPss | sPss | PPPs | llss
+along z, lines 0–4: sssl | sPss | sssl | ssss | ssss
+  x0.0 street     street 4 · edge of t2 (grid)
+  x0.1 street     street 4 · edge of t2 (grid)
+  x0.2 street     street 4 · edge of t2 (grid)
+  x0.3 street     street 4 · edge of t2 (grid)
+  x1.0 street     street 4 · inside t2 (grid)
+  x1.1 primary    primary 4 · seam content t2 | hero t0
+  x1.2 street     street 3, primary 1 · seam content t2 | hero t0
+  x1.3 street     street 4 · inside t2 (grid)
+  x2.0 street     street 4 · inside t2 (grid)
+  x2.1 primary    primary 4 · seam hero t0 | content t2
+  x2.2 street     street 4 · inside t2 (grid)
+  x2.3 street     street 4 · inside t2 (grid)
+  x3.0 primary    primary 4 · seam content t2 | rest t6
+  x3.1 primary    primary 4 · seam content t2 | footer t5
+  x3.2 primary    street 1, primary 3 · seam content t2 | footer t5
+  x3.3 street     street 4 · inside t2 (grid)
+  x4.0 lane       lane 4 · edge of t6 (parcelled)
+  x4.1 lane       lane 4 · edge of t5 (support)
+  x4.2 street     lane 2, street 2 → tie: street · edge of t5 (support)
+  x4.3 street     street 4 · edge of t2 (grid)
+  z0.0 street     street 4 · edge of t2 (grid)
+  z0.1 street     street 4 · edge of t2 (grid)
+  z0.2 street     street 4 · edge of t2 (grid)
+  z0.3 lane       lane 4 · edge of t6 (parcelled)
+  z1.0 street     street 4 · inside t2 (grid)
+  z1.1 primary    primary 4 · seam content t2 | hero t0
+  z1.2 street     street 4 · inside t2 (grid)
+  z1.3 street     lane 2, primary 2 → tie: street · seam rest t6 | footer t5
+  z2.0 street     street 4 · inside t2 (grid)
+  z2.1 street     pedestrian 2, primary 2 → tie: street · inside t0 (landmark)
+  z2.2 street     street 4 · inside t2 (grid)
+  z2.3 lane       lane 4 · inside t5 (support)
+  z3.0 street     street 4 · inside t2 (grid)
+  z3.1 street     street 4 · inside t2 (grid)
+  z3.2 street     street 4 · inside t2 (grid)
+  z3.3 street     street 4 · inside t2 (grid)
+  z4.0 street     street 4 · edge of t2 (grid)
+  z4.1 street     street 4 · edge of t2 (grid)
+  z4.2 street     street 4 · edge of t2 (grid)
+  z4.3 street     street 4 · edge of t2 (grid)
+
+## Paul Graham (oldweb)
+along x, lines 0–4: llll | llll | lsll | llll | llll
+along z, lines 0–4: llll | lsll | lsll | llll | llll
+  x0.0 lane       lane 4 · edge of t1 (parcelled)
+  x0.1 lane       lane 4 · edge of t1 (parcelled)
+  x0.2 lane       lane 4 · edge of t1 (parcelled)
+  x0.3 lane       lane 4 · edge of t1 (parcelled)
+  x1.0 lane       lane 4 · inside t1 (parcelled)
+  x1.1 lane       lane 4 · inside t1 (parcelled)
+  x1.2 lane       lane 4 · inside t1 (parcelled)
+  x1.3 lane       lane 4 · inside t1 (parcelled)
+  x2.0 lane       lane 4 · inside t1 (parcelled)
+  x2.1 street     street 4 · seam t0 | t1 (same tier)
+  x2.2 lane       lane 4 · inside t1 (parcelled)
+  x2.3 lane       lane 4 · inside t1 (parcelled)
+  x3.0 lane       lane 4 · inside t1 (parcelled)
+  x3.1 lane       lane 4 · inside t1 (parcelled)
+  x3.2 lane       lane 4 · inside t1 (parcelled)
+  x3.3 lane       lane 4 · inside t1 (parcelled)
+  x4.0 lane       lane 4 · edge of t1 (parcelled)
+  x4.1 lane       lane 4 · edge of t1 (parcelled)
+  x4.2 lane       lane 4 · edge of t1 (parcelled)
+  x4.3 lane       lane 4 · edge of t1 (parcelled)
+  z0.0 lane       lane 4 · edge of t1 (parcelled)
+  z0.1 lane       lane 4 · edge of t1 (parcelled)
+  z0.2 lane       lane 4 · edge of t1 (parcelled)
+  z0.3 lane       lane 4 · edge of t1 (parcelled)
+  z1.0 lane       lane 4 · inside t1 (parcelled)
+  z1.1 street     lane 2, street 2 → tie: street · inside t1 (parcelled)
+  z1.2 lane       lane 4 · inside t1 (parcelled)
+  z1.3 lane       lane 4 · inside t1 (parcelled)
+  z2.0 lane       lane 4 · inside t1 (parcelled)
+  z2.1 street     lane 2, street 2 → tie: street · inside t1 (parcelled)
+  z2.2 lane       lane 4 · inside t1 (parcelled)
+  z2.3 lane       lane 4 · inside t1 (parcelled)
+  z3.0 lane       lane 4 · inside t1 (parcelled)
+  z3.1 lane       lane 4 · inside t1 (parcelled)
+  z3.2 lane       lane 4 · inside t1 (parcelled)
+  z3.3 lane       lane 4 · inside t1 (parcelled)
+  z4.0 lane       lane 4 · edge of t1 (parcelled)
+  z4.1 lane       lane 4 · edge of t1 (parcelled)
+  z4.2 lane       lane 4 · edge of t1 (parcelled)
+  z4.3 lane       lane 4 · edge of t1 (parcelled)
+
+## craigslist (directory)
+along x, lines 0–4: llll | lPPl | lsll | PPPl | llll
+along z, lines 0–4: llll | sssl | lsll | PPPl | llll
+  x0.0 lane       lane 4 · edge of t4 (parcelled)
+  x0.1 lane       lane 4 · edge of t6 (navigation)
+  x0.2 lane       lane 4 · edge of t6 (navigation)
+  x0.3 lane       lane 4 · edge of t8 (parcelled)
+  x1.0 lane       lane 4 · inside t3 (parcelled)
+  x1.1 primary    primary 4 · seam chrome t6 | content t0
+  x1.2 primary    primary 4 · seam chrome t6 | content t0
+  x1.3 lane       lane 4 · inside t8 (parcelled)
+  x2.0 lane       lane 3, street 1 · seam t3 | t2 (same tier)
+  x2.1 street     street 4 · seam t0 | t1 (same tier)
+  x2.2 lane       lane 4 · inside t1 (parcelled)
+  x2.3 lane       lane 4 · inside t8 (parcelled)
+  x3.0 primary    primary 4 · seam content t2 | rest t8
+  x3.1 primary    primary 4 · seam content t2 | rest t8
+  x3.2 primary    primary 4 · seam content t1 | rest t8
+  x3.3 lane       lane 4 · inside t8 (parcelled)
+  x4.0 lane       lane 4 · edge of t8 (parcelled)
+  x4.1 lane       lane 4 · edge of t8 (parcelled)
+  x4.2 lane       lane 4 · edge of t8 (parcelled)
+  x4.3 lane       lane 4 · edge of t8 (parcelled)
+  z0.0 lane       lane 4 · edge of t4 (parcelled)
+  z0.1 lane       lane 4 · edge of t3 (parcelled)
+  z0.2 lane       lane 4 · edge of t2 (parcelled)
+  z0.3 lane       lane 4 · edge of t8 (parcelled)
+  z1.0 street     lane 2, primary 2 → tie: street · inside t6 (navigation)
+  z1.1 street     street 4 · seam t3 | t0 (same tier)
+  z1.2 street     lane 2, street 2 → tie: street · seam t2 | t1 (same tier)
+  z1.3 lane       lane 4 · inside t8 (parcelled)
+  z2.0 lane       lane 4 · inside t6 (navigation)
+  z2.1 street     lane 2, street 2 → tie: street · inside t0 (parcelled)
+  z2.2 lane       lane 4 · inside t1 (parcelled)
+  z2.3 lane       lane 4 · inside t8 (parcelled)
+  z3.0 primary    lane 1, primary 3 · inside t8 (parcelled)
+  z3.1 primary    primary 4 · seam content t1 | rest t8
+  z3.2 primary    primary 4 · seam content t1 | rest t8
+  z3.3 lane       lane 4 · inside t8 (parcelled)
+  z4.0 lane       lane 4 · edge of t8 (parcelled)
+  z4.1 lane       lane 4 · edge of t8 (parcelled)
+  z4.2 lane       lane 4 · edge of t8 (parcelled)
+  z4.3 lane       lane 4 · edge of t8 (parcelled)
+
+## GOV.UK (institution)
+along x, lines 0–4: ··ss | lPss | lPsl | PPPs | llll
+along z, lines 0–4: slll | sPll | ·ssl | ssss | ssll
+  x0.0 pedestrian pedestrian 4 · edge of t3 (media)
+  x0.1 pedestrian pedestrian 4 · edge of t3 (media)
+  x0.2 street     pedestrian 2, street 2 → tie: street · edge of t3 (media)
+  x0.3 street     street 4 · edge of t5 (continuous)
+  x1.0 lane       lane 4 · inside t2 (parcelled)
+  x1.1 primary    street 1, primary 3 · seam content t3 | hero t0
+  x1.2 street     street 4 · seam t3 | t1 (same tier)
+  x1.3 street     street 4 · inside t5 (continuous)
+  x2.0 lane       lane 4 · inside t2 (parcelled)
+  x2.1 primary    primary 4 · seam hero t0 | content t2
+  x2.2 street     street 4 · inside t1 (continuous)
+  x2.3 lane       lane 4 · inside t6 (parcelled)
+  x3.0 primary    primary 4 · seam content t2 | footer t9
+  x3.1 primary    primary 4 · seam content t2 | footer t9
+  x3.2 primary    primary 4 · seam content t2 | footer t9
+  x3.3 street     street 4 · inside t7 (continuous)
+  x4.0 lane       lane 4 · edge of t9 (support)
+  x4.1 lane       lane 4 · edge of t9 (support)
+  x4.2 lane       lane 4 · edge of t9 (support)
+  x4.3 lane       lane 4 · edge of t9 (support)
+  z0.0 street     pedestrian 2, lane 2 → tie: street · edge of t3 (media)
+  z0.1 lane       lane 4 · edge of t2 (parcelled)
+  z0.2 lane       lane 4 · edge of t2 (parcelled)
+  z0.3 lane       lane 4 · edge of t9 (support)
+  z1.0 street     pedestrian 2, street 2 → tie: street · inside t3 (media)
+  z1.1 primary    primary 4 · seam content t2 | hero t0
+  z1.2 lane       lane 4 · inside t2 (parcelled)
+  z1.3 lane       lane 3, primary 1 · inside t9 (support)
+  z2.0 pedestrian pedestrian 4 · inside t3 (media)
+  z2.1 street     lane 2, primary 2 → tie: street · inside t1 (parcelled)
+  z2.2 street     lane 2, street 2 → tie: street · seam t2 | t1 (same tier)
+  z2.3 lane       lane 4 · inside t9 (support)
+  z3.0 street     street 4 · inside t5 (continuous)
+  z3.1 street     street 4 · seam t1 | t5 (same tier)
+  z3.2 street     street 4 · seam t2 | t6 (same tier)
+  z3.3 street     lane 2, primary 2 → tie: street · seam footer t9 | content t7
+  z4.0 street     street 4 · edge of t5 (continuous)
+  z4.1 street     lane 2, street 2 → tie: street · edge of t5 (continuous)
+  z4.2 lane       lane 4 · edge of t6 (parcelled)
+  z4.3 lane       lane 3, street 1 · edge of t7 (continuous)
+
+## Wikipedia (reference)
+along x, lines 0–4: sssl | sPss | sPsl | Pssl | lsss
+along z, lines 0–4: sssl | sPsP | ssss | ssss | lsll
+  x0.0 street     street 4 · edge of t7 (continuous)
+  x0.1 street     pedestrian 2, street 2 → tie: street · edge of t7 (continuous)
+  x0.2 street     lane 2, street 2 → tie: street · edge of t11 (continuous)
+  x0.3 lane       lane 4 · edge of t13 (parcelled)
+  x1.0 street     street 4 · seam t7 | t6 (same tier)
+  x1.1 primary    primary 4 · seam content t8 | hero t0
+  x1.2 street     street 2, primary 2 → tie: street · seam content t11 | hero t0
+  x1.3 street     street 4 · inside t14 (continuous)
+  x2.0 street     street 4 · inside t6 (continuous)
+  x2.1 primary    primary 4 · seam hero t0 | content t2
+  x2.2 street     lane 2, street 2 → tie: street · inside t1 (archive)
+  x2.3 lane       lane 4 · inside t16 (archive)
+  x3.0 primary    primary 4 · seam content t5 | rest t24
+  x3.1 street     street 2, primary 2 → tie: street · seam content t3 | chrome t19
+  x3.2 street     street 4 · seam t2 | t18 (same tier)
+  x3.3 lane       lane 4 · inside t16 (archive)
+  x4.0 lane       pedestrian 1, lane 3 · edge of t24 (parcelled)
+  x4.1 street     pedestrian 1, lane 1, street 2 · edge of t21 (interactive)
+  x4.2 street     street 4 · edge of t18 (structured)
+  x4.3 street     lane 1, street 3 · edge of t18 (structured)
+  z0.0 street     street 4 · edge of t7 (continuous)
+  z0.1 street     street 4 · edge of t6 (continuous)
+  z0.2 street     pedestrian 2, street 2 → tie: street · edge of t6 (media)
+  z0.3 lane       lane 4 · edge of t24 (parcelled)
+  z1.0 street     street 4 · inside t7 (continuous)
+  z1.1 primary    primary 4 · seam content t6 | hero t0
+  z1.2 street     street 4 · seam t6 | t2 (same tier)
+  z1.3 primary    pedestrian 1, primary 3 · seam rest t24 | chrome t19
+  z2.0 street     street 4 · seam t10 | t11 (same tier)
+  z2.1 street     pedestrian 2, primary 2 → tie: street · inside t0 (landmark)
+  z2.2 street     street 4 · seam t2 | t1 (same tier)
+  z2.3 street     street 4 · inside t18 (structured)
+  z3.0 street     lane 2, street 2 → tie: street · inside t13 (parcelled)
+  z3.1 street     street 4 · seam t1 | t14 (same tier)
+  z3.2 street     street 4 · seam t2 | t16 (same tier)
+  z3.3 street     street 4 · seam t18 | t16 (same tier)
+  z4.0 lane       lane 4 · edge of t13 (parcelled)
+  z4.1 street     lane 2, street 2 → tie: street · edge of t15 (continuous)
+  z4.2 lane       lane 4 · edge of t16 (archive)
+  z4.3 lane       lane 4 · edge of t16 (archive)
+
+## Wikipedia 2 (reference-2)
+along x, lines 0–4: sss· | sPPl | sPsl | Pssl | llss
+along z, lines 0–4: sssl | sPsP | ssss | sPss | slls
+  x0.0 street     street 4 · edge of t4 (continuous)
+  x0.1 street     street 4 · edge of t4 (continuous)
+  x0.2 street     street 4 · edge of t5 (continuous)
+  x0.3 pedestrian pedestrian 3, street 1 · edge of t6 (continuous)
+  x1.0 street     street 4 · inside t3 (continuous)
+  x1.1 primary    primary 4 · seam content t4 | hero t0
+  x1.2 primary    primary 4 · seam content t5 | hero t0
+  x1.3 lane       lane 4 · inside t8 (archive)
+  x2.0 street     street 4 · inside t3 (continuous)
+  x2.1 primary    primary 4 · seam hero t0 | content t2
+  x2.2 street     lane 2, primary 2 → tie: street · inside t1 (archive)
+  x2.3 lane       lane 4 · inside t8 (archive)
+  x3.0 primary    primary 4 · seam content t3 | rest t16
+  x3.1 street     street 4 · seam t2 | t10 (same tier)
+  x3.2 street     street 4 · seam t2 | t9 (same tier)
+  x3.3 lane       lane 4 · inside t8 (archive)
+  x4.0 lane       lane 4 · edge of t15 (support)
+  x4.1 lane       lane 4 · edge of t11 (navigation)
+  x4.2 street     lane 2, street 2 → tie: street · edge of t10 (archive)
+  x4.3 street     street 4 · edge of t9 (structured)
+  z0.0 street     street 4 · edge of t4 (continuous)
+  z0.1 street     street 4 · edge of t3 (continuous)
+  z0.2 street     street 4 · edge of t3 (continuous)
+  z0.3 lane       lane 4 · edge of t16 (parcelled)
+  z1.0 street     street 4 · inside t4 (continuous)
+  z1.1 primary    primary 4 · seam content t3 | hero t0
+  z1.2 street     street 4 · seam t3 | t2 (same tier)
+  z1.3 primary    lane 1, primary 3 · seam rest t16 | content t10
+  z2.0 street     street 4 · inside t5 (continuous)
+  z2.1 street     pedestrian 2, primary 2 → tie: street · inside t0 (landmark)
+  z2.2 street     lane 1, street 3 · seam t2 | t1 (same tier)
+  z2.3 street     lane 1, street 3 · seam t10 | t9 (same tier)
+  z3.0 street     street 4 · inside t6 (continuous)
+  z3.1 primary    primary 4 · seam hero t0 | content t8
+  z3.2 street     street 4 · seam t1 | t8 (same tier)
+  z3.3 street     pedestrian 1, street 3 · seam t9 | t8 (same tier)
+  z4.0 street     pedestrian 2, lane 2 → tie: street · edge of t7 (media)
+  z4.1 lane       lane 4 · edge of t8 (archive)
+  z4.2 lane       lane 4 · edge of t8 (archive)
+  z4.3 street     lane 2, street 2 → tie: street · edge of t8 (archive)
+
+## NASA (media)
+along x, lines 0–4: ···· | ·ss· | ·Ps· | PPPP | ·lll
+along z, lines 0–4: ···· | ·Pss | ·ssl | ·sss | ···l
+  x0.0 pedestrian pedestrian 4 · edge of t8 (media)
+  x0.1 pedestrian pedestrian 4 · edge of t8 (media)
+  x0.2 pedestrian pedestrian 4 · edge of t9 (media)
+  x0.3 pedestrian pedestrian 4 · edge of t9 (media)
+  x1.0 pedestrian pedestrian 4 · inside t8 (media)
+  x1.1 street     pedestrian 1, street 3 · seam t9 | t1 (same tier)
+  x1.2 street     street 4 · seam t9 | t3 (same tier)
+  x1.3 pedestrian pedestrian 4 · inside t10 (media)
+  x2.0 pedestrian pedestrian 4 · inside t8 (media)
+  x2.1 primary    primary 4 · seam hero t0 | content t7
+  x2.2 street     lane 1, street 3 · inside t4 (navigation)
+  x2.3 pedestrian pedestrian 4 · inside t11 (interactive)
+  x3.0 primary    primary 4 · seam content t8 | rest t15
+  x3.1 primary    primary 4 · seam content t8 | footer t14
+  x3.2 primary    primary 4 · seam content t6 | footer t14
+  x3.3 primary    pedestrian 1, primary 3 · inside t13 (interactive)
+  x4.0 pedestrian pedestrian 4 · edge of t15 (interactive)
+  x4.1 lane       lane 4 · edge of t15 (parcelled)
+  x4.2 lane       lane 4 · edge of t14 (support)
+  x4.3 lane       lane 4 · edge of t14 (support)
+  z0.0 pedestrian pedestrian 4 · edge of t8 (media)
+  z0.1 pedestrian pedestrian 4 · edge of t8 (media)
+  z0.2 pedestrian pedestrian 4 · edge of t8 (media)
+  z0.3 pedestrian pedestrian 4 · edge of t15 (interactive)
+  z1.0 pedestrian pedestrian 4 · inside t8 (media)
+  z1.1 primary    street 1, primary 3 · seam t8 | t1 (same tier)
+  z1.2 street     pedestrian 1, street 3 · seam t8 | t7 (same tier)
+  z1.3 street     pedestrian 2, primary 2 → tie: street · seam rest t15 | footer t14
+  z2.0 pedestrian pedestrian 4 · inside t9 (media)
+  z2.1 street     street 2, primary 2 → tie: street · seam t2 | t3 (same tier)
+  z2.2 street     lane 2, street 2 → tie: street · seam t6 | t4 (same tier)
+  z2.3 lane       lane 4 · inside t14 (support)
+  z3.0 pedestrian pedestrian 4 · inside t9 (media)
+  z3.1 street     street 4 · seam t3 | t10 (same tier)
+  z3.2 street     street 2, primary 2 → tie: street · seam t4 | t11 (same tier)
+  z3.3 street     lane 2, primary 2 → tie: street · seam footer t14 | chrome t13
+  z4.0 pedestrian pedestrian 4 · edge of t9 (media)
+  z4.1 pedestrian pedestrian 4 · edge of t10 (media)
+  z4.2 pedestrian pedestrian 4 · edge of t11 (interactive)
+  z4.3 lane       lane 4 · edge of t14 (support)
+
+## Linear (saas)
+along x, lines 0–4: ·ss· | ·PP· | ·Pss | Psss | lsss
+along z, lines 0–4: ···l | sP·P | ssss | ·Pss | s·ss
+  x0.0 pedestrian pedestrian 4 · edge of t5 (interactive)
+  x0.1 street     pedestrian 1, street 3 · edge of t5 (interactive)
+  x0.2 street     pedestrian 2, street 2 → tie: street · edge of t6 (continuous)
+  x0.3 pedestrian pedestrian 4 · edge of t7 (media)
+  x1.0 pedestrian pedestrian 4 · open ground both sides (interactive | media)
+  x1.1 primary    primary 4 · seam content t6 | hero t0
+  x1.2 primary    primary 4 · seam content t6 | hero t0
+  x1.3 pedestrian pedestrian 3, street 1 · inside t9 (interactive)
+  x2.0 pedestrian pedestrian 4 · inside t3 (interactive)
+  x2.1 primary    primary 4 · seam hero t0 | content t2
+  x2.2 street     pedestrian 2, primary 2 → tie: street · inside t1 (media)
+  x2.3 street     street 4 · inside t11 (continuous)
+  x3.0 primary    primary 4 · seam content t3 | footer t15
+  x3.1 street     street 2, primary 2 → tie: street · seam content t3 | chrome t14
+  x3.2 street     street 4 · seam t1 | t11 (same tier)
+  x3.3 street     street 4 · inside t11 (continuous)
+  x4.0 lane       lane 4 · edge of t15 (support)
+  x4.1 street     lane 2, street 2 → tie: street · edge of t15 (support)
+  x4.2 street     street 4 · edge of t12 (continuous)
+  x4.3 street     street 4 · edge of t11 (continuous)
+  z0.0 pedestrian pedestrian 4 · edge of t5 (interactive)
+  z0.1 pedestrian pedestrian 4 · edge of t4 (media)
+  z0.2 pedestrian pedestrian 4 · edge of t3 (interactive)
+  z0.3 lane       lane 4 · edge of t15 (support)
+  z1.0 street     pedestrian 1, street 3 · inside t5 (interactive)
+  z1.1 primary    primary 4 · seam content t4 | hero t0
+  z1.2 pedestrian pedestrian 4 · open ground both sides (interactive | interactive)
+  z1.3 primary    lane 1, primary 3 · seam footer t15 | chrome t14
+  z2.0 street     street 4 · inside t6 (continuous)
+  z2.1 street     pedestrian 2, primary 2 → tie: street · inside t0 (landmark)
+  z2.2 street     street 4 · inside t1 (continuous)
+  z2.3 street     street 4 · seam t13 | t11 (same tier)
+  z3.0 pedestrian pedestrian 4 · inside t7 (media)
+  z3.1 primary    primary 4 · seam hero t0 | content t9
+  z3.2 street     street 4 · seam t1 | t11 (same tier)
+  z3.3 street     street 4 · inside t11 (continuous)
+  z4.0 street     pedestrian 2, street 2 → tie: street · edge of t7 (interactive)
+  z4.1 pedestrian pedestrian 4 · edge of t9 (interactive)
+  z4.2 street     street 4 · edge of t11 (continuous)
+  z4.3 street     street 4 · edge of t11 (continuous)
+
+## Python Docs (docs)
+along x, lines 0–4: ssss | ssss | ssss | Psss | ssss
+along z, lines 0–4: sssl | ssss | ssss | ssss | ssss
+  x0.0 street     street 4 · edge of t2 (continuous)
+  x0.1 street     street 4 · edge of t2 (continuous)
+  x0.2 street     street 4 · edge of t2 (continuous)
+  x0.3 street     street 4 · edge of t2 (continuous)
+  x1.0 street     street 4 · inside t2 (continuous)
+  x1.1 street     street 4 · seam t2 | t1 (same tier)
+  x1.2 street     street 4 · seam t2 | t1 (same tier)
+  x1.3 street     street 4 · inside t3 (continuous)
+  x2.0 street     street 4 · inside t2 (continuous)
+  x2.1 street     street 4 · seam t0 | t2 (same tier)
+  x2.2 street     street 4 · inside t2 (continuous)
+  x2.3 street     street 4 · inside t3 (continuous)
+  x3.0 primary    primary 4 · seam content t2 | chrome t7
+  x3.1 street     street 4 · seam t2 | t3 (same tier)
+  x3.2 street     street 4 · seam t2 | t3 (same tier)
+  x3.3 street     street 4 · inside t3 (continuous)
+  x4.0 street     street 4 · edge of t3 (continuous)
+  x4.1 street     street 4 · edge of t3 (continuous)
+  x4.2 street     street 4 · edge of t3 (continuous)
+  x4.3 street     street 4 · edge of t3 (continuous)
+  z0.0 street     street 4 · edge of t2 (continuous)
+  z0.1 street     street 4 · edge of t2 (continuous)
+  z0.2 street     street 4 · edge of t2 (continuous)
+  z0.3 lane       lane 3, street 1 · edge of t7 (navigation)
+  z1.0 street     street 4 · inside t2 (continuous)
+  z1.1 street     street 4 · seam t2 | t1 (same tier)
+  z1.2 street     street 4 · inside t2 (continuous)
+  z1.3 street     street 2, primary 2 → tie: street · seam rest t9 | content t3
+  z2.0 street     street 4 · inside t2 (continuous)
+  z2.1 street     lane 2, street 2 → tie: street · inside t1 (parcelled)
+  z2.2 street     street 4 · inside t2 (continuous)
+  z2.3 street     street 4 · inside t3 (continuous)
+  z3.0 street     street 4 · inside t2 (continuous)
+  z3.1 street     street 4 · seam t1 | t3 (same tier)
+  z3.2 street     street 4 · seam t2 | t3 (same tier)
+  z3.3 street     street 4 · inside t3 (continuous)
+  z4.0 street     street 4 · edge of t2 (continuous)
+  z4.1 street     street 4 · edge of t3 (continuous)
+  z4.2 street     street 4 · edge of t3 (continuous)
+  z4.3 street     street 4 · edge of t3 (continuous)
+
+## app (app)
+along x, lines 0–4: llll | sssl | ssll | Pssl | ll·l
+along z, lines 0–4: lsll | ssss | lsss | lsss | llll
+  x0.0 lane       lane 4 · edge of t12 (parcelled)
+  x0.1 lane       lane 4 · edge of t12 (parcelled)
+  x0.2 lane       lane 4 · edge of t12 (parcelled)
+  x0.3 lane       lane 4 · edge of t12 (parcelled)
+  x1.0 street     street 4 · seam t12 | t10 (same tier)
+  x1.1 street     street 4 · seam t12 | t1 (same tier)
+  x1.2 street     street 4 · seam t12 | t1 (same tier)
+  x1.3 lane       lane 4 · inside t12 (parcelled)
+  x2.0 street     lane 1, street 3 · seam t9 | t8 (same tier)
+  x2.1 street     street 4 · seam t0 | t5 (same tier)
+  x2.2 lane       lane 4 · inside t3 (parcelled)
+  x2.3 lane       lane 4 · inside t12 (parcelled)
+  x3.0 primary    primary 4 · seam content t7 | footer t17
+  x3.1 street     street 4 · seam t6 | t16 (same tier)
+  x3.2 street     street 4 · seam t4 | t15 (same tier)
+  x3.3 lane       lane 4 · inside t12 (parcelled)
+  x4.0 lane       lane 4 · edge of t16 (parcelled)
+  x4.1 lane       pedestrian 1, lane 2, street 1 · edge of t16 (parcelled)
+  x4.2 pedestrian pedestrian 2, lane 1, street 1 · edge of t15 (media)
+  x4.3 lane       lane 4 · edge of t12 (parcelled)
+  z0.0 lane       lane 4 · edge of t12 (parcelled)
+  z0.1 street     pedestrian 2, lane 2 → tie: street · edge of t10 (interactive)
+  z0.2 lane       lane 4 · edge of t8 (navigation)
+  z0.3 lane       lane 4 · edge of t17 (support)
+  z1.0 street     lane 2, street 2 → tie: street · inside t12 (parcelled)
+  z1.1 street     street 4 · seam t11 | t1 (same tier)
+  z1.2 street     street 4 · seam t8 | t5 (same tier)
+  z1.3 street     lane 2, primary 2 → tie: street · seam footer t17 | content t16
+  z2.0 lane       lane 4 · inside t12 (parcelled)
+  z2.1 street     lane 2, street 2 → tie: street · inside t1 (parcelled)
+  z2.2 street     lane 2, street 2 → tie: street · seam t5 | t3 (same tier)
+  z2.3 street     pedestrian 1, street 3 · inside t15 (continuous)
+  z3.0 lane       lane 4 · inside t12 (parcelled)
+  z3.1 street     street 4 · seam t1 | t12 (same tier)
+  z3.2 street     street 4 · seam t3 | t12 (same tier)
+  z3.3 street     street 4 · seam t14 | t12 (same tier)
+  z4.0 lane       lane 4 · edge of t12 (parcelled)
+  z4.1 lane       lane 4 · edge of t12 (parcelled)
+  z4.2 lane       lane 4 · edge of t12 (parcelled)
+  z4.3 lane       lane 4 · edge of t12 (parcelled)
+
+## news (news)
+along x, lines 0–4: ···· | ···· | ·s·· | PPs· | lss·
+along z, lines 0–4: ···l | ··ss | ··sP | ···· | ····
+  x0.0 pedestrian pedestrian 4 · edge of t7 (media)
+  x0.1 pedestrian pedestrian 4 · edge of t8 (media)
+  x0.2 pedestrian pedestrian 4 · edge of t10 (media)
+  x0.3 pedestrian pedestrian 4 · edge of t13 (media)
+  x1.0 pedestrian pedestrian 3, street 1 · open ground both sides (media | media)
+  x1.1 pedestrian pedestrian 4 · open ground both sides (media | media)
+  x1.2 pedestrian pedestrian 4 · open ground both sides (media | media)
+  x1.3 pedestrian pedestrian 4 · inside t15 (media)
+  x2.0 pedestrian pedestrian 4 · open ground both sides (media | media)
+  x2.1 street     street 4 · seam t0 | t2 (same tier)
+  x2.2 pedestrian pedestrian 4 · inside t1 (media)
+  x2.3 pedestrian pedestrian 4 · inside t17 (media)
+  x3.0 primary    primary 4 · seam content t3 | rest t27
+  x3.1 primary    primary 4 · seam content t2 | chrome t25
+  x3.2 street     pedestrian 1, street 3 · seam t1 | t24 (same tier)
+  x3.3 pedestrian pedestrian 4 · inside t20 (media)
+  x4.0 lane       lane 4 · edge of t26 (support)
+  x4.1 street     lane 2, street 2 → tie: street · edge of t25 (navigation)
+  x4.2 street     pedestrian 2, street 2 → tie: street · edge of t24 (grid)
+  x4.3 pedestrian pedestrian 4 · edge of t22 (media)
+  z0.0 pedestrian pedestrian 4 · edge of t7 (media)
+  z0.1 pedestrian pedestrian 4 · edge of t5 (media)
+  z0.2 pedestrian pedestrian 3, street 1 · edge of t4 (media)
+  z0.3 lane       lane 4 · edge of t27 (parcelled)
+  z1.0 pedestrian pedestrian 4 · inside t8 (media)
+  z1.1 pedestrian pedestrian 4 · open ground both sides (media | media)
+  z1.2 street     street 4 · seam t4 | t2 (same tier)
+  z1.3 street     lane 2, primary 2 → tie: street · seam rest t27 | chrome t25
+  z2.0 pedestrian pedestrian 4 · inside t10 (media)
+  z2.1 pedestrian pedestrian 4 · inside t1 (media)
+  z2.2 street     pedestrian 1, street 3 · seam t2 | t1 (same tier)
+  z2.3 primary    street 1, primary 3 · seam chrome t25 | content t24
+  z3.0 pedestrian pedestrian 4 · inside t13 (media)
+  z3.1 pedestrian pedestrian 4 · open ground both sides (media | media)
+  z3.2 pedestrian pedestrian 4 · open ground both sides (media | media)
+  z3.3 pedestrian pedestrian 4 · open ground both sides (media | media)
+  z4.0 pedestrian pedestrian 4 · edge of t13 (media)
+  z4.1 pedestrian pedestrian 4 · edge of t16 (media)
+  z4.2 pedestrian pedestrian 4 · edge of t18 (media)
+  z4.3 pedestrian pedestrian 3, street 1 · edge of t20 (media)
+
+## portfolio (portfolio)
+along x, lines 0–4: ssss | sPP· | sPs· | Pss· | l···
+along z, lines 0–4: ssss | sPsP | sss· | sss· | ····
+  x0.0 street     street 4 · edge of t6 (continuous)
+  x0.1 street     street 4 · edge of t6 (continuous)
+  x0.2 street     street 4 · edge of t7 (continuous)
+  x0.3 street     pedestrian 1, street 3 · edge of t8 (continuous)
+  x1.0 street     street 4 · inside t5 (continuous)
+  x1.1 primary    primary 4 · seam content t7 | hero t0
+  x1.2 primary    primary 4 · seam content t7 | hero t0
+  x1.3 pedestrian pedestrian 4 · inside t9 (media)
+  x2.0 street     street 4 · seam t5 | t4 (same tier)
+  x2.1 primary    primary 4 · seam hero t0 | content t3
+  x2.2 street     street 4 · inside t1 (continuous)
+  x2.3 pedestrian pedestrian 4 · inside t9 (media)
+  x3.0 primary    primary 4 · seam content t3 | rest t12
+  x3.1 street     street 4 · seam t3 | t10 (same tier)
+  x3.2 street     street 4 · seam t2 | t10 (same tier)
+  x3.3 pedestrian pedestrian 4 · inside t9 (media)
+  x4.0 lane       pedestrian 1, lane 3 · edge of t11 (support)
+  x4.1 pedestrian pedestrian 4 · edge of t10 (media)
+  x4.2 pedestrian pedestrian 4 · edge of t10 (media)
+  x4.3 pedestrian pedestrian 4 · edge of t10 (media)
+  z0.0 street     street 4 · edge of t6 (continuous)
+  z0.1 street     street 4 · edge of t5 (continuous)
+  z0.2 street     street 4 · edge of t4 (continuous)
+  z0.3 street     lane 2, street 2 → tie: street · edge of t12 (continuous)
+  z1.0 street     street 4 · inside t6 (continuous)
+  z1.1 primary    primary 4 · seam content t5 | hero t0
+  z1.2 street     street 4 · seam t5 | t3 (same tier)
+  z1.3 primary    pedestrian 1, primary 3 · seam rest t12 | content t10
+  z2.0 street     street 4 · inside t7 (continuous)
+  z2.1 street     pedestrian 2, primary 2 → tie: street · inside t0 (landmark)
+  z2.2 street     street 4 · seam t2 | t1 (same tier)
+  z2.3 pedestrian pedestrian 4 · inside t10 (media)
+  z3.0 street     street 4 · inside t8 (continuous)
+  z3.1 street     street 2, primary 2 → tie: street · seam hero t0 | content t9
+  z3.2 street     street 4 · seam t1 | t9 (same tier)
+  z3.3 pedestrian pedestrian 4 · open ground both sides (media | media)
+  z4.0 pedestrian pedestrian 4 · edge of t9 (media)
+  z4.1 pedestrian pedestrian 4 · edge of t9 (media)
+  z4.2 pedestrian pedestrian 4 · edge of t9 (media)
+  z4.3 pedestrian pedestrian 4 · edge of t9 (media)
+
+## forum (forum)
+along x, lines 0–4: llll | llll | lPll | llll | llll
+along z, lines 0–4: llll | llls | lsll | llll | llll
+  x0.0 lane       lane 4 · edge of t1 (parcelled)
+  x0.1 lane       lane 4 · edge of t1 (parcelled)
+  x0.2 lane       lane 4 · edge of t1 (parcelled)
+  x0.3 lane       lane 4 · edge of t1 (parcelled)
+  x1.0 lane       lane 4 · inside t1 (parcelled)
+  x1.1 lane       lane 4 · inside t1 (parcelled)
+  x1.2 lane       lane 4 · inside t1 (parcelled)
+  x1.3 lane       lane 4 · inside t1 (parcelled)
+  x2.0 lane       lane 4 · inside t1 (parcelled)
+  x2.1 primary    primary 4 · seam hero t0 | content t1
+  x2.2 lane       lane 4 · inside t1 (parcelled)
+  x2.3 lane       lane 4 · inside t1 (parcelled)
+  x3.0 lane       lane 3, primary 1 · inside t1 (parcelled)
+  x3.1 lane       lane 4 · inside t1 (parcelled)
+  x3.2 lane       lane 4 · inside t1 (parcelled)
+  x3.3 lane       lane 4 · inside t1 (parcelled)
+  x4.0 lane       lane 4 · edge of t1 (parcelled)
+  x4.1 lane       lane 4 · edge of t1 (parcelled)
+  x4.2 lane       lane 4 · edge of t1 (parcelled)
+  x4.3 lane       lane 4 · edge of t1 (parcelled)
+  z0.0 lane       lane 4 · edge of t1 (parcelled)
+  z0.1 lane       lane 4 · edge of t1 (parcelled)
+  z0.2 lane       lane 4 · edge of t1 (parcelled)
+  z0.3 lane       lane 4 · edge of t1 (parcelled)
+  z1.0 lane       lane 4 · inside t1 (parcelled)
+  z1.1 lane       lane 3, primary 1 · inside t1 (parcelled)
+  z1.2 lane       lane 4 · inside t1 (parcelled)
+  z1.3 street     lane 2, primary 2 → tie: street · seam footer t2 | content t1
+  z2.0 lane       lane 4 · inside t1 (parcelled)
+  z2.1 street     lane 2, primary 2 → tie: street · inside t1 (parcelled)
+  z2.2 lane       lane 4 · inside t1 (parcelled)
+  z2.3 lane       lane 4 · inside t1 (parcelled)
+  z3.0 lane       lane 4 · inside t1 (parcelled)
+  z3.1 lane       lane 4 · inside t1 (parcelled)
+  z3.2 lane       lane 4 · inside t1 (parcelled)
+  z3.3 lane       lane 4 · inside t1 (parcelled)
+  z4.0 lane       lane 4 · edge of t1 (parcelled)
+  z4.1 lane       lane 4 · edge of t1 (parcelled)
+  z4.2 lane       lane 4 · edge of t1 (parcelled)
+  z4.3 lane       lane 4 · edge of t1 (parcelled)
+
+## saas-2 (saas-2)
+along x, lines 0–4: ·sss | ·PPl | sPPl | PPPP | llll
+along z, lines 0–4: ··ll | ·Pls | s·sl | sPPl | slll
+  x0.0 pedestrian pedestrian 4 · edge of t3 (media)
+  x0.1 street     pedestrian 2, street 2 → tie: street · edge of t3 (media)
+  x0.2 street     street 4 · edge of t4 (continuous)
+  x0.3 street     street 4 · edge of t5 (continuous)
+  x1.0 pedestrian pedestrian 4 · inside t3 (media)
+  x1.1 primary    primary 4 · seam content t3 | hero t0
+  x1.2 primary    primary 4 · seam content t4 | hero t0
+  x1.3 lane       lane 3, street 1 · inside t7 (navigation)
+  x2.0 street     street 4 · seam t3 | t1 (same tier)
+  x2.1 primary    primary 4 · seam hero t0 | content t1
+  x2.2 primary    pedestrian 1, primary 3 · inside t0 (landmark)
+  x2.3 lane       lane 4 · inside t7 (navigation)
+  x3.0 primary    primary 4 · seam content t1 | rest t9
+  x3.1 primary    primary 4 · seam content t1 | footer t8
+  x3.2 primary    primary 4 · seam content t1 | footer t8
+  x3.3 primary    lane 1, primary 3 · inside t8 (support)
+  x4.0 lane       lane 4 · edge of t9 (parcelled)
+  x4.1 lane       lane 4 · edge of t9 (parcelled)
+  x4.2 lane       lane 4 · edge of t8 (support)
+  x4.3 lane       lane 4 · edge of t8 (support)
+  z0.0 pedestrian pedestrian 4 · edge of t3 (media)
+  z0.1 pedestrian pedestrian 4 · edge of t3 (media)
+  z0.2 lane       lane 4 · edge of t1 (parcelled)
+  z0.3 lane       lane 4 · edge of t9 (parcelled)
+  z1.0 pedestrian pedestrian 4 · inside t3 (media)
+  z1.1 primary    primary 4 · seam content t3 | hero t0
+  z1.2 lane       lane 3, street 1 · seam t2 | t1 (same tier)
+  z1.3 street     lane 2, primary 2 → tie: street · seam rest t9 | footer t8
+  z2.0 street     street 4 · inside t4 (continuous)
+  z2.1 pedestrian pedestrian 4 · inside t0 (landmark)
+  z2.2 street     lane 2, primary 2 → tie: street · seam content t1 | hero t0
+  z2.3 lane       lane 4 · inside t8 (support)
+  z3.0 street     street 2, primary 2 → tie: street · seam t4 | t5 (same tier)
+  z3.1 primary    primary 4 · seam hero t0 | chrome t7
+  z3.2 primary    primary 4 · seam content t1 | chrome t7
+  z3.3 lane       lane 4 · inside t8 (support)
+  z4.0 street     pedestrian 1, street 3 · edge of t5 (continuous)
+  z4.1 lane       lane 4 · edge of t7 (navigation)
+  z4.2 lane       lane 4 · edge of t7 (navigation)
+  z4.3 lane       lane 4 · edge of t8 (support)

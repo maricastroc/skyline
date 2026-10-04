@@ -5,6 +5,15 @@
 > Baseline final: **kit-v9** (`src/lib/pixelcity/kit-v9`, `?v=9`), tag git `foundation-v1`. O kit
 > atual (`?v=10`) é byte a byte o kit-v9 até a próxima fase. Checagem do freeze:
 > `npm run test:foundation`.
+>
+> **Desde a C1 da art direction** ([hierarquia viária](PIXEL_STREET_ROLES.md)), o kit atual difere
+> do kit-v9 só no cenário a jusante (ruas, semáforos, carros). `test:foundation` verifica três
+> coisas:
+>
+> - tudo o que a fundação decide (plano, alocação, cada parte de cada quarteirão, trace) continua
+>   byte a byte o kit-v9;
+> - com `artDirection: false`, a cidade inteira é o kit-v9;
+> - o kit-v9 reproduz os hashes gravados no freeze.
 
 ## 1. Pipeline congelado
 
