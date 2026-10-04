@@ -8,6 +8,7 @@ import { normalize } from "../../src/lib/model/normalize";
 import { generateKitDistrict, newTrace } from "../../src/lib/pixelcity/kit/district";
 import { groupFixture } from "../../src/lib/pixelcity/kit/fixtures";
 import { realPage } from "../../src/lib/pixelcity/kit/real-page";
+import { withoutItems } from "../../src/lib/pixelcity/kit/items";
 import { structureOf, withoutStructure } from "../../src/lib/pixelcity/kit/structure";
 import { allocate } from "../../src/lib/pixelcity/kit/territory";
 import { generateKitDistrict as v6, newTrace as newTraceV6 } from "../../src/lib/pixelcity/kit-v6/district";
@@ -143,9 +144,15 @@ console.log("\n## additive only: everything the descriptor could disturb is iden
     const a = allocate(p.plan);
     const b = allocateV6(q.plan);
     if (JSON.stringify({ path: a.path, owner: [...a.owner], segments: a.segments, lots: a.lots }) === JSON.stringify({ path: b.path, owner: [...b.owner], segments: b.segments, lots: b.lots })) alloc++;
-    if (JSON.stringify(withoutStructure(p.plan).territories) === JSON.stringify(q.plan.territories)) terr++;
+    // Later descriptive fields (Territory.items, program pass) are stripped too.
+    const descriptive = withoutStructure(p.plan).territories.map((t) => {
+      const c = { ...t };
+      delete c.items;
+      return c;
+    });
+    if (JSON.stringify(descriptive) === JSON.stringify(q.plan.territories)) terr++;
     // Ignoring the field (stripped from the plan) reproduces kit-v6 byte for byte.
-    const bare = withoutStructure(p.plan);
+    const bare = withoutItems(withoutStructure(p.plan));
     for (const flat of [false, true]) {
       const c = generateKitDistrict(p.fp, { profile: bare, time: "day", seed: 7, flat });
       const d = v6(q.fp, { profile: q.plan, time: "day", seed: 7, flat });
@@ -232,7 +239,8 @@ console.log("\n## real pages: only territories with structure change");
   for (const e of DATASET) {
     const p = pages.get(e.id)!;
     const q = realPageV6(snap(e.id));
-    const c = generateKitDistrict(p.fp, { profile: p.plan, time: "day", seed: 7, flat: true });
+    // The program pass (simple indexes → institutional) changes uses on purpose: left out here.
+    const c = generateKitDistrict(p.fp, { profile: withoutItems(p.plan), time: "day", seed: 7, flat: true });
     const d = v6(q.fp, { profile: q.plan, time: "day", seed: 7, flat: true });
     if (sha(JSON.stringify(c.parts)) === sha(JSON.stringify(d.parts))) identical++;
     else changed.push(e.id);
@@ -247,7 +255,7 @@ const golden = () => {
   const { p, q } = golden();
   const t = newTrace();
   const tv = newTraceV6();
-  const c = generateKitDistrict(p.fp, { profile: p.plan, time: "day", seed: 7, flat: true, trace: t });
+  const c = generateKitDistrict(p.fp, { profile: withoutItems(p.plan), time: "day", seed: 7, flat: true, trace: t });
   const d = v6(q.fp, { profile: q.plan, time: "day", seed: 7, flat: true, trace: tv });
   check("craigslist: same pieces (type, position, size) as kit-v6 — the land is untouched", JSON.stringify(t.pieces.map((x) => [x.territory, x.piece])) === JSON.stringify(tv.pieces.map((x) => [x.territory, x.piece])));
   check("craigslist: 6 parcelled territories planned, every one from explicit headings", t.frontage.length === 6 && t.frontage.every((f) => p.plan.territories[f.territory].structure!.source === "explicit"), t.frontage.map((f) => `${f.groups}→${f.clusters}`).join(", "));
@@ -262,7 +270,7 @@ console.log("\n## stability: small changes of the page move few cuts");
   const ti = p.plan.territories.findIndex((x) => x.kind === "remainder");
   const base = p.plan.territories[ti].structure!;
   const cityOf = (s: typeof base) => {
-    const plan = { ...p.plan, territories: p.plan.territories.map((x, i) => (i === ti ? { ...x, structure: s } : x)) };
+    const plan = withoutItems({ ...p.plan, territories: p.plan.territories.map((x, i) => (i === ti ? { ...x, structure: s } : x)) });
     const t = newTrace();
     const c = generateKitDistrict(p.fp, { profile: plan, time: "day", seed: 7, flat: true, trace: t });
     return { r: raster(c.parts), f: t.frontage.find((x) => x.territory === ti)! };

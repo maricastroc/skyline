@@ -9,6 +9,7 @@ import { generateSurfaceLab, LAB_SETS, labProgram, USES, type LabKit, type LabRe
 import { deriveGrammar } from "../../src/lib/pixelcity/grammar";
 import { buildGamePalette } from "../../src/lib/pixelcity/palette";
 import { realPage } from "../../src/lib/pixelcity/kit/real-page";
+import { withoutItems } from "../../src/lib/pixelcity/kit/items";
 import { withoutStructure } from "../../src/lib/pixelcity/kit/structure";
 import { surfaceTrace, type Anatomy } from "../../src/lib/pixelcity/kit/surface";
 import { generateKitDistrict as v4, newTrace as newTraceV4 } from "../../src/lib/pixelcity/kit-v4/district";
@@ -198,12 +199,13 @@ for (const id of ["reference", "shop", "institution"]) {
     for (const b of t.buildings) {
       total++;
       if (b.anatomy.length) traced++;
-      const want = USE[b.comp];
+      // Program pass: a parcelled / grid territory whose items are a simple index is institutional.
+      const want = b.program.reason === "simple-index evidence" ? "institutional" : USE[b.comp];
       if (want && b.P.family !== "kiosk" && b.anatomy.some((A) => A.use !== want)) mismatched++;
     }
   }
   check("every non-kiosk building records its anatomy", traced >= total * 0.9, `${traced}/${total} (kiosks and civic pavilions have none)`);
-  check("use follows the composition (region type), not the style", mismatched === 0, `${mismatched} mismatches`);
+  check("use follows the composition (region type) or simple-index evidence, never the style", mismatched === 0, `${mismatched} mismatches`);
 }
 
 console.log("\n# Massing preserved (current kit vs kit-v4, per building)");
@@ -227,7 +229,7 @@ console.log("\n# Massing preserved (current kit vs kit-v4, per building)");
     const tb = newTraceV4();
     // The intra-territory composition pass (later) changes structured parcelled land on purpose;
     // this compares the surface grammar's own effect, so the descriptor is left out.
-    const a = generateKitDistrict(p.fp, { profile: withoutStructure(p.plan), time: "day", seed: 7, trace: ta });
+    const a = generateKitDistrict(p.fp, { profile: withoutItems(withoutStructure(p.plan)), time: "day", seed: 7, trace: ta });
     const b = v4(q.fp, { profile: q.plan, time: "day", seed: 7, trace: tb });
     if (ta.buildings.length !== tb.buildings.length) structural++;
     for (let i = 0; i < Math.min(ta.buildings.length, tb.buildings.length); i++) {
