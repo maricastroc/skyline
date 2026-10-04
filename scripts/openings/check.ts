@@ -180,7 +180,7 @@ for (const e of DATASET) {
     for (const q of a.parts) maxV5 = Math.max(maxV5, q.variant ?? 0);
     // Without the intra-territory and item descriptors (later passes that change structured
     // parcelled land and the use of simple indexes).
-    const b = generateKitDistrict(p6.fp, { profile: withoutItems(withoutStructure(p6.plan)), time: mode === "night" ? "night" : "day", seed: 7, flat: mode === "flat" });
+    const b = generateKitDistrict(p6.fp, { profile: withoutItems(withoutStructure(p6.plan)), time: mode === "night" ? "night" : "day", seed: 7, flat: mode === "flat", artDirection: false });
     if (mode === "flat") {
       if (sha(JSON.stringify([b.parts, b.signs])) === before.get(`flat/${e.id}`)) flatSame++;
       continue;

@@ -112,7 +112,7 @@ console.log("\n# additive only: everything kit-v7 decides is identical");
     const y = allocateV7(q.plan);
     if (JSON.stringify({ path: x.path, owner: [...x.owner], segments: x.segments, lots: x.lots }) === JSON.stringify({ path: y.path, owner: [...y.owner], segments: y.segments, lots: y.lots })) alloc++;
     for (const flat of [false, true]) {
-      const c = generateKitDistrict(p.fp, { profile: withoutItems(p.plan), time: "day", seed: 7, flat });
+      const c = generateKitDistrict(p.fp, { profile: withoutItems(p.plan), time: "day", seed: 7, flat, artDirection: false });
       const d = v7(q.fp, { profile: q.plan, time: "day", seed: 7, flat });
       if (sha(JSON.stringify([c.parts, c.signs])) === sha(JSON.stringify([d.parts, d.signs]))) cities++;
     }
@@ -217,7 +217,7 @@ console.log("\n# narrow lots: one marked entrance per narrow institutional serie
       for (const flat of seed === 7 ? [false, true] : [false]) {
         const ta = newTrace();
         const tb = newTraceV8();
-        const a = generateKitDistrict(p.fp, { profile: p.plan, time: "day", seed, flat, trace: ta });
+        const a = generateKitDistrict(p.fp, { profile: p.plan, time: "day", seed, flat, trace: ta, artDirection: false });
         const b = v8(q.fp, { profile: q.plan, time: "day", seed, flat, trace: tb });
         if (flat) {
           // Flat drops signs, sprites and glows after generation: compare the volumes of the whole city.

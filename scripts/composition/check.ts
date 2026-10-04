@@ -154,7 +154,7 @@ console.log("\n## additive only: everything the descriptor could disturb is iden
     // Ignoring the field (stripped from the plan) reproduces kit-v6 byte for byte.
     const bare = withoutItems(withoutStructure(p.plan));
     for (const flat of [false, true]) {
-      const c = generateKitDistrict(p.fp, { profile: bare, time: "day", seed: 7, flat });
+      const c = generateKitDistrict(p.fp, { profile: bare, time: "day", seed: 7, flat, artDirection: false });
       const d = v6(q.fp, { profile: q.plan, time: "day", seed: 7, flat });
       if (sha(JSON.stringify([c.parts, c.signs])) === sha(JSON.stringify([d.parts, d.signs]))) cities++;
     }
@@ -240,7 +240,7 @@ console.log("\n## real pages: only territories with structure change");
     const p = pages.get(e.id)!;
     const q = realPageV6(snap(e.id));
     // The program pass (simple indexes → institutional) changes uses on purpose: left out here.
-    const c = generateKitDistrict(p.fp, { profile: withoutItems(p.plan), time: "day", seed: 7, flat: true });
+    const c = generateKitDistrict(p.fp, { profile: withoutItems(p.plan), time: "day", seed: 7, flat: true, artDirection: false });
     const d = v6(q.fp, { profile: q.plan, time: "day", seed: 7, flat: true });
     if (sha(JSON.stringify(c.parts)) === sha(JSON.stringify(d.parts))) identical++;
     else changed.push(e.id);
@@ -255,7 +255,7 @@ const golden = () => {
   const { p, q } = golden();
   const t = newTrace();
   const tv = newTraceV6();
-  const c = generateKitDistrict(p.fp, { profile: withoutItems(p.plan), time: "day", seed: 7, flat: true, trace: t });
+  const c = generateKitDistrict(p.fp, { profile: withoutItems(p.plan), time: "day", seed: 7, flat: true, trace: t, artDirection: false });
   const d = v6(q.fp, { profile: q.plan, time: "day", seed: 7, flat: true, trace: tv });
   check("craigslist: same pieces (type, position, size) as kit-v6 — the land is untouched", JSON.stringify(t.pieces.map((x) => [x.territory, x.piece])) === JSON.stringify(tv.pieces.map((x) => [x.territory, x.piece])));
   check("craigslist: 6 parcelled territories planned, every one from explicit headings", t.frontage.length === 6 && t.frontage.every((f) => p.plan.territories[f.territory].structure!.source === "explicit"), t.frontage.map((f) => `${f.groups}→${f.clusters}`).join(", "));
