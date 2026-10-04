@@ -1,13 +1,15 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { KitView, type KitSource } from "@/components/pixel/KitView";
-import type { TimeOfDay } from "@/lib/pixelcity/grammar";
+import type { ArchStyle, TimeOfDay } from "@/lib/pixelcity/grammar";
 import type { ProfileName } from "@/lib/pixelcity/kit/district";
 import { PERTURBATIONS, realPage, type Perturbation } from "@/lib/pixelcity/kit/real-page";
 import { realPage as realPageV2 } from "@/lib/pixelcity/kit-v2/real-page";
 import { realPage as realPageV3 } from "@/lib/pixelcity/kit-v3/real-page";
 import { realPage as realPageV4 } from "@/lib/pixelcity/kit-v4/real-page";
 import { realPage as realPageV5 } from "@/lib/pixelcity/kit-v5/real-page";
+import { realPage as realPageV6 } from "@/lib/pixelcity/kit-v6/real-page";
+import { forceStyle, STYLES } from "@/lib/pixelcity/diagnostics";
 import { vacantFingerprint } from "@/lib/pixelcity/vacant-fingerprint";
 import type { DomSnapshot } from "@/lib/snapshot/types";
 
@@ -22,15 +24,16 @@ const PROFILES: ProfileName[] = ["mixed", "portal", "product", "reference"];
  *   ?debug=provenance (territories in debug colours + legend; current generator)
  *   ?debug=surface (click a building: its anatomy, why each zone, what is absent and why)
  *   ?v=1 first kit · ?v=2 massing pass with cycled minors · ?v=3 semantic allocation pass ·
- *   ?v=4 semantic hygiene pass · ?v=5 architectural surface grammar (all frozen) ·
- *   default: + openings depth
+ *   ?v=4 semantic hygiene pass · ?v=5 architectural surface grammar · ?v=6 openings depth
+ *   (all frozen) · default: current
+ *   ?style=classic|retro|modern|soft|tech (diagnostic: the same page forced into a style)
  */
 export default async function KitPage({ searchParams }: PageProps<"/pixel/kit">) {
   const sp = await searchParams;
   const profile = one(sp.profile) as ProfileName;
   const time = one(sp.time);
   const seed = Number(one(sp.seed));
-  const v = one(sp.v) === "1" ? 1 : one(sp.v) === "2" ? 2 : one(sp.v) === "3" ? 3 : one(sp.v) === "4" ? 4 : one(sp.v) === "5" ? 5 : 6;
+  const v = one(sp.v) === "1" ? 1 : one(sp.v) === "2" ? 2 : one(sp.v) === "3" ? 3 : one(sp.v) === "4" ? 4 : one(sp.v) === "5" ? 5 : one(sp.v) === "6" ? 6 : 7;
   const common = {
     time: time === "night" || time === "golden" || time === "day" ? (time as TimeOfDay) : undefined,
     people: one(sp.people) === "voxel" ? ("voxel" as const) : ("sprite" as const),
@@ -69,10 +72,17 @@ export default async function KitPage({ searchParams }: PageProps<"/pixel/kit">)
       const page = realPageV5(snap, perturbation);
       return <KitView {...common} fp={page.fp} source={{ v: 5, profile: page.plan }} />;
     }
+    if (v === 6) {
+      const page = realPageV6(snap, perturbation);
+      return <KitView {...common} fp={page.fp} source={{ v: 6, profile: page.plan }} />;
+    }
     const page = realPage(snap, perturbation);
-    return <KitView {...common} fp={page.fp} source={{ v: 6, profile: page.plan }} />;
+    // Diagnostic (end-to-end validation): the same page forced into another style.
+    const st = one(sp.style) as ArchStyle;
+    if (STYLES.includes(st)) return <KitView {...common} fp={forceStyle(page.fp, st)} source={{ v: 7, profile: { ...page.plan, identity: forceStyle(page.plan.identity, st) } }} />;
+    return <KitView {...common} fp={page.fp} source={{ v: 7, profile: page.plan }} />;
   }
   const name = PROFILES.includes(profile) ? profile : "mixed";
-  const source: KitSource = v === 1 ? { v: 1 } : v === 2 ? { v: 2, profile: name } : v === 3 ? { v: 3, profile: name } : v === 4 ? { v: 4, profile: name } : v === 5 ? { v: 5, profile: name } : { v: 6, profile: name };
+  const source: KitSource = v === 1 ? { v: 1 } : v === 2 ? { v: 2, profile: name } : v === 3 ? { v: 3, profile: name } : v === 4 ? { v: 4, profile: name } : v === 5 ? { v: 5, profile: name } : v === 6 ? { v: 6, profile: name } : { v: 7, profile: name };
   return <KitView {...common} fp={vacantFingerprint()} source={source} />;
 }
