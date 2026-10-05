@@ -1,14 +1,3 @@
-/**
- * The product's city: a captured page → the kit city (Foundation v1 + Art Direction v1 + Visual
- * Polish v1, exactly what /pixel/kit draws), plus what the interface needs to tie it back to the
- * page — the page map, where each territory lies, and the construction in a few groups.
- *
- *   doc ─▶ analyzeSemantics ─▶ computeFingerprint ─▶ planFromPage ─▶ generateKitDistrict
- *
- * Same calls as kit/real-page.ts (minus normalize: /api/capture already did it). Every city part
- * is tagged with its territory (`node` = territory index, -1 = streets and scenery) so hover and
- * highlight work per territory. Nothing here changes a decision of the city.
- */
 import { computeFingerprint, type SiteFingerprint } from "../fingerprint/fingerprint";
 import type { NormalizedDocument } from "../model/types";
 import { analyzeSemantics, REGION_LABEL, type RegionKind, type Semantics } from "../semantics/analyze";
@@ -20,20 +9,15 @@ import { buildPageMap, type PageMapData, type PMBlock } from "./page-map";
 import type { Part, PixelCity } from "./types";
 
 export interface TerritoryGeo {
-  /** Lot centres (world x, z). */
   lots: Array<[number, number]>;
-  /** The lot nearest the centroid (so the anchor sits on the territory even when it bends). */
   centre: [number, number];
-  /** Height of its tallest building (capped). */
   top: number;
 }
 
 export interface BuildGroup {
-  /** Territory indices (consecutive in plan order: a node range for highlighting). */
   first: number;
   last: number;
   lots: number;
-  /** Seconds after the city arrives. */
   at: number;
 }
 
@@ -50,7 +34,6 @@ export interface KitCity {
   structures: number;
 }
 
-/** What each composition builds, in compose.ts's own words. */
 export const COMP_WORDS: Record<string, string> = {
   continuous: "one built mass along the street",
   parcelled: "narrow attached shops",
@@ -66,8 +49,8 @@ export const COMP_WORDS: Record<string, string> = {
 };
 
 export function blockName(b: PMBlock) {
-  if (b.kind === "remainder") return b.label ?? "Main content";
   if (b.form === "rest") return "Rest of the page";
+  if (b.kind === "remainder") return b.label ?? "Main content";
   if (b.label && b.kind !== "nav" && b.kind !== "footer") return b.label;
   return REGION_LABEL[b.kind as RegionKind] ?? b.kind;
 }
@@ -85,6 +68,7 @@ export function buildKitCity(doc: NormalizedDocument): KitCity {
   const raw = generateKitDistrict(fp, { profile: plan, trace });
   const owner = new Int32Array(raw.parts.length).fill(-1);
   for (const pc of trace.pieces) for (let k = pc.parts[0]; k < pc.parts[1]; k++) owner[k] = pc.territory;
+  // node = territory index (-1: streets, scenery), so hover and highlight work per territory.
   const parts: Part[] = raw.parts.map((q, k) => ({ ...q, node: owner[k] }));
   const city: PixelCity = { ...raw, parts, siteName: sem.siteName, semantics: sem };
   const lots = trace.alloc!.lots;
@@ -116,15 +100,9 @@ function territoryGeometry(trace: KitTrace, parts: Part[]): TerritoryGeo[] {
   return geo;
 }
 
-/** Page alone (the grid lays itself under it), then the groups, then street life and lights. */
 const READ = 1.3;
 const MAX_GROUPS = 6;
 
-/**
- * The construction, in at most MAX_GROUPS steps: the hero alone, then consecutive territories in
- * plan order (the order they were given land, from the centre out) until a group holds a sixth of
- * the land. Presentation only — it re-times the same parts, like construction.ts.
- */
 function planBuild(city: PixelCity, trace: KitTrace, owner: Int32Array, geo: TerritoryGeo[], plan: Plan): KitCity["build"] {
   const lots = trace.alloc!.lots;
   const order = plan.territories.map((_, i) => i).filter((i) => lots[i] > 0);
@@ -139,7 +117,6 @@ function planBuild(city: PixelCity, trace: KitTrace, owner: Int32Array, geo: Ter
       g.lots += lots[t];
     }
   }
-  // A small tail joins the group before it (never leaving the construction a single step).
   if (groups.length > 2 && groups[groups.length - 1].lots < target / 3 && groups[groups.length - 2].first !== plan.hero) {
     const tail = groups.pop()!;
     groups[groups.length - 1].last = tail.last;
@@ -153,7 +130,6 @@ function planBuild(city: PixelCity, trace: KitTrace, owner: Int32Array, geo: Ter
   });
   const end = READ + groups.length * DT;
 
-  // Inside a group, pieces rise outwards from the group's middle; all parts of a piece together.
   const pieceAt = new Float32Array(city.parts.length).fill(-1);
   const byGroup = new Map<number, Array<{ from: number; to: number; d: number }>>();
   for (const pc of trace.pieces) {
@@ -187,9 +163,7 @@ function planBuild(city: PixelCity, trace: KitTrace, owner: Int32Array, geo: Ter
     if (p.mesh === "glow") return end + 0.35;
     if (pieceAt[k] >= 0) return pieceAt[k];
     if (k < b0 || owner[k] < 0) {
-      // Streets, sidewalks and block plinths: the grid lays itself out while the page is read.
       if (k < sc.furniture[0]) return 0.15 + 0.8 * (Math.hypot(p.x, p.z) / far);
-      // Street life, then traffic, once the blocks stand.
       return k < sc.furniture[1] ? end + 0.1 + 0.3 * (Math.hypot(p.x, p.z) / far) : end + 0.3;
     }
     return end;

@@ -1,12 +1,3 @@
-/*
- * Skyline UI (round 5). The world is pixel art; the interface is not.
- * Everything is driven by tokens on .sk[data-ui] so the three typography directions can be
- * compared on the exact same screen:
- *   grotesk   — contemporary grotesk + mono (Geist / Geist Mono)
- *   editorial — display serif + clean sans + mono (Instrument Serif / Instrument Sans / Geist Mono)
- *   bitmap    — a refined dot-matrix face for voice (Doto), mono for data
- */
-
 .sk {
   --sk-accent: #ffcf5a;
   --sk-fg: #f6f4ef;
@@ -25,7 +16,6 @@
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── direction A: grotesk + mono ── */
 .sk[data-ui="grotesk"] {
   --sk-display: var(--font-geist), system-ui, sans-serif;
   --sk-text: var(--font-geist), system-ui, sans-serif;
@@ -41,7 +31,6 @@
   --sk-radius: 12px;
   --sk-btn-radius: 999px;
 }
-/* ── direction B: editorial ── */
 .sk[data-ui="editorial"] {
   --sk-display: var(--font-inst-serif), Georgia, serif;
   --sk-text: var(--font-inst-sans), system-ui, sans-serif;
@@ -57,7 +46,6 @@
   --sk-radius: 3px;
   --sk-btn-radius: 0px;
 }
-/* ── direction C: refined bitmap ── */
 .sk[data-ui="bitmap"] {
   --sk-display: var(--font-doto), ui-monospace, monospace;
   --sk-text: var(--font-geist), system-ui, sans-serif;
@@ -102,7 +90,6 @@
   font-weight: 700;
 }
 
-/* layers that fade instead of mounting/unmounting */
 .sk-layer {
   position: absolute;
   inset: 0;
@@ -131,7 +118,6 @@
   }
 }
 
-/* legibility over the city: a low shade, not a box */
 .sk-scrim {
   position: absolute;
   inset: auto 0 0 0;
@@ -142,7 +128,6 @@
 .sk-scrim[data-strength="soft"] {
   background: radial-gradient(80% 60% at 0% 100%, rgba(8, 8, 12, 0.5), transparent 70%);
 }
-/* Day worlds are bright: the same shade, deeper. */
 .sk[data-time="day"] .sk-scrim {
   background: radial-gradient(120% 95% at 0% 100%, rgba(8, 8, 12, 0.8), rgba(8, 8, 12, 0.45) 40%, transparent 74%);
 }
@@ -150,7 +135,6 @@
   background: radial-gradient(90% 70% at 0% 100%, rgba(8, 8, 12, 0.66), transparent 72%);
 }
 
-/* top bar */
 .sk-top {
   position: absolute;
   top: 18px;
@@ -235,7 +219,6 @@
   justify-content: center;
 }
 
-/* primary action */
 .sk-primary {
   display: inline-flex;
   align-items: center;
@@ -290,7 +273,6 @@
   box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.35);
 }
 
-/* ── City View identity ── */
 .sk-identity {
   position: absolute;
   left: clamp(20px, 3vw, 44px);
@@ -339,7 +321,6 @@
   width: max-content;
 }
 
-/* minimal: one line */
 .sk-identity[data-cv="minimal"] {
   display: flex;
   align-items: center;
@@ -354,7 +335,6 @@
   height: 40px;
   font-size: 14px;
 }
-/* bare: a whisper */
 .sk-bare {
   position: absolute;
   left: 50%;
@@ -384,7 +364,6 @@
   font-size: 14px;
 }
 
-/* ── construction caption ── */
 .sk-build {
   position: absolute;
   left: clamp(20px, 3vw, 44px);
@@ -436,7 +415,6 @@
   }
 }
 
-/* ── home ── */
 .sk-ask {
   position: absolute;
   left: clamp(20px, 3vw, 44px);
@@ -516,7 +494,6 @@
   color: #ffb4a6;
 }
 
-/* home A: a page (the world waits behind it) */
 .sk-page {
   position: absolute;
   inset: 0;
@@ -553,7 +530,6 @@
   font-size: 18px;
 }
 
-/* home C: blueprint — a drafting label at the top */
 .sk-plot {
   position: absolute;
   top: 70px;
@@ -573,7 +549,6 @@
   justify-content: center;
 }
 
-/* ── why this city ── */
 .sk-why {
   position: absolute;
   top: 64px;
@@ -631,7 +606,6 @@
   color: var(--sk-fg-3);
 }
 
-/* ── explore ── */
 .sk-back {
   font-size: 13px;
 }
@@ -794,7 +768,6 @@
   color: var(--sk-accent);
 }
 
-/* ── page ↔ city: the page map's places, the link, the drawer ── */
 .sk-mapwrap {
   position: absolute;
   left: 0;
@@ -867,9 +840,11 @@
   position: absolute;
   left: 16px;
   top: 72px;
-  bottom: 16px;
+  max-height: calc(100% - 88px);
+  overflow: auto;
+  padding-bottom: 14px;
   border-radius: 16px;
-  background: rgba(13, 13, 18, 0.74);
+  background: rgba(13, 13, 18, 0.8);
   -webkit-backdrop-filter: blur(14px) saturate(1.2);
   backdrop-filter: blur(14px) saturate(1.2);
   box-shadow:
@@ -879,21 +854,149 @@
 }
 .sk-drawer header {
   position: relative;
-  padding: 16px 20px 0;
+  padding: 18px 20px 0;
 }
-.sk-drawer header p {
-  margin: 6px 0 0;
-  max-width: 320px;
+.sk-drawer header .sk-label {
+  color: var(--sk-accent);
+}
+.sk-drawer header h2 {
+  margin: 10px 0 0;
+  font-size: 30px;
+  line-height: 1;
+  overflow-wrap: anywhere;
+}
+.sk-drawer header .host {
+  margin-top: 8px;
+  font-family: var(--sk-mono);
   font-size: 12.5px;
-  line-height: 1.35;
   color: var(--sk-fg-2);
+  overflow-wrap: anywhere;
 }
 .sk-drawer header button {
   position: absolute;
-  right: 14px;
-  top: 10px;
+  right: 12px;
+  top: 6px;
   font-size: 20px;
   line-height: 1;
+  color: var(--sk-fg-3);
+  z-index: 1;
+}
+.sk-mapwrap[data-place="drawer"] .pm {
+  box-shadow:
+    0 0 0 5px rgba(255, 255, 255, 0.14),
+    0 20px 50px rgba(0, 0, 0, 0.4);
+}
+.sk-mapwrap[data-place="drawer"] .pm-block[data-state="active"] {
+  box-shadow:
+    inset 0 0 0 9px var(--sk-accent),
+    inset 0 0 0 9999px color-mix(in srgb, var(--sk-accent) 30%, transparent);
+}
+
+.sk-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  margin: 16px 20px 0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--sk-hair);
+}
+.sk-metrics div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 11px 12px 10px;
+  background: rgba(13, 13, 18, 0.92);
+}
+.sk-metrics b {
+  font-family: var(--sk-display);
+  font-weight: var(--sk-display-weight);
+  letter-spacing: var(--sk-display-tracking);
+  font-size: 24px;
+  line-height: 1;
+}
+.sk-metrics span {
+  font-size: 11.5px;
+  line-height: 1.25;
+  color: var(--sk-fg-3);
+}
+
+.sk-legend {
+  margin: 18px 12px 0;
+}
+.sk-legend h4 {
+  margin: 0 8px 6px;
+  color: var(--sk-fg-3);
+}
+.sk-legend button {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 10px;
+  width: 100%;
+  padding: 9px 8px 10px;
+  border-radius: 8px;
+  text-align: left;
+  transition: background 150ms;
+}
+.sk-legend button:hover,
+.sk-legend button[data-on="1"] {
+  background: rgba(255, 255, 255, 0.07);
+}
+.sk-legend .what {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--sk-fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sk-legend .what i {
+  margin-left: 7px;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--sk-fg-3);
+}
+.sk-legend .into {
+  justify-self: end;
+  align-self: baseline;
+  max-width: 150px;
+  font-size: 12px;
+  color: var(--sk-fg-2);
+  text-align: right;
+}
+.sk-legend .into::before {
+  content: "→ ";
+  color: var(--sk-accent);
+}
+.sk-legend .bar {
+  grid-column: 1 / -1;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+.sk-legend .bar i {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--sk-accent) 55%, rgba(255, 255, 255, 0.35));
+}
+.sk-legend button:hover .bar i,
+.sk-legend button[data-on="1"] .bar i {
+  background: var(--sk-accent);
+}
+.sk-legend .n {
+  grid-column: 1 / -1;
+  font-family: var(--sk-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--sk-fg-3);
+}
+.sk-legend .more {
+  margin: 6px 8px 0;
+  font-size: 12px;
   color: var(--sk-fg-3);
 }
 
@@ -947,4 +1050,93 @@
   font-size: 12.5px;
   line-height: 1.35;
   color: var(--sk-fg-2);
+}
+
+.sk-homescrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none !important;
+  background: radial-gradient(56% 50% at 0% 100%, rgba(6, 6, 14, 0.72), rgba(6, 6, 14, 0.4) 48%, transparent 76%);
+}
+.sk-ask:has(.sk-hero) {
+  width: min(680px, calc(100vw - 40px));
+  bottom: clamp(28px, 7vh, 72px);
+}
+.sk-hero {
+  margin: 0;
+  max-width: 11.5ch;
+  font-size: clamp(46px, 6.2vw, 92px);
+  line-height: 0.93;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+.sk[data-ui="editorial"] .sk-hero {
+  letter-spacing: -0.02em;
+}
+.sk-sub {
+  margin: 16px 0 26px;
+  font-size: clamp(17px, 1.45vw, 21px);
+  line-height: 1.3;
+  color: var(--sk-fg-2);
+  letter-spacing: -0.01em;
+}
+.sk-try .arrow {
+  margin-left: 2px;
+}
+.sk-try .ex {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 14px;
+}
+.sk-try .ex i {
+  font-style: normal;
+  color: var(--sk-fg-3);
+}
+.sk-aside {
+  transition: opacity 450ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.sk-aside[data-off="1"] {
+  opacity: 0;
+  pointer-events: none !important;
+}
+.sk-legend .bar i {
+  transition:
+    width 650ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    background 200ms;
+}
+.sk-legend button[data-state="todo"] {
+  opacity: 0.38;
+}
+.sk-drawer[data-mode="build"] .sk-legend button {
+  cursor: default;
+}
+.sk-drawer[data-mode="build"] .sk-metrics b {
+  font-variant-numeric: tabular-nums;
+}
+
+.sk-drawer,
+.sk * {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
+}
+.sk-drawer::-webkit-scrollbar,
+.sk *::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.sk-drawer::-webkit-scrollbar-track,
+.sk *::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sk-drawer::-webkit-scrollbar-thumb,
+.sk *::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.26);
+  border-radius: 0;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.sk-drawer::-webkit-scrollbar-thumb:hover,
+.sk *::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.48);
+  background-clip: padding-box;
 }

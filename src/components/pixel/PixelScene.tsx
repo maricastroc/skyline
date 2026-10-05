@@ -6,7 +6,6 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import * as THREE from "three";
 import type { RGB } from "@/lib/city/types";
 import { srgbToLinear } from "@/lib/city/palette";
-import { drawGlyph, GLYPH_H } from "@/lib/pixelcity/pixel-font";
 import { drawPeopleAtlas, PEOPLE_ATLAS } from "@/lib/pixelcity/kit/people";
 import type { BuildPlan } from "@/lib/pixelcity/construction";
 import type { GamePalette } from "@/lib/pixelcity/palette";
@@ -29,32 +28,17 @@ const BILLBOARD_PAPER: RGB = [0.2, 0.2, 0.22];
 const BILLBOARD_ATLAS = { pixelate: [64, 40] as [number, number] };
 
 export interface ViewState {
-  /** Azimuth in degrees (45 = classic iso from the +x/+z corner). */
   azimuth: number;
-  /** Zoom multiplier on top of "fit". */
   zoom: number;
-  /** Pan offset in world units. */
   pan: [number, number];
 }
 
-/**
- * Two resolutions, decoupled:
- *  - RENDER_LINES: the geometry. The scene is rendered at ~900 lines and enlarged by a whole
- *    number of screen pixels (nearest), so edges, windows and signs get real definition.
- *  - ART_LINES: the pixel language — dither, stars, haze steps, outline weight, glow size —
- *    drawn on a ~600-line grid at screen resolution, independent of the render size.
- * World-anchored patterns (windows, roads, grass, water, sign and image texels) keep their size
- * in the world, so they stay put when the camera moves.
- */
 export const RENDER_LINES = 900;
 export const ART_LINES = 600;
 
 export interface PixelScales {
-  /** Canvas pixel ratio (screen resolution, capped at 2). */
   dpr: number;
-  /** Screen pixels per render pixel. */
   renderPx: number;
-  /** Screen pixels per art pixel. */
   artPx: number;
 }
 
@@ -62,31 +46,19 @@ export interface PixelSceneProps {
   city: PixelCity;
   view?: ViewState;
   interactive?: boolean;
-  /** City view: whole diorama, drag rotates. Explore: closer, drag pans. */
   mode?: "city" | "explore";
-  /** World x/z the camera should centre on (explore). */
   focus?: [number, number] | null;
-  /** Node range [start, end) to highlight strongly (a hovered district, a picked building). */
   highlight?: [number, number] | null;
-  /** Node range to tint softly (the region around the picked building). */
   soft?: [number, number] | null;
-  /** Dim everything outside `highlight` (City view district hover). */
   spotlight?: boolean;
-  /** Hovered node (or null) and the world x/z under the cursor (or null off the city). */
   onHover?: (node: number | null, point: [number, number] | null) => void;
   onPick?: (node: number | null) => void;
   onCanvas?: (canvas: HTMLCanvasElement) => void;
-  /** City view only: move the diorama up by this fraction of the viewport (room for a title). */
   lift?: number;
-  /** Construction choreography for `city` (re-timed build, lights and traffic switching on). */
   plan?: BuildPlan | null;
-  /** The planned city's build clock (seconds), every frame — captions follow the scene, not the wall. */
   onBuildTime?: (seconds: number) => void;
-  /** Explore zoom override (the detail-kit prototype looks closer than the default street view). */
   exploreZoom?: number;
-  /** Finish the construction now (the build clock jumps to the plan's end). */
   skip?: boolean;
-  /** Receives the scene camera (to place interface marks over the city). */
   cameraRef?: React.MutableRefObject<THREE.Camera | null>;
 }
 
@@ -117,7 +89,6 @@ export default function PixelScene({ onCanvas, ...rest }: PixelSceneProps) {
   );
 }
 
-/** Screen, render and art pixel sizes for this element: whole numbers, so every pixel is even. */
 function usePixelScales(ref: React.RefObject<HTMLDivElement | null>): PixelScales | null {
   const [scales, setScales] = useState<PixelScales | null>(null);
   useLayoutEffect(() => {
@@ -137,8 +108,6 @@ function usePixelScales(ref: React.RefObject<HTMLDivElement | null>): PixelScale
   }, [ref]);
   return scales;
 }
-
-/* ─────────────────────────── world ─────────────────────────── */
 
 interface Batch {
   mesh: PartMesh;
@@ -179,7 +148,6 @@ function buildBatches(parts: Part[]): Batch[] {
     };
     list.forEach((p, k) => {
       if (p.rotX || p.rotZ) {
-        // Tilted parts: full rotation (Y last), scale in the part's own frame.
         tmpQ.setFromEuler(tmpE.set(p.rotX ?? 0, p.rotY, p.rotZ ?? 0, "YXZ"));
         tmpM.compose(tmpV.set(p.x, p.y, p.z), tmpQ, tmpS.set(p.w, p.h, p.d));
         b.matrices.set(tmpM.elements, k * 16);
@@ -199,7 +167,6 @@ function buildBatches(parts: Part[]): Batch[] {
   return out;
 }
 
-/** The procedural people atlas: one texture for every city (figures are generic). */
 let peopleTexture: THREE.CanvasTexture | null = null;
 function peopleAtlas(): THREE.CanvasTexture {
   if (peopleTexture) return peopleTexture;
@@ -223,10 +190,10 @@ function useSignAtlas(city: PixelCity): THREE.CanvasTexture {
     c.height = city.signAtlas.h;
     const g = c.getContext("2d")!;
     const css = (rgb: RGB) => `rgb(${rgb.map((v) => Math.round(v * 255)).join(",")})`;
+    const paint = () => {
     for (const s of city.signs) {
       g.fillStyle = css(s.bg);
       g.fillRect(s.x, s.y, s.w, s.h);
-      // 1-texel darker frame
       g.fillStyle = css(s.bg.map((v) => v * 0.55) as RGB);
       g.fillRect(s.x, s.y, s.w, 1);
       g.fillRect(s.x, s.y + s.h - 1, s.w, 1);
@@ -234,41 +201,80 @@ function useSignAtlas(city: PixelCity): THREE.CanvasTexture {
       g.fillRect(s.x + s.w - 1, s.y, 1, s.h);
       g.fillStyle = css(s.fg);
       const dot = (x: number, y: number) => g.fillRect(x, y, 1, 1);
+      if (s.font === "sans") {
+        const [head, ...rest] = s.text.split("\n");
+        const family = "'Helvetica Neue', Helvetica, Arial, sans-serif";
+        const fit = (text: string, weight: number, size: number, track: number) => {
+          let px = size;
+          for (;;) {
+            g.font = `${weight} ${px}px ${family}`;
+            g.letterSpacing = `${(px * track).toFixed(1)}px`;
+            if (g.measureText(text).width <= s.w * 0.84 || px <= 6) return px;
+            px -= 1;
+          }
+        };
+        g.textAlign = "center";
+        g.textBaseline = "alphabetic";
+        const cx = s.x + s.w / 2;
+        const big = fit(head, 800, Math.round(s.h * 0.42), 0.02);
+        const headY = s.y + s.h * (rest.length ? 0.5 : 0.66);
+        g.fillText(head, cx, headY);
+        if (rest.length) {
+          if (s.accent) {
+            g.fillStyle = css(s.accent);
+            g.fillRect(cx - s.w * 0.36, Math.round(headY + big * 0.2), Math.round(s.w * 0.72), Math.max(2, Math.round(s.h * 0.035)));
+            g.fillStyle = css(s.fg);
+          }
+          const small = fit(rest[0], 700, Math.round(s.h * 0.15), 0.16);
+          g.fillText(rest.join(" "), cx, Math.round(headY + big * 0.2 + small * 1.75));
+        }
+        g.letterSpacing = "0px";
+        continue;
+      }
+      const doto = "var(--font-doto), Doto, monospace";
+      g.fillStyle = css(s.fg);
+      g.textAlign = "center";
+      g.textBaseline = "middle";
+      g.letterSpacing = "0px";
+      const cx = s.x + s.w / 2;
       if (s.text.startsWith("|")) {
         const t = s.text.slice(1);
-        for (let i = 0; i < t.length; i++) drawGlyph(t[i], s.x + 2, s.y + 2 + i * (GLYPH_H + 1), dot);
+        const step = Math.min(s.w - 2, (s.h - 2) / t.length);
+        g.font = `900 ${Math.max(5, Math.floor(step * 0.95))}px ${doto}`;
+        for (let i = 0; i < t.length; i++) g.fillText(t[i], cx, s.y + 1 + step * (i + 0.5));
       } else {
-        // Multi-line, each line centred.
-        s.text.split("\n").forEach((line, li) => {
-          const lw = line.length * 4 - 1;
-          const ox = s.x + Math.floor((s.w - lw) / 2);
-          for (let i = 0; i < line.length; i++) drawGlyph(line[i], ox + i * 4, s.y + 2 + li * (GLYPH_H + 1), dot);
-        });
+        const lines = s.text.split("\n");
+        const lh = (s.h - 2) / lines.length;
+        let px = Math.max(5, Math.floor(lh * 0.9));
+        const longest = lines.reduce((a, b) => (b.length > a.length ? b : a), "");
+        for (;;) {
+          g.font = `900 ${px}px ${doto}`;
+          if (g.measureText(longest).width <= s.w - 4 || px <= 5) break;
+          px -= 1;
+        }
+        lines.forEach((line, li) => g.fillText(line, cx, s.y + 1 + lh * (li + 0.5)));
       }
     }
+    };
+    paint();
     const t = new THREE.CanvasTexture(c);
     t.colorSpace = THREE.SRGBColorSpace;
     t.minFilter = THREE.NearestFilter;
     t.magFilter = THREE.NearestFilter;
     t.generateMipmaps = false;
+    document.fonts?.load("900 16px Doto").then(() => {
+      paint();
+      t.needsUpdate = true;
+    });
     return t;
   }, [city]);
 }
 
-/* ─────────────────────────── stage ─────────────────────────── */
-
-/**
- * One world on screen at a time — except while one replaces another (the vacant lot becoming
- * a city, a city cleared back to the lot): then the incoming world spreads from the origin in
- * a widening ring over the outgoing one, and the light and sky move from one palette to the
- * other as it goes. No cut, no loading screen.
- */
 const REVEAL = { dur: 1.9, radius: 150, screen: 55 };
 interface Reveal {
   on: boolean;
   t: number;
   r: number;
-  /** 0..1 palette blend (outgoing → incoming). */
   k: number;
 }
 let layerIds = 0;
@@ -286,7 +292,6 @@ function Stage({ city, view, interactive = true, mode = "city", focus = null, hi
     if (cameraRef) cameraRef.current = camera;
   }, [camera, cameraRef]);
   const [stack, setStack] = useState<PixelCity[]>([city]);
-  // Derived during render: a new city pushes the current one out (React's "adjust state on prop change").
   if (stack[stack.length - 1] !== city) setStack([stack[stack.length - 1], city]);
   const reveal = useMemo<Reveal>(() => ({ on: false, t: 0, r: 0, k: 1 }), []);
   useLayoutEffect(() => {
@@ -340,7 +345,6 @@ function Lights({ to, from, reveal }: { to: PixelCity; from: PixelCity | null; r
   const hemi = useRef<THREE.HemisphereLight>(null);
   const sun = useRef<THREE.DirectionalLight>(null);
   const world = to.frame === "world";
-  // World frame: shadows reach a band of countryside around the city too.
   const half = Math.max(to.size.w, to.size.d) / 2 + (world ? 22 : 0);
   const tmp = useMemo(() => ({ a: new THREE.Color(), b: new THREE.Color(), d: new THREE.Vector3(), e: new THREE.Vector3() }), []);
   useFrame(() => {
@@ -377,8 +381,6 @@ function Lights({ to, from, reveal }: { to: PixelCity; from: PixelCity | null; r
   );
 }
 
-/* ─────────────────────────── layer ─────────────────────────── */
-
 function Layer({
   city,
   role,
@@ -402,7 +404,6 @@ function Layer({
   onMeshes?: (m: THREE.InstancedMesh[]) => void;
   onBuildTime?: (seconds: number) => void;
 }) {
-  // The choreography is fixed when the layer is born.
   const [plan] = useState(planProp);
   const p = city.palette;
   const night = p.time === "night";
@@ -420,8 +421,6 @@ function Layer({
     }),
     [p, night, plan],
   );
-  // Billboard photos at the art scale: 64×40 texels per slot (≈1 art pixel per texel on a
-  // typical billboard in City View), nearest — not smoothed by the finer render.
   const images = useAtlas(city.images, BILLBOARD_PAPER, BILLBOARD_ATLAS);
   const signs = useSignAtlas(city);
 
@@ -459,8 +458,6 @@ function Layer({
       return m;
     });
   };
-  // The city (DOM parts: inspectable, highlightable) and the land around it (scenery: neither).
-  // With a construction plan the same parts rise in the plan's order instead.
   const parts = useMemo(() => (plan ? city.parts.map((q, i) => ({ ...q, delay: plan.delays[i] ?? q.delay })) : city.parts), [city, plan]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const meshes = useMemo(() => toMeshes(parts), [parts, kit]);
@@ -471,7 +468,6 @@ function Layer({
   }, [meshes, onMeshes]);
   useEffect(() => () => [...meshes, ...scenery].forEach((m) => m.geometry.dispose()), [meshes, scenery]);
 
-  // Highlight a node range (a region and everything it contains) via aAnim.w.
   const hl0 = highlight?.[0] ?? -1;
   const hl1 = highlight?.[1] ?? -1;
   const sf0 = soft?.[0] ?? -1;
@@ -523,15 +519,8 @@ function Layer({
   );
 }
 
-/* ─────────────────────────── post ─────────────────────────── */
-
 const inkOf = (p: GamePalette): RGB => p.ink ?? (p.time === "night" ? [0.05, 0.04, 0.12] : [0.12, 0.08, 0.14]);
 
-/**
- * Renders the scene into its own target at the render resolution (with depth), then enlarges
- * it to the screen buffer with nearest sampling. The effects that follow run at screen
- * resolution and read this pass's depth, so they can draw on the art grid.
- */
 class RenderScaledPass extends Pass {
   readonly target: THREE.WebGLRenderTarget;
   private readonly copy = new CopyMaterial();
@@ -576,8 +565,6 @@ function Post({ to, from, reveal, fog, scales }: { to: PixelCity; from: PixelCit
     const p = to.palette;
     const post = new PixelPostEffect({ skyTop: srgb(p.sky.top), skyBottom: srgb(p.sky.bottom), ink: srgb(inkOf(p)), stars: p.sky.stars, edge: 0.55 });
     post.uniforms.get("uArt")!.value = artPx;
-    // Glow sized in art pixels: the mip chain starts at screen resolution, so it needs about
-    // log2(artPx) more levels to reach as far as it did when the frame *was* the art grid.
     const bloom = new BloomEffect({ mipmapBlur: true, levels: 4 + Math.round(Math.log2(artPx)), radius: 0.5, luminanceThreshold: 0.95, intensity: 0.25 });
     const tone = new ToneMappingEffect({ mode: ToneMappingMode.NEUTRAL });
     const composer = new EffectComposer(gl, { frameBufferType: THREE.HalfFloatType, multisampling: 0 });
@@ -585,11 +572,8 @@ function Post({ to, from, reveal, fog, scales }: { to: PixelCity; from: PixelCit
     const effects = new EffectPass(camera, post, bloom, tone);
     composer.addPass(render);
     composer.addPass(effects);
-    // The effects read the depth of the scene as rendered (render resolution), not the
-    // composer's own (empty) screen-size depth.
     if (render.target.depthTexture) effects.setDepthTexture(render.target.depthTexture);
     return { composer, post, bloom, applied: { w: -1, h: -1 } };
-    // The pipeline lives as long as the canvas and its pixel sizes; colors follow the palettes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gl, scene, camera, renderPx, artPx]);
   useEffect(() => () => pipe.composer.dispose(), [pipe]);
@@ -622,25 +606,16 @@ function Post({ to, from, reveal, fog, scales }: { to: PixelCity; from: PixelCit
   return null;
 }
 
-/* ─────────────────────────── camera ─────────────────────────── */
-
-/**
- * World frame: the art scale is fixed (world units across the screen diagonal), not fitted to
- * the city — so a big page runs past the edges and a small one sits in open land.
- */
 const WORLD_DIAG = 50;
 const ZOOM = {
   island: { explore: 2.6, city: [0.8, 1.7], street: [1.4, 6] },
-  world: { explore: 1.75, city: [0.7, 1.5], street: [0.8, 4.5] },
+  world: { explore: 1.75, city: [0.45, 4.5], street: [0.8, 4.5] },
 } as const;
 
-/** View-space distances where the haze starts and ends (world frame). */
 export interface Fog {
   near: number;
   far: number;
-  /** View depth of the ground under the bottom and top screen rows: the haze thins with height above it. */
   ground: [number, number];
-  /** Sine of the camera elevation (depth below the ground's → height above it). */
   sinEl: number;
 }
 
@@ -670,7 +645,6 @@ function Rig({
   lift: number;
   meshes: React.RefObject<THREE.InstancedMesh[]>;
   fog: Fog;
-  /** Screen pixels per render pixel: the camera snaps to the render grid. */
   renderPx: number;
   exploreZoom?: number;
   onHover?: PixelSceneProps["onHover"];
@@ -681,7 +655,6 @@ function Rig({
   const Z = ZOOM[city.frame];
   const az0 = view?.azimuth ?? 45;
   const state = useRef({
-    // World frame opens a little higher and turned, then settles: we arrive flying over it.
     az: world ? az0 - 18 : az0,
     azTarget: az0,
     zoom: world ? 0.62 : (view?.zoom ?? 1),
@@ -694,6 +667,7 @@ function Rig({
     mouse: new THREE.Vector2(),
     inside: false,
     hover: -2,
+    offset: new THREE.Vector2(),
     hx: NaN,
     hz: NaN,
     lift: mode === "city" ? lift : 0,
@@ -703,7 +677,6 @@ function Rig({
   const ray = useMemo(() => new THREE.Raycaster(), []);
   const ground = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), []);
 
-  // A user gesture takes the camera back from any running glide.
   const cancelTween = () => {
     const s = state.current;
     if (!s.tween) return;
@@ -717,8 +690,6 @@ function Rig({
     if (view) state.current.azTarget = view.azimuth;
   }, [view]);
 
-  // Mode changes are one continuous camera move: aerial → approach → street, and back. So is a
-  // new world arriving: the camera keeps flying and settles on it while it's being built.
   const cityRef = useRef(city);
   useEffect(() => {
     const s = state.current;
@@ -733,6 +704,7 @@ function Rig({
       s.zoom = z1;
       if (p1) s.pan.copy(p1);
     }
+    s.offset.set(0, 0);
     s.tween = { t: 0, dur: first && world ? 2.8 : newWorld ? 4.6 : mode === "explore" ? 1.9 : 1.6, z0: s.zoom, z1, p0: s.pan.clone(), p1, a0: s.az, a1: s.azTarget };
   }, [mode, focus, view, world, Z, city, exploreZoom]);
 
@@ -740,7 +712,11 @@ function Rig({
     if (!interactive) return;
     const el = gl.domElement;
     const s = state.current;
-    const onDown = (e: PointerEvent) => (s.drag = { x: e.clientX, y: e.clientY, moved: false });
+    el.style.cursor = "grab";
+    const onDown = (e: PointerEvent) => {
+      s.drag = { x: e.clientX, y: e.clientY, moved: false };
+      el.style.cursor = "grabbing";
+    };
     const onMove = (e: PointerEvent) => {
       const r = el.getBoundingClientRect();
       s.mouse.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
@@ -749,20 +725,29 @@ function Rig({
       if (Math.hypot(e.clientX - s.drag.x, e.clientY - s.drag.y) > 3) s.drag.moved = true;
       if (!s.drag.moved) return;
       cancelTween();
-      if (s.mode === "city") {
-        s.azTarget -= e.movementX * 0.3; // orbit
+      if (s.mode === "city" && e.shiftKey) {
+        s.azTarget -= e.movementX * 0.3;
         return;
       }
       const cam = camera as THREE.OrthographicCamera;
       const right = new THREE.Vector3(1, 0, 0).applyQuaternion(cam.quaternion);
       const fwd = new THREE.Vector3(0, 0, -1).applyQuaternion(cam.quaternion).setY(0).normalize();
       const k = 1 / cam.zoom;
-      s.panTarget.x -= (right.x * e.movementX - fwd.x * e.movementY * 2) * k;
-      s.panTarget.y -= (right.z * e.movementX - fwd.z * e.movementY * 2) * k;
+      const dx = -(right.x * e.movementX - fwd.x * e.movementY * 2) * k;
+      const dz = -(right.z * e.movementX - fwd.z * e.movementY * 2) * k;
+      const c = cityRef.current;
+      if (s.mode === "city" && c.frame === "world") {
+        const lim = Math.max(c.size.w, c.size.d) / 2 + 6;
+        s.offset.set(Math.max(-lim, Math.min(lim, s.offset.x + dx)), Math.max(-lim, Math.min(lim, s.offset.y + dz)));
+        return;
+      }
+      s.panTarget.x += dx;
+      s.panTarget.y += dz;
       s.pan.copy(s.panTarget);
     };
     const onUp = () => {
       if (s.drag && !s.drag.moved) onPick?.(s.hover >= 0 ? s.hover : null);
+      if (s.drag) el.style.cursor = "grab";
       s.drag = null;
     };
     const onWheel = (e: WheelEvent) => {
@@ -777,7 +762,6 @@ function Rig({
         cancelTween();
         s.azTarget += e.code === "KeyQ" ? -90 : 90;
       }
-      if (s.mode !== "explore") return;
       const cam = camera as THREE.OrthographicCamera;
       const step = 40 / cam.zoom;
       const right = new THREE.Vector3(1, 0, 0).applyQuaternion(cam.quaternion).setY(0).normalize();
@@ -789,7 +773,12 @@ function Rig({
       if (e.code === "KeyA" || e.code === "ArrowLeft") mv.set(-right.x, -right.z);
       if (mv.lengthSq() === 0) return;
       cancelTween();
-      s.panTarget.add(mv.multiplyScalar(step));
+      mv.multiplyScalar(step);
+      const c = cityRef.current;
+      if (s.mode === "city" && c.frame === "world") {
+        const lim = Math.max(c.size.w, c.size.d) / 2 + 6;
+        s.offset.set(Math.max(-lim, Math.min(lim, s.offset.x + mv.x)), Math.max(-lim, Math.min(lim, s.offset.y + mv.y)));
+      } else s.panTarget.add(mv);
     };
     el.addEventListener("pointerdown", onDown);
     window.addEventListener("pointermove", onMove);
@@ -797,6 +786,7 @@ function Rig({
     el.addEventListener("wheel", onWheel, { passive: false });
     window.addEventListener("keydown", onKey);
     return () => {
+      el.style.cursor = "";
       el.removeEventListener("pointerdown", onDown);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
@@ -808,7 +798,7 @@ function Rig({
   useFrame((_, dt) => {
     const s = state.current;
     const k = 1 - Math.exp(-dt * 5);
-    const el = (30 * Math.PI) / 180; // 2:1 dimetric
+    const el = (30 * Math.PI) / 180;
     const tw = s.tween;
     let e = 0;
     if (tw) {
@@ -816,7 +806,6 @@ function Rig({
       const p = clamp01(tw.t / tw.dur);
       e = easeInOut(p);
       s.az = tw.a0 + (tw.a1 - tw.a0) * e;
-      // Zoom lags the pan a little: fly toward it, then come down.
       s.zoom = Math.exp(Math.log(tw.z0) + (Math.log(tw.z1) - Math.log(tw.z0)) * easeInOut(clamp01((p - 0.1) / 0.9)));
     } else {
       s.az += (s.azTarget - s.az) * (1 - Math.exp(-dt * 8));
@@ -824,7 +813,6 @@ function Rig({
     }
     const az = (s.az * Math.PI) / 180;
     const dir = new THREE.Vector3(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el));
-    // Project the city's footprint onto the camera plane (any rectangle, any azimuth).
     const right2 = new THREE.Vector3(Math.cos(az), 0, -Math.sin(az));
     const depthAxis = new THREE.Vector3(Math.sin(az), 0, Math.cos(az));
     const hw = city.size.w / 2;
@@ -836,8 +824,6 @@ function Rig({
     const extY = (Math.max(...ds) - Math.min(...ds)) * Math.sin(el) + (city.maxHeight + 3.5) * Math.cos(el);
     const base = world ? Math.hypot(size.width, size.height) / WORLD_DIAG : Math.min(size.width / extX, size.height / extY) * 0.97;
 
-    // World City View: centre the city when it fits; when it overflows, slide toward the
-    // entrance so the landmark and the first districts own the frame.
     const framing = new THREE.Vector2();
     if (world) {
       const over = Math.max(extX / (size.width / base), extY / (size.height / base));
@@ -854,7 +840,7 @@ function Rig({
         s.tween = null;
       }
     } else {
-      if (world && s.mode === "city") s.panTarget.copy(framing);
+      if (world && s.mode === "city") s.panTarget.copy(framing).add(s.offset);
       if (world && s.mode === "explore") {
         const m = 14;
         s.panTarget.set(Math.max(-hw - m, Math.min(hw + m, s.panTarget.x)), Math.max(-hd - m, Math.min(hd + m, s.panTarget.y)));
@@ -870,8 +856,6 @@ function Rig({
     cam.position.copy(target).addScaledVector(dir, 600);
     cam.up.set(0, 1, 0);
     cam.lookAt(target);
-    // Snap to the render-pixel grid so panning doesn't shimmer: world-anchored patterns move
-    // by whole pixels.
     const texel = renderPx / (cam.zoom * viewport.dpr);
     const right = new THREE.Vector3(1, 0, 0).applyQuaternion(cam.quaternion);
     const up = new THREE.Vector3(0, 1, 0).applyQuaternion(cam.quaternion);
@@ -881,13 +865,10 @@ function Rig({
     cam.updateProjectionMatrix();
     cam.updateMatrixWorld();
 
-    // Haze, anchored to the frame: in City View the top band of land dissolves into the sky
-    // (a horizon an orthographic camera can't otherwise have). It lies low: what rises above the
-    // ground stands out of it as a skyline. It lifts as the camera comes down into the streets.
     if (world) {
-      s.haze += ((s.mode === "city" ? 1 : 0) - s.haze) * (1 - Math.exp(-dt * 2.5));
+      const hazeTo = s.mode === "city" ? Math.min(1, Math.max(0, (1.7 - s.zoom) / 0.7)) : 0;
+      s.haze += (hazeTo - s.haze) * (1 - Math.exp(-dt * 2.5));
       const viewH = size.height / cam.zoom;
-      // View depth of the ground under the screen row at height v (0 = bottom, 1 = top).
       const groundDepth = (v: number) => 600 + (target.y + Math.cos(el) * (v - 0.5) * viewH) / Math.sin(el);
       const [hn, hf] = city.atmosphere?.haze ?? [0.64, 0.97];
       fog.near = groundDepth(1.6 + (hn - 1.6) * s.haze);
@@ -917,8 +898,6 @@ function Rig({
         }
       }
       const node = best?.node ?? -1;
-      // Ground point (falls back to the ground plane: the land isn't raycast), quantised to
-      // half tiles so hover only fires when it matters.
       const gp = first ? first.point : ray.ray.intersectPlane(ground, new THREE.Vector3());
       const px = gp ? Math.round(gp.x * 2) / 2 : NaN;
       const pz = gp ? Math.round(gp.z * 2) / 2 : NaN;
@@ -936,8 +915,6 @@ function Rig({
   });
   return null;
 }
-
-/* ─────────────────────────── life ─────────────────────────── */
 
 function Life({ city, uniforms, startAt }: { city: PixelCity; uniforms: PixelUniforms; startAt?: number }) {
   const p = city.palette;
@@ -966,22 +943,8 @@ function Life({ city, uniforms, startAt }: { city: PixelCity; uniforms: PixelUni
         });
       }
     }
-    const clouds: Array<{ x: number; z: number; y: number; s: number; v: number; parts: Array<[number, number, number, number]> }> = [];
-    // No clouds at night, nor over a drawing (the blueprint overrides the ink).
-    if (!night && !p.ink) {
-      const half = Math.max(city.size.w, city.size.d) / 2;
-      const nc = 4 + Math.floor(rand() * 4);
-      for (let i = 0; i < nc; i++) {
-        const parts: Array<[number, number, number, number]> = [];
-        const k = 3 + Math.floor(rand() * 4);
-        for (let j = 0; j < k; j++) parts.push([(rand() - 0.5) * 3, rand() * 0.5, (rand() - 0.5) * 1.6, 1 + rand() * 1.4]);
-        // Keep clouds behind the diorama (screen-top), never over the city's centre.
-        const a = rand() * half * 1.6;
-        clouds.push({ x: -half * 0.35 - a + (rand() - 0.5) * half, z: -half * 0.35 - (half * 1.6 - a) * 0.8, y: city.maxHeight * 0.7 + 8 + rand() * 6, s: 1 + rand() * 1.2, v: 0.4 + rand() * 0.5, parts });
-      }
-    }
-    return { cars, clouds };
-  }, [city, p, night]);
+    return { cars };
+  }, [city, p]);
 
   const carMesh = useMemo(() => {
     const geo = new THREE.BoxGeometry(1, 1, 1).translate(0, 0.5, 0);
@@ -999,15 +962,6 @@ function Life({ city, uniforms, startAt }: { city: PixelCity; uniforms: PixelUni
     m.frustumCulled = false;
     return m;
   }, [sim, p, night]);
-  const cloudMesh = useMemo(() => {
-    const total = sim.clouds.reduce((s, c) => s + c.parts.length, 0);
-    const mat = new THREE.MeshToonMaterial({ gradientMap: toonRamp(), color: srgb(p.cloud) });
-    const m = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), mat, Math.max(1, total));
-    m.count = total;
-    m.castShadow = true;
-    m.frustumCulled = false;
-    return m;
-  }, [sim, p]);
   const smoke = useMemo(() => {
     const per = 10;
     const m = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshToonMaterial({ gradientMap: toonRamp(), color: srgb(night ? [0.45, 0.45, 0.55] : [0.86, 0.86, 0.88]) }), Math.max(1, city.smokestacks.length * per));
@@ -1056,26 +1010,9 @@ function Life({ city, uniforms, startAt }: { city: PixelCity; uniforms: PixelUni
     carMesh.instanceMatrix.needsUpdate = true;
     if (night) lightMesh.instanceMatrix.needsUpdate = true;
 
-    const span = Math.max(city.size.w, city.size.d) * 1.6;
-    let k = 0;
-    for (const cl of sim.clouds) {
-      cl.x += cl.v * dt;
-      cl.z -= cl.v * dt;
-      if (cl.x > span / 2) {
-        cl.x -= span;
-        cl.z += span;
-      }
-      for (const [dx, dy, dz, s] of cl.parts) {
-        m4.compose(v.set(cl.x + dx * cl.s, cl.y + dy, cl.z + dz * cl.s), q.identity(), sc.set(s * cl.s, 0.7 * cl.s, s * 0.8 * cl.s));
-        cloudMesh.setMatrixAt(k++, m4);
-      }
-    }
-    cloudMesh.instanceMatrix.needsUpdate = true;
-
     if (train && city.rail) {
       const [a, b] = city.rail.points;
       const len = Math.abs(a[2] - b[2]);
-      // Back and forth along the line, pausing at the ends.
       const cycle = (time * 2.2) % (len * 2 + 6);
       const t = cycle < len + 3 ? Math.min(cycle, len) : Math.max(0, len * 2 + 3 - cycle);
       for (let i = 0; i < 3; i++) {
@@ -1101,7 +1038,6 @@ function Life({ city, uniforms, startAt }: { city: PixelCity; uniforms: PixelUni
     <>
       <primitive object={carMesh} />
       <primitive object={lightMesh} />
-      <primitive object={cloudMesh} />
       <primitive object={smoke.mesh} />
       {train && <primitive object={train} />}
     </>

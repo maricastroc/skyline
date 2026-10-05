@@ -8,7 +8,7 @@ import type { SiteFingerprint } from "@/lib/fingerprint/fingerprint";
 import { blockName, compWords, type KitCity } from "@/lib/pixelcity/kit-city";
 import { SIDEWALK_H } from "@/lib/pixelcity/kit/street";
 import type { PMBlock } from "@/lib/pixelcity/page-map";
-import { generateVacantWorld } from "@/lib/pixelcity/vacant";
+import { generateVacantWorld, SITE_CENTRE } from "@/lib/pixelcity/vacant";
 import { PageMap, type BlockState } from "./PageMap";
 import type { ViewState } from "./PixelScene";
 import { makePostcard } from "./postcard";
@@ -16,7 +16,6 @@ import { usePixelCity } from "./usePixelCity";
 
 const PixelScene = dynamic(() => import("./PixelScene"), { ssr: false });
 
-/** Directions under comparison (round 5). Chosen with ?ui= &home= &cv= — none is “the” answer yet. */
 export type UiType = "grotesk" | "editorial" | "bitmap";
 export type HomeKind = "refined" | "vacant" | "blueprint";
 export type CityViewKind = "meta" | "minimal" | "bare";
@@ -33,25 +32,19 @@ const EXAMPLES: Array<[string, string]> = [
   ["The Guardian", "https://www.theguardian.com/international"],
 ];
 
-/** City View framing approved in the framing round (world frame, fixed art scale). */
 const CITY_VIEW: ViewState = { azimuth: 45, zoom: 0.9, pan: [0, 0] };
 const HOME_VIEW: Record<HomeKind, ViewState> = {
   refined: { azimuth: 45, zoom: 1.1, pan: [0, 0] },
-  // The lot sits up and to the right of the question, which lives bottom-left.
-  vacant: { azimuth: 45, zoom: 1.1, pan: [-3, 6] },
-  // The plot sits below the drafting label at the top.
+  vacant: { azimuth: 45, zoom: 1.22, pan: [SITE_CENTRE[0] - 1.6, SITE_CENTRE[1] + 4.8] },
   blueprint: { azimuth: 45, zoom: 0.8, pan: [-4, -4] },
 };
-/** Construction: wider, so the district can grow from the centre out in view. */
 const BUILD_ZOOM = 0.62;
-/** A territory pointed at from the page: the camera comes to it, a little closer. */
 const FOCUS_ZOOM = 0.72;
+const STREET_ZOOM = 1.75;
+const STREET_FROM = 1.25;
 
-/** The page map: one element, laid out at MAP_W, moved and scaled between its places. */
 const MAP_W = 360;
-type MapPlace = "hidden" | "center" | "dock" | "thumb" | "drawer";
-
-type Mode = "city" | "explore";
+type MapPlace = "hidden" | "thumb" | "drawer";
 
 function hostOf(u: string) {
   try {
@@ -70,10 +63,9 @@ function addressOf(u: string) {
   }
 }
 const short = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1)}…` : s);
-/** A territory's share of the page (the same weight that bought its land). */
 const pageShare = (w: number) => (w < 0.01 ? "<1%" : `${Math.round(w * 100)}%`);
+const lotsLabel = (n: number) => `${n} ${n === 1 ? "lot" : "lots"}`;
 
-/** ?at=: the territory whose kind or name matches. */
 function findTerritory(kit: KitCity, at: string): number | null {
   const q = at.toLowerCase();
   const withLand = kit.map.blocks.filter((b) => b.lots > 0);
@@ -102,7 +94,6 @@ export function PixelApp({
 
   const vacant = useMemo(() => generateVacantWorld(vacantFp, home === "blueprint" ? "blueprint" : "lot"), [vacantFp, home]);
   const plan = kit?.build.plan ?? null;
-  // Construction clock = the scene's build time for this city (so the page map follows what's on screen).
   const [elapsed, setElapsed] = useState(0);
   const [skipped, setSkipped] = useState(false);
   const [clockOf, setClockOf] = useState(kit);
@@ -117,7 +108,7 @@ export function PixelApp({
   }, [plan]);
   const onBuildTime = useCallback((t: number) => {
     const k = tick.current;
-    if (k.last > k.done) return; // finished: stop re-rendering
+    if (k.last > k.done) return;
     if (t - k.last > 0.066 || t < k.last) {
       k.last = t;
       setElapsed(t);
@@ -137,15 +128,12 @@ export function PixelApp({
     } catch {}
   }, []);
 
-  // ── City View / Explore state ──
-  const [mode, setMode] = useState<Mode>("city");
-  const [focus, setFocus] = useState<[number, number] | null>(null);
-  /** Territory under the cursor in the city, one pointed at on the page map, one picked in Explore. */
   const [hoverT, setHoverT] = useState<number | null>(null);
   const [mapT, setMapT] = useState<number | null>(null);
   const [pinned, setPinned] = useState<number | null>(null);
-  /** The territory the camera went to from the page (it stays there until the drawer closes). */
   const [cameraT, setCameraT] = useState<number | null>(null);
+  const [flyT, setFlyT] = useState<number | null>(null);
+  const [zoomedIn, setZoomedIn] = useState(false);
   const [whyOpen, setWhyOpen] = useState(false);
   const [hudHidden, setHudHidden] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -153,42 +141,31 @@ export function PixelApp({
   const canvas = useRef<HTMLCanvasElement | null>(null);
   const camera = useRef<THREE.Camera | null>(null);
   const root = useRef<HTMLDivElement>(null);
+  const input = useRef<HTMLInputElement>(null);
+  const focusInput = useRef(false);
   const chip = useRef<HTMLDivElement>(null);
-  const live = useRef({ mode, built, building, whyOpen, pinned });
+  const live = useRef({ built, building, whyOpen, pinned });
   useEffect(() => {
-    live.current = { mode, built, building, whyOpen, pinned };
+    live.current = { built, building, whyOpen, pinned };
   });
 
   const lotsOf = useCallback((t: number) => kit?.lots[t] ?? 0, [kit]);
   const blockOf = useCallback((t: number | null): PMBlock | null => (t === null || !kit ? null : (kit.map.blocks.find((b) => b.t === t) ?? null)), [kit]);
 
-  const enter = useCallback(
-    (t: number | null) => {
-      if (!kit) return;
-      const hero = kit.plan.hero >= 0 && kit.lots[kit.plan.hero] > 0 ? kit.plan.hero : null;
-      const at = t ?? hero;
-      setFocus(at !== null ? kit.geo[at].centre : [0, 0]);
-      setPinned(t);
-      setMode("explore");
-      setWhyOpen(false);
-    },
-    [kit],
-  );
-  const backToCity = useCallback(() => {
-    setMode("city");
-    setPinned(null);
-  }, []);
   const openWhy = useCallback((open: boolean) => {
     setWhyOpen(open);
     setMapT(null);
+    setFlyT(null);
     if (!open) setCameraT(null);
   }, []);
   const leave = useCallback(() => {
-    setMode("city");
     setPinned(null);
+    setFlyT(null);
     setWhyOpen(false);
     setCameraT(null);
     setUrl(null);
+    setDraft("");
+    focusInput.current = true;
     try {
       const sp = new URLSearchParams(window.location.search);
       sp.delete("url");
@@ -199,32 +176,21 @@ export function PixelApp({
   }, []);
   const skip = useCallback(() => setSkipped(true), []);
 
-  // Deep link (?at=…): once built, fly into that territory with it picked.
   if (built && initialAt && !atUsed && url === initialUrl && kit) {
     setAtUsed(true);
     const t = findTerritory(kit, initialAt);
     if (t !== null) {
-      setFocus(kit.geo[t].centre);
+      setFlyT(t);
       setPinned(t);
-      setMode("explore");
     }
   }
 
   const onHover = useCallback((node: number | null) => setHoverT((prev) => (prev === node ? prev : node)), []);
-  const onPick = useCallback(
-    (node: number | null) => {
-      const { mode, built } = live.current;
-      if (!built) return;
-      if (mode === "city") {
-        if (node !== null) enter(node);
-        return;
-      }
-      setPinned(node);
-    },
-    [enter],
-  );
+  const onPick = useCallback((node: number | null) => {
+    if (!live.current.built) return;
+    setPinned((prev) => (node !== null && prev === node ? null : node));
+  }, []);
 
-  // A territory pointed at on the page: after a beat, the camera goes there (and stays).
   useEffect(() => {
     if (mapT === null) return;
     const id = setTimeout(() => setCameraT(mapT), 140);
@@ -241,22 +207,15 @@ export function PixelApp({
       }
       if (!L.built) return;
       if (e.code === "KeyH") setHudHidden((v) => !v);
-      if (e.code === "Enter" && L.mode === "city") enter(null);
-      if (e.code === "KeyC") {
-        if (L.mode === "city") enter(null);
-        else backToCity();
-      }
       if (e.code === "Escape") {
-        if (L.mode === "city") openWhy(false);
+        if (L.whyOpen) openWhy(false);
         else if (L.pinned !== null) setPinned(null);
-        else backToCity();
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [enter, backToCity, openWhy, skip]);
+  }, [openWhy, skip]);
 
-  // ── viewport ──
   const [vp, setVp] = useState({ w: 1440, h: 900 });
   useEffect(() => {
     const u = () => setVp({ w: window.innerWidth, h: window.innerHeight });
@@ -265,61 +224,71 @@ export function PixelApp({
     return () => window.removeEventListener("resize", u);
   }, []);
 
-  // ── construction steps ──
   const groups = kit?.build.groups ?? [];
   let gi = -1;
   if (kit && building) for (let i = 0; i < groups.length; i++) if (groups[i].at <= elapsed) gi = i;
   const group = gi >= 0 ? groups[gi] : null;
   const reading = !!kit && building && gi < 0;
 
-  const phase: "home" | "building" | "city" | "explore" = !url || error ? "home" : building ? "building" : mode === "explore" ? "explore" : "city";
+  const phase: "home" | "building" | "city" = !url || error ? "home" : building ? "building" : "city";
+  useEffect(() => {
+    if (phase !== "home" || !focusInput.current) return;
+    focusInput.current = false;
+    const id = setTimeout(() => input.current?.focus(), 350);
+    return () => clearTimeout(id);
+  }, [phase]);
   const drawerOpen = phase === "city" && whyOpen;
 
-  // ── the page map's place ──
   const mapH = Math.max(320, vp.h - 180);
-  const dockScale = Math.min(0.78, (vp.w * 0.3) / MAP_W);
   const thumbScale = 0.2;
-  const drawerW = Math.min(MAP_W + 40, vp.w - 32);
-  const drawerScale = Math.min(1, (vp.h - 166) / mapH, (drawerW - 40) / MAP_W);
-  const place: MapPlace = !kit || phase === "home" || phase === "explore" || hudHidden ? "hidden" : building ? (reading ? "center" : "dock") : drawerOpen ? "drawer" : "thumb";
+  const drawerW = Math.min(372, vp.w - 32);
+  const drawerScale = 84 / MAP_W;
+  const place: MapPlace = !kit || phase === "home" || hudHidden ? "hidden" : building || drawerOpen ? "drawer" : "thumb";
   const placeOf: Record<Exclude<MapPlace, "hidden">, { x: number; y: number; s: number }> = {
-    center: { x: Math.round(vp.w / 2 - MAP_W / 2), y: 90, s: 1 },
-    dock: { x: 28, y: 76, s: dockScale },
-    drawer: { x: Math.round(16 + (drawerW - MAP_W * drawerScale) / 2), y: 150, s: drawerScale },
+    drawer: { x: Math.round(16 + drawerW - 20 - MAP_W * drawerScale), y: 108, s: drawerScale },
     thumb: { x: 20, y: 66, s: thumbScale },
   };
   const at = placeOf[place === "hidden" ? "thumb" : place];
-  const dockRight = 28 + MAP_W * dockScale;
   const drawerRight = 16 + drawerW;
 
-  // ── what is linked: page block ↔ territory ──
-  const linked = building ? null : phase === "city" ? (drawerOpen ? (mapT ?? hoverT) : hoverT) : (hoverT ?? pinned);
+  const linked = building || phase !== "city" ? null : drawerOpen ? (mapT ?? hoverT) : (hoverT ?? pinned);
   let highlight: [number, number] | null = null;
   let soft: [number, number] | null = null;
   if (building && group) highlight = [group.first, group.last + 1];
   else if (linked !== null) highlight = [linked, linked + 1];
-  if (phase === "explore" && pinned !== null && pinned !== linked) soft = [pinned, pinned + 1];
-  // The group's largest territory carries the link during construction.
+  if (phase === "city" && pinned !== null && pinned !== linked) soft = [pinned, pinned + 1];
   const lead = group ? (() => {
     let best = group.first;
     for (let t = group.first; t <= group.last; t++) if (lotsOf(t) > lotsOf(best)) best = t;
     return best;
   })() : null;
-  const anchorT = building ? lead : drawerOpen ? (mapT ?? hoverT) : null;
+  const anchorT = drawerOpen ? (mapT ?? hoverT) : null;
 
-  // ── camera ──
-  const panelRight = building ? dockRight : drawerOpen ? drawerRight : 0;
+  const panelRight = building || drawerOpen ? drawerRight : 0;
   const focusT = drawerOpen && cameraT !== null && kit?.geo[cameraT]?.lots.length ? cameraT : null;
-  const zoom = building ? BUILD_ZOOM : focusT !== null ? FOCUS_ZOOM : CITY_VIEW.zoom;
+  const flyTo = !building && !drawerOpen && flyT !== null && kit?.geo[flyT]?.lots.length ? flyT : null;
+  const zoom = building ? BUILD_ZOOM : focusT !== null ? FOCUS_ZOOM : flyTo !== null ? STREET_ZOOM : CITY_VIEW.zoom;
   const base = Math.hypot(vp.w, vp.h) / 50;
   const dx = panelRight / 2 / (base * zoom);
   const dz = focusT !== null ? 2.5 : 0;
-  const [fx, fz] = focusT !== null && kit ? kit.geo[focusT].centre : [0, 0];
+  const goT = focusT ?? flyTo;
+  const [fx, fz] = goT !== null && kit ? kit.geo[goT].centre : [0, 0];
   const px = Math.round((fx - 0.707 * dx - 0.707 * dz) * 4) / 4;
   const pz = Math.round((fz + 0.707 * dx - 0.707 * dz) * 4) / 4;
   const cityView = useMemo<ViewState>(() => (px === 0 && pz === 0 && zoom === CITY_VIEW.zoom ? CITY_VIEW : { azimuth: 45, zoom, pan: [px, pz] }), [px, pz, zoom]);
 
-  // ── marks over the city: the territory's anchor, and the curve from its page block ──
+  useEffect(() => {
+    if (phase !== "city") return;
+    const id = setInterval(() => {
+      const cam = camera.current as THREE.OrthographicCamera | null;
+      if (!cam) return;
+      const z = cam.zoom / base;
+      setZoomedIn((prev) => (prev ? z > STREET_FROM - 0.1 : z > STREET_FROM));
+    }, 200);
+    return () => clearInterval(id);
+  }, [phase, base]);
+  const titleOff = pinned !== null || zoomedIn;
+
   const stage = useRef<HTMLDivElement>(null);
   const [anchor, setAnchor] = useState<{ x: number; y: number } | null>(null);
   const [blockRect, setBlockRect] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
@@ -337,7 +306,7 @@ export function PixelApp({
       const r = cv.getBoundingClientRect();
       const a = { x: r.left + ((v.x + 1) / 2) * r.width, y: r.top + ((1 - v.y) / 2) * r.height };
       setAnchor((o) => (o && Math.abs(o.x - a.x) < 0.5 && Math.abs(o.y - a.y) < 0.5 ? o : a));
-      const el = st.querySelector<HTMLElement>(`.sk-pagemap [data-pm-t="${anchorT}"]`);
+      const el = root.current?.querySelector<HTMLElement>(`.sk-legend [data-pm-t="${anchorT}"]`) ?? st.querySelector<HTMLElement>(`.sk-pagemap [data-pm-t="${anchorT}"]`);
       if (el) {
         const b = el.getBoundingClientRect();
         const n = { x: b.left, y: b.top, w: b.width, h: b.height };
@@ -348,7 +317,6 @@ export function PixelApp({
     return () => cancelAnimationFrame(raf);
   }, [anchorT, kit]);
 
-  // ── page map states ──
   const stateOf = useCallback(
     (t: number): BlockState => {
       if (building) {
@@ -365,14 +333,12 @@ export function PixelApp({
   const tagOf = useCallback(
     (b: PMBlock) => {
       if (building && group && b.t >= group.first && b.t <= group.last && b.lots > 0) return `→ ${b.lots} lots`;
-      if (drawerOpen && b.t === linked) return `→ ${b.lots} lots`;
       return null;
     },
-    [building, group, drawerOpen, linked],
+    [building, group],
   );
   const onMapHover = useCallback((t: number | null) => setMapT(t), []);
 
-  // Hover chip follows the cursor without re-rendering the scene.
   const cursor = useRef({ x: 0, y: 0 });
   const placeChip = useCallback(() => {
     const el = chip.current;
@@ -381,8 +347,7 @@ export function PixelApp({
     const flip = x + 14 + el.offsetWidth > window.innerWidth - 8;
     el.style.transform = `translate(${flip ? x - 10 - el.offsetWidth : x + 14}px, ${y + 16}px)`;
   }, []);
-  // (Not over the building already open in Explore: the card says it.)
-  const hoverBlock = built && hoverT !== null && !(drawerOpen && mapT !== null) && !(phase === "explore" && hoverT === pinned) ? blockOf(hoverT) : null;
+  const hoverBlock = built && hoverT !== null && !drawerOpen && hoverT !== pinned ? blockOf(hoverT) : null;
   const hoverText = hoverBlock ? { k: `${pageShare(hoverBlock.weight)} of the page`, t: short(blockName(hoverBlock), 44) } : null;
   const chipKey = hoverText ? `${hoverText.k}|${hoverText.t}` : "";
   useLayoutEffect(placeChip, [chipKey, placeChip]);
@@ -390,7 +355,6 @@ export function PixelApp({
   const finalUrl = kit ? (doc?.source.finalUrl ?? url ?? "") : (url ?? "");
   const host = url ? hostOf(finalUrl) : "";
   const address = url ? addressOf(finalUrl) : "";
-  // A “site name” that is really a whole headline (no short name on the page) reads better as the host.
   const name = [kit?.sem.siteName, doc?.document.title?.split(/\s[|–—-]\s/)[0]].find((n) => n && n.length <= 32) || host;
   const accent = rgbToCss((city ?? vacant).palette.accents[0]);
   const territories = kit ? kit.lots.filter((l) => l > 0).length : 0;
@@ -421,22 +385,6 @@ export function PixelApp({
     }
   };
 
-  // Construction caption: the page first, then what is rising and how much land it took.
-  const step = (() => {
-    if (!kit) return null;
-    if (!building) return { n: null, label: `${kit.structures} structures`, detail: `${territories} territories` };
-    if (reading) return { n: null, label: `Reading ${host}`, detail: `${kit.map.blocks.filter((b) => b.form !== "rest").length} parts of the page` };
-    if (!group || lead === null) return null;
-    const lb = blockOf(lead);
-    let more = -1;
-    for (let t = group.first; t <= group.last; t++) if (lotsOf(t) > 0) more++;
-    return {
-      n: `${gi + 1}/${groups.length}`,
-      label: `${short(lb ? blockName(lb) : "", 34)}${more > 0 ? ` + ${more} more` : ""} → ${group.lots} lots`,
-      detail: more > 0 ? null : compWords(kit, lead),
-    };
-  })();
-
   const field = (
     <form
       className="sk-field"
@@ -445,7 +393,7 @@ export function PixelApp({
         if (draft.trim()) go(draft.trim());
       }}
     >
-      <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="https://" spellCheck={false} autoComplete="off" aria-label="Website address" />
+      <input ref={input} value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="https://" spellCheck={false} autoComplete="off" aria-label="Website address" />
       <button className="sk-primary" type="submit">
         Build <span className="arrow">→</span>
       </button>
@@ -453,11 +401,16 @@ export function PixelApp({
   );
   const examples = (
     <div className="sk-try">
-      <span>or try</span>
-      {EXAMPLES.map(([label, u]) => (
-        <button key={u} type="button" onClick={() => go(u)}>
-          {label}
-        </button>
+      <span>
+        Explore <span className="arrow">→</span>
+      </span>
+      {EXAMPLES.map(([label, u], i) => (
+        <span key={u} className="ex">
+          <button type="button" onClick={() => go(u)}>
+            {label}
+          </button>
+          {i < EXAMPLES.length - 1 ? <i aria-hidden>·</i> : null}
+        </span>
       ))}
     </div>
   );
@@ -467,6 +420,74 @@ export function PixelApp({
     </div>
   );
   const pb = blockOf(pinned);
+  const landed = kit ? kit.map.blocks.filter((b) => b.lots > 0) : [];
+  const panel = (mode: "build" | "why") => {
+    if (!kit) return null;
+    const upto = mode === "build" ? (group ? group.last : -1) : Infinity;
+    const done = landed.filter((b) => b.t <= upto);
+    const legend = [...landed].sort((a, b) => b.lots - a.lots).slice(0, 4);
+    const extra = mode === "build" ? lead : linked;
+    if (extra !== null && !legend.some((b) => b.t === extra)) {
+      const b = blockOf(extra);
+      if (b && b.lots > 0) legend.push(b);
+    }
+    const stateOfRow = (t: number) => (mode === "why" ? (linked === t ? "on" : "idle") : group && t >= group.first && t <= group.last ? "on" : t <= upto ? "done" : "todo");
+    const structures = mode === "build" ? kit.trace.buildings.filter((b) => b.territory <= upto).length : kit.structures;
+    return (
+      <div className="sk-drawer" data-mode={mode} style={{ width: drawerW }}>
+        <header style={{ minHeight: Math.round(mapH * drawerScale) + 38, paddingRight: Math.round(MAP_W * drawerScale) + 36 }}>
+          <span className="sk-label">{mode === "why" ? "Why this city" : reading ? "Reading the page" : `Building · ${gi + 1}/${groups.length}`}</span>
+          <h2 className="sk-display">{name}</h2>
+          <div className="host">{host}</div>
+          {mode === "why" ? (
+            <button onClick={() => openWhy(false)} aria-label="Close">
+              ×
+            </button>
+          ) : null}
+        </header>
+        <div className="sk-metrics">
+          <div>
+            <b>{(doc?.stats.elements ?? 0).toLocaleString("en")}</b>
+            <span>elements read</span>
+          </div>
+          <div>
+            <b>{Math.round(done.reduce((a, b) => a + b.weight, 0) * 100)}%</b>
+            <span>of the page became land</span>
+          </div>
+          <div>
+            <b>{done.length}</b>
+            <span>{done.length === 1 ? "part, one district" : "parts, one district each"}</span>
+          </div>
+          <div>
+            <b>{structures}</b>
+            <span>structures on 256 lots</span>
+          </div>
+        </div>
+        <div className="sk-legend" onMouseLeave={mode === "why" ? () => setMapT(null) : undefined}>
+          <h4 className="sk-label">Page → City</h4>
+          {legend.map((b) => {
+            const st = stateOfRow(b.t);
+            return (
+              <button key={b.t} data-pm-t={b.t} data-on={st === "on" ? "1" : "0"} data-state={st} onMouseEnter={mode === "why" ? () => setMapT(b.t) : undefined} onFocus={mode === "why" ? () => setMapT(b.t) : undefined} tabIndex={mode === "why" ? 0 : -1}>
+                <span className="what">
+                  {short(blockName(b), 30)}
+                  {b.count > 1 ? <i>{b.count} items</i> : null}
+                </span>
+                <span className="into">{compWords(kit, b.t)}</span>
+                <span className="bar">
+                  <i style={{ width: st === "todo" ? 0 : `${Math.max(1.5, (b.lots / 256) * 100)}%` }} />
+                </span>
+                <span className="n">
+                  {pageShare(b.weight)} of the page → {lotsLabel(b.lots)}
+                </span>
+              </button>
+            );
+          })}
+          {landed.length > legend.length ? <div className="more">+ {landed.length - legend.length} smaller parts{mode === "why" ? " — point at them on the page or in the city" : ""}</div> : null}
+        </div>
+      </div>
+    );
+  };
   const ab = blockOf(anchorT);
 
   return (
@@ -488,19 +509,17 @@ export function PixelApp({
         onBuildTime={onBuildTime}
         skip={skipped}
         view={phase === "home" ? HOME_VIEW[home] : cityView}
-        mode={mode}
-        focus={focus}
-        interactive={phase === "city" || phase === "explore"}
+        mode="city"
+        interactive={phase === "city"}
         highlight={highlight}
         soft={soft}
-        spotlight={phase === "city" && linked !== null}
+        spotlight={phase === "city" && linked !== null && (drawerOpen || !zoomedIn)}
         onHover={onHover}
         onPick={onPick}
         onCanvas={(c) => (canvas.current = c)}
         cameraRef={camera}
       />
 
-      {/* ── home ── */}
       {home === "refined" && (
         <div className="sk-page" data-on={phase === "home" ? "1" : "0"}>
           <div className="sk-page-inner">
@@ -519,9 +538,10 @@ export function PixelApp({
               <i /> Skyline
             </span>
           </div>
-          <div className="sk-scrim" data-strength="soft" />
+          <div className="sk-homescrim" />
           <div className="sk-ask">
-            <h1 className="sk-q sk-display">What should we build here?</h1>
+            <h1 className="sk-hero sk-display">Every website has a skyline.</h1>
+            <p className="sk-sub">Paste a URL. See what yours becomes.</p>
             {field}
             {examples}
             {errorLine}
@@ -545,10 +565,8 @@ export function PixelApp({
         </div>
       )}
 
-      {/* ── construction ── */}
       <div className="sk-layer" data-on={phase === "building" ? "1" : "0"}>
-        <div className="sk-scrim" data-strength="soft" />
-        {reading ? <div className="sk-readscrim" /> : null}
+        {!kit ? <div className="sk-scrim" data-strength="soft" /> : null}
         <div className="sk-top">
           <span className="sk-wordmark">
             <i /> Skyline
@@ -561,35 +579,32 @@ export function PixelApp({
             </div>
           ) : null}
         </div>
-        <div className="sk-build">
-          <div className="sk-hostname sk-display">{host}</div>
-          <div className="sk-step" aria-live="polite">
-            <span className="dot" />
-            {step ? (
-              <>
-                {step.n ? <span className="n">{step.n}</span> : null}
-                <span key={step.label} className="label">
-                  {step.label}
-                </span>
-                {step.detail && <span className="detail">{step.detail}</span>}
-              </>
-            ) : (
+        {kit ? (
+          panel("build")
+        ) : (
+          <div className="sk-build">
+            <div className="sk-hostname sk-display">{host}</div>
+            <div className="sk-step" aria-live="polite">
+              <span className="dot" />
               <span className="label">Surveying {host}…</span>
-            )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
-      {/* ── City View ── */}
       {city && kit && (
         <div className="sk-layer" data-on={!hudHidden && phase === "city" ? "1" : "0"}>
-          {cv === "meta" && !drawerOpen && <div className="sk-scrim" />}
-          {cv === "minimal" && !drawerOpen && <div className="sk-scrim" data-strength="soft" />}
+          {cv === "meta" && !drawerOpen && (!titleOff || pinned !== null) && <div className="sk-scrim" />}
+          {cv === "minimal" && !drawerOpen && (!titleOff || pinned !== null) && <div className="sk-scrim" data-strength="soft" />}
           <div className="sk-top">
             <button className="sk-wordmark" onClick={leave} title="Build another site">
               <i /> Skyline
             </button>
             <div className="sk-pill">
+              <button className={`sk-quiet${cv === "meta" ? "" : " sk-icon"}`} onClick={leave} title="Build another site">
+                <IconNew />
+                {cv === "meta" && "New city"}
+              </button>
               <button className={`sk-quiet${cv === "meta" ? "" : " sk-icon"}`} aria-pressed={whyOpen} onClick={() => openWhy(!whyOpen)} title="Why this city?">
                 <IconPage />
                 {cv === "meta" && "Why this city?"}
@@ -602,72 +617,55 @@ export function PixelApp({
               )}
             </div>
           </div>
+          {!drawerOpen ? <div className="sk-hint">drag to move · scroll to zoom into the streets · Q/E or shift-drag to turn · click a building to see its page</div> : null}
           {drawerOpen ? (
-            <div className="sk-drawer" style={{ width: drawerW }}>
-              <header>
-                <span className="sk-label">Why this city</span>
-                <button onClick={() => openWhy(false)} aria-label="Close">
-                  ×
-                </button>
-                <p>Every part of {host} became a part of the city. Point at the page or at the city.</p>
-              </header>
-            </div>
+            panel("why")
           ) : (
             <>
               <button className="sk-thumbhit" style={{ width: Math.round(MAP_W * thumbScale) + 12, height: Math.round(mapH * thumbScale) + 30 }} onClick={() => openWhy(true)} title="Why this city?" aria-label="Why this city? Show the page">
                 <span>the page</span>
               </button>
               {cv === "meta" && (
-                <div className="sk-identity" data-cv="meta">
+                <div className="sk-identity sk-aside" data-cv="meta" data-off={titleOff ? "1" : "0"}>
                   <h1 className="sk-name sk-display">{name}</h1>
                   <div className="sk-host">{address}</div>
                   <div className="sk-meta">
                     <b>{kit.structures}</b> structures · <b>{territories}</b> territories · {city.palette.time === "golden" ? "golden hour" : city.palette.time}
                   </div>
-                  <button className="sk-primary" onClick={() => enter(null)}>
-                    Enter city <span className="arrow">→</span>
-                  </button>
                 </div>
               )}
               {cv === "minimal" && (
-                <div className="sk-identity" data-cv="minimal">
+                <div className="sk-identity sk-aside" data-cv="minimal" data-off={titleOff ? "1" : "0"}>
                   <div className="sk-hostname sk-display">{host}</div>
-                  <button className="sk-primary" onClick={() => enter(null)}>
-                    Enter <span className="arrow">→</span>
-                  </button>
                 </div>
               )}
               {cv === "bare" && (
-                <div className="sk-bare">
+                <div className="sk-bare sk-aside" data-off={titleOff ? "1" : "0"}>
                   <span>{host}</span>
-                  <button className="sk-primary" onClick={() => enter(null)}>
-                    Enter <span className="arrow">↵</span>
-                  </button>
                 </div>
               )}
+              {pb && pinned !== null ? <FromThePage kit={kit} b={pb} t={pinned} onClose={() => setPinned(null)} /> : null}
             </>
           )}
         </div>
       )}
 
-      {/* ── the page map: centre (reading) → dock (rising) → thumbnail (“Why this city?”) ⇄ drawer ── */}
       {kit ? (
         <div
           ref={stage}
           className="sk-mapwrap"
           data-place={place}
-          style={{ transform: `translate(${at.x}px, ${at.y}px) scale(${at.s})`, opacity: place === "hidden" ? 0 : 1 }}
+          style={{ transform: `translate(${at.x}px, ${at.y}px) scale(${at.s})`, opacity: place === "hidden" || (drawerOpen && !building) ? 0 : 1, pointerEvents: drawerOpen && !building ? "none" : undefined }}
           onClick={place === "thumb" ? () => openWhy(true) : undefined}
         >
           <PageMap data={kit.map} width={MAP_W} height={mapH} stateOf={stateOf} onHover={drawerOpen ? onMapHover : undefined} tagOf={tagOf} className="sk-pagemap" />
         </div>
       ) : null}
 
-      {/* the link: page block → territory */}
-      {anchorT !== null && anchor && ab && (building || drawerOpen) ? (
+      {anchorT !== null && anchor && ab && drawerOpen ? (
         <>
           <svg className="sk-link" width={vp.w} height={vp.h}>
-            {blockRect && (place === "dock" || place === "drawer") ? (
+            {blockRect && place === "drawer" ? (
               <path
                 d={(() => {
                   const x0 = blockRect.x + blockRect.w;
@@ -682,50 +680,13 @@ export function PixelApp({
           {drawerOpen ? (
             <div className="sk-anchorchip" style={{ left: Math.min(anchor.x + 12, vp.w - 300), top: Math.max(76, anchor.y - 34) }}>
               <span className="k">
-                {pageShare(ab.weight)} of the page → {lotsOf(anchorT!)} lots
+                {pageShare(ab.weight)} of the page → {lotsLabel(lotsOf(anchorT!))}
               </span>
               {short(blockName(ab), 38)}
             </div>
           ) : null}
         </>
       ) : null}
-
-      {/* ── Explore ── */}
-      {!hudHidden && phase === "explore" && kit && (
-        <div className="sk-layer sk-late" data-on="1">
-          <div className="sk-top">
-            <div className="sk-pill">
-              <button className="sk-quiet sk-back" onClick={backToCity}>
-                <IconBack /> City
-              </button>
-              <span className="sk-quiet sk-mono" style={{ cursor: "default" }}>
-                {host}
-              </span>
-            </div>
-          </div>
-          {pb && pinned !== null ? (
-            <aside className="sk-inspect sk-from">
-              <header>
-                <span className="k sk-label">From the page</span>
-                <span className="kind sk-label">{pb.kind === "remainder" ? "content" : pb.kind}</span>
-                <button onClick={() => setPinned(null)} aria-label="Close">
-                  ×
-                </button>
-              </header>
-              <div className="quote">{blockName(pb)}</div>
-              <div className="meta">
-                {pb.count > 1 ? `${pb.count} items · ` : ""}
-                {pageShare(pb.weight)} of the page → {lotsOf(pinned)}/256 lots
-                <br />
-                {compWords(kit, pinned)}
-              </div>
-              {lotsOf(pinned) >= 128 ? <div className="note">Most of the page is this part, so most of the city is too.</div> : null}
-              <PageMap data={kit.map} width={272} height={300} stateOf={(t) => (t === pinned ? "active" : "dim")} className="sk-minimap" />
-            </aside>
-          ) : null}
-          <div className="sk-hint">drag to move · scroll to zoom · Q/E rotate · click a building to see its page · esc back</div>
-        </div>
-      )}
 
       <div ref={chip} className="sk-hover" hidden={hudHidden || !hoverText || building}>
         {hoverText && (
@@ -745,13 +706,36 @@ const IconPage = () => (
     <path d="M5.5 5h5M5.5 7.5h5M5.5 10h3" strokeLinecap="round" />
   </svg>
 );
+const IconNew = () => (
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
+    <path d="M8 3v10M3 8h10" strokeLinecap="round" />
+  </svg>
+);
 const IconSave = () => (
   <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
     <path d="M8 2.5v7.5M4.8 7l3.2 3.2L11.2 7M3 13.5h10" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
-const IconBack = () => (
-  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
-    <path d="M9.5 3.5 5 8l4.5 4.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
+function FromThePage({ kit, b, t, onClose }: { kit: KitCity; b: PMBlock; t: number; onClose: () => void }) {
+  const lots = kit.lots[t] ?? 0;
+  return (
+    <aside className="sk-inspect sk-from">
+      <header>
+        <span className="k sk-label">From the page</span>
+        <span className="kind sk-label">{b.kind === "remainder" ? "content" : b.kind}</span>
+        <button onClick={onClose} aria-label="Close">
+          ×
+        </button>
+      </header>
+      <div className="quote">{blockName(b)}</div>
+      <div className="meta">
+        {b.count > 1 ? `${b.count} items · ` : ""}
+        {pageShare(b.weight)} of the page → {lots}/256 lots
+        <br />
+        {compWords(kit, t)}
+      </div>
+      {lots >= 128 ? <div className="note">Most of the page is this part, so most of the city is too.</div> : null}
+      <PageMap data={kit.map} width={272} height={300} stateOf={(x) => (x === t ? "active" : "dim")} className="sk-minimap" />
+    </aside>
+  );
+}
