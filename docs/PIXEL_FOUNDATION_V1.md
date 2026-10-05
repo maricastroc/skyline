@@ -1,5 +1,11 @@
 # Pixel city: fundação semântica / arquitetônica v1
 
+> **Atualização (2026-10-05):** o código dos kits congelados (`kit-v1` … `kit-v12`), as rotas
+> `?v=N` e as checagens de equivalência byte a byte com eles foram removidos. Esta fase deixou de
+> ser um contrato verificado pelo CI; o kit-v9 continua recuperável pela tag git `foundation-v1`. Os testes
+> atuais verificam as invariantes do kit atual, cada camada ligada × desligada (README → How to
+> run). O restante deste documento é o registro do freeze.
+
 > **SEMANTIC / ARCHITECTURAL FOUNDATION V1: FROZEN**
 >
 > Baseline final: **kit-v9** (`src/lib/pixelcity/kit-v9`, `?v=9`), tag git `foundation-v1`. O kit

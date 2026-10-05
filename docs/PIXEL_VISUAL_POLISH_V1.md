@@ -1,5 +1,11 @@
 # Pixel city: Visual Polish v1
 
+> **Atualização (2026-10-05):** os kits congelados (`kit-v1` … `kit-v12`), as rotas `?v=N` e as
+> checagens de equivalência com eles foram removidos. As menções abaixo a `?v=N`, ao kit-v12 e às
+> ablações como reprodução de kits são histórico: hoje `test:polish` compara o kit atual com o
+> polish ligado × desligado. A versão encerrada continua recuperável pela tag git
+> `visual-polish-v1`.
+
 > **VISUAL POLISH V1: ENCERRADO**
 >
 > Baseline final: o commit `d69c79f` (rodada 2) e esta declaração.

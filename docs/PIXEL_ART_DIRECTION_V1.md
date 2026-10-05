@@ -1,5 +1,11 @@
 # Pixel city: Art Direction v1
 
+> **Atualização (2026-10-05):** o código dos kits congelados (`kit-v1` … `kit-v12`), as rotas
+> `?v=N` e as checagens de equivalência byte a byte com eles foram removidos. Esta fase deixou de
+> ser um contrato verificado pelo CI; o kit-v12 continua recuperável pela tag git `art-direction-v1`. Os testes
+> atuais verificam as invariantes do kit atual, cada camada ligada × desligada (README → How to
+> run). O restante deste documento é o registro do freeze.
+
 > **ART DIRECTION V1: FROZEN**
 >
 > Baseline final: **kit-v12** (`src/lib/pixelcity/kit-v12`, `?v=12`), tag git `art-direction-v1`.

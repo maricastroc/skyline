@@ -18,6 +18,10 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/maricastroc/skyline/actions/workflows/ci.yml"><img src="https://github.com/maricastroc/skyline/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI" /></a>
+</p>
+
+<p align="center">
   <a href="#-features">Features</a> •
   <a href="#-from-page-to-city">Page → City</a> •
   <a href="#-safe-capture">Safe Capture</a> •
@@ -135,7 +139,7 @@ URL ─▶ /api/capture ─▶ static capture ─▶ DomSnapshot ─▶ normaliz
 
 - **Semantics** — page regions (hero, navigation, feed, index, references, footer…) are inferred from tag, position, size, content and class names, never from the hostname.
 - **Allocation** — territories fill 256 lots in reading order, from the centre outwards, with land proportional to each one's weight.
-- **City** — composition, massing, program, façades, streets, street life and atmosphere all come from the kit ([`src/lib/pixelcity/kit`](src/lib/pixelcity/kit)). The foundation and art-direction layers are frozen and checked by tests.
+- **City** — composition, massing, program, façades, streets, street life and atmosphere all come from the kit ([`src/lib/pixelcity/kit`](src/lib/pixelcity/kit)). Each layer is checked against a corpus of real pages, on its own and switched on and off.
 - **Page map** — the page redrawn from the same data the city was built from, so the two always agree.
 
 <br/>
@@ -155,7 +159,7 @@ Fetching arbitrary URLs on a server is the riskiest thing this app does, so the 
 
 The hardest part was making the city **mean something** without cheating. A city that looks good is easy to fake with a hostname lookup; a city that reflects the page needed a semantic layer that works from structure alone, an allocation that keeps land honest to each part's weight, and a building kit expressive enough that a list, an index and a media wall read as different places from the street. Every stage is checked by its own script against a corpus of real, frozen page snapshots ([`docs/real-pages/snapshots`](docs/real-pages/snapshots)), from news and documentation to shops and the old web.
 
-The second one was **changing the look without breaking the meaning.** Once the semantic and architectural base was right, it was frozen as a versioned kit, and so was the art direction built on top of it. The freeze checks regenerate those layers and compare them byte by byte with the recorded kits, so visual polish can move freely while the cities underneath stay exactly the same — and any older kit version can still be rendered side by side at `/pixel/kit?v=<n>`.
+The second one was **changing the look without breaking the meaning.** The city is built in layers — the page model and the land first, then streets, street life, atmosphere and the drawing of rooftop plants and billboards — and each upper layer can be switched off. The checks build every corpus page with a layer on and off and require the difference to stay inside that layer: the polish never changes a decision, the atmosphere only touches the sky, sun and ambient light, street life never moves a block, and the art direction never moves the land. Earlier milestones stay in git as tags (`foundation-v1`, `art-direction-v1`, `visual-polish-v1`).
 
 <br/>
 
@@ -182,17 +186,19 @@ npm run dev
 > ⏩ Access [http://localhost:3000](http://localhost:3000) (it redirects to `/pixel`), paste a URL and press **Build**.
 > Direct link: `http://localhost:3000/pixel?url=https://news.ycombinator.com`.
 
-> Run the frozen-layer checks (byte-for-byte against the recorded kits):
+> Run every check over the real-page corpus (`test:polish` paints the signs in Chrome; set `CHROME_PATH` if it isn't in the default macOS location):
 
 ```bash
-npm run test:foundation && npm run test:art-direction && npm run test:polish
+npm test
 ```
 
-> Run one pipeline stage over the real-page corpus (also `test:hygiene`, `test:surface`, `test:openings`, `test:composition`, `test:program`, `test:streets`, `test:life`, `test:atmosphere`):
+> Run one stage (also `test:hygiene`, `test:surface`, `test:openings`, `test:composition`, `test:program`, `test:streets`, `test:life`, `test:atmosphere`, `test:polish`):
 
 ```bash
 npm run test:allocation
 ```
+
+> GitHub Actions runs `lint`, `typecheck`, `npm test` and `build` on every push to `main` and on every pull request ([`ci.yml`](.github/workflows/ci.yml)).
 
 > Run capture → normalization in the terminal and print a summary:
 
@@ -205,7 +211,7 @@ npm run probe -- https://news.ycombinator.com
 | Route                         | What it is                                                                                         |
 | ----------------------------- | -------------------------------------------------------------------------------------------------- |
 | `/pixel`                      | The product                                                                                        |
-| `/pixel/kit?page=<id>&v=<n>`  | The city of a frozen snapshot (`docs/real-pages/snapshots`), in any frozen kit version             |
+| `/pixel/kit?page=<id>`        | The city of a corpus snapshot (`docs/real-pages/snapshots`), with debug views (`debug=provenance`, `surface`, `streets`) |
 | `/pixel/compare`              | Several cities under the same camera                                                               |
 | `/maquette`                   | The 3D maquette from the first version                                                             |
 
@@ -213,8 +219,8 @@ npm run probe -- https://news.ycombinator.com
 
 | Document                                                                |                                         |
 | ----------------------------------------------------------------------- | --------------------------------------- |
-| [PIXEL_FOUNDATION_V1.md](docs/PIXEL_FOUNDATION_V1.md)                   | Semantic and architectural base (frozen) |
-| [PIXEL_ART_DIRECTION_V1.md](docs/PIXEL_ART_DIRECTION_V1.md)             | Streets, street life and atmosphere (frozen) |
+| [PIXEL_FOUNDATION_V1.md](docs/PIXEL_FOUNDATION_V1.md)                   | Semantic and architectural base         |
+| [PIXEL_ART_DIRECTION_V1.md](docs/PIXEL_ART_DIRECTION_V1.md)             | Streets, street life and atmosphere     |
 | [PIXEL_VISUAL_POLISH_V1.md](docs/PIXEL_VISUAL_POLISH_V1.md)             | Haze and assets                         |
 | [PIXEL_PRODUCT_COMMUNICATION.md](docs/PIXEL_PRODUCT_COMMUNICATION.md)   | Page → city in the interface            |
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md)                                 | Capture, security and the original maquette |
