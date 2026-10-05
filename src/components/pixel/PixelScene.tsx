@@ -84,6 +84,10 @@ export interface PixelSceneProps {
   onBuildTime?: (seconds: number) => void;
   /** Explore zoom override (the detail-kit prototype looks closer than the default street view). */
   exploreZoom?: number;
+  /** Finish the construction now (the build clock jumps to the plan's end). */
+  skip?: boolean;
+  /** Receives the scene camera (to place interface marks over the city). */
+  cameraRef?: React.MutableRefObject<THREE.Camera | null>;
 }
 
 export default function PixelScene({ onCanvas, ...rest }: PixelSceneProps) {
@@ -276,7 +280,11 @@ const idOf = (c: PixelCity) => {
 
 type StageProps = Omit<PixelSceneProps, "onCanvas"> & { scales: PixelScales };
 
-function Stage({ city, view, interactive = true, mode = "city", focus = null, highlight = null, soft = null, spotlight = false, lift = 0, plan = null, onBuildTime, onHover, onPick, scales, exploreZoom }: StageProps) {
+function Stage({ city, view, interactive = true, mode = "city", focus = null, highlight = null, soft = null, spotlight = false, lift = 0, plan = null, onBuildTime, onHover, onPick, scales, exploreZoom, skip = false, cameraRef }: StageProps) {
+  const { camera } = useThree();
+  useEffect(() => {
+    if (cameraRef) cameraRef.current = camera;
+  }, [camera, cameraRef]);
   const [stack, setStack] = useState<PixelCity[]>([city]);
   // Derived during render: a new city pushes the current one out (React's "adjust state on prop change").
   if (stack[stack.length - 1] !== city) setStack([stack[stack.length - 1], city]);
@@ -317,6 +325,7 @@ function Stage({ city, view, interactive = true, mode = "city", focus = null, hi
           highlight={c === active ? highlight : null}
           soft={c === active ? soft : null}
           spotlight={c === active && spotlight}
+          skip={c === city && skip}
           onMeshes={c === active ? onMeshes : undefined}
           onBuildTime={c === city ? onBuildTime : undefined}
         />
@@ -378,6 +387,7 @@ function Layer({
   highlight,
   soft,
   spotlight,
+  skip,
   onMeshes,
   onBuildTime,
 }: {
@@ -388,6 +398,7 @@ function Layer({
   highlight: [number, number] | null;
   soft: [number, number] | null;
   spotlight: boolean;
+  skip: boolean;
   onMeshes?: (m: THREE.InstancedMesh[]) => void;
   onBuildTime?: (seconds: number) => void;
 }) {
@@ -493,6 +504,7 @@ function Layer({
     const mode = !reveal.on || role === "solo" ? 0 : role === "incoming" ? 1 : -1;
     u.uReveal.value.set(reveal.r, mode);
     if (plan) {
+      if (skip && u.uTime.value < plan.done) u.uTime.value = plan.done;
       u.uLights.value = Math.min(1, Math.max(0, (u.uTime.value - plan.lightsAt) / 0.7));
       onBuildTime?.(u.uTime.value);
     }
@@ -619,7 +631,7 @@ function Post({ to, from, reveal, fog, scales }: { to: PixelCity; from: PixelCit
 const WORLD_DIAG = 50;
 const ZOOM = {
   island: { explore: 2.6, city: [0.8, 1.7], street: [1.4, 6] },
-  world: { explore: 1.75, city: [0.7, 1.5], street: [1.2, 4.5] },
+  world: { explore: 1.75, city: [0.7, 1.5], street: [0.8, 4.5] },
 } as const;
 
 /** View-space distances where the haze starts and ends (world frame). */
