@@ -9,7 +9,7 @@
     "lint": "eslint",
     "probe": "tsx scripts/probe.ts",
     "shoot": "node scripts/shoot.mjs",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "fingerprint": "tsx scripts/fingerprint.ts",
     "test": "npm run test:allocation && npm run test:hygiene && npm run test:surface && npm run test:openings && npm run test:composition && npm run test:program && npm run test:streets && npm run test:life && npm run test:atmosphere && npm run test:polish",
     "test:allocation": "tsx scripts/semantic-allocation/check.ts",

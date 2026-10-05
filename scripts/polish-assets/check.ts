@@ -139,7 +139,7 @@ __def("pixel-font", function (exports, require, module) { ${js("src/lib/pixelcit
 __def("sign-paint", function (exports, require, module) { ${js("src/components/pixel/sign-paint.ts")} });
 window.paintSigns = __m["sign-paint"].paintSigns;`;
   const puppeteer = (await import("puppeteer-core")).default;
-  const browser = await puppeteer.launch({ executablePath: exe, headless: true });
+  const browser = await puppeteer.launch({ executablePath: exe, headless: true, args: ["--no-sandbox"] });
   try {
     const page = await browser.newPage();
     await page.setContent("<!doctype html><html><body></body></html>");
