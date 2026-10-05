@@ -1,20 +1,17 @@
 # Skyline
 
-> Turn any website into a city.
+> Every website has a skyline.
 
-Skyline captura uma página pública por HTTPS, lê a estrutura real do DOM e a reconstrói
-como uma maquete urbana 3D, que dá para explorar e demolir nó a nó. Seções viram quarteirões,
-headings viram torres, imagens viram outdoors com a imagem real, links viram ruas e postes,
-e a profundidade de aninhamento vira relevo.
+Skyline lê a estrutura real de uma página pública e a reconstrói como uma cidade em pixel art
+isométrica. Cada parte da página vira um bairro: o terreno é proporcional ao peso daquela parte, e
+o tipo de conteúdo decide a organização urbana (uma lista vira lojas geminadas, um índice vira
+pilhas baixas, uma vitrine de mídia vira torre com telões, o hero vira o landmark).
 
-![Wikipedia — Brutalist architecture](docs/screenshots/wiki-aerial.jpg)
+![Home](docs/screenshots/readme/home.jpg)
 
-> **Exploração em andamento:** uma nova direção em pixel art, guiada por um `SiteFingerprint`,
-> vive isolada em `/pixel` e `/pixel/compare`. Veja **[docs/PIXEL_CITY.md](docs/PIXEL_CITY.md)**
-> e a rodada semântica (City View, Explore, inspector, teste de identidade) em
-> **[docs/PIXEL_CITY_SEMANTIC.md](docs/PIXEL_CITY_SEMANTIC.md)**. A versão anterior está em `/pixel/v1`.
-> Enquadramento “a cidade é a tela” (A/B com a ilha via `&frame=island`):
-> **[docs/PIXEL_CITY_FRAMING.md](docs/PIXEL_CITY_FRAMING.md)**.
+| construção | a cidade | por que esta cidade |
+|---|---|---|
+| ![Construção](docs/screenshots/readme/build.jpg) | ![Cidade](docs/screenshots/readme/city.jpg) | ![Why this city?](docs/screenshots/readme/why.jpg) |
 
 ## Rodando
 
@@ -23,84 +20,80 @@ npm install
 npm run dev
 ```
 
-Abra `http://localhost:3000` (vai para a cidade em pixel art, `/pixel`), cole uma URL HTTPS
-e clique em **Build**. Link direto: `http://localhost:3000/pixel?url=https://news.ycombinator.com`.
+Abra `http://localhost:3000` (redireciona para `/pixel`), cole uma URL e clique em **Build**.
+Link direto: `http://localhost:3000/pixel?url=https://news.ycombinator.com`.
 
-A maquete 3D bege da primeira rodada (voo, inspeção, demolição) continua em
-`http://localhost:3000/maquette?url=…`; o que está abaixo sobre controles e DOM INTEGRITY se refere a ela.
-O exemplo `sample:lumen` (o HTML do protótipo original) funciona sem rede.
+## Como usar
 
-## Controles
-
-| | |
-|---|---|
-| **Clique** | entra em voo (pointer lock); voando: inspecionar / demolir o que está na mira |
-| **Mouse** | olhar (ou arrastar, sem pointer lock) |
-| **WASD** / setas | mover |
-| **Space / E** · **Shift / Q** | subir · descer |
-| **Scroll** | mirar o pai (↑) ou voltar ao filho (↓) — é assim que se demole um container inteiro |
-| **1 · 2** / Tab | modo Explore · Destroy |
-| **F** | voar até o nó selecionado |
-| **Esc** | liberar o cursor |
-| **O** · **R** · **H** · **M** | órbita · reconstruir · esconder HUD (para prints) · som |
-
-Sem pointer lock, o cursor livre continua inspecionando: passe o mouse sobre qualquer prédio.
+- **Construção:** a página aparece num painel; enquanto a cidade sobe, as partes da página acendem e
+  os números crescem. **Skip** (ou Esc, Espaço, Enter) pula para o fim.
+- **A cidade:** arrastar move, scroll aproxima até o nível da rua, Q/E ou Shift+arrastar giram.
+  Clicar num prédio mostra de que parte da página ele veio.
+- **Why this city?** mostra a página, quanto dela virou terreno e o que cada parte virou; apontar
+  uma parte (no painel ou na cidade) liga as duas com uma linha.
+- **New city** volta para a home; **Postcard** salva uma imagem; H esconde a interface.
+- `?at=references` (ou outro nome de parte) abre a cidade já no bairro correspondente.
 
 ## Como funciona
 
 ```
-URL ─▶ /api/capture ─▶ acquire() ─▶ DomSnapshot ─▶ normalize() ─▶ NormalizedDocument
-                         │                                               │
-                         ├ fetchStaticPage   (implementado)              ▼ (cliente)
-                         └ captureRenderedPage (interface, Playwright)   generateCity() ─▶ CityModel
-                                                                         buildRenderModel() ─▶ RenderModel
-                                                                         <CityScene/>  (~6 draw calls)
+URL ─▶ /api/capture ─▶ captura estática ─▶ DomSnapshot ─▶ normalize() ─▶ NormalizedDocument
+                                                                              │ (cliente)
+   analyzeSemantics ─▶ computeFingerprint ─▶ planFromPage ─▶ generateKitDistrict ─▶ PixelScene
+   (regiões)           (identidade visual)   (territórios)   (cidade do kit)        (three.js)
 ```
 
-Arquitetura, gramática visual, algoritmo de layout, redução de DOMs grandes e a estratégia
-de aquisição e segurança estão em **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
+- **Semântica:** regiões da página (hero, navegação, feed, índice, referências, rodapé…) inferidas
+  por tag, posição, tamanho, conteúdo e nomes de classe — nunca por hostname.
+- **Alocação:** os territórios ocupam 256 lotes em ordem de leitura, do centro para fora, com
+  terreno proporcional ao peso de cada um.
+- **Cidade:** composição, volumetria, programa, fachadas, ruas, vida de rua e atmosfera vêm do kit
+  (`src/lib/pixelcity/kit`). As camadas de base e de direção de arte estão congeladas e são
+  checadas por testes.
+- **Page map:** a página redesenhada a partir do que o pipeline já sabe (ordem de leitura,
+  títulos, links, imagens reais, cores e tipo), sem inventar conteúdo.
 
-Pontos-chave:
+Segurança da captura:
 
-- **O cliente nunca recebe HTML.** O servidor envia só estrutura e métricas, então não há o que
-  executar nem o que injetar.
-- **SSRF fechado no nível do socket.** O DNS é validado, a conexão vai para o IP já validado e cada
-  redirect é revalidado. Ver [`net-guard.ts`](src/lib/acquisition/net-guard.ts) e
-  [`safe-fetch.ts`](src/lib/acquisition/safe-fetch.ts).
-- **Imagens reais via proxy assinado** (HMAC), para não virar um proxy aberto. Todas ficam
-  num único atlas 2048² e cada outdoor é uma instância.
-- **Ids em pré-ordem.** A subárvore de um nó é um intervalo contíguo, então destruir um `section`
-  inteiro é atualizar um intervalo de instâncias. Crescimento e colapso rodam no vertex shader.
-- **DOM INTEGRITY** é calculada por peso estrutural, não por contagem de meshes.
+- **O cliente nunca recebe HTML**, só estrutura e métricas.
+- **SSRF fechado no nível do socket:** o DNS é validado, a conexão vai para o IP validado e cada
+  redirect é revalidado ([`net-guard.ts`](src/lib/acquisition/net-guard.ts),
+  [`safe-fetch.ts`](src/lib/acquisition/safe-fetch.ts)).
+- **Imagens reais via proxy assinado** (HMAC), para não virar um proxy aberto.
+
+## Rotas
+
+| rota | o que é |
+|---|---|
+| `/pixel` | o produto |
+| `/pixel/kit?page=<id>&v=<n>` | a cidade de um snapshot congelado (`docs/real-pages/snapshots`), em qualquer versão congelada do kit |
+| `/pixel/compare` | várias cidades com a mesma câmera |
+| `/maquette` | a maquete 3D da primeira versão |
 
 ## Scripts
 
-| | |
+| comando | |
 |---|---|
-| `npm run probe -- <url…>` | roda o pipeline do servidor no terminal (captura → normalização → cidade) e imprime um resumo; `TREE=3` mostra a árvore |
-| `npm run shoot -- <url> <prefixo> [cenas…]` | screenshots 1440×900@2x com o Chrome instalado (`puppeteer-core`, sem baixar browser). Cenas: `landing intro entrance aerial street inspect destroy orbit`. Env: `BASE`, `CHROME_PATH`, `OUT`, `Q` |
-| `npm run typecheck` · `npm run lint` · `npm run build` | |
+| `npm run dev` · `build` · `typecheck` · `lint` | |
+| `npm run test:foundation` · `test:art-direction` · `test:polish` | as camadas congeladas, comparadas byte a byte com os kits gravados |
+| `npm run test:allocation` · `hygiene` · `surface` · `openings` · `composition` · `program` · `streets` · `life` · `atmosphere` | cada etapa do pipeline sobre o corpus de páginas reais |
+| `npm run probe -- <url>` | roda captura → normalização no terminal e imprime um resumo |
 
-Na página, `window.__skyline` expõe ganchos de teste: `setView`, `select`, `destroy`,
-`project`, `bench` (tempo de frame síncrono) e `state`.
+## Documentação
 
-## Páginas testadas
-
-| Página | Estrutura | Cidade |
-|---|---|---|
-| en.wikipedia.org/wiki/Brutalist_architecture | 5.668 elementos, profundidade 28, 1.798 links | metrópole densa: galeria de fotos reais, torres azuis, sidebars viram ruas |
-| news.ycombinator.com | 808 elementos, layout em `<table>` | grade regular de plintos com a faixa laranja do `bgcolor` |
-| gov.uk | 374 elementos, HTML semântico | floresta de torres (37 headings), outdoor com o logo GOV.UK |
-| stripe.com | 1.356 elementos, marketing | torres magenta/violeta, dezenas de outdoors com screenshots do produto |
-| bbc.com/news | 1.187 elementos | 57 manchetes em torres vermelhas |
-
-Screenshots em [`docs/screenshots/`](docs/screenshots).
+| documento | |
+|---|---|
+| [PIXEL_FOUNDATION_V1.md](docs/PIXEL_FOUNDATION_V1.md) | base semântica e arquitetural (congelada) |
+| [PIXEL_ART_DIRECTION_V1.md](docs/PIXEL_ART_DIRECTION_V1.md) | ruas, vida de rua e atmosfera (congelada) |
+| [PIXEL_VISUAL_POLISH_V1.md](docs/PIXEL_VISUAL_POLISH_V1.md) | névoa e assets |
+| [PIXEL_PRODUCT_COMMUNICATION.md](docs/PIXEL_PRODUCT_COMMUNICATION.md) | página → cidade na interface |
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | captura, segurança e a maquete original |
 
 ## Limites conhecidos
 
-- **SPAs**: a captura estática vê só o "esqueleto" que o servidor envia. A UI avisa, e
-  `captureRenderedPage` está pronta para receber um worker Playwright (`SKYLINE_RENDERER_URL`).
-- Sites com bot challenge (Cloudflare etc.) ou login são recusados com explicação. Não tentamos
-  burlar esses bloqueios.
-- Rate limit, cache e o segredo de assinatura vivem em memória por processo. Em produção com
-  várias instâncias, defina `SKYLINE_ASSET_SECRET` e use um store compartilhado.
+- **SPAs:** a captura estática vê só o HTML que o servidor envia; `captureRenderedPage` está pronta
+  para um worker com navegador (`SKYLINE_RENDERER_URL`).
+- **Bloqueios:** sites com bot challenge (Cloudflare etc.) ou login são recusados com explicação;
+  não tentamos burlar.
+- **Estado em memória:** rate limit, cache e o segredo de assinatura vivem por processo. Com mais de
+  uma instância, defina `SKYLINE_ASSET_SECRET` e use um store compartilhado.
