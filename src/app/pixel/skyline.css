@@ -1295,3 +1295,13 @@
     bottom: 14px;
   }
 }
+
+/* keep the identity block clear of the controls bar at the foot */
+.sk-identity {
+  bottom: clamp(60px, 9vh, 88px);
+}
+@media (max-width: 640px) {
+  .sk-identity {
+    bottom: 20px;
+  }
+}

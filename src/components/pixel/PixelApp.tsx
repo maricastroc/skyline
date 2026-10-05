@@ -26,7 +26,7 @@ export interface Variants {
 }
 
 const EXAMPLES: Array<[string, string]> = [
-  ["Wikipedia", "https://en.wikipedia.org/wiki/Brutalist_architecture"],
+  ["Apple", "https://www.apple.com"],
   ["Hacker News", "https://news.ycombinator.com"],
   ["Linear", "https://linear.app"],
   ["The Guardian", "https://www.theguardian.com/international"],
