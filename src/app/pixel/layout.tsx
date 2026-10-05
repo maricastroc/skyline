@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Doto, Geist, Geist_Mono, Instrument_Sans, Instrument_Serif, Silkscreen } from "next/font/google";
 import "./pixel.css";
 import "./skyline.css";
+import "./page-map.css";
 
 // Silkscreen: only the frozen round-2 UI (/pixel/v1) still uses it. In the city, signs are
 // drawn with the bitmap font in the sign atlas, not with CSS.

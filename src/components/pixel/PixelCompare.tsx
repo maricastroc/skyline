@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { rgbToCss } from "@/lib/city/palette";
+import { blockName, compWords } from "@/lib/pixelcity/kit-city";
 import { usePixelCity } from "./usePixelCity";
 
 const PixelScene = dynamic(() => import("./PixelScene"), { ssr: false });
@@ -31,7 +32,8 @@ export function PixelCompare({ urls, reveal: initialReveal, azimuth = 45 }: { ur
 }
 
 function Panel({ url, letter, reveal, azimuth }: { url: string; letter: string; reveal: boolean; azimuth: number }) {
-  const { city, error, loading } = usePixelCity(url);
+  const { kit, error, loading } = usePixelCity(url);
+  const city = kit?.city ?? null;
   let host = url;
   try {
     host = new URL(/^https?:/.test(url) ? url : `https://${url}`).hostname.replace(/^www\./, "");
@@ -50,14 +52,17 @@ function Panel({ url, letter, reveal, azimuth }: { url: string; letter: string; 
       {reveal && city && (
         <div className="px-reveal" style={{ "--px-accent": rgbToCss(city.palette.accents[0]) } as React.CSSProperties}>
           <div className="px-chip">
-            <b>{host}</b> {city.grammar.time} · {city.grammar.style} · {city.buildings.length} bldg
+            <b>{host}</b> {city.grammar.time} · {city.grammar.style} · {kit!.structures} bldg
           </div>
           <ol className="px-influences">
-            {city.influences.slice(0, 5).map((f, i) => (
-              <li key={i}>
-                <span className="what">{f.what}</span> <span className="eff">→ {f.effect}</span>
-              </li>
-            ))}
+            {[...kit!.map.blocks]
+              .sort((a, b) => b.lots - a.lots)
+              .slice(0, 5)
+              .map((b) => (
+                <li key={b.t}>
+                  <span className="what">{blockName(b)}</span> <span className="eff">→ {b.lots} lots, {compWords(kit!, b.t)}</span>
+                </li>
+              ))}
           </ol>
         </div>
       )}
