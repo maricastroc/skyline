@@ -300,6 +300,7 @@ function textOf(el: P5Element): string {
     if (n.nodeName === "#text") out += (n as DefaultTreeAdapterMap["textNode"]).value;
     else if (isElement(n)) {
       if (n.tagName === "script" || n.tagName === "template") continue;
+      if (n !== el && (n.tagName === "style" || n.tagName === "noscript")) continue;
       if (/^(br|p|div|li|h[1-6]|section|article|td|th|tr|dt|dd)$/.test(n.tagName)) out += " ";
       for (let i = n.childNodes.length - 1; i >= 0; i--) stack.push(n.childNodes[i]);
     }
