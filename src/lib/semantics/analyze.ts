@@ -61,6 +61,8 @@ export interface AnalyzeOptions {
   explicitFooter?: boolean;
 }
 
+const GENERIC_SLD = /^(com|net|org|gov|edu|mil|int|co|ac|go|or|ne|gob|gouv|nom|ltd|plc|sch|biz|info|art|blog|app|eco|emp|ind|inf|jus|leg|mus|adv|eng|med|tv)$/;
+
 export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions = {}): Semantics {
   const nodes = doc.nodes;
   const imgs = (n: NNode) => (opts.contentMedia ? n.images - (n.incidentalImages ?? 0) : n.images);
@@ -126,7 +128,10 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
   try {
     host = new URL(doc.source.finalUrl).hostname.replace(/^www\./, "");
   } catch {}
-  const hostRoot = host.split(".").slice(-2, -1)[0] ?? host;
+  const labels = host.split(".");
+  // Under a country code, a generic second level (com.br, gov.br, co.uk…) is not the site's name.
+  const generic = labels.length >= 3 && labels[labels.length - 1].length === 2 && GENERIC_SLD.test(labels[labels.length - 2]);
+  const hostRoot = labels[labels.length - (generic ? 3 : 2)] ?? host;
   const siteName = (() => {
     if (doc.document.siteName) return doc.document.siteName;
     const parts = (doc.document.title || "").split(/\s+[|–—\-·:]\s+/).map((s) => s.trim()).filter(Boolean);
