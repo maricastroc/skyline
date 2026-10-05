@@ -163,12 +163,10 @@
   font-size: 22px;
   font-style: italic;
 }
-.sk-wordmark i {
-  width: 9px;
-  height: 9px;
-  background: var(--sk-accent);
-  border-radius: var(--sk-radius);
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25);
+.sk-wordmark .sk-logo {
+  flex: none;
+  margin: -2px -1px 0 -3px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
 }
 .sk-pill {
   display: inline-flex;
@@ -1304,4 +1302,40 @@
   .sk-identity {
     bottom: 20px;
   }
+}
+
+/* invalid address: quiet red edge on the field, a clear two-line message under it */
+.sk-field[data-invalid="1"] {
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255, 140, 120, 0.75),
+    var(--sk-shadow);
+  animation: sk-nudge 320ms ease;
+}
+@keyframes sk-nudge {
+  20% { transform: translateX(-5px); }
+  45% { transform: translateX(4px); }
+  70% { transform: translateX(-2px); }
+}
+.sk-error {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 12px;
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: #ffb4a6;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.7);
+}
+.sk-error svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+}
+.sk-error b {
+  display: block;
+  font-weight: 600;
+}
+.sk-error span {
+  color: rgba(255, 255, 255, 0.78);
 }

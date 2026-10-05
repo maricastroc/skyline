@@ -42,8 +42,13 @@ export async function makePostcard(source: HTMLCanvasElement, o: PostcardOptions
   ctx.fillText(o.host, m, H - m);
   ctx.textAlign = "right";
   ctx.fillText("Skyline", W - m, H - m);
-  ctx.fillStyle = o.accent;
-  ctx.fillRect(W - m - ctx.measureText("Skyline").width - small * 1.1, H - m - small * 0.62, small * 0.5, small * 0.5);
+  const logo = new Image();
+  logo.src = "/logo.svg";
+  try {
+    await logo.decode();
+    const s = small * 1.7;
+    ctx.drawImage(logo, W - m - ctx.measureText("Skyline").width - small * 0.45 - s, H - m - s * 0.78, s, s);
+  } catch {}
 
   return new Promise((resolve) => out.toBlob((b) => resolve(b), "image/png"));
 }

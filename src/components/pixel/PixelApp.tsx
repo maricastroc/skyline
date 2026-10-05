@@ -9,6 +9,7 @@ import { blockName, compWords, type KitCity } from "@/lib/pixelcity/kit-city";
 import { SIDEWALK_H } from "@/lib/pixelcity/kit/street";
 import type { PMBlock } from "@/lib/pixelcity/page-map";
 import { generateVacantWorld, SITE_CENTRE } from "@/lib/pixelcity/vacant";
+import { Logo } from "./Logo";
 import { PageMap, type BlockState } from "./PageMap";
 import type { ViewState } from "./PixelScene";
 import { makePostcard } from "./postcard";
@@ -31,6 +32,14 @@ const EXAMPLES: Array<[string, string]> = [
   ["Linear", "https://linear.app"],
   ["The Guardian", "https://www.theguardian.com/international"],
 ];
+
+/** A quick look at what was typed, before bothering the surveyor. */
+function checkAddress(v: string): { title: string; detail: string; hint: string } | null {
+  if (/\s/.test(v)) return { title: "That doesn't look like a website", detail: "Addresses don't contain spaces.", hint: "Paste a web address, like apple.com" };
+  const host = v.replace(/^[a-z]+:\/\//i, "").split(/[/?#]/)[0].replace(/^www\./i, "");
+  if (!/^[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,}$/i.test(host)) return { title: "That doesn't look like a website", detail: "It needs a domain.", hint: "Try a full address, like apple.com or https://linear.app" };
+  return null;
+}
 
 const CITY_VIEW: ViewState = { azimuth: 45, zoom: 0.9, pan: [0, 0] };
 const HOME_VIEW: Record<HomeKind, ViewState> = {
@@ -135,6 +144,7 @@ export function PixelApp({
   const [flyT, setFlyT] = useState<number | null>(null);
   const [zoomedIn, setZoomedIn] = useState(false);
   const [whyOpen, setWhyOpen] = useState(false);
+  const [localError, setLocalError] = useState<{ title: string; detail: string; hint?: string } | null>(null);
   const [hudHidden, setHudHidden] = useState(false);
   const [saving, setSaving] = useState(false);
   const [atUsed, setAtUsed] = useState(false);
@@ -385,15 +395,34 @@ export function PixelApp({
     }
   };
 
+  const shown = localError ?? error;
   const field = (
     <form
       className="sk-field"
+      data-invalid={shown ? "1" : "0"}
       onSubmit={(e) => {
         e.preventDefault();
-        if (draft.trim()) go(draft.trim());
+        const v = draft.trim();
+        if (!v) return;
+        const bad = checkAddress(v);
+        if (bad) return setLocalError(bad);
+        setLocalError(null);
+        go(v);
       }}
     >
-      <input ref={input} value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="https://" spellCheck={false} autoComplete="off" aria-label="Website address" />
+      <input
+        ref={input}
+        value={draft}
+        onChange={(e) => {
+          setDraft(e.target.value);
+          setLocalError(null);
+        }}
+        placeholder="https://"
+        spellCheck={false}
+        autoComplete="off"
+        aria-label="Website address"
+        aria-invalid={shown ? true : undefined}
+      />
       <button className="sk-primary" type="submit">
         Build <span className="arrow">→</span>
       </button>
@@ -414,9 +443,16 @@ export function PixelApp({
       ))}
     </div>
   );
-  const errorLine = error && (
-    <div className="sk-error">
-      {error.title} — {error.detail}
+  const errorLine = shown && (
+    <div className="sk-error" role="alert">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
+        <circle cx="8" cy="8" r="6.25" />
+        <path d="M8 4.8v3.6M8 10.9v.1" strokeLinecap="round" />
+      </svg>
+      <div>
+        <b>{shown.title}</b>
+        <span>{shown.hint ?? shown.detail}</span>
+      </div>
     </div>
   );
   const pb = blockOf(pinned);
@@ -535,7 +571,7 @@ export function PixelApp({
         <div className="sk-layer" data-on={phase === "home" ? "1" : "0"}>
           <div className="sk-top">
             <span className="sk-wordmark">
-              <i /> Skyline
+              <Logo /> Skyline
             </span>
           </div>
           <div className="sk-homescrim" />
@@ -552,7 +588,7 @@ export function PixelApp({
         <div className="sk-layer" data-on={phase === "home" ? "1" : "0"}>
           <div className="sk-top">
             <span className="sk-wordmark">
-              <i /> Skyline
+              <Logo /> Skyline
             </span>
           </div>
           <div className="sk-plot">
@@ -569,7 +605,7 @@ export function PixelApp({
         {!kit ? <div className="sk-scrim" data-strength="soft" /> : null}
         <div className="sk-top">
           <span className="sk-wordmark">
-            <i /> Skyline
+            <Logo /> Skyline
           </span>
           {kit ? (
             <div className="sk-pill">
@@ -598,7 +634,7 @@ export function PixelApp({
           {cv === "minimal" && !drawerOpen && (!titleOff || pinned !== null) && <div className="sk-scrim" data-strength="soft" />}
           <div className="sk-top">
             <button className="sk-wordmark" onClick={leave} title="Build another site">
-              <i /> Skyline
+              <Logo /> Skyline
             </button>
             <div className="sk-pill">
               <button className={`sk-quiet${cv === "meta" ? "" : " sk-icon"}`} onClick={leave} title="Build another site">
