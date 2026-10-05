@@ -67,10 +67,18 @@ vHighlight = aAnim.w;
 #else
   vScale = vec3(1.0);
 #endif
-// Pop up from the ground with a little overshoot — game-like, not architectural.
+// Pop up from the ground with a little overshoot — game-like, not architectural. The part scales
+// toward the ground (world y), so a piece stacked on another (a crown, a roof) rises with it
+// instead of waiting flattened at its own height.
 float tb = clamp((uTime - aAnim.x) / 0.55, 0.0, 1.0);
-float grow = tb >= 1.0 ? 1.0 : 1.0 + 2.70158 * pow(tb - 1.0, 3.0) + 1.70158 * pow(tb - 1.0, 2.0);
-transformed.y *= max(grow, 0.0005);
+float grow = max(tb >= 1.0 ? 1.0 : 1.0 + 2.70158 * pow(tb - 1.0, 3.0) + 1.70158 * pow(tb - 1.0, 2.0), 0.0005);
+#ifdef USE_INSTANCING
+  transformed.y = transformed.y * grow - instanceMatrix[3].y * (1.0 - grow) / max(length(instanceMatrix[1].xyz), 1e-4);
+#else
+  transformed.y *= grow;
+#endif
+// Not started yet: nothing at all (not even the flattened footprint).
+if (tb <= 0.0) transformed *= 0.0;
 if (aAnim.y >= 0.0) {
   float k = clamp((uTime - aAnim.y) / 0.5, 0.0, 1.0);
   transformed *= 1.0 - k;
