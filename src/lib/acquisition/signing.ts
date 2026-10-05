@@ -1,7 +1,8 @@
+import "server-only";
 import crypto from "node:crypto";
 
-// Signed URLs keep /api/asset from being an open proxy. Set SKYLINE_ASSET_SECRET when running more than one instance.
-const SECRET = process.env.SKYLINE_ASSET_SECRET ?? crypto.randomBytes(32).toString("hex");
+// Signed URLs keep /api/asset from being an open proxy. next.config.ts fixes the secret per build so every instance agrees.
+const SECRET = process.env.SKYLINE_ASSET_SECRET || crypto.randomBytes(32).toString("hex");
 
 export function signAssetUrl(url: string): string {
   return crypto.createHmac("sha256", SECRET).update(url).digest("base64url").slice(0, 22);
