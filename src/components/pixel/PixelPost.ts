@@ -9,7 +9,8 @@ import * as THREE from "three";
  *    stars at night;
  *  - outlines where a neighbour one art pixel away is clearly farther (silhouettes), darkening
  *    toward the ink color, like hand-made sprites;
- *  - the haze that dissolves distant land into the sky, dithered on the same grid.
+ *  - the haze that dissolves distant land into the sky, lying low: far streets go, what rises
+ *    above them stays as a skyline. Dithered on the same grid, between neighbouring levels.
  */
 const FRAG = /* glsl */ `
 uniform vec3 uSkyTop;
@@ -20,8 +21,17 @@ uniform float uEdge;
 uniform float uOutline;
 uniform float uFogNear;
 uniform float uFogFar;
+/** View depth of the ground under the bottom (x) and top (y) screen rows; sin of the camera elevation. */
+uniform vec2 uGround;
+uniform float uSinEl;
 /** Screen pixels per art pixel. */
 uniform float uArt;
+
+// Haze steps (dithered between neighbours), and how it thins with height above the ground:
+// full at street level, down to HAZE_TOP from HAZE_LIFT world units up.
+const float HAZE_LEVELS = 24.0;
+const float HAZE_LIFT = 6.0;
+const float HAZE_TOP = 0.5;
 
 float bayer4(vec2 p) {
   ivec2 i = ivec2(mod(p, 4.0));
@@ -61,12 +71,22 @@ void mainImage(const in vec4 inputColor, const in vec2 uv, const in float depth,
   }
   float edge = step(uEdge, far) * uOutline;
   vec3 c = mix(inputColor.rgb, inputColor.rgb * 0.38 + uInk * 0.22, edge);
-  // Haze: far land dissolves into the sky in 4 dithered steps; fully hazed land *is* sky
-  // (stars included), so the world never shows an edge.
-  float f = smoothstep(uFogNear, uFogFar, -z);
-  float fq = clamp(floor(f * 4.0 + bayer4(px + 2.0)) / 4.0, 0.0, 1.0);
-  c = mix(c, sky(uv, px), fq) + stars(uv, px) * step(0.999, fq);
-  outputColor = vec4(c, inputColor.a);
+  // Haze, lying low: far land dissolves into the air, but it thins with height above the ground
+  // under it (from this depth and the ground's depth on this row), so distant streets go while
+  // roofs, towers and landmarks rise out of it. The amount steps through fine levels dithered
+  // between neighbours — never land against sky — and mixes in a perceptual space, so shadows
+  // fade as evenly as sunlit walls. Fully hazed land *is* sky (stars included), so the world
+  // never shows an edge.
+  float h = max(0.0, (mix(uGround.x, uGround.y, uv.y) + z) * uSinEl);
+  float f = smoothstep(uFogNear, uFogFar, -z) * mix(1.0, HAZE_TOP, smoothstep(0.2, HAZE_LIFT, h));
+  float q = clamp(floor(f * HAZE_LEVELS + bayer4(px + 2.0)) / HAZE_LEVELS, 0.0, 1.0);
+  if (q >= 0.999) {
+    outputColor = vec4(sky(uv, px) + stars(uv, px), inputColor.a);
+    return;
+  }
+  vec3 air = mix(uSkyBottom, uSkyTop, clamp(uv.y * 1.1 - 0.05, 0.0, 1.0));
+  vec3 g = mix(sqrt(max(c, 0.0)), sqrt(air), q);
+  outputColor = vec4(g * g, inputColor.a);
 }
 `;
 
@@ -84,6 +104,8 @@ export class PixelPostEffect extends Effect {
         ["uOutline", new THREE.Uniform(1)],
         ["uFogNear", new THREE.Uniform(1e6)],
         ["uFogFar", new THREE.Uniform(1e6 + 1)],
+        ["uGround", new THREE.Uniform(new THREE.Vector2(0, 0))],
+        ["uSinEl", new THREE.Uniform(1)],
         ["uArt", new THREE.Uniform(1)],
       ]),
     });

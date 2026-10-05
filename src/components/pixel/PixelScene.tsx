@@ -299,7 +299,7 @@ function Stage({ city, view, interactive = true, mode = "city", focus = null, hi
   const active = stack[stack.length - 1];
   const outgoing = stack.length > 1 ? stack[0] : null;
   const meshesRef = useRef<THREE.InstancedMesh[]>([]);
-  const fog = useMemo<Fog>(() => ({ near: 1e6, far: 1e6 + 1 }), []);
+  const fog = useMemo<Fog>(() => ({ near: 1e6, far: 1e6 + 1, ground: [0, 0], sinEl: 1 }), []);
   const onMeshes = useCallback((m: THREE.InstancedMesh[]) => {
     meshesRef.current = m;
   }, []);
@@ -595,6 +595,8 @@ function Post({ to, from, reveal, fog, scales }: { to: PixelCity; from: PixelCit
     u.get("uStars")!.value = (k > 0.5 ? B : A).sky.stars ? 1 : 0;
     u.get("uFogNear")!.value = fog.near;
     u.get("uFogFar")!.value = fog.far;
+    (u.get("uGround")!.value as THREE.Vector2).set(fog.ground[0], fog.ground[1]);
+    u.get("uSinEl")!.value = fog.sinEl;
     const night = B.time !== "day";
     bloom.luminanceMaterial.threshold = night ? 0.75 : 0.95;
     bloom.intensity = night ? 0.9 : 0.25;
@@ -624,6 +626,10 @@ const ZOOM = {
 export interface Fog {
   near: number;
   far: number;
+  /** View depth of the ground under the bottom and top screen rows: the haze thins with height above it. */
+  ground: [number, number];
+  /** Sine of the camera elevation (depth below the ground's → height above it). */
+  sinEl: number;
 }
 
 type Tween = { t: number; dur: number; z0: number; z1: number; p0: THREE.Vector2; p1: THREE.Vector2 | null; a0: number; a1: number };
@@ -864,8 +870,8 @@ function Rig({
     cam.updateMatrixWorld();
 
     // Haze, anchored to the frame: in City View the top band of land dissolves into the sky
-    // (a horizon an orthographic camera can't otherwise have); tall buildings, being nearer,
-    // stand crisp against it. It lifts as the camera comes down into the streets.
+    // (a horizon an orthographic camera can't otherwise have). It lies low: what rises above the
+    // ground stands out of it as a skyline. It lifts as the camera comes down into the streets.
     if (world) {
       s.haze += ((s.mode === "city" ? 1 : 0) - s.haze) * (1 - Math.exp(-dt * 2.5));
       const viewH = size.height / cam.zoom;
@@ -874,6 +880,9 @@ function Rig({
       const [hn, hf] = city.atmosphere?.haze ?? [0.64, 0.97];
       fog.near = groundDepth(1.6 + (hn - 1.6) * s.haze);
       fog.far = groundDepth(2.1 + (hf - 2.1) * s.haze);
+      fog.ground[0] = groundDepth(0);
+      fog.ground[1] = groundDepth(1);
+      fog.sinEl = Math.sin(el);
     } else {
       fog.near = 1e6;
       fog.far = 1e6 + 1;
