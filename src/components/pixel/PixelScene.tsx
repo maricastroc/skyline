@@ -22,6 +22,7 @@ import {
   type PixelUniforms,
 } from "./materials";
 import { PixelPostEffect } from "./PixelPost";
+import { paintSigns } from "./sign-paint";
 
 const srgb = (c: RGB) => new THREE.Color().setRGB(c[0], c[1], c[2], THREE.SRGBColorSpace);
 const BILLBOARD_PAPER: RGB = [0.2, 0.2, 0.22];
@@ -188,84 +189,12 @@ function useSignAtlas(city: PixelCity): THREE.CanvasTexture {
     const c = document.createElement("canvas");
     c.width = city.signAtlas.w;
     c.height = city.signAtlas.h;
-    const g = c.getContext("2d")!;
-    const css = (rgb: RGB) => `rgb(${rgb.map((v) => Math.round(v * 255)).join(",")})`;
-    const paint = () => {
-    for (const s of city.signs) {
-      g.fillStyle = css(s.bg);
-      g.fillRect(s.x, s.y, s.w, s.h);
-      g.fillStyle = css(s.bg.map((v) => v * 0.55) as RGB);
-      g.fillRect(s.x, s.y, s.w, 1);
-      g.fillRect(s.x, s.y + s.h - 1, s.w, 1);
-      g.fillRect(s.x, s.y, 1, s.h);
-      g.fillRect(s.x + s.w - 1, s.y, 1, s.h);
-      g.fillStyle = css(s.fg);
-      const dot = (x: number, y: number) => g.fillRect(x, y, 1, 1);
-      if (s.font === "sans") {
-        const [head, ...rest] = s.text.split("\n");
-        const family = "'Helvetica Neue', Helvetica, Arial, sans-serif";
-        const fit = (text: string, weight: number, size: number, track: number) => {
-          let px = size;
-          for (;;) {
-            g.font = `${weight} ${px}px ${family}`;
-            g.letterSpacing = `${(px * track).toFixed(1)}px`;
-            if (g.measureText(text).width <= s.w * 0.84 || px <= 6) return px;
-            px -= 1;
-          }
-        };
-        g.textAlign = "center";
-        g.textBaseline = "alphabetic";
-        const cx = s.x + s.w / 2;
-        const big = fit(head, 800, Math.round(s.h * 0.42), 0.02);
-        const headY = s.y + s.h * (rest.length ? 0.5 : 0.66);
-        g.fillText(head, cx, headY);
-        if (rest.length) {
-          if (s.accent) {
-            g.fillStyle = css(s.accent);
-            g.fillRect(cx - s.w * 0.36, Math.round(headY + big * 0.2), Math.round(s.w * 0.72), Math.max(2, Math.round(s.h * 0.035)));
-            g.fillStyle = css(s.fg);
-          }
-          const small = fit(rest[0], 700, Math.round(s.h * 0.15), 0.16);
-          g.fillText(rest.join(" "), cx, Math.round(headY + big * 0.2 + small * 1.75));
-        }
-        g.letterSpacing = "0px";
-        continue;
-      }
-      const doto = "var(--font-doto), Doto, monospace";
-      g.fillStyle = css(s.fg);
-      g.textAlign = "center";
-      g.textBaseline = "middle";
-      g.letterSpacing = "0px";
-      const cx = s.x + s.w / 2;
-      if (s.text.startsWith("|")) {
-        const t = s.text.slice(1);
-        const step = Math.min(s.w - 2, (s.h - 2) / t.length);
-        g.font = `900 ${Math.max(5, Math.floor(step * 0.95))}px ${doto}`;
-        for (let i = 0; i < t.length; i++) g.fillText(t[i], cx, s.y + 1 + step * (i + 0.5));
-      } else {
-        const lines = s.text.split("\n");
-        const lh = (s.h - 2) / lines.length;
-        let px = Math.max(5, Math.floor(lh * 0.9));
-        const longest = lines.reduce((a, b) => (b.length > a.length ? b : a), "");
-        for (;;) {
-          g.font = `900 ${px}px ${doto}`;
-          if (g.measureText(longest).width <= s.w - 4 || px <= 5) break;
-          px -= 1;
-        }
-        lines.forEach((line, li) => g.fillText(line, cx, s.y + 1 + lh * (li + 0.5)));
-      }
-    }
-    };
-    paint();
+    paintSigns(c.getContext("2d")!, city.signs);
     const t = new THREE.CanvasTexture(c);
     t.colorSpace = THREE.SRGBColorSpace;
     t.minFilter = THREE.NearestFilter;
     t.magFilter = THREE.NearestFilter;
     t.generateMipmaps = false;
-    document.fonts?.load("900 16px Doto").then(() => {
-      paint();
-      t.needsUpdate = true;
-    });
     return t;
   }, [city]);
 }
