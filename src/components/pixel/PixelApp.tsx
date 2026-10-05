@@ -622,9 +622,6 @@ export function PixelApp({
             panel("why")
           ) : (
             <>
-              <button className="sk-thumbhit" style={{ width: Math.round(MAP_W * thumbScale) + 12, height: Math.round(mapH * thumbScale) + 30 }} onClick={() => openWhy(true)} title="Why this city?" aria-label="Why this city? Show the page">
-                <span>the page</span>
-              </button>
               {cv === "meta" && (
                 <div className="sk-identity sk-aside" data-cv="meta" data-off={titleOff ? "1" : "0"}>
                   <h1 className="sk-name sk-display">{name}</h1>
@@ -655,8 +652,7 @@ export function PixelApp({
           ref={stage}
           className="sk-mapwrap"
           data-place={place}
-          style={{ transform: `translate(${at.x}px, ${at.y}px) scale(${at.s})`, opacity: place === "hidden" || (drawerOpen && !building) ? 0 : 1, pointerEvents: drawerOpen && !building ? "none" : undefined }}
-          onClick={place === "thumb" ? () => openWhy(true) : undefined}
+          style={{ transform: `translate(${at.x}px, ${at.y}px) scale(${at.s})`, opacity: place === "hidden" || place === "thumb" || (drawerOpen && !building) ? 0 : 1, pointerEvents: place === "thumb" || (drawerOpen && !building) ? "none" : undefined }}
         >
           <PageMap data={kit.map} width={MAP_W} height={mapH} stateOf={stateOf} onHover={drawerOpen ? onMapHover : undefined} tagOf={tagOf} className="sk-pagemap" />
         </div>
@@ -718,24 +714,35 @@ const IconSave = () => (
 );
 function FromThePage({ kit, b, t, onClose }: { kit: KitCity; b: PMBlock; t: number; onClose: () => void }) {
   const lots = kit.lots[t] ?? 0;
+  const crop = useRef<HTMLDivElement>(null);
+  const [shift, setShift] = useState(0);
+  const CROP_H = 168;
+  useLayoutEffect(() => {
+    const el = crop.current?.querySelector<HTMLElement>(`[data-pm-t="${t}"]`);
+    if (!el) return;
+    // Centre the originating block in the window, with a little of what surrounds it.
+    const mid = el.offsetTop + Math.min(el.offsetHeight, CROP_H) / 2;
+    setShift(Math.max(0, mid - CROP_H / 2 - (el.offsetHeight < CROP_H ? 0 : 0)));
+  }, [t, kit]);
+  const site = [kit.map.siteName, kit.map.title.split(/\s[|–—-]\s/)[0]].filter((x, i, a) => x && a.indexOf(x) === i).join(" · ");
   return (
-    <aside className="sk-inspect sk-from">
-      <header>
-        <span className="k sk-label">From the page</span>
-        <span className="kind sk-label">{b.kind === "remainder" ? "content" : b.kind}</span>
-        <button onClick={onClose} aria-label="Close">
-          ×
-        </button>
-      </header>
-      <div className="quote">{blockName(b)}</div>
-      <div className="meta">
+    <aside className="sk-from">
+      <button className="x" onClick={onClose} aria-label="Close">
+        ×
+      </button>
+      <div className="eyebrow">From the page</div>
+      <h2>{blockName(b)}</h2>
+      <div className="site">{site}</div>
+      <div className="stats">
         {b.count > 1 ? `${b.count} items · ` : ""}
-        {pageShare(b.weight)} of the page → {lots}/256 lots
-        <br />
-        {compWords(kit, t)}
+        {pageShare(b.weight)} of page · {lots} lots
       </div>
-      {lots >= 128 ? <div className="note">Most of the page is this part, so most of the city is too.</div> : null}
-      <PageMap data={kit.map} width={272} height={300} stateOf={(x) => (x === t ? "active" : "dim")} className="sk-minimap" />
+      <div className="into">{compWords(kit, t)}</div>
+      <div className="crop" ref={crop} style={{ height: CROP_H }}>
+        <div style={{ transform: `translateY(${-shift}px)` }}>
+          <PageMap data={kit.map} width={300} height={1700} stateOf={(x) => (x === t ? "active" : "idle")} className="sk-minimap" />
+        </div>
+      </div>
     </aside>
   );
 }

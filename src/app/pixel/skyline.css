@@ -1140,3 +1140,158 @@
   background: rgba(255, 255, 255, 0.48);
   background-clip: padding-box;
 }
+
+/* legibility over the busy scene: the hint sits on a dark pill, the meta line reads brighter */
+.sk-hint {
+  padding: 6px 12px;
+  background: rgba(13, 13, 18, 0.72);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: inset 0 0 0 1px var(--sk-hair);
+  color: rgba(255, 255, 255, 0.78);
+  text-shadow: none;
+}
+.sk-aside .sk-host,
+.sk-aside .sk-meta,
+.sk-aside .sk-meta b {
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85), 0 0 12px rgba(0, 0, 0, 0.6);
+}
+
+/* ── narrow screens ── */
+.sk-quiet {
+  white-space: nowrap;
+}
+@media (max-width: 640px) {
+  .sk-top {
+    top: 12px;
+    left: 14px;
+    right: 14px;
+    gap: 10px;
+  }
+  .sk-wordmark {
+    flex-shrink: 0;
+    font-size: 15px;
+  }
+  /* icon-only actions, never wrapping */
+  .sk-quiet {
+    width: 32px;
+    padding: 0;
+    justify-content: center;
+    font-size: 0;
+    gap: 0;
+  }
+  .sk-quiet svg {
+    width: 16px;
+    height: 16px;
+  }
+  .sk-hint {
+    display: none;
+  }
+  .sk-identity {
+    left: 16px;
+    right: 16px;
+    max-width: none;
+    bottom: 20px;
+  }
+  .sk-name {
+    font-size: clamp(30px, 9vw, 40px);
+  }
+  .sk-host,
+  .sk-meta {
+    max-width: 100%;
+  }
+  .sk-meta {
+    font-size: 10.5px;
+  }
+  .sk-drawer {
+    left: 12px;
+    top: 60px;
+    max-height: calc(100% - 72px);
+  }
+  .sk-anchorchip {
+    max-width: calc(100vw - 24px);
+  }
+}
+
+/* ── from the page: a compact editorial card ── */
+.sk-from {
+  position: absolute;
+  left: 24px;
+  bottom: 28px;
+  width: min(300px, calc(100vw - 48px));
+  padding: 4px 0 0;
+  color: var(--sk-fg);
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.55);
+  animation: sk-in 260ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.sk-from::before {
+  content: "";
+  position: absolute;
+  inset: -90px -140px -60px -80px;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(closest-side at 40% 55%, rgba(6, 8, 18, 0.72), rgba(6, 8, 18, 0.4) 60%, transparent);
+}
+.sk-from .x {
+  position: absolute;
+  right: 0;
+  top: 0;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--sk-fg-3);
+}
+.sk-from .x:hover {
+  color: var(--sk-fg);
+}
+.sk-from .eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sk-fg-2);
+}
+.sk-from h2 {
+  margin: 6px 0 2px;
+  font-family: var(--sk-text);
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+.sk-from .site {
+  font-size: 13px;
+  color: var(--sk-fg-2);
+}
+.sk-from .stats {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--sk-fg);
+}
+.sk-from .into {
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--sk-fg-2);
+}
+.sk-from .into::first-letter {
+  text-transform: uppercase;
+}
+.sk-from .crop {
+  margin-top: 14px;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  -webkit-mask-image: linear-gradient(transparent, #000 14%, #000 86%, transparent);
+  mask-image: linear-gradient(transparent, #000 14%, #000 86%, transparent);
+}
+.sk-from .crop .pm {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+@media (max-width: 640px) {
+  .sk-from {
+    left: 16px;
+    bottom: 14px;
+  }
+}
