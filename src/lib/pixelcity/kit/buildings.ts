@@ -245,9 +245,44 @@ function bladeSign(kit: Kit, u: number, y: number, text: string, bg: RGB) {
 
 /** A façade screen or billboard panel on a face (media). */
 function screen(kit: Kit, u0: number, u1: number, y0: number, y1: number, text: string | undefined, accent: RGB) {
-  kit.span(u0 - 0.05, u1 + 0.05, y0 - 0.05, y1 + 0.05, 0, 0.06, [0.12, 0.12, 0.14]);
-  kit.glow((u0 + u1) / 2, y0, 0.065, u1 - u0, y1 - y0, 0.01, mix(accent, white, 0.15), kit.night ? 1.25 : 0.7);
-  if (text) kit.sign(text, (u0 + u1) / 2, y0 + (y1 - y0) * 0.35, 0.075, { bg: darkOf(accent, 0.2), texel: Math.min(0.07, (y1 - y0) / 14), maxW: u1 - u0 - 0.2 });
+  const a0 = kit.parts.length;
+  if (kit.polishAssets) billboard(kit, u0, u1, y0, y1, text, accent);
+  else {
+    kit.span(u0 - 0.05, u1 + 0.05, y0 - 0.05, y1 + 0.05, 0, 0.06, [0.12, 0.12, 0.14]);
+    kit.glow((u0 + u1) / 2, y0, 0.065, u1 - u0, y1 - y0, 0.01, mix(accent, white, 0.15), kit.night ? 1.25 : 0.7);
+    if (text) kit.sign(text, (u0 + u1) / 2, y0 + (y1 - y0) * 0.35, 0.075, { bg: darkOf(accent, 0.2), texel: Math.min(0.07, (y1 - y0) / 14), maxW: u1 - u0 - 0.2 });
+  }
+  kit.assets?.push({ asset: "screen", range: [a0, kit.parts.length] });
+}
+
+/**
+ * The façade billboard as an object: a deep metal frame round the panel, a service catwalk with a
+ * rail below it and floodlights on the catwalk that wash the panel upward at night (lamps below,
+ * so their shadows fall off the panel). The panel is emissive — a lit box in a grazing sun shows
+ * the renderer's shadow dither. What it shows is the page's: its text when there is one (same
+ * sign, same size), otherwise the plain accent panel, a little dimmer. Nothing is invented.
+ */
+function billboard(kit: Kit, u0: number, u1: number, y0: number, y1: number, text: string | undefined, accent: RGB) {
+  const W = u1 - u0;
+  const H = y1 - y0;
+  const frame: RGB = [0.34, 0.35, 0.38];
+  const metal: RGB = [0.22, 0.23, 0.25];
+  const panel = text ? mix(accent, white, 0.15) : mix(accent, white, 0.22);
+  kit.span(u0, u1, y0, y1, 0, 0.09, frame);
+  kit.glow((u0 + u1) / 2, y0, 0.095, W, H, 0.01, panel, text ? (kit.night ? 1.25 : 0.7) : kit.night ? 0.5 : 0.45);
+  if (text) kit.sign(text, (u0 + u1) / 2, y0 + H * 0.35, 0.105, { bg: darkOf(accent, 0.2), texel: Math.min(0.07, H / 14), maxW: W - 0.2 });
+  kit.span(u0 - 0.07, u1 + 0.07, y1, y1 + 0.07, 0, 0.17, frame);
+  kit.span(u0 - 0.07, u1 + 0.07, y0 - 0.07, y0, 0, 0.17, frame);
+  kit.span(u0 - 0.07, u0, y0, y1, 0, 0.17, frame);
+  kit.span(u1, u1 + 0.07, y0, y1, 0, 0.17, frame);
+  kit.span(u0 - 0.15, u1 + 0.15, y0 - 0.16, y0 - 0.12, 0, 0.34, metal);
+  kit.span(u0 - 0.15, u1 + 0.15, y0 - 0.12, y0 + 0.08, 0.32, 0.34, [0.2, 0.2, 0.22], Surf.RAIL);
+  for (const f of [0.18, 0.5, 0.82]) {
+    const u = u0 + W * f;
+    kit.box(u, y0 - 0.12, 0.26, 0.1, 0.06, 0.07, metal);
+    kit.glow(u, y0 - 0.06, 0.25, 0.08, 0.012, 0.05, kit.palette.lamp, kit.night ? 2 : 0.2);
+  }
+  if (kit.night) kit.glow((u0 + u1) / 2, y0, 0.102, W, H * 0.32, 0.002, mix(panel, kit.palette.lamp, 0.35), 0.9);
 }
 
 /* ───────────────────────── rooftops ───────────────────────── */
@@ -403,6 +438,25 @@ function groundFace(kit: Kit, span: number, g: number, P: Program, A: Anatomy, l
   }
 }
 
+/**
+ * Rooftop condensers: light galvanised cabinets on a pad no bigger than they are, a darker louvre
+ * on both long faces (one of them always faces the camera) and one or two fans flush on top, so
+ * the plant reads as plant at City scale and from any side. Same units, in the same places.
+ */
+function condensers(kit: Kit, cx0: number, cw: number, cz: number, y: number, n: number, steel: RGB) {
+  const galv = mix(steel, white, 0.5);
+  const uw = Math.min(0.62, cw / n - 0.12);
+  const xs = Array.from({ length: n }, (_, i) => cx0 + (cw * (i + 0.5)) / n);
+  kit.span(xs[0] - uw / 2 - 0.04, xs[n - 1] + uw / 2 + 0.04, y, y + 0.04, cz - 0.28, cz + 0.28, mix(steel, white, 0.3));
+  for (const x of xs) {
+    kit.box(x, y + 0.04, cz, uw, 0.32, 0.48, galv);
+    for (const s of [-1, 1]) kit.span(x - uw / 2 + 0.04, x + uw / 2 - 0.04, y + 0.08, y + 0.3, cz + s * 0.24, cz + s * 0.255, darkOf(galv, 0.3));
+    const fans = uw >= 0.5 ? 2 : 1;
+    const fd = Math.min(0.3, uw / fans - 0.07);
+    for (let f = 0; f < fans; f++) kit.cyl(x - uw / 2 + (uw * (f + 0.5)) / fans, y + 0.36, cz, fd, 0.02, fd, darkOf(steel, 0.5));
+  }
+}
+
 /** Roof zones: SERVICE (one grouped cluster at the back), OCCUPIED (front strip). EDGE is the volume's. */
 export function roofZones(kit: Kit, x0: number, x1: number, z0: number, z1: number, y: number, P: Program, A: Anatomy) {
   const w = x1 - x0;
@@ -447,12 +501,17 @@ export function roofZones(kit: Kit, x0: number, x1: number, z0: number, z1: numb
       // Unit count follows the roof area; one fewer is an equivalent installation.
       const n0 = Math.max(1, Math.min(3, Math.round((w * d) / 7)));
       const n = n0 > 1 && kit.rand(P.seed, 302) < 0.4 ? n0 - 1 : n0;
-      kit.box(cx0 + cw / 2, y, cz, cw, 0.05, 0.75, darkOf(steel, 0.25));
-      for (let i = 0; i < n; i++) {
-        const x = cx0 + (cw * (i + 0.5)) / n;
-        kit.box(x, y + 0.05, cz, Math.min(0.62, cw / n - 0.12), 0.3, 0.5, steel, Surf.GRILLE);
+      const a0 = kit.parts.length;
+      if (kit.polishAssets) condensers(kit, cx0, cw, cz, y, n, steel);
+      else {
+        kit.box(cx0 + cw / 2, y, cz, cw, 0.05, 0.75, darkOf(steel, 0.25));
+        for (let i = 0; i < n; i++) {
+          const x = cx0 + (cw * (i + 0.5)) / n;
+          kit.box(x, y + 0.05, cz, Math.min(0.62, cw / n - 0.12), 0.3, 0.5, steel, Surf.GRILLE);
+        }
+        kit.box(cx0 + cw / 2, y + 0.42, cz - 0.3, cw - 0.1, 0.08, 0.08, steel);
       }
-      kit.box(cx0 + cw / 2, y + 0.42, cz - 0.3, cw - 0.1, 0.08, 0.08, steel);
+      kit.assets?.push({ asset: "hvac", range: [a0, kit.parts.length] });
       if (w > 3.2) bulkhead(left ? x1 - 0.6 : x0 + 0.6);
       break;
     }

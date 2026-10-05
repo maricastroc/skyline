@@ -119,6 +119,11 @@ export interface KitOptions {
    * day (kit-v11). The layers switch off in order: no C3 means no C4, no art direction means none.
    */
   atmosphere?: boolean;
+  /**
+   * Visual polish (default on): how rooftop plant and façade screens are drawn. Off: kit-v12's
+   * drawing, byte for byte. It changes no decision: where, how many and why they appear.
+   */
+  polishAssets?: boolean;
   /** Validation: filled with every allocation and building decision (no effect on the output). */
   trace?: KitTrace;
 }
@@ -165,6 +170,8 @@ export interface KitTrace {
   life?: StreetLife;
   /** Art direction, C4: the page's environment (air, tint, light) and why (sky, haze, light only). */
   environment?: Environment;
+  /** Visual polish: the part range of every rooftop plant and façade screen, in build order. */
+  assets?: Array<{ asset: "hvac" | "screen"; range: [number, number] }>;
 }
 
 export const newTrace = (): KitTrace => ({ pieces: [], buildings: [], landmark: null, frontage: [], range: [0, 0] });
@@ -231,6 +238,8 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
   // Page signals the surface grammar may spend (unused at territory, composition and massing).
   kit.surface = { regularity: fp.regularity, headings: fp.headings, interactivity: fp.interactivity, linkDensity: fp.linkDensity };
   const trace = o.trace ?? (o.provenance ? newTrace() : undefined);
+  kit.polishAssets = o.polishAssets !== false;
+  if (trace) kit.assets = trace.assets = [];
 
   const grid: Grid = { lines: LINES, road: R, side: S, block: B, ext: 14 };
   const ground: Part[] = [{ mesh: "box", node: -1, x: 0, y: -0.3, z: 0, w: 3000, h: 0.3, d: 3000, rotY: 0, color: palette.sidewalk.map((v) => v * 0.9) as RGB, surf: Surf.PAVING, lit: 0, delay: 0 }];

@@ -35,6 +35,10 @@ export class Kit {
   /** Test instrumentation (off unless set): the anatomy zone of every part, aligned with `parts`. */
   zones?: Array<string | null>;
   zone: string | null = null;
+  /** Visual polish: the redrawn rooftop plant and façade screens (off: kit-v12's drawing, byte for byte). */
+  polishAssets = true;
+  /** Test instrumentation (off unless set): the part range each polished asset drew, in build order. */
+  assets?: Array<{ asset: "hvac" | "screen"; range: [number, number] }>;
   private shelf = { x: 1, y: 1, h: 0 };
   private f = { x: 0, y: 0, z: 0, r: 0 };
 
