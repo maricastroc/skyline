@@ -1,0 +1,163 @@
+diff --git a/src/lib/pixelcity/kit/buildings.ts b/src/lib/pixelcity/kit/buildings.ts
+index 4badba8..2469c44 100644
+--- a/src/lib/pixelcity/kit/buildings.ts
++++ b/src/lib/pixelcity/kit/buildings.ts
+@@ -243,8 +243,83 @@ function bladeSign(kit: Kit, u: number, y: number, text: string, bg: RGB) {
+   kit.sign(t, u, y, 0.3, { bg, texel, rotY: Math.PI / 2, vertical: true });
+ }
+ 
++// STUDY (polish round 2, temporary — not for commit): ?hvacStudy=a|b|c · ?screenStudy=a|b|c.
++const study = (k: string) => (typeof window === "undefined" ? "" : (new URLSearchParams(window.location.search).get(k) ?? ""));
++const HVAC_STUDY = study("hvacStudy");
++const SCREEN_STUDY = study("screenStudy");
++
++/** STUDY: the blank state of a façade screen (no text from the page), three treatments. */
++function blankScreenStudy(kit: Kit, u0: number, u1: number, y0: number, y1: number, accent: RGB) {
++  const W = u1 - u0;
++  const H = y1 - y0;
++  const metal: RGB = [0.22, 0.23, 0.25];
++  if (SCREEN_STUDY === "a") {
++    // A · display off: a graphite bezel, dark glass with a hint of the brand colour, and a
++    // stepped pixel-art reflection; a tiny standby light at night.
++    const glass = mix([0.07, 0.09, 0.13], accent, 0.14);
++    kit.span(u0 - 0.08, u1 + 0.08, y0 - 0.08, y1 + 0.08, 0, 0.09, metal);
++    kit.span(u0, u1, y0, y1, 0.09, 0.1, glass);
++    const shine = mix(glass, kit.palette.sky.top, 0.42);
++    const steps = 5;
++    for (let i = 0; i < steps; i++) {
++      const a = u0 + W * (0.12 + i * 0.075);
++      const b = a + W * 0.17;
++      const ya = y0 + (H * i) / steps;
++      // Night: the reflection catches the street's light faintly, so the glass reads, not a hole.
++      if (kit.night) {
++        kit.glow(a + W * 0.06, ya, 0.103, W * 0.12, H / steps, 0.004, shine, 0.35);
++        kit.glow(b + W * 0.0175, ya, 0.103, W * 0.035, H / steps, 0.004, shine, 0.2);
++      } else {
++        kit.span(a, a + W * 0.12, ya, ya + H / steps, 0.1, 0.105, shine);
++        kit.span(b, b + W * 0.035, ya, ya + H / steps, 0.1, 0.105, mix(glass, shine, 0.6));
++      }
++    }
++    if (kit.night) kit.glow(u1 + 0.02, y0 - 0.06, 0.095, 0.03, 0.03, 0.01, accent, 1.6);
++    return;
++  }
++  if (SCREEN_STUDY === "b") {
++    // B · modular LED wall: cabinets on a dark frame, the page's accent in rows lightening
++    // upward (fixed, not random).
++    kit.span(u0 - 0.05, u1 + 0.05, y0 - 0.05, y1 + 0.05, 0, 0.08, [0.1, 0.1, 0.12]);
++    const cols = Math.max(3, Math.round(W / 0.34));
++    const rows = Math.max(2, Math.round(H / 0.34));
++    const gap = 0.025;
++    for (let r = 0; r < rows; r++) {
++      const t = rows === 1 ? 0.5 : r / (rows - 1);
++      const c = mix(darkOf(accent, 0.22), mix(accent, white, 0.3), t);
++      for (let k = 0; k < cols; k++) {
++        const a = u0 + (W * k) / cols + gap / 2;
++        const yb = y0 + (H * r) / rows + gap / 2;
++        kit.glow(a + (W / cols - gap) / 2, yb, 0.085, W / cols - gap, H / rows - gap, 0.01, c, kit.night ? 1.25 : 0.7);
++      }
++    }
++    return;
++  }
++  // C · outdoor structure: a deep frame around a panel in the page's accent, a service catwalk
++  // with a rail below and three floodlights on it washing the panel upward (lamps below: their
++  // shadows fall off the panel). The panel stays emissive: a lit box in a grazing sun shows the
++  // renderer's shadow dither.
++  const panel = mix(accent, white, 0.22);
++  const frame: RGB = [0.34, 0.35, 0.38];
++  kit.span(u0, u1, y0, y1, 0, 0.09, frame);
++  kit.glow((u0 + u1) / 2, y0, 0.095, W, H, 0.01, panel, kit.night ? 0.5 : 0.45);
++  kit.span(u0 - 0.07, u1 + 0.07, y1, y1 + 0.07, 0, 0.17, frame);
++  kit.span(u0 - 0.07, u1 + 0.07, y0 - 0.07, y0, 0, 0.17, frame);
++  kit.span(u0 - 0.07, u0, y0, y1, 0, 0.17, frame);
++  kit.span(u1, u1 + 0.07, y0, y1, 0, 0.17, frame);
++  kit.span(u0 - 0.15, u1 + 0.15, y0 - 0.16, y0 - 0.12, 0, 0.34, metal);
++  kit.span(u0 - 0.15, u1 + 0.15, y0 - 0.12, y0 + 0.08, 0.32, 0.34, [0.2, 0.2, 0.22], Surf.RAIL);
++  for (const f of [0.18, 0.5, 0.82]) {
++    const u = u0 + W * f;
++    kit.box(u, y0 - 0.12, 0.26, 0.1, 0.06, 0.07, metal);
++    kit.glow(u, y0 - 0.06, 0.25, 0.08, 0.012, 0.05, kit.palette.lamp, kit.night ? 2 : 0.2);
++  }
++  if (kit.night) kit.glow((u0 + u1) / 2, y0, 0.103, W, H * 0.32, 0.005, mix(panel, kit.palette.lamp, 0.35), 0.9);
++}
++
+ /** A façade screen or billboard panel on a face (media). */
+ function screen(kit: Kit, u0: number, u1: number, y0: number, y1: number, text: string | undefined, accent: RGB) {
++  if (!text && SCREEN_STUDY) return blankScreenStudy(kit, u0, u1, y0, y1, accent);
+   kit.span(u0 - 0.05, u1 + 0.05, y0 - 0.05, y1 + 0.05, 0, 0.06, [0.12, 0.12, 0.14]);
+   kit.glow((u0 + u1) / 2, y0, 0.065, u1 - u0, y1 - y0, 0.01, mix(accent, white, 0.15), kit.night ? 1.25 : 0.7);
+   if (text) kit.sign(text, (u0 + u1) / 2, y0 + (y1 - y0) * 0.35, 0.075, { bg: darkOf(accent, 0.2), texel: Math.min(0.07, (y1 - y0) / 14), maxW: u1 - u0 - 0.2 });
+@@ -403,6 +478,62 @@ function groundFace(kit: Kit, span: number, g: number, P: Program, A: Anatomy, l
+   }
+ }
+ 
++/**
++ * STUDY: the rooftop HVAC cluster, three treatments. Same pad position and width, same unit
++ * count; none has the floating duct.
++ */
++function hvacStudy(kit: Kit, cx0: number, cw: number, cz: number, y: number, n: number, steel: RGB, P: Program) {
++  const galv = mix(steel, white, 0.5);
++  const dark = darkOf(steel, 0.5);
++  const uw = Math.min(0.62, cw / n - 0.12);
++  const xs = Array.from({ length: n }, (_, i) => cx0 + (cw * (i + 0.5)) / n);
++  if (HVAC_STUDY === "a") {
++    // A · packaged condensers: light cabinets on a light pad, a darker louvre panel on the
++    // street side, one or two fans flush on top.
++    kit.box(cx0 + cw / 2, y, cz, cw - 0.06, 0.04, 0.62, mix(steel, white, 0.3));
++    for (const x of xs) {
++      kit.box(x, y + 0.04, cz, uw, 0.32, 0.48, galv);
++      kit.span(x - uw / 2 + 0.04, x + uw / 2 - 0.04, y + 0.08, y + 0.3, cz + 0.24, cz + 0.255, darkOf(galv, 0.3));
++      const fans = uw >= 0.5 ? 2 : 1;
++      const fd = Math.min(0.3, uw / fans - 0.07);
++      for (let f = 0; f < fans; f++) kit.cyl(x - uw / 2 + (uw * (f + 0.5)) / fans, y + 0.36, cz, fd, 0.02, fd, dark);
++    }
++    return;
++  }
++  if (HVAC_STUDY === "b") {
++    // B · condensing cabinets with the fan on the face: upright, shallower boxes, a ringed fan
++    // grille on the street side, on two low rails.
++    kit.box(cx0 + cw / 2, y, cz - 0.1, cw - 0.06, 0.05, 0.06, dark);
++    kit.box(cx0 + cw / 2, y, cz + 0.1, cw - 0.06, 0.05, 0.06, dark);
++    for (const x of xs) {
++      kit.box(x, y + 0.05, cz, uw, 0.4, 0.34, galv);
++      kit.box(x, y + 0.45, cz, uw + 0.02, 0.03, 0.36, mix(galv, white, 0.25));
++      const fd = Math.min(0.32, uw - 0.12);
++      kit.cyl(x, y + 0.25, cz + 0.17, fd, 0.02, fd, darkOf(galv, 0.2), { rotX: Math.PI / 2 });
++      kit.cyl(x, y + 0.25, cz + 0.17, fd * 0.72, 0.03, fd * 0.72, dark, { rotX: Math.PI / 2 });
++    }
++    return;
++  }
++  // C · equipment screen: a louvred enclosure in the parapet's colour hides the plant; only the
++  // fans show over its rim.
++  const sc = trimOf(P.wall);
++  const xa = cx0 - 0.06;
++  const xb = cx0 + cw + 0.06;
++  const za = cz - 0.37;
++  const zb = cz + 0.37;
++  const t = 0.04;
++  const hS = 0.36;
++  kit.span(xa, xb, y, y + 0.03, za, zb, darkOf(steel, 0.25));
++  for (const x of xs) {
++    kit.box(x, y + 0.03, cz, uw, 0.27, 0.46, galv);
++    kit.cyl(x, y + 0.3, cz, Math.min(0.3, uw - 0.12), 0.02, Math.min(0.3, uw - 0.12), dark);
++  }
++  kit.span(xa, xb, y, y + hS, zb - t, zb, sc, Surf.GRILLE);
++  kit.span(xa, xb, y, y + hS, za, za + t, sc, Surf.GRILLE);
++  kit.span(xa, xa + t, y, y + hS, za, zb, sc, Surf.GRILLE);
++  kit.span(xb - t, xb, y, y + hS, za, zb, sc, Surf.GRILLE);
++}
++
+ /** Roof zones: SERVICE (one grouped cluster at the back), OCCUPIED (front strip). EDGE is the volume's. */
+ export function roofZones(kit: Kit, x0: number, x1: number, z0: number, z1: number, y: number, P: Program, A: Anatomy) {
+   const w = x1 - x0;
+@@ -447,6 +578,11 @@ export function roofZones(kit: Kit, x0: number, x1: number, z0: number, z1: numb
+       // Unit count follows the roof area; one fewer is an equivalent installation.
+       const n0 = Math.max(1, Math.min(3, Math.round((w * d) / 7)));
+       const n = n0 > 1 && kit.rand(P.seed, 302) < 0.4 ? n0 - 1 : n0;
++      if (HVAC_STUDY) {
++        hvacStudy(kit, cx0, cw, cz, y, n, steel, P);
++        if (w > 3.2) bulkhead(left ? x1 - 0.6 : x0 + 0.6);
++        break;
++      }
+       kit.box(cx0 + cw / 2, y, cz, cw, 0.05, 0.75, darkOf(steel, 0.25));
+       for (let i = 0; i < n; i++) {
+         const x = cx0 + (cw * (i + 0.5)) / n;
