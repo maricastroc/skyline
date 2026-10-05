@@ -18,17 +18,12 @@ export interface DestroyResult {
   spread: number;
 }
 
-/**
- * The imperative side of a city: GPU batches, alive flags, the scene clock and destruction.
- * React components render it; this class mutates it. One instance per generated city.
- */
 export class CityRuntime {
   readonly alive: Uint8Array;
   readonly totalWeight: number;
   aliveWeight: number;
   readonly uniforms: CityUniforms;
   readonly meshes: Partial<Record<MeshKind, THREE.InstancedMesh>> = {};
-  /** Seconds since the city started building; drives uTime. */
   clock = 0;
   shake = 0;
   debris: DebrisSink | null = null;
@@ -61,7 +56,6 @@ export class CityRuntime {
     return n;
   }
 
-  /** Nearest alive structure under the ray. */
   pick(raycaster: THREE.Raycaster): { node: number; point: THREE.Vector3; distance: number } | null {
     let best: { node: number; point: THREE.Vector3; distance: number } | null = null;
     const hits: THREE.Intersection[] = [];
@@ -80,7 +74,6 @@ export class CityRuntime {
     return best;
   }
 
-  /** Paint highlight codes into aAnim.w: selected subtree = 1, destroy target subtree = 2. */
   setHighlights(selected: number | null, danger: number | null): void {
     for (const [a, b] of this.painted) this.paint(a, b, 0);
     this.painted = [];
@@ -113,7 +106,6 @@ export class CityRuntime {
     }
   }
 
-  /** Collapse a node and its whole subtree. Returns null if it was already gone. */
   destroy(node: number, impact?: THREE.Vector3): DestroyResult | null {
     const nodes = this.doc.nodes;
     const n = nodes[node];
@@ -135,7 +127,6 @@ export class CityRuntime {
     const now = this.clock;
     let spread = 0;
 
-    // Budget debris per event so destroying <body> doesn't spawn 10k fragments.
     let instances = 0;
     this.forRange(node, n.end, (_b, _a, s, e) => (instances += e - s));
     const debrisChance = Math.min(1, 260 / Math.max(1, instances));
@@ -146,7 +137,6 @@ export class CityRuntime {
         if (batch.anim[k * 4 + 1] >= 0) continue;
         const bx = batch.boxes.subarray(k * 6, k * 6 + 6);
         const d = Math.hypot(bx[0] - center.x, bx[1] + bx[4] * 0.5 - center.y, bx[2] - center.z);
-        // A shockwave: structures near the impact go first.
         const delay = Math.min(2.2, Math.pow(d, 0.8) * 0.045) + batch.anim[k * 4 + 2] * 0.12;
         batch.anim[k * 4 + 1] = now + delay;
         spread = Math.max(spread, delay);
@@ -163,7 +153,6 @@ export class CityRuntime {
     return { node, removedWeight, removedNodes, spread };
   }
 
-  /** Everything stands up again, with the build animation. */
   rebuild(): void {
     this.alive.fill(1);
     this.aliveWeight = this.totalWeight;
@@ -174,7 +163,7 @@ export class CityRuntime {
         batch.anim[k * 4 + 3] = 0;
       }
       const attr = this.meshes[kind]!.geometry.getAttribute("aAnim") as THREE.InstancedBufferAttribute;
-      attr.clearUpdateRanges(); // full upload
+      attr.clearUpdateRanges();
       attr.needsUpdate = true;
     }
     this.painted = [];

@@ -1,5 +1,3 @@
-"""Visual polish audit (round 0), evidence boards: 1:1 crops of the captures, one board per bottleneck.
-python3 scripts/polish-audit/evidence.py   Writes docs/screenshots/polish-audit/evidence/."""
 import os
 from PIL import Image, ImageDraw, ImageFont
 
@@ -8,9 +6,8 @@ O = f"{S}/evidence"
 os.makedirs(O, exist_ok=True)
 FONT = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial.ttf", 22)
 BIG = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial.ttf", 30)
-H = 560  # every crop shown at this height (1:1 or close)
+H = 560
 
-# (view/page, (x0, y0, x1, y1) in 2880×1800 source pixels, label)
 BOARDS = {
     "G1-haze": ("G1 · a névoa desenhada como tela: retícula, prédios fantasma, o marco dentro da faixa", [
         ("city/reference", (1008, 86, 1800, 662), "Wikipedia · o salão do marco vira retícula vermelho/azul"),

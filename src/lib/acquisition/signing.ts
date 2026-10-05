@@ -1,10 +1,6 @@
 import crypto from "node:crypto";
 
-/**
- * Asset URLs are signed so /api/asset only proxies images we extracted from a capture —
- * it is not an open proxy. Set SKYLINE_ASSET_SECRET in multi-instance deployments; otherwise
- * a per-process secret is used (signatures die with the process, which is fine for dev).
- */
+// Signed URLs keep /api/asset from being an open proxy. Set SKYLINE_ASSET_SECRET when running more than one instance.
 const SECRET = process.env.SKYLINE_ASSET_SECRET ?? crypto.randomBytes(32).toString("hex");
 
 export function signAssetUrl(url: string): string {

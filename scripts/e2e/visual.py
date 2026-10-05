@@ -1,12 +1,3 @@
-"""End-to-end differentiation — final pixels. python3 scripts/e2e/visual.py
-Reads docs/screenshots/e2e/<variant>/<page>-<view>.png, writes docs/e2e/visual.json.
-
-Per image: a colour histogram (HSV 12×3×4), a luminance layout thumbnail (32×20), a gradient
-magnitude histogram and a gradient orientation histogram (texture: window grids, roofs, streets).
-Distance between two images = mean of the four component distances, each divided by its median
-over all page pairs of that view (so no component dominates). Same normalisation for seed /
-style / ablation comparisons, so page-vs-noise ratios are meaningful.
-"""
 import json, os, itertools
 import numpy as np
 from PIL import Image

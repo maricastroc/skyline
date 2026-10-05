@@ -1,13 +1,5 @@
 import type { NNode, NormalizedDocument } from "../model/types";
 
-/**
- * Semantic regions: what each part of the page *is for*, inferred from tag + position + size
- * + content + headings + class/ARIA names. Never from tag alone.
- *
- * Every region carries `evidence`: short human sentences that justify the inference. The city
- * turns regions into urban forms; the inspector shows the evidence when a landmark is clicked,
- * so any important structure can answer "why does this exist here?".
- */
 export type RegionKind =
   | "page"
   | "brand"
@@ -41,24 +33,20 @@ export interface Region {
   evidence: string[];
   parent: number;
   children: number[];
-  /** Repeated items (cards, tiers, stories, images, links) as node ids. */
   items: number[];
 }
 
 export interface Semantics {
   siteName: string;
   regions: Region[];
-  /** Innermost region containing each node. */
   regionOf: Int32Array;
   hero: number;
   nav: number;
   brand: number;
   footer: number;
   main: number;
-  /** Major regions laid out along the avenue, in reading order. */
   districts: number[];
   sidebars: number[];
-  /** CTA regions in the hero, if any. */
   ctas: number[];
 }
 
@@ -69,16 +57,7 @@ const pct = (v: number) => `${Math.round(v * 100)}%`;
 const q = (s?: string, n = 42) => (s ? `“${s.length > n ? `${s.slice(0, n - 1)}…` : s}”` : "");
 
 export interface AnalyzeOptions {
-  /**
-   * Count only content media (snapshot/media.ts) when deciding image-driven kinds (gallery,
-   * showcase, logos) and image evidence. Off by default: the original behaviour.
-   */
   contentMedia?: boolean;
-  /**
-   * An explicit footer (<footer> / role=contentinfo) that runs to the end of the page is the
-   * footer at any size. Off by default: footers over 35% of the page are then only partly recognised
-   * (a column or a list inside them is picked instead).
-   */
   explicitFooter?: boolean;
 }
 
@@ -111,7 +90,6 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
     return r;
   };
 
-  /* helpers over subtrees */
   const firstHeading = (i: number) => {
     let best: NNode | null = null;
     for (let k = i; k < nodes[i].end; k++) {
@@ -144,7 +122,6 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
     return out;
   };
 
-  /* ── site name ── */
   let host = "";
   try {
     host = new URL(doc.source.finalUrl).hostname.replace(/^www\./, "");
@@ -160,13 +137,11 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
     return hostRoot.charAt(0).toUpperCase() + hostRoot.slice(1);
   })();
 
-  /* ── footer ── */
   let footer: Region | null = null;
   {
     let best: { i: number; score: number; ev: string[] } | null = null;
     for (let i = 1; i < N; i++) {
       const n = nodes[i];
-      // An explicit footer that runs to the end of the page qualifies whatever its size or start.
       const explicitEnd = !!opts.explicitFooter && n.role === "footer" && n.end >= N - 1;
       if ((pos(i) < 0.55 && !explicitEnd) || n.level > 5 || (share(n) > 0.35 && !explicitEnd)) continue;
       const ev: string[] = [];
@@ -187,7 +162,7 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
         ev.push(`${n.links} short links at the very end of the page`);
       }
       if (score >= 1.5) {
-        score += share(n) * 4; // prefer the outermost footer, not its icon strip
+        score += share(n) * 4;
         if (!best || score > best.score) best = { i, score, ev };
       }
     }
@@ -197,7 +172,6 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
     }
   }
 
-  /* ── nav (and table of contents) ── */
   let nav: Region | null = null;
   const navCandidates: Array<{ i: number; score: number; ev: string[] }> = [];
   for (let i = 1; i < N; i++) {
@@ -243,7 +217,6 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
     });
   }
 
-  /* ── brand ── */
   let brand: Region | null = null;
   const mainNode = nodes.find((n) => n.role === "main" && share(n) > 0.15);
   {
@@ -269,7 +242,7 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
         score += 2;
         ev.push(`its text matches the site name ${q(siteName)}`);
       }
-      if (mainNode && inside(i, mainNode.id)) score -= 3; // a product mockup inside the page isn't the brand
+      if (mainNode && inside(i, mainNode.id)) score -= 3;
       if (score >= 2 && (!best || score > best.score)) best = { i, score, ev };
     }
     if (best) {
@@ -278,14 +251,12 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
     }
   }
 
-  /* ── main ── */
   let main: Region | null = null;
   {
     const m = nodes.find((n) => n.role === "main" && share(n) > 0.15);
     if (m) main = add(m.id, "main", [m.tag === "main" ? "the <main> element" : "role=main / main content container", `holds ${pct(share(m))} of the page`]);
   }
 
-  /* ── hero ── */
   let hero: Region | null = null;
   const h1 = nodes.find((n) => n.heading === 1);
   {
@@ -312,14 +283,12 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
       if (imgs(n) > 0) score += 0.5;
       if (score >= 3) {
         ev.push(`starts in the first ${pct(pos(i) || 0.01)} of the page`);
-        // Prefer the smallest container that still has the h1 and something else.
         candidates.push({ i, score: score - share(n) * 4 + (n.children.length >= 2 ? 0.5 : 0), ev });
       }
     }
     candidates.sort((a, b) => b.score - a.score);
     const c = candidates[0];
     if (c) {
-      // Grow to the enclosing block when it is the same hero (same h1, still a modest share).
       let i = c.i;
       for (let p = nodes[i].parent; p > 0; p = nodes[p].parent) {
         const pn = nodes[p];
@@ -334,7 +303,6 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
     }
   }
 
-  /* ── CTAs ── */
   const ctas: Region[] = [];
   {
     const scope = hero ? hero.node : 0;
@@ -343,7 +311,6 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
     }
   }
 
-  /* ── specialised blocks, anywhere ── */
   const claimed = () => regions.filter((r) => r.kind === "toc" || r.kind === "nav" || r.kind === "footer");
   for (let i = 1; i < N; i++) {
     const n = nodes[i];
@@ -359,19 +326,16 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
     const ht = head?.label ?? "";
     const items = repeated(i);
 
-    // infobox (Wikipedia-style summary box)
     if (/(^|[\s_-])(infobox|vcard|summary-?box|sidebar-?box|factbox)([\s_-]|$)/.test(nm)) {
       add(i, "infobox", [`class ${q(nm.split(" ").find((x) => /infobox|vcard|summary|sidebar|fact/.test(x)))}`, imgs(n) ? `with ${imgs(n)} image${imgs(n) > 1 ? "s" : ""}` : "a summary table"], { title: n.label ?? "Infobox" });
       i = n.end - 1;
       continue;
     }
-    // references / notes
     if (/(^|[\s_-])(references|reflist|footnotes|citations|refs|notes)([\s_-]|$)/.test(nm) || (/^(references|notes|sources|bibliography|citations|footnotes)$/i.test(ht) && head && inside(head.id, i) && head.id - i < 4)) {
       add(i, "references", [/references|reflist|footnotes|citations|notes/.test(nm) ? `class ${q(nm.split(" ")[0])}` : `heading ${q(ht)}`, `${n.descendants} elements, ${n.links} links`], { title: ht || "References", items: items.slice(0, 60) });
       i = n.end - 1;
       continue;
     }
-    // pricing
     const prices = collectIn(i, (m) => PRICE_RE.test(text(m)), 6);
     if ((prices.length >= 2 && items.length >= 2) || /(^|[\s_-])(pricing|plans|tiers|price-?table)([\s_-]|$)/.test(nm) || /^(pricing|plans|choose your plan)/i.test(ht)) {
       if (prices.length >= 1) {
@@ -383,7 +347,6 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
         continue;
       }
     }
-    // gallery (explicit, or an image grid) vs showcase (product sections rich in images)
     if (!containsHero && imgs(n) >= 4 && n.chars / Math.max(imgs(n), 1) < 140) {
       const logo = /(^|[\s_-])(logos?|customers|clients|partners|brands|trusted|companies|integrations)([\s_-]|$)/.test(nm) || /trusted|customers|used by|companies|integrations/i.test(ht);
       const explicit = /(^|[\s_-])(gallery|carousel|slider|photos|images|media)([\s_-]|$)/.test(nm) || /gallery|photos|images|screenshots/i.test(ht);
@@ -396,7 +359,6 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
       i = n.end - 1;
       continue;
     }
-    // testimonials / faq
     if (/(^|[\s_-])(testimonials?|quotes?|reviews?)([\s_-]|$)/.test(nm) || countIn(i, (m) => m.tag === "blockquote") >= 2 || /what .* say|testimonials|reviews|loved by/i.test(ht)) {
       add(i, "testimonials", [countIn(i, (m) => m.tag === "blockquote") >= 2 ? `${countIn(i, (m) => m.tag === "blockquote")} quotes` : `named ${q(nm.split(" ")[0] || ht)}`], { title: ht || "Testimonials", items: items.slice(0, 6) });
       i = n.end - 1;
@@ -407,7 +369,6 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
       i = n.end - 1;
       continue;
     }
-    // feed (stories, posts, results) vs link directory (lists of bare links)
     if (items.length >= 6 && !containsHero) {
       const tagsOk = items.every((c) => /^(li|tr|article|div|section)$/.test(nodes[c].tag)) && nodes[items[0]].tag !== "p";
       const linked = items.filter((c) => nodes[c].links > 0).length;
@@ -432,8 +393,6 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
         }
       }
     }
-    // feature grid: 3–12 similar cards, each with a heading
-    // (cards are small and alike — an article's chapters are not a feature grid)
     const itemShares = items.map((c) => share(nodes[c]));
     const alike = itemShares.length ? Math.max(...itemShares) / Math.max(Math.min(...itemShares), 1e-6) < 4 : false;
     if (items.length >= 3 && items.length <= 12 && share(n) <= 0.25 && Math.max(0, ...itemShares) <= 0.08 && alike && items.filter((c) => countIn(c, (m) => !!m.heading) > 0).length >= Math.ceil(items.length * 0.66)) {
@@ -444,31 +403,27 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
       i = n.end - 1;
       continue;
     }
-    // generic major section (only shallow, sizeable, headed blocks)
     if ((n.role === "section" || n.role === "article" || (head && head.heading! <= 3 && head.id - i < 6)) && share(n) >= 0.02 && n.level <= 8) {
       const lead = !ht && !regions.some((r) => r.kind === "section");
       add(i, "section", [n.role === "section" || n.role === "article" ? `a <${n.tag}>` : "a block opened by a heading", ht ? `heading ${q(ht)}` : lead ? "the first, untitled section: the page's introduction" : "", `${pct(share(n))} of the page`].filter(Boolean), { title: ht || (lead ? "Introduction" : n.label) });
     }
   }
 
-  /* ── sidebars ── */
   const sidebars: Region[] = [];
   for (let i = 1; i < N; i++) {
     const n = nodes[i];
     if (taken.has(i) || share(n) < 0.02 || share(n) > 0.35) continue;
-    if (hero && inside(i, hero.node)) continue; // a sidebar drawn inside a product mockup isn't the page's
+    if (hero && inside(i, hero.node)) continue;
     if (n.role === "aside" || /(^|[\s_-])(sidebar|side-?bar|aside|vector-column-start|vector-column-end|rail)([\s_-]|$)/.test(names(n))) {
       sidebars.push(add(i, "sidebar", [n.role === "aside" ? "an <aside>" : `class ${q(names(n).split(" ")[0])}`, `${n.links} links beside the main content`], { title: firstHeading(i)?.label ?? "Sidebar" }));
       i = n.end - 1;
     }
   }
 
-  /* ── forms ── */
   for (const n of nodes) {
     if (n.role === "form" && !taken.has(n.id) && share(n) > 0.002) add(n.id, "form", ["a <form>", n.controls ? `${n.controls} inputs` : ""].filter(Boolean), { title: n.label ?? (/search/.test(names(n)) ? "Search" : "Form") });
   }
 
-  /* ── tree, regionOf ── */
   regions.sort((a, b) => a.node - b.node || nodes[b.node].end - nodes[a.node].end);
   regions.forEach((r, k) => (r.id = k));
   const regionOf = new Int32Array(N).fill(-1);
@@ -485,7 +440,6 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
     regionOf[i] = stack.length ? stack[stack.length - 1].id : -1;
   }
 
-  /* ── importance ── */
   const prior: Record<RegionKind, number> = {
     page: 1, hero: 1, brand: 0.7, nav: 0.75, pricing: 0.85, features: 0.65, gallery: 0.65, feed: 0.75, main: 0.55, directory: 0.4, showcase: 0.6,
     section: 0.5, toc: 0.55, infobox: 0.6, references: 0.45, testimonials: 0.5, logos: 0.45, faq: 0.4,
@@ -493,15 +447,11 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
   };
   for (const r of regions) r.importance = Math.min(1, prior[r.kind] * (0.45 + Math.sqrt(share(nodes[r.node])) * 1.2));
 
-  /* ── districts: major regions in reading order ── */
   const isSpine = (r: Region) => r.kind === "nav" || r.kind === "brand" || r.kind === "cta" || r.kind === "footer" || r.kind === "sidebar" || r.kind === "main" || r.kind === "form" || r === hero;
-  // Anything inside the entrance (hero), the avenue (nav), the edge (footer) or a sidebar
-  // belongs to those, not to a district of its own.
   const spineNodes = [hero, nav, footer, brand, ...sidebars].filter((r): r is Region => !!r).map((r) => r.node);
   let districts = regions
     .filter((r) => !isSpine(r) && share(nodes[r.node]) >= 0.012 && !spineNodes.some((sn) => inside(r.node, sn)))
     .map((r) => r.id);
-  // Keep only outermost districts (a gallery inside a section stays inside it).
   districts = districts.filter((id) => !districts.some((o) => o !== id && inside(regions[id].node, regions[o].node)));
 
   return {

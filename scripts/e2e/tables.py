@@ -1,4 +1,3 @@
-"""Markdown tables from docs/e2e/metrics.json and docs/e2e/visual.json: python3 scripts/e2e/tables.py > docs/e2e/tables.md"""
 import json, statistics as st
 m = json.load(open("docs/e2e/metrics.json")); ids = m["ids"]; L = m["layers"]
 vis = json.load(open("docs/e2e/visual.json")) if __import__("os").path.exists("docs/e2e/visual.json") else None
@@ -28,7 +27,6 @@ if vis:
     for v, e in vis["views"].items():
         sd = e.get("seed8SamePage", {}).get("mean"); cl = e.get("classicSamePage", {}).get("mean"); mo = e.get("modernSamePage", {}).get("mean")
         f = lambda x: f"{x:.2f}" if x is not None else "–"
-        # Style noise only over pages not already in the forced style (else forcing changes nothing).
         so = m["styleOf"]
         exc = [d for k in ("classic", "modern") if f"{k}SamePage" in e for p, d in e[f"{k}SamePage"]["per"].items() if so[p] != k]
         sty = st.mean(exc) if exc else None

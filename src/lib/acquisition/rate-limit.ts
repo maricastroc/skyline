@@ -1,8 +1,3 @@
-/**
- * In-memory token bucket per client key. Best effort: per process, resets on restart.
- * Good enough to stop a single tab from hammering the fetcher; swap for a shared store
- * (Redis/Upstash) when deployed on multiple instances.
- */
 interface Bucket {
   tokens: number;
   updated: number;
@@ -30,7 +25,6 @@ export function clientKey(req: Request): string {
   return fwd || req.headers.get("x-real-ip") || "local";
 }
 
-/** Tiny LRU for capture results. */
 export class Lru<V> {
   private map = new Map<string, { v: V; at: number }>();
   constructor(private max: number, private ttlMs: number) {}

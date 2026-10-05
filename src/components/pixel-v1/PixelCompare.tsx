@@ -7,10 +7,6 @@ import { usePixelCity } from "./usePixelCity";
 
 const PixelScene = dynamic(() => import("./PixelScene"), { ssr: false });
 
-/**
- * The test for this round: N cities, same camera, domains hidden. If they don't read as
- * different places at a glance, the grammar isn't doing its job.
- */
 export function PixelCompare({ urls, reveal: initialReveal, azimuth = 45 }: { urls: string[]; reveal: boolean; azimuth?: number }) {
   const [reveal, setReveal] = useState(initialReveal);
   return (

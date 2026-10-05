@@ -1,9 +1,3 @@
-// Art direction C3 (street life) checks: npm run test:life
-// Street life is read from the foundation and C1 (frontage, street roles, two page measures), never
-// from the seed or the site; it leaves C1 and the blocks untouched; the stamp is gone; related pages
-// keep related street life; small page edits move it little.
-// The current kit runs with `polishAssets: false` (visual polish off): this suite checks its own
-// pass against the kits before it; the polish is checked by `npm run test:polish`.
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { generateKitDistrict, LINES, newTrace, type KitTrace } from "../../src/lib/pixelcity/kit/district";
@@ -31,7 +25,6 @@ const intensities = (t: KitTrace) => JSON.stringify([t.life!.sides.map((s) => [s
 const sprites = (c: { parts: Part[] }, t: KitTrace) => c.parts.slice(t.scene!.furniture[0], t.scene!.traffic[1]).filter((q) => q.mesh === "sprite").length;
 const runs = DATASET.map((e) => ({ id: e.id, ...build(e.id) }));
 
-// 1. Ablation and upstream: C3 off is kit-v10 (C1) byte for byte; C1's roles and the blocks never move.
 let ablated = 0;
 let rolesSame = 0;
 let blocksSame = 0;
@@ -51,7 +44,6 @@ check("with street life off, the whole city is byte-identical to kit-v10 (C1) (d
 check("C1 street roles unchanged (identical to kit-v10)", rolesSame === runs.length, `${rolesSame}/${runs.length}`);
 check("blocks (lots, pieces, buildings) byte-identical to kit-v10", blocksSame === runs.length, `${blocksSame}/${runs.length}`);
 
-// 2. The seed moves things, never how much: intensities and counts identical for seeds 7, 8, 11.
 let seedFree = 0;
 let moved = 0;
 for (const r of runs) {
@@ -64,12 +56,10 @@ for (const r of runs) {
 check("intensities and people counts do not depend on the seed (7 / 8 / 11)", seedFree === runs.length, `${seedFree}/${runs.length}`);
 check("the seed still moves positions within the counts", moved === runs.length, `${moved}/${runs.length}`);
 
-// 3. No site knowledge in the street-life code.
 const src = readFileSync("src/lib/pixelcity/kit/street-life.ts", "utf8").replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
 const site = /hostname|location\.|\burl\b|siteName|wikipedia|ikea|craigslist|graham|nasa|linear|gov\.uk|python/i;
 check("no hostname, URL or site name in the street-life code", !site.test(src), site.exec(src)?.[0] ?? "");
 
-// 4. The stamp is gone: the sidewalk layer is no longer the same in every page.
 const key = (q: Part) => `${q.mesh}|${q.x.toFixed(3)}|${q.y.toFixed(3)}|${q.z.toFixed(3)}|${q.w.toFixed(3)}|${q.h.toFixed(3)}|${q.d.toFixed(3)}`;
 const audit = ["shop", "oldweb", "directory", "institution", "reference", "media", "saas", "docs"].map((id) => runs.find((r) => r.id === id)!);
 const sets = audit.map((r) => new Set(r.c.parts.slice(...r.t.scene!.furniture).map(key)));
@@ -77,7 +67,6 @@ const common = [...sets[0]].filter((k) => sets.every((s) => s.has(k))).length;
 const avg = sets.reduce((s, x) => s + x.size, 0) / sets.length;
 check("the sidewalk layer is no longer a stamp (parts identical in all 8 audit pages < 10%)", common / avg < 0.1, `${common} common parts, ${((100 * common) / avg).toFixed(1)}% of a page's (kit-v10: 100%)`);
 
-// 5. Everything stays in the street: no scene part over a block's lots; no car on a promenade.
 const B = 14;
 let inside = 0;
 let onPromenade = 0;
@@ -85,7 +74,6 @@ for (const r of runs) {
   const blocks: Array<[number, number]> = [];
   for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) blocks.push([(LINES[i] + LINES[i + 1]) / 2, (LINES[j] + LINES[j + 1]) / 2]);
   for (const q of r.c.parts.slice(r.t.scene!.furniture[0], r.t.scene!.traffic[1])) {
-    // People are billboards (their depth is not a footprint); footprints turn with the part.
     if (q.mesh === "sprite") continue;
     const turned = Math.abs(Math.sin(q.rotY)) > 0.5;
     const [w, d] = turned ? [q.d, q.w] : [q.w, q.d];
@@ -110,7 +98,6 @@ for (const r of runs) {
 check("no street-life footprint over a block (furniture, crossings, traffic; people are billboards)", inside === 0, `${inside} parts`);
 check("no car on a promenade", onPromenade === 0, `${onPromenade} vehicle lights`);
 
-// 6. Family: the two Wikipedia articles are closer in street life than the median pair.
 const profile = (t: KitTrace) => {
   const m = (xs: number[]) => xs.reduce((s, v) => s + v, 0) / xs.length;
   return [m(t.life!.sides.map((s) => s.footfall)), m(t.life!.sides.map((s) => s.canopy)), m(t.life!.segments.map((s) => s.traffic))];
@@ -124,7 +111,6 @@ const by = (id: string) => runs.find((r) => r.id === id)!.t;
 const wiki = dist(profile(by("reference")), profile(by("reference-2")));
 check("Wikipedia × Wikipedia closer than the median pair (footfall, canopy, traffic)", wiki < median, `${wiki.toFixed(3)} vs median ${median.toFixed(3)}; Wikipedia × Paul Graham ${dist(profile(by("reference")), profile(by("oldweb"))).toFixed(3)}`);
 
-// 7. Equivalent pages, equivalent street life: small page edits move the intensities little.
 let change = 0;
 let n = 0;
 for (const r of runs)

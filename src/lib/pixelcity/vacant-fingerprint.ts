@@ -1,7 +1,3 @@
-/**
- * The vacant world's fingerprint: the one an empty page gets, computed with the real
- * pipeline (parse → normalize → fingerprint). Server-side only; the client gets plain data.
- */
 import { computeFingerprint, type SiteFingerprint } from "../fingerprint/fingerprint";
 import { normalize } from "../model/normalize";
 import { buildSnapshot, parsePage } from "../snapshot/parse-html";

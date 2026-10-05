@@ -7,26 +7,12 @@ import { buildGamePalette, type GamePalette } from "./palette";
 import { textWidth } from "./pixel-font";
 import { Surf, type Building, type BuildingKind, type Part, type PixelCity, type RoadSeg, type SignSpec } from "./types";
 
-/* ─────────────────────────────────────────────────────────────────────────────
- * DOM + CSS + content → SiteFingerprint → CityGrammar → pixel city
- *
- * 1. Buildings are DOM *groups*, not elements: the tree is cut where a subtree's weight
- *    fits the grammar's building budget. A card, a nav, a paragraph run → one building.
- * 2. Groups above that become blocks; district roots become districts. Layout is an
- *    integer tile grid (ordered bisection), with avenues/streets inserted per hierarchy
- *    level as the grammar dictates.
- * 3. Each building's kind comes from its content (h1 → landmark, links → shops, form →
- *    factory, images → billboard…); its architecture from the grammar's style.
- * ──────────────────────────────────────────────────────────────────────────── */
-
 const FLOOR = 0.5;
 const SIGN_TEXEL = 0.11;
 const SIGN_ATLAS = { w: 512, h: 256 };
 const MAX_IMAGES = 40;
-/** UI chrome makes poor shop signs. */
 const CHROME_LABEL = /^\s*(up ?vote|down ?vote|vote|hide|flag|reply|edit|share|more|next|prev(ious)?|log ?in|sign ?in|sign ?up|menu|close|search|toggle.*|skip.*|jump.*|read more|view|go|home|top|\d+|[^a-z0-9]*)\s*$/i;
 
-/** A page element's background, as a game color: chromatic stays vivid, dark becomes slate. */
 function gameTint(hex: string | undefined): RGB | null {
   if (!hex) return null;
   const rgb = hexToRgb(hex);
@@ -67,7 +53,6 @@ interface Unit {
   heading: number;
   repeat: number;
   style: ArchStyle;
-  /** The element's own page background, translated to the game palette. */
   tint: RGB | null;
 }
 
@@ -88,7 +73,6 @@ export function generatePixelCity(doc: NormalizedDocument): PixelCity {
   const rand = mulberry32(fp.seed);
   const pick = <T,>(xs: T[]) => xs[Math.floor(rand() * xs.length) % xs.length];
 
-  /* images that get real textures */
   const imageNodes = nodes
     .filter((n) => n.image && (n.image.proxy || n.image.src))
     .sort((a, b) => b.image!.priority - a.image!.priority)
@@ -99,11 +83,9 @@ export function generatePixelCity(doc: NormalizedDocument): PixelCity {
     return { node: n.id, slot, src: n.image!.proxy ?? n.image!.src };
   });
 
-  /* nav ancestry: links inside a nav become shops, wherever the nav was split */
   const inNav = new Uint8Array(N);
   for (let i = 1; i < N; i++) inNav[i] = nodes[i].role === "nav" || inNav[nodes[i].parent] ? 1 : 0;
 
-  /* districts: descend the heavy chain (see the maquette generator) */
   const districtRoots: number[] = [];
   {
     let cur = 0;
@@ -131,11 +113,9 @@ export function generatePixelCity(doc: NormalizedDocument): PixelCity {
   };
   const unitWeight = nodes[0].weight / grammar.units;
   let kiosks = 0;
-  // A skyline needs gaps: a budget of towers, spent on the first headings in reading order.
   let towersLeft = Math.round(3 + grammar.towers * 9 + grammar.verticality * 6);
   let firstH1 = nodes.find((n) => n.heading === 1)?.id ?? -1;
 
-  /* ── 1. units ── */
   const styleFor = (node: number): ArchStyle => {
     const r = ((node * 2654435761) >>> 0) / 4294967296;
     return r < grammar.secondaryShare ? grammar.secondary : grammar.style;
@@ -240,7 +220,6 @@ export function generatePixelCity(doc: NormalizedDocument): PixelCity {
     return { id, level, children: kids, area: 0 };
   };
 
-  // Many districts (a feed of 60 <tr>s) are chunked into superblocks so avenues stay few.
   let districts = districtRoots.map((d) => collect(d, 2));
   if (districts.length > 8) {
     const per = Math.ceil(districts.length / Math.min(6, Math.ceil(Math.sqrt(districts.length))));
@@ -251,7 +230,6 @@ export function generatePixelCity(doc: NormalizedDocument): PixelCity {
   const root: LNode = { id: 0, level: 0, children: districts, area: 0 };
   if (!root.children.length) root.children.push({ id: 0, level: 1, unit: makeUnit(0, false), children: [], area: 0 });
   if (firstH1 < 0) {
-    // No h1: the heaviest unit becomes the landmark, so every city has a center of gravity.
     let best: Unit | null = null;
     const walk = (l: LNode) => {
       if (l.unit && (!best || l.unit.weight > best.weight)) best = l.unit;
@@ -266,7 +244,6 @@ export function generatePixelCity(doc: NormalizedDocument): PixelCity {
     }
   }
 
-  /* ── 2. areas & layout ── */
   const gapAt = (level: number): { size: number; road: boolean } => {
     if (level === 0) return { size: grammar.avenue, road: true };
     if (level <= grammar.streetLevels) return { size: 1, road: true };
@@ -282,7 +259,7 @@ export function generatePixelCity(doc: NormalizedDocument): PixelCity {
     for (const c of l.children) s += areaOf(c);
     const g = gapAt(l.level).size;
     s += (l.children.length - 1) * g * Math.sqrt(s) * 0.8;
-    if (l.level >= 1 && l.level <= grammar.streetLevels + 1) s = (Math.sqrt(s) + 1) ** 2; // sidewalks
+    if (l.level >= 1 && l.level <= grammar.streetLevels + 1) s = (Math.sqrt(s) + 1) ** 2;
     l.area = s;
     return s;
   };
@@ -323,7 +300,6 @@ export function generatePixelCity(doc: NormalizedDocument): PixelCity {
     return spec;
   };
 
-  /* integer ordered bisection */
   const partition = (items: LNode[], r: Rect, gap: { size: number; road: boolean }, out: (l: LNode, r: Rect) => void) => {
     if (!items.length) return;
     if (items.length === 1) return out(items[0], r);
@@ -345,7 +321,7 @@ export function generatePixelCity(doc: NormalizedDocument): PixelCity {
     let alongX = r.w > r.d || (r.w === r.d && rand() < 0.5);
     if ((alongX ? r.w : r.d) < 2) alongX = !alongX;
     const len = alongX ? r.w : r.d;
-    if (len < 2) return out(items[0], r); // no room left: the rest fold into the first
+    if (len < 2) return out(items[0], r);
     let g = gap.size;
     if (len - g < 2) g = 0;
     const avail = len - g;
@@ -358,7 +334,6 @@ export function generatePixelCity(doc: NormalizedDocument): PixelCity {
       if (g && gap.road) roads.push({ x: r.x + a, z: r.z, w: g, d: r.d, axis: "z", avenue: g > 1 });
       else if (g) greens.push({ x: r.x + a, z: r.z, w: g, d: r.d });
     } else {
-      // First half toward the viewer (+z): the page reads from the front of the diorama back.
       ra = { x: r.x, z: r.z + r.d - a, w: r.w, d: a };
       rb = { x: r.x, z: r.z, w: r.w, d: r.d - a - g };
       if (g && gap.road) roads.push({ x: r.x, z: r.z + r.d - a - g, w: r.w, d: g, axis: "x", avenue: g > 1 });
@@ -382,7 +357,6 @@ export function generatePixelCity(doc: NormalizedDocument): PixelCity {
     let y = plateY;
     let inner = r;
     if (l.level >= 1 && l.level <= grammar.streetLevels + 1 && r.w >= 3 && r.d >= 3) {
-      // A block: raised sidewalk plate with a curb.
       const isPark = nodes[l.id].role === "footer" || nodes[l.id].role === "aside";
       push({ mesh: "box", node: l.id, x: r.x + r.w / 2, y: plateY, z: r.z + r.d / 2, w: r.w, h: 0.12, d: r.d, color: isPark ? palette.grass[1] : palette.sidewalk, surf: isPark ? Surf.GRASS : Surf.PAVING, delay: 0.1 });
       y = plateY + 0.12;
@@ -393,7 +367,6 @@ export function generatePixelCity(doc: NormalizedDocument): PixelCity {
     partition(l.children, inner, gap, (c, cr) => place(c, cr, y));
   };
 
-  /* ── 3. buildings ── */
   const wallOf = (u: Unit) => {
     if (u.tint) return u.tint;
     const ws = palette.walls[u.style];
@@ -411,14 +384,12 @@ export function generatePixelCity(doc: NormalizedDocument): PixelCity {
     const delay = 0.25 + (order++ / Math.max(totalUnits, 1)) * 1.6 + rand() * 0.15;
     const fw = Math.min(u.fw, Math.max(1, lot.w - (lot.w > u.fw ? 0.35 : 0.2)));
     const fd = Math.min(u.fd, Math.max(1, lot.d - (lot.d > u.fd ? 0.35 : 0.2)));
-    // Buildings hug the front of their lot (toward the viewer); gardens fill the back.
     const cx = lot.x + lot.w / 2;
     const cz = lot.z + lot.d - fd / 2 - 0.15;
     const ctx: Ctx = { u, cx, cz, fw, fd, y0, delay };
     const h = KITS[u.kind](ctx);
     buildings.push({ node: u.node, kind: u.kind, x: cx, z: cz, w: fw, d: fd, h, label: u.label });
 
-    // Leftover lot: garden or paving, with trees.
     const back = lot.d - fd - 0.15;
     if (back >= 0.8) {
       const gz = lot.z + back / 2;
@@ -539,7 +510,6 @@ export function generatePixelCity(doc: NormalizedDocument): PixelCity {
 
   const KITS: Record<BuildingKind, (c: Ctx) => number> = {
     house: (c) => {
-      // Dense, deep pages build tall narrow townhouses; airy ones, cottages.
       const cap = grammar.coverage > 0.65 ? 2 + Math.round(grammar.verticality * 3) : 3;
       const floors = Math.min(cap, floorsFor(c.u, 1 + (grammar.coverage > 0.65 ? 1 : 0), 0.8));
       const h = floors * FLOOR + 0.2;
@@ -579,12 +549,10 @@ export function generatePixelCity(doc: NormalizedDocument): PixelCity {
     landmark: (c) => {
       const h = Math.max(9, (8 + grammar.verticality * 16)) ;
       const accent = palette.accents[0];
-      // Plaza
       push({ mesh: "box", node: c.u.node, x: c.cx, y: c.y0, z: c.cz, w: c.fw, h: 0.08, d: c.fd, color: palette.plaza, surf: Surf.PAVING, delay: c.delay });
       const y = c.y0 + 0.08;
       switch (c.u.style) {
         case "classic": {
-          // Clock tower: stocky stone shaft, lit clock face, pointed roof, a flag.
           const sh = Math.min(h * 0.7, 12);
           body(c, 1.4, palette.walls.classic[3], Surf.BRICK, { y, w: 2.6, d: 2.6 });
           body(c, sh, palette.walls.classic[1], Surf.BRICK, { y: y + 1.4, w: 1.7, d: 1.7, lit: litChance * 0.4 });
@@ -609,13 +577,11 @@ export function generatePixelCity(doc: NormalizedDocument): PixelCity {
         case "retro": {
           body(c, h * 0.55, palette.walls.retro[0], Surf.BRICK, { y, w: 2.6, d: 2.4 });
           const top = y + h * 0.55;
-          // Lattice radio mast
           for (let i = 0; i < 4; i++) {
             const t = i / 4;
             push({ mesh: "box", node: c.u.node, x: c.cx - 0.5 + t * 0.2, y: top, z: c.cz, w: 0.08, h: h * 0.6 * (1 - t * 0.2), d: 0.08, color: palette.walls.tech[1], delay: c.delay + 0.2 });
           }
           push({ mesh: "glow", node: c.u.node, x: c.cx - 0.4, y: top + h * 0.6, z: c.cz, w: 0.18, h: 0.18, d: 0.18, color: oklch(0.66, 0.2, 25), lit: 1.6, delay: c.delay + 0.3 });
-          // Big rooftop sign with the h1
           const spec = c.u.label ? addSign(c.u.label.split(/\s+/).slice(0, 2).join(" ").slice(0, 14), accent, oklch(0.98, 0.02, 90)) : null;
           if (spec) {
             for (const s of [-1, 1]) push({ mesh: "box", node: c.u.node, x: c.cx + 0.3 + s * 0.6, y: top, z: c.cz + 0.6, w: 0.08, h: 0.6, d: 0.08, color: palette.walls.tech[1], delay: c.delay + 0.2 });
@@ -710,7 +676,6 @@ export function generatePixelCity(doc: NormalizedDocument): PixelCity {
     push({ mesh: "box", node: -1, x, y, z, w: 0.14 * scale, h: 0.45 * scale, d: 0.14 * scale, color: palette.trunk, delay });
     const leaf = pick(palette.leaves);
     if (style === "retro" && rand() < 0.5) {
-      // palm
       push({ mesh: "box", node: -1, x, y: y + 0.45 * scale, z, w: 0.1 * scale, h: 0.6 * scale, d: 0.1 * scale, color: palette.trunk, delay });
       push({ mesh: "box", node: -1, x, y: y + 1.0 * scale, z, w: 0.8 * scale, h: 0.14 * scale, d: 0.22 * scale, color: leaf, delay: delay + 0.05 });
       push({ mesh: "box", node: -1, x, y: y + 1.0 * scale, z, w: 0.22 * scale, h: 0.14 * scale, d: 0.8 * scale, color: leaf, delay: delay + 0.05 });
@@ -734,11 +699,9 @@ export function generatePixelCity(doc: NormalizedDocument): PixelCity {
     push({ mesh: "pyramid", node, x, y: y + 1.0, z, w: 0.62, h: 0.25, d: 0.62, color: oklch(0.4, 0.04, 50), delay, rotY: Math.PI / 8 });
   };
 
-  /* ── run layout ── */
   const cityRect: Rect = { x: -half, z: -half, w: side, d: side };
   partition(root.children, cityRect, gapAt(0), (l, r) => place(l, r, 0));
 
-  /* ── 4. ground, roads, greens, lamps ── */
   const margin = 1.5;
   const plateW = side + margin * 2;
   push({ mesh: "box", node: -1, x: 0, y: -0.3, z: 0, w: plateW, h: 0.3, d: plateW, color: palette.grass[0], surf: Surf.GRASS, delay: 0 });
@@ -753,7 +716,6 @@ export function generatePixelCity(doc: NormalizedDocument): PixelCity {
     const n = Math.floor(r.w * r.d * grammar.trees * 0.25);
     for (let i = 0; i < n; i++) tree(r.x + 0.3 + rand() * (r.w - 0.6), r.z + 0.3 + rand() * (r.d - 0.6), 0.05, 0.4);
   }
-  // Street lamps along roads.
   const lampEvery = night ? 3 : 4;
   for (const r of roads) {
     const len = r.axis === "x" ? r.w : r.d;
@@ -764,7 +726,6 @@ export function generatePixelCity(doc: NormalizedDocument): PixelCity {
       push({ mesh: "glow", node: -1, x, y: 0.9, z, w: 0.16, h: 0.1, d: 0.16, color: palette.lamp, lit: night ? 1.6 : grammar.time === "golden" ? 0.9 : 0.15, delay: 0.55 });
     }
   }
-  // A rim of trees around the plate edge — the diorama's frame.
   const rim = Math.round(side * (0.6 + grammar.trees));
   for (let i = 0; i < rim; i++) {
     const t = rand() * 4;

@@ -1,4 +1,3 @@
-// Baseline of the end-to-end differentiation validation: npx tsx scripts/e2e/corpus.ts > docs/e2e/corpus-baseline.txt
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { generateKitDistrict } from "../../src/lib/pixelcity/kit/district";

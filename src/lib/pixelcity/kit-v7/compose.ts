@@ -1,32 +1,4 @@
 // FROZEN: detail kit after the intra-territory composition pass (baseline of the program differentiation pass). Do not edit.
-/**
- * Semantic allocation, step 3: the land a territory received → buildings.
- *
- * Inside a block, a segment's lots are grouped into the largest PIECES they form:
- *   full    all 16 lots (14×14)          half   two quadrants on one block edge (14×7)
- *   quad    one quadrant, a corner (7×7)  lot    a single lot (3.5×3.5); interior lots are yards
- *
- * Each composition (Comp) knows how to organise every piece size with the existing families
- * (no new building or roof types). What differs between compositions is the ORGANISATION:
- *
- *   continuous   one built mass along the street (perimeter block, L, corner): long text
- *   parcelled    many narrow attached units with shops: feeds and link lists; when the
- *                territory's content is organised in groups (structure.ts), its frontage is
- *                laid out group by group, runs meeting at passages (frontage.ts)
- *   archive      parallel low stacks: indexes, references, directories
- *   grid         identical modules on a regular grid: product / pricing grids
- *   media        podium + tower with screens on open ground: galleries, showcases
- *   interactive  open square with kiosks: forms and calls to action
- *   navigation   low arcades along the street: navigation bars
- *   support      low plain buildings: footers
- *   structured   tall ribbon slabs: tables, infoboxes
- *   landmark     the hero's building on the hero's largest piece, its other land a forecourt
- *   marker       a kiosk with the site name: a brand without a hero
- *
- * Heights grow with the territory's weight (monotone, logarithmic or saturating — the weight
- * is already the land, so a big region is wide, not a forest of skyscrapers) and with the
- * grammar's verticality; the site's style only expresses them (roof, façade, colour, ornament).
- */
 import type { ArchStyle, CityGrammar } from "../grammar";
 import type { GamePalette } from "../palette";
 import { Surf } from "../types";
@@ -44,7 +16,6 @@ export type PieceType = "full" | "half" | "quad" | "lot";
 export interface Piece {
   type: PieceType;
   seg: number;
-  /** Block-local centre and rotation (local +z faces the street). */
   x: number;
   z: number;
   rot: number;
@@ -63,7 +34,6 @@ const HALVES: Array<{ q: [[number, number], [number, number]]; x: number; z: num
   { q: [[0, 0], [0, 1]], x: -3.5, z: 0, rot: -Math.PI / 2 },
 ];
 
-/** Largest pieces of each segment inside block (i, j). */
 export function piecesOfBlock(alloc: Allocation, i: number, j: number): Piece[] {
   const own = (a: number, b: number) => alloc.owner[(i * LOTS + a) * N + (j * LOTS + b)];
   const out: Piece[] = [];
@@ -108,18 +78,13 @@ export function piecesOfBlock(alloc: Allocation, i: number, j: number): Piece[] 
   return out;
 }
 
-/* ───────────────────────── programs ───────────────────────── */
-
 export interface ComposeCtx {
   kit: Kit;
   g: CityGrammar;
   p: GamePalette;
   plan: Plan;
-  /** Verticality factor applied to every height. */
   vf: number;
-  /** Called around every building, for the trace / provenance. */
   record: (P: Program, w: number, d: number, fn: () => number) => number;
-  /** Grouped frontage of parcelled pieces whose territory has internal structure (frontage.ts). */
   frontage?: Map<Piece, Run[][]>;
 }
 
@@ -137,10 +102,6 @@ const COMP_CONTENT: Record<Comp, Brief["content"]> = {
   structured: "structured",
 };
 
-/**
- * What each organisation's buildings are FOR — the surface grammar's first input (surface.ts).
- * The landmark's use follows its family (civic hall / clock tower → civic, towers → office).
- */
 const USE: Record<Comp, Use | undefined> = {
   landmark: undefined,
   marker: "kiosk",
@@ -155,32 +116,21 @@ const USE: Record<Comp, Use | undefined> = {
   structured: "office",
 };
 
-/** Base program for a segment piece: style, colours, roof, awnings… from the brief grammar. */
 function prog(ctx: ComposeCtx, t: Territory, comp: Comp, salt: number, corner = false): Program {
   const b: Brief = { role: comp === "support" ? "support" : "minor", content: COMP_CONTENT[comp], weight: t.weight, repeat: t.repeat, label: shortLabel(t.label) };
   return { ...programFor(b, ctx.g, ctx.p, ctx.kit, salt, corner), use: USE[comp] };
 }
 
-/** Width a run gives up on each side where the frontage changes cluster (a passage of 2× this). */
 const HALF_PASSAGE = 0.35;
 
-/**
- * Parcelled, grouped: the same piece and the same program as the kit-v6 layout (yard, corners,
- * an attached series of narrow units along each street row, as many units per length — the units
- * are still the items), but each row is cut into runs, one per spatial cluster of page groups,
- * and wherever the frontage changes cluster a passage opens (frontage.ts).
- */
 function groupedParcelled(ctx: ComposeCtx, pc: Piece, t: Territory, comp: Comp, salt: number, rows: Run[][], W: number, D: number) {
   const { kit } = ctx;
   const P = prog(ctx, t, comp, salt, pc.corner);
   const units = Math.max(2, Math.min(6, Math.round(2 + t.repeat / 6)));
   const roof = P.style === "modern" || P.style === "tech" ? P.roof : "gable";
-  // Each run continues its row's unit sequence (same seed and unit indices as the kit-v6 row), so
-  // the units — the items — are unchanged and the only new thing is the cut between clusters.
   const lay = (x: number, z: number, rot: number, length: number, depth: number, rowUnits: number, seed: number, runs: Run[]) => {
     const c = Math.cos(rot);
     const s = Math.sin(rot);
-    // Units per run by largest remainder (at least one each), in row order.
     const raw = runs.map((r) => (rowUnits * (r.to - r.from)) / length);
     const n = raw.map((v) => Math.max(1, Math.floor(v)));
     let left = Math.max(rowUnits, runs.length) - n.reduce((a, b) => a + b, 0);
@@ -216,7 +166,6 @@ function groupedParcelled(ctx: ComposeCtx, pc: Piece, t: Territory, comp: Comp, 
   } else place(ctx, 0, 0, 0, W, D, { ...P, family: pc.corner ? "corner" : "walkup" });
 }
 
-/** log₂(1 + k·w): grows with weight, saturates. */
 const lw = (w: number, k: number) => Math.log2(1 + k * w);
 const fl = (ctx: ComposeCtx, f: number, min = 1) => Math.max(min, Math.round(f * ctx.vf));
 
@@ -227,8 +176,6 @@ function yard(kit: Kit, x: number, z: number, w: number, d: number, seed: number
   kit.span(x - w / 2 + 0.05, x + w / 2 - 0.05, 0, 0.03, z - d / 2 + 0.05, z + d / 2 - 0.05, kit.palette.grass[1], Surf.GRASS);
   for (let t = 0; t < trees; t++) tree(kit, x + (kit.rand(seed, t) - 0.5) * (w - 1.2), z + (kit.rand(seed, t + 7) - 0.5) * (d - 1.2), seed * 3 + t, 0.85, 0.03);
 }
-
-/* ───────────────────────── compositions ───────────────────────── */
 
 export function composePiece(ctx: ComposeCtx, pc: Piece, t: Territory, comp: Comp, salt: number) {
   const { kit } = ctx;
@@ -256,7 +203,6 @@ export function composePiece(ctx: ComposeCtx, pc: Piece, t: Territory, comp: Com
         const units = Math.max(2, Math.min(6, Math.round(2 + t.repeat / 6)));
         if (pc.type === "full") {
           yard(kit, 0, 0, 5.6, 5.6, salt, 2);
-          // Rows on the four edges, shops on the corners.
           for (const [x, z, rot] of [
             [0, 4.9, 0],
             [4.9, 0, Math.PI / 2],
@@ -286,7 +232,6 @@ export function composePiece(ctx: ComposeCtx, pc: Piece, t: Territory, comp: Com
         return;
       }
       case "grid": {
-        // One program for every module: identical units are the point.
         const floors = fl(ctx, 3 + 0.5 * lw(w, 10), 2);
         const P: Program = { ...prog(ctx, t, comp, salt), family: "walkup", floors, ground: "shop", signage: "shop", topside: "hvac" };
         const cells: Array<[number, number, number]> = [];
@@ -298,7 +243,6 @@ export function composePiece(ctx: ComposeCtx, pc: Piece, t: Territory, comp: Com
         return;
       }
       case "media": {
-        // Saturating: the region's weight is already its land; towers stay below the landmark.
         const floors = fl(ctx, 6 + 10 * (1 - Math.exp(-w / 0.08)), 4);
         const P: Program = { ...prog(ctx, t, comp, salt), signage: "screen", facade: "curtain" };
         if (pc.type === "full") {
@@ -378,24 +322,12 @@ export function composePiece(ctx: ComposeCtx, pc: Piece, t: Territory, comp: Com
         return;
       }
       case "landmark":
-        // Handled by composeLandmark; a landmark piece that isn't the building is forecourt.
         plaza(kit, -W / 2, W / 2, -D / 2, D / 2, salt, pc.type !== "lot");
         return;
     }
   });
 }
 
-/* ───────────────────────── the landmark ───────────────────────── */
-
-/**
- * L1 ROLE → FAMILY. The hero's own content (soft metrics, strongest class) decides what kind
- *    of monument it is: a statement (text) → civic hall; a gateway of links → clock tower;
- *    a showcase (media) → podium tower (narrow tower on a single lot); a call to act → an
- *    open square with a pavilion.
- * L2 WEIGHT → SIZE. Footprint = the hero's largest piece; height grows with the hero's share.
- * L3 STYLE → EXPRESSION. Roof (dome / spire / crown / terrace / flat / mansard), façade and
- *    colour follow the site's style; the style never picks the family.
- */
 export const LANDMARK_ROOF: Record<string, Record<ArchStyle, RoofFamily>> = {
   civic: { classic: "dome", retro: "gable", modern: "flat", soft: "terrace", tech: "crown" },
   clocktower: { classic: "spire", retro: "spire", modern: "flat", soft: "terrace", tech: "crown" },
@@ -408,7 +340,6 @@ export interface LandmarkInfo {
   floors: number;
   piece: PieceType;
   role: string;
-  /** World position of the building's piece. */
   x: number;
   z: number;
   block: [number, number];

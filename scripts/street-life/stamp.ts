@@ -1,7 +1,3 @@
-// C3 audit (read-only): how much of the street layer is the same in every page?
-//   npx tsx scripts/street-life/stamp.ts [kit]   kit: v10 (default, C1) or current
-// For the 8 audit pages, compares the sidewalk furniture, the crossing furniture and the traffic
-// part by part (mesh + position + size, colour ignored) and counts what is identical in all 8.
 import { readFileSync } from "node:fs";
 import { generateKitDistrict as gCur, newTrace as tCur } from "../../src/lib/pixelcity/kit/district";
 import { realPage as rCur } from "../../src/lib/pixelcity/kit/real-page";

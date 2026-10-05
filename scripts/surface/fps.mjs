@@ -1,6 +1,3 @@
-// Approximate frame rate, kit-v4 vs current, same scenes (headless GPU, vsync-capped at ~60:
-// only drops are informative). Alternates versions per scene to cancel drift.
-//   node scripts/surface/fps.mjs [page …]      Env: BASE, CHROME_PATH
 import puppeteer from "puppeteer-core";
 
 const BASE = process.env.BASE ?? "http://localhost:3000";
@@ -17,7 +14,6 @@ const browser = await puppeteer.launch({
   headless: true,
   args: ["--use-angle=metal", "--enable-gpu", "--ignore-gpu-blocklist"],
 });
-// --scale=2 renders a 2880×1800 CSS viewport (4× the fragments) to stress fill rate.
 const REPS = Number(process.argv.find((a) => a.startsWith("--reps="))?.split("=")[1] ?? 1);
 const SCALE = Number(process.argv.find((a) => a.startsWith("--scale="))?.split("=")[1] ?? 1);
 const measure = async (q) => {
@@ -46,7 +42,6 @@ console.log(`| page | view | fps kit-v${BEFORE} | fps now |`);
 console.log("|---|---|---|---|");
 for (const id of pages)
   for (const [v, q] of views) {
-    // Alternate versions; the median of REPS runs each (fill-rate stress is noisy).
     const A = [];
     const B = [];
     for (let r = 0; r < REPS; r++) {

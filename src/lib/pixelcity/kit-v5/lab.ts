@@ -1,17 +1,4 @@
 // FROZEN: detail kit after the surface grammar pass (baseline of the openings depth pass). Do not edit.
-/**
- * Surface Grammar Lab: buildings in isolation, on a controlled grid, for regression and
- * comparison. Same camera, same palette, same seeds; only the axis under study changes.
- *
- *   programs  one box (6×5, 5 floors) × every use, in two styles: is the use legible from
- *             façade, ground floor and roof alone?
- *   corners   the same uses on a corner lot (two street frontages)
- *   roofs     uses × roof conditions (small flat, large flat, pitched), seen from above
- *   styles    one use × the five styles: does style only change the expression?
- *   sizes     uses × (narrow and low, wide and tall)
- *
- * `build` is injected so the frozen kit-v4 can render the same programs (BEFORE).
- */
 import type { RGB } from "../../city/types";
 import type { SiteFingerprint } from "../../fingerprint/fingerprint";
 import { deriveGrammar, type ArchStyle, type TimeOfDay } from "../grammar";
@@ -24,7 +11,6 @@ import type { Anatomy, Use } from "./surface";
 export type LabSet = "programs" | "corners" | "roofs" | "styles" | "sizes";
 export const LAB_SETS: LabSet[] = ["programs", "corners", "roofs", "styles", "sizes"];
 
-/** What a lab needs from a kit version. */
 export interface LabKit {
   Kit: new (palette: GamePalette, seed: number) => { parts: Part[]; signs: SignSpec[]; signAtlas: { w: number; h: number }; frame<T>(x: number, z: number, rot: number, fn: () => T, y?: number): T; span(x0: number, x1: number, y0: number, y1: number, z0: number, z1: number, color: RGB, surf?: number): unknown; sign(text: string, x: number, y: number, z: number, o: { bg: RGB; fg?: RGB; texel?: number; rotY?: number; maxW?: number }): number; anatomies?: Anatomy[]; smoke: Array<[number, number, number]> };
   building: (kit: never, w: number, d: number, P: Program) => number;
@@ -104,7 +90,6 @@ export interface LabResult {
   cells: Array<{ label: string; x: number; z: number; anatomy?: Anatomy; parts: [number, number]; footprint: [number, number, number, number]; groundHeight: number; floors: number }>;
 }
 
-/** The lab as an ordinary PixelCity. Cells sit on paved pads, fronts facing +z. */
 export function generateSurfaceLab(kitApi: LabKit, base: SiteFingerprint, o: { set: LabSet; style?: ArchStyle; time?: TimeOfDay; flat?: boolean }): LabResult {
   const g0 = deriveGrammar(base);
   const grammar = { ...g0, time: o.time ?? "day" };

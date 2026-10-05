@@ -1,29 +1,18 @@
 import { firstColor } from "./css-signals";
 
-/**
- * Global style signals: how a site *feels*, read from its CSS. Regex-level and cheap; we
- * never compute styles. These feed the SiteFingerprint (roundness, airiness, ornament,
- * typography, darkness) — the parts of a site's identity the DOM alone doesn't carry.
- */
 export interface StyleSignals {
   cssBytes: number;
-  /** border-radius values in px. */
   radius: { count: number; median: number; pill: number };
-  /** padding / margin / gap values in px. */
   spacing: { count: number; median: number; large: number };
   shadows: number;
   gradients: number;
   animations: number;
   transitions: number;
-  /** Weighted votes; body/heading rules count more than incidental ones. */
   fonts: { serif: number; sans: number; mono: number };
   uppercase: number;
-  /** Best guess of the page background (#rrggbb). */
   pageBg?: string;
   darkScheme: boolean;
-  /** Presentational HTML: bgcolor/align attributes, <font>, <center>, layout tables. */
   legacy: number;
-  /** Share of class names that look like utility classes (Tailwind and friends). */
   utility: number;
 }
 
@@ -31,7 +20,6 @@ export interface MarkupSignals {
   legacy: number;
   utilityClasses: number;
   totalClasses: number;
-  /** Values implied by utility classes (Tailwind-style), in px. */
   utilSpacing: number[];
   utilRadius: number[];
   utilFonts: { serif: number; sans: number; mono: number };
@@ -39,9 +27,8 @@ export interface MarkupSignals {
 
 const TW_RADIUS: Record<string, number> = { none: 0, sm: 2, "": 4, md: 6, lg: 8, xl: 12, "2xl": 16, "3xl": 24, full: 9999 };
 
-/** Reads the design intent encoded in utility class names (p-6, gap-12, rounded-xl, font-serif). */
 export function readUtilityClass(c: string, into: MarkupSignals): void {
-  const cls = c.replace(/^([a-z0-9]+:)+/, ""); // drop sm:/md:/hover: variants
+  const cls = c.replace(/^([a-z0-9]+:)+/, "");
   const sp = /^-?(?:p|px|py|pt|pb|pl|pr|m|mx|my|mt|mb|ml|mr|gap|gap-x|gap-y|space-x|space-y)-(\d+(?:\.\d+)?)$/.exec(cls);
   if (sp) {
     into.utilSpacing.push(parseFloat(sp[1]) * 4);
@@ -67,7 +54,7 @@ function toPx(v: string): number | null {
   const n = parseFloat(m[1]);
   if (!Number.isFinite(n)) return null;
   if (m[2] === "rem" || m[2] === "em") return n * 16;
-  if (m[2] === "%") return n >= 50 ? 9999 : n; // 50% radius = circle
+  if (m[2] === "%") return n >= 50 ? 9999 : n;
   return n;
 }
 
@@ -77,7 +64,6 @@ function median(xs: number[]): number {
   return s[Math.floor(s.length / 2)];
 }
 
-/** Custom properties, so `padding: var(--space-8)` reads as the 64px it is. */
 function varResolver(css: string): (v: string) => string {
   const vars = new Map<string, string>();
   for (const m of css.matchAll(/(--[\w-]+)\s*:\s*([^;}]+)/g)) if (!vars.has(m[1])) vars.set(m[1], m[2].trim());
@@ -121,10 +107,8 @@ export function extractStyleSignals(css: string[], markup: MarkupSignals, themeC
   for (const m of all.matchAll(/([^{}]*)\{[^{}]*?font(?:-family)?\s*:\s*([^;}]+)/gi)) {
     const sel = m[1].trim().toLowerCase();
     const decl = resolve(m[2]);
-    // Only real family lists (a shorthand like `font: inherit` says nothing).
     if (!/[a-z]{3,}/i.test(decl) || /^\s*(inherit|initial|unset|var\()/i.test(decl)) continue;
     const weight = /(^|[\s,])(html|body|:root)\b/.test(sel) ? 10 : /\bh[1-3]\b|title|heading|headline|display/.test(sel) ? 6 : 1;
-    // The generic fallback at the end of the stack is the most honest signal of intent.
     const stack = decl.replace(/!important/i, "").trim();
     const generic = /(?:^|,)\s*(serif|sans-serif|monospace|system-ui|ui-sans-serif|ui-serif|ui-monospace)\s*$/i.exec(stack)?.[1]?.toLowerCase();
     if (generic === "monospace" || generic === "ui-monospace" || MONO_RE.test(stack.split(",")[0])) fonts.mono += weight;
@@ -132,9 +116,7 @@ export function extractStyleSignals(css: string[], markup: MarkupSignals, themeC
     else fonts.sans += weight;
   }
 
-  // Page background: explicit html/body/:root rules first, then background-ish custom properties.
   let pageBg: string | undefined;
-  // Only unqualified html/body/:root rules: `html[data-theme=light] body` is an alternate theme.
   for (const m of all.matchAll(/(^|})\s*((?:html|body|:root)(?:\s*,\s*(?:html|body|:root))*)\s*\{([^{}]*)\}/gi)) {
     const bg = /(?:^|;)\s*background(?:-color)?\s*:\s*([^;]+)/i.exec(m[3]);
     const c = bg && firstColor(resolve(bg[1]));

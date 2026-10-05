@@ -1,29 +1,17 @@
-/**
- * Construction choreography: when each part of a city rises, and what the caption says
- * meanwhile. Presentation only — it re-times the existing parts, never adds or changes them.
- *
- * Order: lots → streets → structures (in reading order) → the landmark → signs & real
- * images → trees and street furniture → lights. Every number in a caption is a count of
- * something in this city or its page; nothing is decorative.
- */
 import type { NormalizedDocument } from "../model/types";
 import { Surf, type Part, type PixelCity } from "./types";
 
 export interface BuildStage {
   key: "survey" | "lots" | "streets" | "structures" | "landmark" | "signs" | "trees" | "lights" | "done";
-  /** Seconds after the city's data arrives. */
   at: number;
   label: string;
   detail?: string;
 }
 
 export interface BuildPlan {
-  /** New build delay per part, aligned with `city.parts`. */
   delays: number[];
   stages: BuildStage[];
-  /** Windows and lamps switch on over [lightsAt, lightsAt + 0.7]. */
   lightsAt: number;
-  /** Traffic starts. */
   lifeAt: number;
   done: number;
 }

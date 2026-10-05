@@ -17,11 +17,6 @@ interface Pending {
   floor: number;
 }
 
-/**
- * Fragments (instanced cubes with simple physics that settle into rubble) and plaster dust
- * (soft points that rise and fade). Spawns are scheduled at each structure's own collapse
- * time, so the debris follows the shockwave.
- */
 export function Debris({ runtime, dustColor }: { runtime: CityRuntime; dustColor: THREE.Color }) {
   const sim = useMemo(() => {
     const geo = new THREE.BoxGeometry(1, 1, 1);
@@ -36,14 +31,14 @@ export function Debris({ runtime, dustColor }: { runtime: CityRuntime; dustColor
 
     const dustGeo = new THREE.BufferGeometry();
     const dustPos = new Float32Array(MAX_DUST * 3);
-    const dustData = new Float32Array(MAX_DUST * 2); // age01, size
+    const dustData = new Float32Array(MAX_DUST * 2);
     dustGeo.setAttribute("position", new THREE.BufferAttribute(dustPos, 3).setUsage(THREE.DynamicDrawUsage));
     dustGeo.setAttribute("aData", new THREE.BufferAttribute(dustData, 2).setUsage(THREE.DynamicDrawUsage));
     const dustMat = new THREE.ShaderMaterial({
       transparent: true,
       depthWrite: false,
       uniforms: { uColor: { value: dustColor }, uScale: { value: 600 } },
-      vertexShader: /* glsl */ `
+      vertexShader: `
         attribute vec2 aData;
         varying float vAlpha;
         uniform float uScale;
@@ -54,7 +49,7 @@ export function Debris({ runtime, dustColor }: { runtime: CityRuntime; dustColor
           gl_PointSize = aData.y * (0.6 + age * 1.6) * uScale / -mv.z;
           gl_Position = projectionMatrix * mv;
         }`,
-      fragmentShader: /* glsl */ `
+      fragmentShader: `
         uniform vec3 uColor;
         varying float vAlpha;
         void main() {
@@ -175,7 +170,6 @@ export function Debris({ runtime, dustColor }: { runtime: CityRuntime; dustColor
     const dt = Math.min(rawDt, 0.05);
     const now = runtime.clock;
 
-    // Release scheduled spawns.
     if (sim.pending.length) {
       const keep: Pending[] = [];
       for (const p of sim.pending) {
@@ -185,7 +179,6 @@ export function Debris({ runtime, dustColor }: { runtime: CityRuntime; dustColor
       sim.pending = keep;
     }
 
-    // Fragments
     let moving = false;
     for (let i = 0; i < sim.used; i++) {
       if (sim.rest[i]) continue;
@@ -218,7 +211,6 @@ export function Debris({ runtime, dustColor }: { runtime: CityRuntime; dustColor
     }
     if (moving) sim.mesh.instanceMatrix.needsUpdate = true;
 
-    // Dust
     let dustAlive = false;
     for (let i = 0; i < MAX_DUST; i++) {
       if (sim.dustLife[i] <= 0) continue;

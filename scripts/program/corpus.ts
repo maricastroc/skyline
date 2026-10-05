@@ -1,4 +1,3 @@
-// Baseline of the program differentiation pass: npx tsx scripts/program/corpus.ts > docs/program/corpus-before.txt
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { generateKitDistrict } from "../../src/lib/pixelcity/kit/district";

@@ -1,7 +1,3 @@
-// Records the frozen foundation's city hashes (kit-v9, every corpus page, day / night / flat, seed 7):
-//   npx tsx scripts/foundation/record.ts
-// Run once, at the end of the foundation (kit-v9 unchanged since the freeze); test:foundation then
-// checks that kit-v9 still reproduces them, independently of the current kit.
 import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";
 import { generateKitDistrict } from "../../src/lib/pixelcity/kit-v9/district";

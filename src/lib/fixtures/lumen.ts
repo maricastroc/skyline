@@ -1,4 +1,3 @@
-/** The sample landing page from the original prototype, kept as an offline fixture. */
 export const LUMEN_SAMPLE_HTML = `<!doctype html><html lang="pt-BR"><head><title>Lumen — Construa mais rápido</title>
 <meta name="theme-color" content="#3b5bdb">
 <style>.top{position:sticky;top:0;background:#3b5bdb}.cta{background:#f08c00;color:#fff}.featured{border-color:#3b5bdb}</style>

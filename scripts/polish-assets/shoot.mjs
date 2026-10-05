@@ -1,21 +1,14 @@
-// Visual polish round 2 (rooftop condensers, structured billboards): BEFORE × AFTER captures,
-// 1440×900 @2x, seed 7, no overlays. BEFORE = ?v=12 (kit-v12, byte-identical to polishAssets:
-// false) drawn by the current renderer; AFTER = the current kit.
-//   node scripts/polish-assets/shoot.mjs [before|after …]      Env: BASE, OUT, CASES, FORCE.
-// Writes <OUT>/<variant>/<case>.png (default OUT: docs/screenshots/polish-assets).
 import { existsSync, mkdirSync } from "node:fs";
 import puppeteer from "puppeteer-core";
 
 const BASE = process.env.BASE ?? "http://localhost:3001";
 const OUT = process.env.OUT ?? "docs/screenshots/polish-assets";
 const CASES = {
-  // rooftop plant
   "pg-city": "page=oldweb&time=day",
   "ikea-city": "page=shop&time=day",
   "pg-street": "page=oldweb&time=day&view=street&focus=0,0",
   "ikea-street": "page=shop&time=day&view=street&focus=0,0",
   "guardian-street": "page=news&time=day&view=street&focus=0,0",
-  // billboards (Guardian City also shows its rooftop plant)
   "guardian-city": "page=news&time=day",
   "guardian-night": "page=news&time=night",
   "linear-city": "page=saas&time=day",

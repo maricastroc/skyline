@@ -8,7 +8,6 @@ import type { CityRuntime } from "@/components/experience/runtime";
 import { useSkyline } from "@/components/experience/store";
 import { ROLE_LABEL } from "@/components/hud/format";
 
-/** A drafting-style bounding box around whatever the pointer targets. */
 export function HoverOutline({ runtime }: { runtime: CityRuntime }) {
   const hover = useSkyline((s) => s.hover);
   const mode = useSkyline((s) => s.mode);
@@ -50,7 +49,6 @@ export function HoverOutline({ runtime }: { runtime: CityRuntime }) {
   );
 }
 
-/** District names pinned to the front-left corner of each top-level plinth, like a site plan. */
 export function DistrictLabels({ runtime }: { runtime: CityRuntime }) {
   const [, force] = useState(0);
   useEffect(() => runtime.onChange(() => force((v) => v + 1)), [runtime]);
@@ -65,7 +63,6 @@ export function DistrictLabels({ runtime }: { runtime: CityRuntime }) {
       const n = nodes[id];
       const b = runtime.city.bounds[id];
       if (!b || !Number.isFinite(b.min[0])) continue;
-      // Only districts big enough to read as a place.
       if ((b.max[0] - b.min[0]) * (b.max[2] - b.min[2]) < span * span * 0.035) continue;
       const pos: [number, number, number] = [b.min[0] + 0.4, runtime.city.anchor[id][1] + 0.2, b.max[2] - 0.6];
       if (out.some((o) => Math.hypot(o.pos[0] - pos[0], o.pos[2] - pos[2]) < span * 0.16)) continue;

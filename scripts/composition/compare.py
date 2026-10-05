@@ -1,4 +1,3 @@
-"""BEFORE (kit-v6, docs/e2e) × AFTER (docs/composition) tables: python3 scripts/composition/compare.py > docs/composition/tables.md"""
 import json, statistics as st, sys, os
 sys.path.insert(0, "scripts/e2e")
 import numpy as np
@@ -41,7 +40,6 @@ for l in ("composition", "massing"):
 for view in ("flat", "city"):
     print(f"| ρ semantics ↔ pixels {view} | {rho(sem, [vd(vb, view, a, b) for a, b in pairs]):.2f} | {rho(sem, [vd(va, view, a, b) for a, b in pairs]):.2f} |")
     print(f"| mean page↔page pixels {view} | {st.mean([vd(vb, view, a, b) for a, b in pairs]):.2f} | {st.mean([vd(va, view, a, b) for a, b in pairs]):.2f} |")
-# Seed noise (city): craigslist re-measured with the new kit; the other 13 cities are byte-identical.
 med = np.array(va["views"]["city"]["componentMedians"])
 d8 = float((comps(features("docs/screenshots/composition/after/directory-city.png"), features("docs/screenshots/composition/after/directory-city-seed8.png")) / med).mean())
 seedB = vb["views"]["city"]["seed8SamePage"]["per"]; seedA = dict(seedB); seedA["directory"] = d8

@@ -1,8 +1,3 @@
-// Simple-index experiment (program differentiation pass), kit-v7 → current:
-//   npx tsx scripts/program/experiment.ts > docs/program/experiment.md
-// Uses BEFORE × AFTER (volumes and land), the reason of every use, the fallback share, which
-// territories and buildings changed, seed stability, and that nothing but the changed buildings
-// moved (normal and flat): parts outside them byte-identical, same footprints and heights.
 import { readFileSync } from "node:fs";
 import { generateKitDistrict, newTrace, type KitTrace } from "../../src/lib/pixelcity/kit/district";
 import { realPage } from "../../src/lib/pixelcity/kit/real-page";
@@ -28,7 +23,6 @@ let changedVolumes = 0;
 let totalBuildings = 0;
 const changedTerritories: string[] = [];
 
-/** Land of each building: its piece's lots shared among the piece's buildings. */
 function landOf(t: KitTrace | KitTraceV7) {
   const out = new Map<number, number>();
   t.pieces.forEach((pc) => {
@@ -37,12 +31,10 @@ function landOf(t: KitTrace | KitTraceV7) {
   });
   return out;
 }
-/** Parts outside the given building ranges, in order. */
 const outside = (parts: Part[], ranges: Array<[number, number]>) => parts.filter((_, i) => !ranges.some(([a, b]) => i >= a && i < b));
 const bbox = (parts: Part[]) => {
   let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity, y1 = -Infinity;
   for (const p of parts) {
-    // Half extents in plan of a part turned by rotY.
     const c = Math.abs(Math.cos(p.rotY ?? 0));
     const s = Math.abs(Math.sin(p.rotY ?? 0));
     const hx = (c * p.w + s * p.d) / 2;
@@ -79,7 +71,6 @@ for (const e of DATASET) {
     const ub = A0.anatomy.map((x) => x.use);
     if (ua.join() !== ub.join()) changed.push(i);
     for (const x of B.anatomy) after.push({ page: e.id, use: x.use, reason: B.program.reason, land: (la.get(i) ?? 0) / Math.max(1, B.anatomy.length) });
-    // kit-v7 had no reasons: the same table, without the simple-index rule.
     for (const x of A0.anatomy) before.push({ page: e.id, use: x.use, reason: A0.comp === "parcelled" && x.use === "commercial" ? FALLBACK : "other", land: (lb.get(i) ?? 0) / Math.max(1, A0.anatomy.length) });
   });
   changedBuildings += changed.length;
@@ -91,8 +82,6 @@ for (const e of DATASET) {
     const it = T.items!;
     changedTerritories.push(`| ${NAMES[e.id]} | ${T.kind} | ${[...new Set(bs.map((i) => ta.buildings[i].comp))].join("+")} | ${it.count} × \`${it.shape}\`, ${it.linksPerItem} link, ${Math.round(it.charsPerItem)} chars, titled ${Math.round(it.titledShare * 100)}% (link ${Math.round(it.linkTitledShare * 100)}%) | ${bs.length} | ${[...new Set(bs.map((i) => ta.buildings[i].P.family))].join(", ")} | ${(bs.reduce((s, i) => s + ta.buildings[i].w, 0) / bs.length).toFixed(1)} |`);
   }
-  // Nothing but the changed buildings moved: normal and flat.
-  // Massing inputs: the changed buildings' programs are identical apart from the use and its reason.
   const strip = (P: object) => {
     const c = { ...(P as Record<string, unknown>) };
     delete c.use;
@@ -100,14 +89,10 @@ for (const e of DATASET) {
     return JSON.stringify(c);
   };
   const programs = changed.every((i) => strip(ta.buildings[i].P) === strip(tb.buildings[i].P));
-  // Normal: trace ranges index the output parts. Signs are compared by count only: the 512² atlas drops a full city's last signs, so fewer signs
-  // in the changed buildings lets signs further on appear (an atlas effect, not a change there).
   const noRect = (ps: Part[]) => JSON.stringify(ps.filter((q) => q.mesh !== "sign"));
   const ra = changed.map((i) => ta.buildings[i].parts);
   const rb = changed.map((i) => tb.buildings[i].parts);
   const sameNormal = noRect(outside(a.parts, ra)) === noRect(outside(b.parts, rb));
-  // Flat drops signs, sprites and glows after generation: ranges are mapped onto the flat list
-  // (checked: flat = the normal parts, filtered and recoloured).
   const keep = (q: Part) => q.mesh !== "sign" && q.mesh !== "sprite" && q.mesh !== "glow";
   const fa = run(7, true);
   const geom = (ps: Part[]) => JSON.stringify(ps.map((q) => [q.mesh, q.x, q.y, q.z, q.w, q.h, q.d, q.rotY]));
@@ -135,7 +120,6 @@ for (const e of DATASET) {
   })) : 0;
   const heights = changed.map((_, k) => bbox(a.parts.slice(...ra[k]).filter(keep)).y1 - bbox(b.parts.slice(...rb[k]).filter(keep)).y1);
   integrity.push(`| ${NAMES[e.id]} | ${changed.length ? (programs ? "identical" : "**differ**") : "–"} | ${sameNormal ? "identical" : "**differs**"} | ${sameFlat ? "identical" : "**differs**"} | ${changed.length ? `${inChanged(b.parts.length, rb)} → ${inChanged(a.parts.length, ra)}` : "–"} | ${b.parts.length} → ${a.parts.length} | ${fa.b.parts.length} → ${fa.a.parts.length} | ${b.signs.length} → ${a.signs.length} | ${changed.length ? foot.toFixed(2) : "–"} | ${changed.length ? `${Math.min(...heights).toFixed(2)} … ${Math.max(...heights).toFixed(2)}` : "–"} |`);
-  // Seeds 7, 8, 9: the same buildings change, to the same uses.
   const sig = (t: KitTrace | KitTraceV7) => JSON.stringify(t.buildings.map((x) => x.anatomy.map((y) => y.use)));
   const sets = [7, 8, 9].map((s) => {
     const r = run(s);

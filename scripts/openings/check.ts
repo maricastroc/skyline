@@ -1,7 +1,3 @@
-// Acceptance tests of the openings depth pass: npm run test:openings
-// The opening model (kit/openings.ts, mirrored by the shader), the Surface Lab, real snapshots.
-// The current kit runs with `polishAssets: false` (visual polish off): this suite checks its own
-// pass against the kits before it; the polish is checked by `npm run test:polish`.
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { deriveGrammar, type ArchStyle } from "../../src/lib/pixelcity/grammar";
@@ -28,9 +24,8 @@ const check = (name: string, ok: boolean, detail = "") => {
 };
 const sha = (s: string) => createHash("sha1").update(s).digest("hex");
 const snap = (id: string) => JSON.parse(readFileSync(`docs/real-pages/snapshots/${id}.json`, "utf8"));
-const OPENING_MASK = ~(OPENING - 1); // every bit from 1024 up belongs to the openings pass
+const OPENING_MASK = ~(OPENING - 1);
 
-/* ───────────── The opening model ───────────── */
 console.log("# Opening anatomy (the rectangles and the recess solver the shader uses)");
 {
   let inside = 0;
@@ -42,8 +37,7 @@ console.log("# Opening anatomy (the rectangles and the recess solver the shader 
         for (const attic of [false, true]) {
           const o = punchedOpening(bayCode, { pattern, tall, attic });
           total++;
-          // Opening and its frame ring inside the bay; opening inside the floor.
-          const head = o.y1 + FRAME_W * 1.7 < 0.49 ? FRAME_W * 1.7 : FRAME_W; // as the shader
+          const head = o.y1 + FRAME_W * 1.7 < 0.49 ? FRAME_W * 1.7 : FRAME_W;
           const ok = o.cx + o.hw + FRAME_W <= o.bay / 2 + 1e-9 && o.y0 - FRAME_W >= 0 && o.y1 + head <= 0.5;
           if (ok) inside++;
           else worst = `bay ${o.bay} pattern ${pattern}${tall ? " tall" : ""}${attic ? " attic" : ""}`;
@@ -51,8 +45,6 @@ console.log("# Opening anatomy (the rectangles and the recess solver the shader 
   check("opening + frame ring stay inside the bay and the floor", inside === total, `${inside}/${total}${worst ? `, fails: ${worst}` : ""}`);
 }
 {
-  // Sample the solver along rays from the opening's centre: the layers must appear in order
-  // glass → (sash) → reveal → outside, never glass after reveal.
   const views: Array<[number, number, number]> = [
     [0.7, 0.5, 0.6],
     [-0.7, 0.5, 0.6],
@@ -100,7 +92,6 @@ console.log("# Opening anatomy (the rectangles and the recess solver the shader 
   check("glass centre seen as glass at street zoom", q.part === 1);
 }
 
-/* ───────────── Lab: program decides the depth, style the expression ───────────── */
 console.log("\n# Program and style (Surface Lab, same lot)");
 const fp = vacantFingerprint();
 const pal = buildGamePalette(fp, deriveGrammar(fp));
@@ -123,7 +114,6 @@ for (const use of USES) {
   check("curtain walls stay flush", at("office", "tech").opening.depth === "flush");
 }
 {
-  // Ground glazing never above the ground floor (or the glazed base), in every lab building.
   let zones: Array<string | null> = [];
   const api: LabKit = {
     Kit: class extends Kit {
@@ -158,7 +148,6 @@ for (const use of USES) {
   check("recessed shop / lobby glazing stays in the ground floor or glazed base", above === 0 && glazing > 0, `${glazing} glazing parts${above ? `, ${above} above: ${worst}` : ""}`);
 }
 
-/* ───────────── Real pages: frozen, flat, families, determinism ───────────── */
 console.log("\n# Real pages against the frozen surface-grammar kit (kit-v5)");
 const before = new Map<string, string>();
 for (const l of readFileSync("docs/openings/corpus-before.txt", "utf8").split("\n")) {
@@ -180,8 +169,6 @@ for (const e of DATASET) {
     const a = v5(p5.fp, { profile: p5.plan, time: mode === "night" ? "night" : "day", seed: 7, flat: mode === "flat" });
     if (sha(JSON.stringify([a.parts, a.signs])) === before.get(`${mode}/${e.id}`)) frozen++;
     for (const q of a.parts) maxV5 = Math.max(maxV5, q.variant ?? 0);
-    // Without the intra-territory and item descriptors (later passes that change structured
-    // parcelled land and the use of simple indexes).
     const b = generateKitDistrict(p6.fp, { polishAssets: false, profile: withoutItems(withoutStructure(p6.plan)), time: mode === "night" ? "night" : "day", seed: 7, flat: mode === "flat", artDirection: false });
     if (mode === "flat") {
       if (sha(JSON.stringify([b.parts, b.signs])) === before.get(`flat/${e.id}`)) flatSame++;

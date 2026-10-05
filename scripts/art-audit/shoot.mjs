@@ -1,7 +1,3 @@
-// Art-direction audit captures (1440×900 @2x, same camera, day, seed 7 unless the view says otherwise):
-//   node scripts/art-audit/shoot.mjs [view …]
-// Views: city · street · flat (massing only) · own (city at the page's own time of day) · wide (city, zoom 0.55)
-// Writes docs/screenshots/art-audit/<view>/<page>.png. Env: BASE, CHROME_PATH, PAGES (comma list), FORCE.
 import { existsSync, mkdirSync } from "node:fs";
 import puppeteer from "puppeteer-core";
 

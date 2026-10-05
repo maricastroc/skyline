@@ -1,6 +1,3 @@
-// Identity test, picture half: same-angle comparison + City View + landmark inspector per site.
-//   node scripts/identity.mjs
-// Env: BASE (default http://localhost:3000), CHROME_PATH, OUT (default docs/screenshots/semantic)
 import { mkdirSync } from "node:fs";
 import puppeteer from "puppeteer-core";
 
@@ -28,7 +25,7 @@ async function shoot(path, w, h, file, ready, settle = 7000) {
   page.on("console", (m) => m.type() === "error" && console.log("[page]", m.text().slice(0, 300)));
   await page.goto(`${BASE}${path}`, { waitUntil: "domcontentloaded" });
   await page.waitForFunction(ready, { timeout: 120000 });
-  await sleep(settle); // build-up animation, billboard images, camera glide
+  await sleep(settle);
   await page.screenshot({ path: `${OUT}${file}` });
   console.log("shot", `${OUT}${file}`);
   await page.close();

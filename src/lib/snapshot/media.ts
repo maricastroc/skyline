@@ -1,26 +1,3 @@
-/**
- * Content media vs incidental imagery.
- *
- * Every element the model counts as an image (an <img>, a <picture>, an element with an
- * inline background image, or anything with role="img") gets one verdict. The question is
- * only about the page: does this image carry content, or is it there for layout, decoration or
- * interface? Rules, in order (the first that applies decides):
- *
- *   spacer    a declared width or height of 2 px or less: layout spacers, tracking pixels
- *   icon      largest declared side ≤ 32 px AND (it has no text alternative, OR the same image
- *             repeats ≥ 3 times on the page, OR it is an inline vector graphic): bullets, UI
- *             icons, avatars at icon size. A small image with its own description that appears
- *             once (a described thumbnail, a flag in a list) stays content.
- *   repeated  no declared size, no text alternative, and the same image ≥ 5 times on the page:
- *             bullets, separators, rating stars
- *   named-ui  no declared size, and its class or file name is interface vocabulary (avatar,
- *             icon, emoji, sprite, spinner, badge, bullet, spacer, pixel)
- *   content   everything else
- *
- * A text alternative is a non-empty alt, aria-label or title. alt="" is the HTML convention
- * for "decorative", which is why it counts as no alternative. Nothing here depends on any
- * particular site.
- */
 import type { SnapshotNode } from "./types";
 
 export type ImageVerdict = "content" | "spacer" | "icon" | "repeated" | "named-ui";
@@ -37,7 +14,6 @@ const UI_WORD = /(^|[^a-z])(avatar|icon|emoji|sprite|spinner|badge|bullet|spacer
 
 const sourceOf = (s: SnapshotNode) => s.image ?? s.attrs?.src ?? (s.attrs?.role === "img" && s.attrs?.["aria-label"] ? `inline:${s.attrs["aria-label"]}` : undefined);
 
-/** How many times each image source appears on the page. */
 export function countSources(root: SnapshotNode): Map<string, number> {
   const m = new Map<string, number>();
   const walk = (n: SnapshotNode) => {

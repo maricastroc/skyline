@@ -1,25 +1,13 @@
 // FROZEN: art direction C3, street life (the street-life kit, art direction baseline). Do not edit.
-/**
- * Pixel people, generated — not drawn by hand. Each figure is 6×11 pixels in an 8×12 cell:
- * hair style, skin, top, bottoms (trousers or skirt), shoes and an optional bag come from a
- * hash of the figure's index; poses are stand, two walk frames and sit. The kit addresses
- * figures by (variant, pose) and the scene paints the same layout into a texture.
- *
- * Why sprites here and nowhere else: at City View a person is ~11 render pixels tall. A
- * 3-box figure at that size is a blob; a designed pixel figure reads as a person, costs one
- * quad, and can carry a pose.
- */
 import { h01 } from "../hash";
 
 export const PEOPLE_ATLAS = { w: 256, h: 128, cw: 8, ch: 12 } as const;
 export const PERSON_VARIANTS = 48;
 export type Pose = "stand" | "walkA" | "walkB" | "sit";
 const POSES: Pose[] = ["stand", "walkA", "walkB", "sit"];
-/** World size of a figure cell (tiles): ~0.72 of a floor, the miniature's usual exaggeration. */
 export const PERSON_H = 0.39;
 export const PERSON_W = (PERSON_H * PEOPLE_ATLAS.cw) / PEOPLE_ATLAS.ch;
 
-/** Atlas rect [x, y, w, h] (a negative width mirrors the figure). */
 export function personRect(variant: number, pose: Pose, flip = false): [number, number, number, number] {
   const idx = (variant % PERSON_VARIANTS) * POSES.length + POSES.indexOf(pose);
   const cols = PEOPLE_ATLAS.w / PEOPLE_ATLAS.cw;
@@ -67,7 +55,6 @@ function shade(hex: string, k: number): string {
   return `rgb(${f((n >> 16) & 255)},${f((n >> 8) & 255)},${f(n & 255)})`;
 }
 
-/** Paint every figure into a 2D context sized PEOPLE_ATLAS.w × PEOPLE_ATLAS.h (transparent). */
 export function drawPeopleAtlas(g: CanvasRenderingContext2D) {
   g.clearRect(0, 0, PEOPLE_ATLAS.w, PEOPLE_ATLAS.h);
   for (let v = 0; v < PERSON_VARIANTS; v++)
@@ -88,9 +75,8 @@ function drawPerson(g: CanvasRenderingContext2D, ox: number, oy: number, L: Look
   const topD = shade(L.top, 0.72);
   const botD = shade(L.bottom, 0.72);
   const sit = pose === "sit";
-  const dy = sit ? 2 : 0; // seated figures sit lower in the cell
+  const dy = sit ? 2 : 0;
 
-  // Head (rows 0–2) and hair.
   if (L.hairStyle === "bald") row(0 + dy, 2, 3, L.skin);
   else if (L.hairStyle === "cap") {
     row(0 + dy, 1, 4, L.top);
@@ -103,7 +89,6 @@ function drawPerson(g: CanvasRenderingContext2D, ox: number, oy: number, L: Look
     px(1, 2 + dy, L.hair);
     px(1, 3 + dy, L.hair);
   }
-  // Torso (rows 3–5), arms, hands.
   row(3 + dy, 1, 4, L.top);
   row(4 + dy, 1, 4, L.top);
   row(5 + dy, 1, 4, L.top);
@@ -119,14 +104,12 @@ function drawPerson(g: CanvasRenderingContext2D, ox: number, oy: number, L: Look
     px(5, 6 + dy, L.bag);
   }
   if (sit) {
-    // Thighs forward, shins down, feet.
     row(6 + dy, 1, 5, L.bottom);
     px(5, 7 + dy, botD);
     px(5, 8 + dy, L.shoes);
     px(4, 8 + dy, L.shoes);
     return;
   }
-  // Hips and legs (rows 6–9), shoes (row 10).
   if (L.skirt) {
     row(6, 1, 4, L.bottom);
     row(7, 0, 5, L.bottom);
@@ -144,7 +127,6 @@ function drawPerson(g: CanvasRenderingContext2D, ox: number, oy: number, L: Look
         px(4, y, botD);
       }
     } else {
-      // Stride: one leg forward, one back.
       const a = swing > 0 ? 0 : 1;
       const b = swing > 0 ? 4 : 3;
       for (const y of [7, 8, 9]) {

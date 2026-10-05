@@ -1,12 +1,4 @@
 // FROZEN: art direction C3, street life (the street-life kit, art direction baseline). Do not edit.
-/**
- * Controlled fixtures for the intra-territory composition pass (tests and /pixel/kit?groups=…).
- *
- * One parcelled territory holding the whole city: same land, same items, same program, same style
- * and seed — only its INTERNAL organisation changes. The structure descriptor is extracted from a
- * synthetic page (headed lists, through the real normalizer and structure.ts), so the fixture
- * exercises the same path as a real page from the descriptor on.
- */
 import type { SiteFingerprint } from "../../fingerprint/fingerprint";
 import { normalize } from "../../model/normalize";
 import type { DomSnapshot, SnapshotNode } from "../../snapshot/types";
@@ -15,7 +7,6 @@ import { structureOf } from "./structure";
 
 const el = (tag: string, o: Partial<SnapshotNode> = {}, children: SnapshotNode[] = []): SnapshotNode => ({ tag, text: 0, ...o, children });
 
-/** A page of headed link lists: sizes[i] links under the i-th <h4> (one size → one plain list). */
 export function headedListsPage(sizes: number[]): DomSnapshot {
   let n = 0;
   const link = () => el("a", { text: 10, sample: `item ${n}`, own: `item ${n}`, attrs: { href: `/i/${n++}` } });
@@ -37,7 +28,6 @@ export function groupFixture(sizes: number[], identity: SiteFingerprint): Plan {
     weight: 1,
     rawWeight: 1,
     repeat: 0,
-    // Fixed metrics: the land, the mix and the program never depend on the organisation.
     metrics: { chars: 1200, links: 120, images: 0, controls: 0, descendants: 260, inTables: 0, items: 0 },
     tier: 1,
     order: 1,

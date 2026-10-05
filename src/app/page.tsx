@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 
-/** The pixel city is the app; `/?url=…` keeps working and lands there. The maquette is at /maquette. */
 export default async function Home({ searchParams }: PageProps<"/">) {
   const sp = await searchParams;
   const qs = new URLSearchParams();

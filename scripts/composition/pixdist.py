@@ -1,5 +1,3 @@
-"""Pixel distance between captures with the end-to-end normalisation (docs/e2e/visual.json).
-python3 scripts/composition/pixdist.py VIEW a.png b.png [c.png d.png …] → one distance per pair."""
 import sys, json, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "e2e"))
 import numpy as np

@@ -36,42 +36,29 @@ const PixelScene = dynamic(() => import("./PixelScene"), { ssr: false });
 
 const CITY: ViewState = { azimuth: 45, zoom: 0.9, pan: [0, 0] };
 
-/**
- * Which generator: 1 the first kit, 2 the massing pass with cycled minors, 3 the semantic
- * allocation pass, 4 the semantic hygiene pass, 5 the surface grammar pass, 6 the openings depth
- * pass, 7 the intra-territory composition pass (all frozen), 8 the current one.
- */
 export type KitSource = { v: 1 } | { v: 2; profile: ProfileNameV2 | ProfileV2 } | { v: 3; profile: ProfileNameV3 | PlanV3 } | { v: 4; profile: ProfileNameV4 | PlanV4 } | { v: 5; profile: ProfileNameV5 | PlanV5 } | { v: 6; profile: ProfileNameV6 | PlanV6 } | { v: 7; profile: ProfileNameV7 | PlanV7 } | { v: 8; profile: ProfileNameV8 | PlanV8 } | { v: 9; profile: ProfileNameV9 | PlanV9 } | { v: 10; profile: ProfileNameV10 | PlanV10 } | { v: 11; profile: ProfileNameV11 | PlanV11 } | { v: 12; profile: ProfileNameV12 | PlanV12 } | { v: 13; profile: ProfileName | Plan };
 
 export interface KitViewProps {
   fp: SiteFingerprint;
-  /** Omitted: the profile's own time of day (from its identity). */
   time?: TimeOfDay;
   people: PeopleMode;
   view: "city" | "street" | "close";
   source: KitSource;
   flat: boolean;
-  /** Kit seed (decoration and per-building choices); defaults to the kit's 7. */
   seed?: number;
-  /** Provenance view (current generator only): territories in debug colours, plus a legend. */
   provenance?: boolean;
-  /** Surface inspector (current generator only): click a building to read its anatomy and why. */
   inspect?: boolean;
-  /** Street-role view (current generator only, art direction C1): streets in their role colours, plus a legend. */
   streets?: boolean;
-  /** Street / close views: world point to look at and zoom (defaults: the view's own). */
   focus?: [number, number];
   zoom?: number;
 }
 
-/** The prototype district in the regular scene, camera and post — no UI (except the provenance legend). */
 export function KitView({ fp, time, people, view, source, flat, seed, provenance, inspect, streets, focus, zoom }: KitViewProps) {
   const [picked, setPicked] = useState<number | null>(null);
   const { city, trace } = useMemo(() => {
     if (source.v === 1) {
       const c = generateKitDistrictV1(fp, { time, people });
       if (!flat) return { city: c, trace: null };
-      // Same silhouette treatment as v2, for a fair before/after.
       const grey: [number, number, number] = [0.62, 0.62, 0.66];
       return { city: { ...c, signs: [], parts: c.parts.filter((q) => q.mesh !== "sign" && q.mesh !== "sprite" && q.mesh !== "glow").map((q) => ({ ...q, color: q.y + q.h > 0.4 ? grey : q.color, surf: 0, variant: 0, lit: 0 })) }, trace: null };
     }
@@ -89,7 +76,6 @@ export function KitView({ fp, time, people, view, source, flat, seed, provenance
     const tr: KitTrace = newTrace();
     const c = generateKitDistrict(fp, { time, people, profile: source.profile, flat, seed, provenance, streetRoles: streets, trace: tr });
     if (!inspect || flat || provenance || streets) return { city: c, trace: tr };
-    // Inspector: each building's parts answer picking as that building (node = trace index).
     const parts = c.parts.map((q) => ({ ...q, node: -1 }));
     tr.buildings.forEach((b, i) => {
       for (let k = b.parts[0]; k < b.parts[1]; k++) parts[k].node = i;
@@ -146,7 +132,6 @@ export function KitView({ fp, time, people, view, source, flat, seed, provenance
   );
 }
 
-/** Page column (reading order, height ∝ weight) beside a city column (height ∝ lots), same colours. */
 function Legend({ trace }: { trace: KitTrace }) {
   const plan = trace.plan!;
   const alloc = trace.alloc!;
@@ -191,7 +176,6 @@ function Legend({ trace }: { trace: KitTrace }) {
   );
 }
 
-/** Street roles: colour, count of the 24 inner segments and of the 16 on the outer ring. */
 function StreetLegend({ trace }: { trace: KitTrace }) {
   const segs = trace.streets ?? [];
   const roles = ["primary", "street", "lane", "pedestrian"] as const;

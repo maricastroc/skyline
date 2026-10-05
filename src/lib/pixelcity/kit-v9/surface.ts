@@ -1,29 +1,4 @@
 // FROZEN: semantic / architectural foundation v1 (final baseline after the narrow-lot institutional pass). Do not edit.
-/**
- * Architectural surface grammar: how a building's massing becomes a legible building.
- *
- * The massing (families, volumes, heights) is decided upstream and is not touched here. This
- * file decides, for one building, an ANATOMY:
- *
- *   GROUND  how it meets the street: frontage kind, units, entrances, transparency, awning,
- *           signage, corner entrance
- *   BASE    0–2 floors above the ground set apart (rusticated / banded / glazed)
- *   BODY    the façade rhythm: bay width, opening pattern (single, paired, vertical, sparse,
- *           ribbon, curtain), brick, tall openings, articulated end bays
- *   CROWN   how it ends against the sky: none / cornice / parapet / attic / emphasized top
- *   ROOF    zones: EDGE (parapet, cornice, railing, eaves), SERVICE (one grouped cluster),
- *           OCCUPIED (terrace, garden), ENERGY (solar), ARCHITECTURAL (the massing's roof family)
- *   CORNER  whether it stands on a corner, and what it does about it
- *
- * Decisions follow USE first (what the building is for), then STYLE only expresses them
- * (which cornice, which awning, which opening pattern, which topside the roof zones show).
- * The RNG only picks between equivalent alternatives (one more shop unit, a neighbouring bay
- * width for homes and shops, which side the first shop door / the service cluster takes, which
- * bay the fire escape is on), seeded by the program and the lot; every pick is in `variation`.
- *
- * USE comes from the composition (compose.ts sets it from the territory's organisation) or,
- * for synthetic programs, from the building's ground and family.
- */
 import type { ArchStyle } from "../grammar";
 import type { Awning, Family, Ground, Program, Signage } from "./buildings";
 import type { RoofFamily } from "./massing";
@@ -31,19 +6,10 @@ import { openingFor, type OpeningTreatment } from "./openings";
 
 export type Use = "residential" | "commercial" | "office" | "civic" | "institutional" | "industrial" | "service" | "kiosk";
 
-/**
- * Page signals that reach the surface. All four were dead at every coarser scale (validation
- * round: zero effect on territory, composition or massing), so using them here does not let
- * one variable drive the whole city. Page-level, 0..1.
- */
 export interface SurfaceSignals {
-  /** Share of repeated sibling runs → strictness of the façade rhythm. */
   regularity: number;
-  /** Headings per element → strength of the base / body / crown hierarchy. */
   headings: number;
-  /** Controls and calls to action → how active the commercial ground floor is. */
   interactivity: number;
-  /** Links per element → how finely a commercial frontage is segmented. */
   linkDensity: number;
 }
 export const NEUTRAL_SIGNALS: SurfaceSignals = { regularity: 0.5, headings: 0.5, interactivity: 0.5, linkDensity: 0.5 };
@@ -59,24 +25,17 @@ export interface Anatomy {
   crown: { kind: "none" | "cornice" | "parapet" | "attic" | "emphasized"; floors: number; cornice: "heavy" | "light" | "none" };
   roof: { edge: "parapet" | "cornice" | "railing" | "eaves" | "none"; service: "hvac" | "tank" | "vents" | "penthouse" | "chimneys" | "bulkhead" | "none"; occupied: "terrace" | "garden" | "none"; energy: "solar" | "none"; architectural: RoofFamily };
   corner: { condition: boolean; treatment: "entrance" | "wrap" | "turret" | "round" | "vertical" | "none" };
-  /** Detail families this building is eligible for, each with its reason. */
   details: string[];
-  /** Choices the RNG made, each among equivalent options (never a structural decision). */
   variation: string[];
-  /** What the building does NOT have, and the rule that left it out ("why no fire escape?"). */
   absent: string[];
-  /** Page signals that changed a decision (and how). */
   signals: string[];
-  /** What the style expressed. */
   style: string;
   why: string[];
-  /** Openings depth pass: how the façade's openings are recessed and framed (openings.ts). */
   opening: OpeningTreatment;
 }
 
 const PITCHED = new Set<RoofFamily>(["gable", "mansard", "sawtooth", "dome", "spire", "crown"]);
 
-/** Use, when compose did not set it: from the family, then the ground floor. */
 export function programUse(P: Program): Use {
   if (P.use) return P.use;
   const f: Family = P.family;
@@ -92,21 +51,13 @@ export function programUse(P: Program): Use {
 }
 
 export interface AnatomyInput {
-  /** Width of the main frontage and number of floors above the ground. */
   span: number;
   floors: number;
   groundHeight: number;
-  /** The building stands on a corner (two street frontages). */
   corner: boolean;
-  /** Roof family of the top volume (massing). */
   roof: RoofFamily;
   signals: SurfaceSignals;
   rand: (k: number) => number;
-  /**
-   * The volume is one unit of an attached series whose units are too narrow for a ceremonial
-   * entrance each (buildings.ts, CEREMONIAL_SPAN). `main`: the unit that carries the series'
-   * one marked entrance. Read by the institutional ground only.
-   */
   series?: { main: boolean };
 }
 
@@ -120,18 +71,14 @@ export function anatomyFor(P: Program, a: AnatomyInput): Anatomy {
   const S = a.signals;
   const tallish = a.floors >= 4;
 
-  /* GROUND */
   const awningFor = (): Awning => {
-    // Style expresses an awning that the use made eligible; equivalent options only.
     const opts: Awning[] = st === "classic" ? ["solid", "solid", "stripes"] : st === "retro" ? ["stripes", "stripes", "solid"] : st === "soft" ? ["solid", "stripes", "canopy"] : st === "modern" ? ["canopy"] : ["none"];
     return opts[Math.floor(a.rand(1) * opts.length) % opts.length];
   };
   let ground: Anatomy["ground"];
   switch (use) {
     case "commercial": {
-      // Frontage segmentation: link-dense pages cut the street front into more, narrower shops.
       const unitW = 3.2 - 1.4 * S.linkDensity;
-      // Equivalent subdivisions of the same frontage (one more, narrower shop) — the RNG picks.
       const u = Math.max(1, Math.round(a.span / unitW));
       const units = a.span / (u + 1) >= 1.3 && a.rand(2) < 0.5 ? u + 1 : u;
       variation.push(`shop units ${units} of {${u}${a.span / (u + 1) >= 1.3 ? `, ${u + 1}` : ""}}`);
@@ -153,8 +100,6 @@ export function anatomyFor(P: Program, a: AnatomyInput): Anatomy {
       why.push("ground: one axial, ceremonial entrance on a clean frontage — civic use");
       break;
     case "institutional":
-      // An attached series of narrow units reads as ONE institution: its marked entrance (and
-      // plaque) on the main unit, a plain door on each of the others (the units keep their rhythm).
       if (a.series && !a.series.main) {
         ground = { kind: "civic", height: a.groundHeight, units: 1, entrance: "secondary", transparency: 0.25, awning: "none", signage: "none", cornerEntrance: false };
         why.push("ground: a plain secondary door, mostly closed plinth — institutional row (its marked entrance is on the main unit)");
@@ -175,7 +120,6 @@ export function anatomyFor(P: Program, a: AnatomyInput): Anatomy {
       ground = { kind: "storefront", height: a.groundHeight, units: 1, entrance: "per-unit", transparency: 0.9, awning: "none", signage: "shop", cornerEntrance: false };
       break;
     default: {
-      // Residential: the ground floor is homes unless the lot is a corner shop (mixed use).
       const shop = P.ground === "shop" || P.ground === "cafe";
       const units = Math.max(1, Math.round(a.span / 3.4));
       ground = shop
@@ -186,7 +130,6 @@ export function anatomyFor(P: Program, a: AnatomyInput): Anatomy {
     }
   }
 
-  /* BASE: a distinct lower zone on taller buildings whose use has one. */
   const hierarchy = S.headings;
   let base: Anatomy["base"] = { floors: 0, treatment: "none" };
   if (use === "civic" || use === "institutional") base = { floors: a.floors >= 3 ? 1 : 0, treatment: "rusticated" };
@@ -198,17 +141,13 @@ export function anatomyFor(P: Program, a: AnatomyInput): Anatomy {
   }
   if (base.floors) why.push(`base: ${base.floors} floor(s), ${base.treatment}`);
 
-  /* BODY: use picks the opening logic, style its expression. */
   let body: Anatomy["body"];
-  // Bay width comes from the program; walk-up homes and shops may take a neighbouring width
-  // (neighbouring buildings rarely share one), offices / civic / institutional keep theirs.
   const bay0 = Math.floor(P.rhythm / 2) % 4;
   const free = use === "residential" || use === "commercial";
   const bay = free ? Math.max(0, Math.min(3, bay0 + (a.rand(3) < 0.34 ? -1 : a.rand(3) < 0.67 ? 0 : 1))) : bay0;
   if (free) variation.push(`bay ${0.5 + 0.25 * bay} of {${[bay0 - 1, bay0, bay0 + 1].filter((b) => b >= 0 && b <= 3).map((b) => 0.5 + 0.25 * b).join(", ")}}`);
   const brick = (P.rhythm & 1) === 1;
   const tall = (P.rhythm & 8) === 8;
-  // Strict rhythm on very regular pages; articulated end bays where the page is less regular.
   const accentEnds = a.span >= 3.6 && S.regularity < 0.45 && (use === "residential" || use === "civic" || use === "institutional" || use === "commercial");
   if (accentEnds) signals.push(`regularity ${S.regularity.toFixed(2)} → articulated end bays`);
   switch (use) {
@@ -230,17 +169,14 @@ export function anatomyFor(P: Program, a: AnatomyInput): Anatomy {
       why.push("body: few, regular openings — utilitarian");
       break;
     case "commercial":
-      // Lit by flat above the shops; whole lit floors stay the office signature.
       body = P.facade === "framed" ? { surf: "framed", pattern: st === "modern" || st === "tech" ? "paired" : "single", bay, tall, brick, accentEnds, litGroups: true } : { surf: P.facade, pattern: "single", bay, tall, brick, accentEnds: false, litGroups: false };
       why.push(`body: ${body.surf === "framed" ? `${body.pattern} windows above the shops` : P.facade}`);
       break;
     default:
       body = P.facade === "framed" ? { surf: "framed", pattern: st === "modern" || st === "tech" ? "paired" : "single", bay, tall, brick, accentEnds, litGroups: true } : { surf: P.facade, pattern: "single", bay, tall, brick, accentEnds: false, litGroups: false };
-      // Vertical openings stay the civic / office signature; homes keep domestic windows.
       why.push(`body: domestic ${body.pattern} windows, lit by flat at night`);
   }
 
-  /* CROWN: does the building need an ending? (use) — how is it expressed? (style) */
   let crown: Anatomy["crown"] = { kind: "none", floors: 0, cornice: "none" };
   const pitched = PITCHED.has(a.roof);
   if (use === "industrial" || use === "kiosk" || a.floors < 2) crown = { kind: "none", floors: 0, cornice: "none" };
@@ -254,8 +190,6 @@ export function anatomyFor(P: Program, a: AnatomyInput): Anatomy {
   }
   why.push(`crown: ${crown.kind}${crown.floors ? ` (top floor)` : ""}${crown.cornice !== "none" ? `, ${crown.cornice} cornice` : ""}`);
 
-  /* ROOF zones: the use decides which zones exist; the style's topside (chosen in the brief
-     among that style's equivalents) decides how they are expressed. */
   let service: Anatomy["roof"]["service"] = "none";
   let occupied: Anatomy["roof"]["occupied"] = "none";
   let energy: Anatomy["roof"]["energy"] = "none";
@@ -280,7 +214,7 @@ export function anatomyFor(P: Program, a: AnatomyInput): Anatomy {
         service = "hvac";
         break;
       default:
-        service = "none"; // civic: a deliberately clean roof
+        service = "none";
     }
     if (occupiable)
       occupied =
@@ -300,7 +234,6 @@ export function anatomyFor(P: Program, a: AnatomyInput): Anatomy {
   if (energy === "solar") details.push("solar array: solar topside (style) in the free roof zone");
   if (use === "civic") details.push(!pitched && a.span >= 3 ? "central skylight lantern, no plant: civic roof kept clean on purpose" : "no roof plant: civic roof kept clean on purpose");
 
-  /* CORNER */
   let corner: Anatomy["corner"] = { condition: a.corner, treatment: "none" };
   if (a.corner) {
     const t: Anatomy["corner"]["treatment"] =
@@ -309,8 +242,6 @@ export function anatomyFor(P: Program, a: AnatomyInput): Anatomy {
     why.push(`corner: ${t}`);
   }
 
-  /* Details that follow from the anatomy (eligibility, not chance). */
-  // Narrow walk-ups (one stair: homes, or shops with flats above) need a second way down.
   const walkup = use === "residential" || use === "commercial";
   if (walkup && st === "retro" && a.floors >= 4 && a.span >= 2.8 && a.span <= 4 && body.surf === "framed") details.push(`fire escape: narrow retro ${use} walk-up (one stair), 4+ floors, punched façade`);
   if (use === "residential" && (st === "modern" || st === "soft") && a.floors >= 4 && body.surf === "framed") details.push("balconies: residential, modern/soft, 4+ floors");
@@ -332,7 +263,6 @@ export function anatomyFor(P: Program, a: AnatomyInput): Anatomy {
   return A;
 }
 
-/** FRAMED / BANDS variant bits for a zone (see materials.ts). */
 export const PATTERN_BITS: Record<Pattern, number> = { single: 0, paired: 16, vertical: 32, sparse: 48 };
 export const ATTIC = 64;
 export const RUSTIC = 128;
@@ -342,7 +272,6 @@ export function bodyVariant(b: Anatomy["body"]): number {
   return (b.brick ? 1 : 0) + 2 * b.bay + (b.tall ? 8 : 0) + PATTERN_BITS[b.pattern] + (b.accentEnds ? END_BAYS : 0) + (b.litGroups ? LIT_GROUPS : 0);
 }
 
-/** The per-building surface trace: what each zone became and why (validation, provenance). */
 export interface SurfaceTrace {
   program: Use;
   groundFloor: string;

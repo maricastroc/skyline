@@ -1,5 +1,3 @@
-"""Visual polish audit (round 0), boards: python3 scripts/polish-audit/sheets.py
-(after node scripts/polish-audit/shoot.mjs). Writes docs/screenshots/polish-audit/sheets/."""
 import os
 import subprocess
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
@@ -18,7 +16,6 @@ for letter, view in (("A", "city"), ("B", "street"), ("C", "night"), ("D", "wide
     sheet(f"{letter}-{view}.jpg", 4, 900, [f"-:{VIEW[view]} · kit atual (= kit-v12), seed 7, sem overlays",
                                            *[f"{img(view, p)}:{NAME[p]}" for p in EIGHT]])
 
-# E: thumbnails at 240 px (City day): colour, then grey + blur (what survives as a shape).
 TW, TH, GAP, LH = 300, 188, 8, 22
 f = ImageFont.load_default(size=15)
 sh = Image.new("RGB", (8 * TW + 7 * GAP, 2 * (TH + LH) + GAP), (16, 16, 20))

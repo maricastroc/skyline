@@ -1,5 +1,3 @@
-// Art-direction audit (read-only): which page signals the frozen foundation already produces, per page,
-// next to what the scene does with them today. npx tsx scripts/art-audit/signals.ts
 import { readFileSync } from "node:fs";
 import { generateKitDistrict, newTrace } from "../../src/lib/pixelcity/kit/district";
 import { realPage } from "../../src/lib/pixelcity/kit/real-page";
@@ -19,11 +17,9 @@ for (const [id, name] of PAGES) {
   const city = generateKitDistrict(p.fp, { profile: p.plan, time: "day", trace });
   const g = trace.grammar!;
   const fp = p.fp;
-  // Composition shares by land (lots), from the allocation.
   const lots: Record<string, number> = {};
   for (const s of trace.alloc!.segments) lots[s.comp] = (lots[s.comp] ?? 0) + s.count;
   const comp = Object.entries(lots).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ${pct(v / 256)}`).join(", ");
-  // Heights and footprint of buildings (block parts only), open ground.
   const tops: number[] = [];
   let foot = 0;
   for (const b of trace.buildings) {
@@ -51,8 +47,6 @@ for (const [id, name] of PAGES) {
 }
 console.log(rows.join("\n"));
 
-// Dry run of one existing signal (no rendering): the 24 inner street segments of the 4×4 grid, by what
-// faces them. "interior" = the same territory on both sides for most of the segment; "frontier" otherwise.
 console.log("## inner street segments (24): interior / frontier, and what faces them\n");
 import { N } from "../../src/lib/pixelcity/kit/territory";
 for (const [id, name] of PAGES) {

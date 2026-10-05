@@ -1,6 +1,3 @@
-"""Metric ablations from docs/e2e/metrics.json: python3 scripts/e2e/ablate.py > docs/e2e/ablations.txt
-Drop one component group from a layer's distance and see how much page-to-page distance (and its
-rank agreement with semantics) remains."""
 import json, statistics as st
 m = json.load(open("docs/e2e/metrics.json")); ids = m["ids"]; B = m["breakdown"]
 pairs = [f"{ids[i]}~{ids[j]}" for i in range(len(ids)) for j in range(i + 1, len(ids))]
@@ -26,8 +23,6 @@ for L, drop in cases:
     v = layer(L, drop)
     print(f"{L:12} {('-' if not drop else ','.join(drop)):30} {st.mean(v):.3f}       {rho(sem, v):.2f}")
 
-# Robustness: the same analysis with only each layer's KEY components (what the layer decides),
-# instead of the mean over all components (which dilutes categorical changes with generic scalars).
 KEY = {"semantics": ("kind", "content"), "territory": ("comp", "rank"), "composition": ("compPieces", "piece"), "massing": ("family", "floors", "landmark"), "surface": ("use", "ground", "body", "roof"), "expression": ("style", "frame", "opening")}
 print("\nkey components only               page mean   ρ(semantics key)   ρ with previous layer (key)")
 semk = [st.mean([B[p]["semantics"][k] for k in KEY["semantics"]]) for p in pairs]
@@ -37,7 +32,6 @@ for L in m["layers"]:
     print(f"{L:12} {','.join(KEY[L]):22} {st.mean(v):.3f}       {rho(semk, v):.2f}              {rho(prev, v):.2f}")
     prev = v
 
-# Which semantic features does the territory layer follow? ρ(territory) against semantic subsets.
 print("\nsemantic subset vs territory / massing / surface (ρ)")
 ter = [st.mean(B[p]["territory"].values()) for p in pairs]
 mas = [st.mean(B[p]["massing"].values()) for p in pairs]

@@ -6,13 +6,6 @@ import { vacantFingerprint } from "@/lib/pixelcity/vacant-fingerprint";
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
 const STYLES: ArchStyle[] = ["classic", "retro", "modern", "soft", "tech"];
 
-/**
- * Surface Grammar Lab: buildings in isolation, same camera and palette.
- *   ?set=programs|corners|roofs|styles|sizes  ?style=classic|retro|modern|soft|tech
- *   ?set=openings  ?light=front|side|shadow (sun override)
- *   ?v=4 (before the surface grammar)  ?v=5 (before the openings depth)  ?time=day|night  ?flat=1
- *   ?focus=x,z  ?zoom=n  ?legend=1
- */
 export default async function SurfaceLabPage({ searchParams }: PageProps<"/pixel/surface-lab">) {
   const sp = await searchParams;
   const set = (LAB_SETS as string[]).includes(one(sp.set) ?? "") ? (one(sp.set) as LabSet) : "programs";

@@ -14,7 +14,6 @@ import {
   createSolidMaterial,
 } from "./materials";
 
-/** One InstancedMesh per mesh kind: the whole city in five draw calls. */
 export function CityMeshes({ runtime }: { runtime: CityRuntime }) {
   const atlas = useAtlas(runtime.city.images, runtime.city.palette.building);
 
@@ -53,8 +52,6 @@ export function CityMeshes({ runtime }: { runtime: CityRuntime }) {
     return out;
   }, [runtime, atlas]);
 
-  // Register the meshes React actually renders. (Doing this inside useMemo is a trap: in
-  // StrictMode the factory runs twice and the runtime would drive orphaned copies.)
   useLayoutEffect(() => {
     for (const m of meshes) runtime.meshes[m.userData.kind as MeshKind] = m;
     return () => {

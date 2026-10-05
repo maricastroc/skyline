@@ -14,10 +14,6 @@ import { Debris } from "./Debris";
 import { Environment } from "./Environment";
 import { DistrictLabels, HoverOutline } from "./Overlays";
 
-/**
- * Quality tiers. The look depends on AO and soft light far more than on resolution, so we
- * drop pixels before we drop effects. PerformanceMonitor walks the tiers at runtime.
- */
 const TIERS = [
   { dpr: 1, ao: false, tilt: false },
   { dpr: 1, ao: true, tilt: false },
@@ -28,7 +24,6 @@ const TIERS = [
 
 export default function CityScene({ runtime }: { runtime: CityRuntime }) {
   const span = Math.max(runtime.city.size.w, runtime.city.size.d);
-  // ?q=0..4 pins a tier (screenshots, benchmarks); otherwise it adapts.
   const [pinned] = useState(() => typeof window !== "undefined" && new URLSearchParams(window.location.search).has("q"));
   const [tier, setTier] = useState(() => {
     if (typeof window === "undefined") return 3;
@@ -37,7 +32,6 @@ export default function CityScene({ runtime }: { runtime: CityRuntime }) {
   });
   const t = TIERS[tier];
   const dust = useMemo(() => {
-    // Plaster dust: a few shades darker than the haze so it reads against paper buildings.
     const f = runtime.city.palette.fog;
     const g = runtime.city.palette.structure;
     return new THREE.Color().setRGB(f[0] * 0.7 + g[0] * 0.3, f[1] * 0.7 + g[1] * 0.3, f[2] * 0.7 + g[2] * 0.3, THREE.SRGBColorSpace);

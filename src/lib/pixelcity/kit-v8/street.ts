@@ -1,10 +1,4 @@
 // FROZEN: detail kit after the simple-index program experiment (baseline of the narrow-lot institutional pass). Do not edit.
-/**
- * Detail kit — streets. Surfaces (asphalt, intersections, zebras, stop lines, sidewalks,
- * curbs) and street furniture, each a small function of a position and orientation.
- * Furniture is authored in a "curb frame": local x runs along the curb, local +z points at
- * the road, the sidewalk top is y = 0.
- */
 import { mix } from "../../city/palette";
 import type { RGB } from "../../city/types";
 import { Surf } from "../types";
@@ -15,16 +9,13 @@ const white: RGB = [0.97, 0.96, 0.92];
 const metal: RGB = [0.2, 0.21, 0.24];
 
 export interface Grid {
-  /** Road centre lines (both axes use the same list). */
   lines: number[];
   road: number;
   side: number;
   block: number;
-  /** How far roads run past the outer lines. */
   ext: number;
 }
 
-/** Asphalt, intersections, crossings, stop lines; sidewalks and curbs around every block. */
 export function streetSurfaces(kit: Kit, g: Grid) {
   const p = kit.palette;
   const R = g.road;
@@ -41,7 +32,6 @@ export function streetSurfaces(kit: Kit, g: Grid) {
     }
     for (const c2 of L) kit.span(c - R / 2, c + R / 2, 0, 0.04, c2 - R / 2, c2 + R / 2, mix(p.road, white, 0.03));
   }
-  // Crossings and stop lines on every approach.
   const zw = 0.7;
   for (const cx of L)
     for (const cz of L)
@@ -50,11 +40,9 @@ export function streetSurfaces(kit: Kit, g: Grid) {
         const ez = cz + s * (R / 2 + zw / 2 + 0.05);
         kit.box(ex, 0, cz, zw, 0.05, R - 0.1, p.road, Surf.ZEBRA);
         kit.box(cx, 0, ez, R - 0.1, 0.05, zw, p.road, Surf.ZEBRA);
-        // Stop line on the incoming half of each approach.
         kit.span(cx + s * (R / 2 + zw + 0.12), cx + s * (R / 2 + zw + 0.18), 0, 0.05, cz + (s > 0 ? -R / 2 + 0.06 : 0), cz + (s > 0 ? 0 : R / 2 - 0.06), p.roadMark);
         kit.span(cx + (s > 0 ? 0 : -R / 2 + 0.06), cx + (s > 0 ? R / 2 - 0.06 : 0), 0, 0.05, cz + s * (R / 2 + zw + 0.12), cz + s * (R / 2 + zw + 0.18), p.roadMark);
       }
-  // Sidewalk rings with curbs.
   const B = g.block;
   const S = g.side;
   const curb = mix(p.stone, white, 0.35);
@@ -75,8 +63,6 @@ export function streetSurfaces(kit: Kit, g: Grid) {
     }
 }
 
-/* ───────────────────────── furniture (curb frame) ───────────────────────── */
-
 export function streetLamp(kit: Kit, x: number, z: number) {
   kit.box(x, 0, z, 0.06, 1.25, 0.06, metal);
   kit.box(x, 0, z, 0.12, 0.08, 0.12, metal);
@@ -90,7 +76,6 @@ export function streetTree(kit: Kit, x: number, z: number, seed: number) {
   tree(kit, x, z, seed, 1);
 }
 
-/** A tree with a designed, layered silhouette (round or conical by seed). */
 export function tree(kit: Kit, x: number, z: number, seed: number, s: number, y = 0) {
   const [l0, l1] = kit.palette.leaves;
   const dark = mix(l1, [0.05, 0.12, 0.1], 0.25);
@@ -151,7 +136,6 @@ export function bollards(kit: Kit, x: number, z: number, n = 3) {
   for (let i = 0; i < n; i++) kit.cyl(x + (i - (n - 1) / 2) * 0.3, 0, z, 0.07, 0.16, 0.07, mix(metal, white, 0.2));
 }
 
-/** Signal pole at a corner; the arm reaches over the road along local +z. */
 export function trafficSignal(kit: Kit, x: number, z: number, rot: number, go: boolean, street?: string) {
   kit.frame(x, z, rot, () => {
     kit.box(0, 0, 0, 0.07, 1.45, 0.07, metal);
@@ -166,7 +150,6 @@ export function trafficSignal(kit: Kit, x: number, z: number, rot: number, go: b
       const on = go ? i === 2 : i === 0;
       kit.glow(0, 1.32 - i * 0.11, 1.16, 0.08, 0.07, 0.03, on ? c : mix(c, [0.1, 0.1, 0.1], 0.75), on ? 2.2 : 0.2);
     });
-    // Pedestrian head on the pole.
     kit.box(0.07, 0.62, 0, 0.1, 0.12, 0.08, [0.13, 0.13, 0.15]);
     kit.glow(0.12, 0.65, 0, 0.02, 0.07, 0.06, go ? [1, 0.55, 0.15] : [0.95, 0.95, 0.9], 1.6);
     if (street) {
@@ -176,7 +159,6 @@ export function trafficSignal(kit: Kit, x: number, z: number, rot: number, go: b
   });
 }
 
-/** Bus shelter (curb frame), opening toward the road, with an ad panel and a stop sign. */
 export function busShelter(kit: Kit, x: number, z: number, accent: RGB, route: string) {
   const glass = mix(kit.palette.glass, white, 0.35);
   kit.frame(x, z, 0, () => {

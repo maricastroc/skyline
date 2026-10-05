@@ -14,11 +14,8 @@ export interface SafeFetchOptions {
   accept: string;
   maxBytes: number;
   maxRedirects?: number;
-  /** Time to first byte of headers, per hop. */
   headersTimeoutMs?: number;
-  /** Whole operation, all hops and body. */
   deadlineMs?: number;
-  /** Validated before the body is read. Throw a CaptureError to reject. */
   checkResponse?: (res: SafeResponseHead) => void;
   signal?: AbortSignal;
 }
@@ -36,10 +33,6 @@ export interface SafeResponse extends SafeResponseHead {
   durationMs: number;
 }
 
-/**
- * HTTPS GET with SSRF protection on every hop, manual redirects, decompression with a
- * decompressed-size cap, and hard timeouts. Never throws anything but CaptureError.
- */
 export async function safeFetch(start: URL, opts: SafeFetchOptions): Promise<SafeResponse> {
   const t0 = Date.now();
   const maxRedirects = opts.maxRedirects ?? 5;
@@ -52,6 +45,7 @@ export async function safeFetch(start: URL, opts: SafeFetchOptions): Promise<Saf
   const redirects: string[] = [];
   let url = start;
   try {
+    // Every redirect hop is re-validated (and re-resolved through the guarded lookup).
     for (let hop = 0; ; hop++) {
       assertFetchableUrl(url);
       const res = await request(url, opts, controller.signal);
@@ -117,7 +111,6 @@ function request(url: URL, opts: SafeFetchOptions, signal: AbortSignal): Promise
           "accept-encoding": "gzip, deflate, br",
         },
         timeout: opts.headersTimeoutMs ?? 8_000,
-        // Never reuse sockets across hosts: every connection goes through guardedLookup.
         agent: false,
       },
       resolve,
@@ -154,7 +147,6 @@ async function readBody(res: IncomingMessage, maxBytes: number, signal: AbortSig
   return Buffer.concat(chunks);
 }
 
-/** Best-effort charset decoding: header, then <meta charset>, then UTF-8. */
 export function decodeHtml(body: Buffer, contentType: string): string {
   let charset = /charset=["']?([\w-]+)/i.exec(contentType)?.[1];
   if (!charset) {

@@ -1,6 +1,3 @@
-// Art-direction round: real screens of every variant, 1440×900, same cities and camera.
-//   node scripts/direction.mjs [only…]   (groups: type inspector home cityview build)
-// Env: BASE (default http://localhost:3000), CHROME_PATH, OUT (default docs/screenshots/direction)
 import { mkdirSync } from "node:fs";
 import puppeteer from "puppeteer-core";
 
@@ -37,7 +34,6 @@ async function shot(page, name) {
   console.log("shot", name);
 }
 
-// 1. Typography: same City View (meta), same cities and camera; only data-ui changes.
 if (want("type"))
   for (const [site, url] of [["linear", LINEAR], ["wikipedia", WIKI]])
     for (const ui of ["grotesk", "editorial", "bitmap"]) {
@@ -48,7 +44,6 @@ if (want("type"))
       await page.close();
     }
 
-// 2. Inspector per typography (Linear's landmark).
 if (want("inspector"))
   for (const ui of ["grotesk", "editorial", "bitmap"]) {
     const page = await open(q({ url: LINEAR, ui, at: "hero" }));
@@ -58,7 +53,6 @@ if (want("inspector"))
     await page.close();
   }
 
-// 3. Home: refined page / vacant world / blueprint (grotesk).
 if (want("home"))
   for (const home of ["refined", "vacant", "blueprint"]) {
     const page = await open(q({ home, ui: "grotesk" }));
@@ -67,7 +61,6 @@ if (want("home"))
     await page.close();
   }
 
-// 4. City View: identity + metadata / minimal identity / almost no UI (grotesk).
 if (want("cityview"))
   for (const [site, url] of [["linear", LINEAR], ["guardian", GUARDIAN]])
     for (const cv of ["meta", "minimal", "bare"]) {
@@ -78,7 +71,6 @@ if (want("cityview"))
       await page.close();
     }
 
-// 5. Construction, from each world home: click Build and sample the build clock.
 if (want("build"))
   for (const [home, site, url] of [["vacant", "linear", LINEAR], ["blueprint", "guardian", GUARDIAN], ["vacant", "hn", HN]]) {
     const page = await open(q({ home, ui: "grotesk" }));

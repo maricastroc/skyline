@@ -6,7 +6,6 @@ import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import type { CityRuntime } from "@/components/experience/runtime";
 
-/** In-page anchor links (#id) become sky bridges between the link and its target. */
 export function Arcs({ runtime }: { runtime: CityRuntime }) {
   const [version, setVersion] = useState(0);
   useEffect(() => runtime.onChange(() => setVersion((v) => v + 1)), [runtime]);
@@ -42,7 +41,6 @@ export function Arcs({ runtime }: { runtime: CityRuntime }) {
 
   useEffect(() => () => geometry?.dispose(), [geometry]);
 
-  // Bridges appear once the city has finished rising.
   useFrame(() => {
     const t = (runtime.clock - runtime.city.buildDuration + 0.5) / 1.5;
     material.opacity = Math.max(0, Math.min(1, t)) * 0.6;

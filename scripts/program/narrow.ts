@@ -1,10 +1,3 @@
-// Narrow-lot institutional pass, kit-v8 (BEFORE) → current:
-//   npx tsx scripts/program/narrow.ts > docs/program/narrow.md
-// Which buildings changed (and why), that nothing else moved (normal, flat, night), that the
-// changed buildings' volumes are untouched (every difference is at the ground floor or signage),
-// unit widths around the threshold, and seed stability. Geometry and signs are told apart: the
-// sign atlas (512²) drops the last signs of a city that fills it, so fewer signs early on lets
-// signs further on appear — an atlas effect, not a change of those buildings.
 import { readFileSync } from "node:fs";
 import { CEREMONIAL_SPAN } from "../../src/lib/pixelcity/kit/buildings";
 import { generateKitDistrict, newTrace } from "../../src/lib/pixelcity/kit/district";
@@ -17,7 +10,6 @@ import { DATASET } from "../real-pages/dataset";
 const NAMES: Record<string, string> = { reference: "Wikipedia", docs: "Python Docs", app: "GitHub", saas: "Linear", shop: "IKEA", news: "Guardian", portfolio: "portfolio", forum: "lobste.rs", institution: "GOV.UK", oldweb: "Paul Graham", media: "NASA", directory: "craigslist", "reference-2": "Wikipedia 2", "saas-2": "Vercel" };
 const snap = (id: string) => JSON.parse(readFileSync(`docs/real-pages/snapshots/${id}.json`, "utf8"));
 const key = (q: Part) => JSON.stringify({ ...q, rect: undefined });
-/** Parts of a that b lacks (multiset). */
 const minus = (a: Part[], b: Part[]) => {
   const m = new Map<string, number>();
   for (const q of b) m.set(key(q), (m.get(key(q)) ?? 0) + 1);
@@ -39,9 +31,7 @@ const flatIndex = (parts: Part[]) => {
   m.push(n);
   return m;
 };
-/** Where a differing part sits: at the ground floor (top below 1.0), a sign, or higher (and what it is). */
 const band = (q: Part) => (q.mesh === "sign" ? "sign" : q.y + q.h <= 1.0 ? "ground floor" : Math.min(q.w, q.d) < 0.1 ? "above the ground floor: sign hardware (blade-sign brackets)" : "above the ground floor: other");
-/** Volumes: boxes, prisms and roofs at least 0.3 across in plan whose top is above the ground floor. */
 const volume = (q: Part) => keep(q) && q.y + q.h > 1.0 && Math.min(q.w, q.d) >= 0.3;
 const geom = (q: Part) => q.mesh !== "sign";
 
@@ -64,7 +54,6 @@ for (const e of DATASET) {
     const b = v8(q.fp, { profile: q.plan, time, seed, flat, trace: tb });
     return { a, b, ta, tb };
   };
-  /** Buildings whose geometry changed (signs aside), or (signs = true) whose signs alone changed. */
   const changedOf = (r: ReturnType<typeof run>, signs = false) =>
     r.ta.buildings
       .map((B, i) => {
@@ -79,7 +68,6 @@ for (const e of DATASET) {
   const signOnly = changedOf(day, true);
   totalAll += day.ta.buildings.length;
   changedAll += changed.length;
-  // Wide institutional (no attached narrow series): must be identical.
   day.ta.buildings.forEach((B, i) => {
     const inst = B.anatomy.some((A) => A.use === "institutional");
     const narrow = B.P.family === "rows" && B.anatomy.some((A) => A.ground.entrance === "secondary" || A.why.some((w) => w.includes("institutional row")));
@@ -92,7 +80,6 @@ for (const e of DATASET) {
       widths.push(B.w / n);
     }
   });
-  // What changed inside the changed buildings.
   for (const i of changed) {
     const A = day.a.parts.slice(...day.ta.buildings[i].parts);
     const B = day.b.parts.slice(...day.tb.buildings[i].parts);
@@ -107,7 +94,6 @@ for (const e of DATASET) {
     [0, 0],
   );
   rows.push(`| ${NAMES[e.id]} | ${changed.length} / ${day.ta.buildings.length} | ${why || "–"} | ${changed.length ? `${entrances[0]} marked · ${entrances[1]} plain` : "–"} | ${signOnly.length || "–"} |`);
-  // Nothing outside the changed buildings moved: day, night, flat.
   const cells: string[] = [];
   for (const [time, flat] of [["day", false], ["night", false], ["day", true]] as const) {
     const r = time === "day" && !flat ? day : run(7, time, flat);
@@ -124,7 +110,6 @@ for (const e of DATASET) {
     const same = JSON.stringify(outside(r.a.parts, ra).filter(geom).map(key)) === JSON.stringify(outside(r.b.parts, rb).filter(geom).map(key));
     cells.push(same ? "identical" : "**differs**");
   }
-  // Volumes: every changed building's volumes (floors, base, crown, roof and its plant) are the same.
   const volumes = changed.every((i) => {
     const A = day.a.parts.slice(...day.ta.buildings[i].parts).filter(volume);
     const B = day.b.parts.slice(...day.tb.buildings[i].parts).filter(volume);

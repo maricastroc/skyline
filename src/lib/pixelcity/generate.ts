@@ -10,33 +10,13 @@ import { textWidth } from "./pixel-font";
 import { addWorld, plantTree } from "./scenery";
 import { Surf, type Building, type CityFrame, type BuildingKind, type Influence, type Part, type PixelCity, type RoadSeg, type SignSpec, type Zone } from "./types";
 
-/* ─────────────────────────────────────────────────────────────────────────────
- * PAGE → SEMANTICS → CITY
- *
- * The page's semantic regions decide the city plan:
- *   hero    → the entrance: monumental landmark, CTA gate, city-name sign
- *   nav     → the main avenue, with the nav links as street banners
- *   regions → districts along the avenue, in reading order (front → back)
- *   toc     → a monorail stopping at the sections it links to
- *   footer  → the waterfront at the back edge
- * Region kinds pick urban forms (feature grid → ensemble, pricing → towers by price,
- * gallery → billboard plaza, feed → shops in rank order, references → archive…).
- * The fingerprint/grammar decides the look (time of day, architecture, density, height).
- *
- * Structure is deterministic and data-driven. The only pseudo-random input is decoration
- * (tree placement, ±1 floor), hashed from element ids so it never changes between runs.
- * ──────────────────────────────────────────────────────────────────────────── */
-
 const FLOOR = 0.5;
 const SIGN_TEXEL = 0.11;
 const SIGN_ATLAS = { w: 512, h: 512 };
 const MAX_IMAGES = 48;
 const PRICE_RE = /(?:[$€£¥]|R\$|US\$)\s?\d+(?:[.,]\d+)?|\d+(?:[.,]\d+)?\s?(?:[$€£])|\bfree\b/i;
-/** UI chrome makes poor shop signs. */
 const CHROME_LABEL = /^\s*(up ?vote|down ?vote|vote|hide|flag|reply|edit|share|more|next|prev(ious)?|log ?in|sign ?in|sign ?up|menu|close|search|toggle.*|skip.*|jump.*|navigate.*|open (menu|navigation)|read more|view|go|home|top|\d+|[^a-z0-9]*)\s*$/i;
 
-
-/** A page element's background, as a game color: chromatic stays vivid, dark becomes slate. */
 function gameTint(hex: string | undefined): RGB | null {
   if (!hex) return null;
   const rgb = hexToRgb(hex);
@@ -67,7 +47,6 @@ interface Unit {
   repeat: number;
   style: ArchStyle;
   tint: RGB | null;
-  /** pricing tier index / count; feed rank */
   rank?: number;
   of?: number;
   price?: string;
@@ -85,7 +64,6 @@ interface LNode {
 const q = (s?: string, n = 36) => (s ? `“${s.length > n ? `${s.slice(0, n - 1)}…` : s}”` : "");
 
 const STOP = new Set(["the", "a", "an", "of", "to", "in", "on", "for", "and", "or", "with", "from", "by", "at", "is", "are", "how", "why", "what", "your", "you", "my", "our", "new", "now", "this", "that", "its", "it's", "into", "via"]);
-/** Up to `n` meaningful words that fit `maxChars` each, in reading order. */
 function keywords(label: string | undefined, n: number, maxChars: number): string | undefined {
   if (!label) return undefined;
   const clean = label.replace(/^(show|ask|launch|tell) hn:\s*/i, "").replace(/[“”"'()[\]]/g, " ");
@@ -95,7 +73,6 @@ function keywords(label: string | undefined, n: number, maxChars: number): strin
   return words[0]?.slice(0, maxChars);
 }
 
-/** The most telling short word of a label: what a shop would paint on its sign. */
 function keyword(label: string | undefined, maxChars = 9): string | undefined {
   if (!label) return undefined;
   const clean = label.replace(/^(show|ask|launch|tell) hn:\s*/i, "").replace(/[“”"'()[\]]/g, " ");
@@ -119,7 +96,6 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
   const span = (node: number): [number, number] => [node, nodes[node].end];
   const total = nodes[0]?.weight || 1;
 
-  /* images that get real textures (hero and gallery first) */
   const imageNodes = nodes
     .filter((n) => n.image && (n.image.proxy || n.image.src))
     .map((n) => {
@@ -157,7 +133,6 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
   let towersLeft = Math.round(3 + grammar.towers * 9 + grammar.verticality * 6);
   const styleFor = (node: number): ArchStyle => (h01(node, 11) < grammar.secondaryShare ? grammar.secondary : grammar.style);
 
-  /* ── 1. units ── */
   const makeUnit = (id: number, forced?: BuildingKind, extra: Partial<Unit> = {}): Unit => {
     const n = nodes[id];
     let minHeading = 7;
@@ -268,9 +243,7 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
     };
   };
 
-  /** The first meaningful label inside a subtree, as a sign keyword. */
   const labelOf = (i: number): { label?: string } => {
-    // The longest of the first few labels is usually the title (a story, a card).
     const found: string[] = [];
     for (let k2 = i; k2 < nodes[i].end && found.length < 6; k2++) {
       for (const l of [nodes[k2].label, ...(nodes[k2].linkLabels ?? [])]) if (l && !CHROME_LABEL.test(l)) found.push(l);
@@ -280,7 +253,6 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
   };
   const unitNode = (id: number, level: number, forced?: BuildingKind, extra?: Partial<Unit>): LNode => ({ id, level, unit: makeUnit(id, forced, extra), children: [], area: 0 });
   const group = (id: number, level: number, children: LNode[]): LNode => (children.length === 1 ? { ...children[0], level } : { id, level, children, area: 0 });
-  /** Long item lists become rows, so the partition makes a grid of streets. */
   const rows = (id: number, level: number, items: LNode[], per: number): LNode => {
     if (items.length <= per) return group(id, level, items);
     const out: LNode[] = [];
@@ -288,7 +260,6 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
     return group(id, level, out);
   };
 
-  /** A region's urban form. */
   const collectRegion = (r: Region, level: number): LNode => {
     const items = r.items.filter((i) => i >= 0 && i < N);
     switch (r.kind) {
@@ -319,7 +290,6 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
       case "directory":
         return rows(r.node, level, items.slice(0, 16).map((i) => unitNode(i, level + 1, "stall")), 6);
       case "references": {
-        // The archive: identical stacks, as many as the references are heavy.
         const n = nodes[r.node];
         const stacks = Math.max(3, Math.min(14, Math.round(Math.sqrt(n.descendants) / 2.2)));
         return rows(r.node, level, Array.from({ length: stacks }, () => unitNode(r.node, level + 1, "archive")), 2);
@@ -343,7 +313,6 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
     return group(id, level, kids);
   };
 
-  /* ── 2. the plan ── */
   const heroR = sem.hero >= 0 ? R[sem.hero] : null;
   const navR = sem.nav >= 0 ? R[sem.nav] : null;
   const footerR = sem.footer >= 0 ? R[sem.footer] : null;
@@ -351,7 +320,6 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
   const tocR = R.find((r) => r.kind === "toc") ?? null;
   const ctaR = sem.ctas.length ? R[sem.ctas[0]] : null;
 
-  // Districts: semantic regions in reading order; large uncovered blocks join as plain districts.
   const districtRegions = sem.districts.map((i) => R[i]).filter((r) => r.kind !== "toc");
   const covered = (i: number) =>
     [heroR, navR, footerR, brandR, tocR, ...sem.sidebars.map((s) => R[s]), ...districtRegions].some((r) => r && inside(i, r.node));
@@ -372,7 +340,6 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
     scan(scope, 0);
   }
   type DItem = { region: Region | null; node: number; tree: LNode; title?: string; end?: number };
-  // Long feeds are cut into blocks of ten, in rank order, so both sides of the avenue fill.
   const feedBlocks = (r: Region): DItem[] => {
     const items = r.items.slice(0, 40);
     const out: DItem[] = [];
@@ -420,29 +387,27 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
   if (footerTree) areaOf(footerTree);
   for (const t of sideTrees) areaOf(t);
 
-  const A = navR ? 3 : 2; // avenue
-  const E = 8; // entrance band depth
+  const A = navR ? 3 : 2;
+  const E = 8;
   const WATER = 2;
   const footerArea = footerTree?.area ?? 0;
   const sideArea = sideTrees.reduce((s, t) => s + t.area, 0);
   const dArea = dItems.reduce((s, d) => s + d.tree.area + Math.sqrt(d.tree.area) * 2.2, 0) || 40;
   const S = sideTrees.length ? Math.max(3, Math.min(8, Math.round(Math.sqrt(sideArea) * 0.7))) : 0;
   const sideGap = S ? 1 : 0;
-  // Two columns of width Cw beside the avenue; solve for a roughly square plate.
   const F = footerTree ? Math.max(3, Math.min(6, Math.ceil(Math.sqrt(footerArea) * 0.6))) : 2;
   const k = A + S + sideGap - E - F - WATER;
   let Cw = Math.round((-2 * k + Math.sqrt(4 * k * k + 16 * dArea)) / 8);
   Cw = Math.max(dItems.some((d) => d.region?.kind === "feed") ? 10 : 6, Math.min(22, Cw));
   const W = 2 * Cw + A + S + sideGap;
 
-  // Column assignment: greedy (shorter column next), reading order preserved front → back.
   const colDepth = [0, 0];
   const placed: Array<{ d: DItem; col: 0 | 1; z0: number; depth: number }> = [];
   for (const d of dItems) {
     const depth = Math.max(3, Math.ceil((d.tree.area + Math.sqrt(d.tree.area) * 2) / (Cw - 1)) + 1);
     const col: 0 | 1 = colDepth[0] <= colDepth[1] ? 0 : 1;
     placed.push({ d, col, z0: colDepth[col], depth });
-    colDepth[col] += depth + 1; // + cross street
+    colDepth[col] += depth + 1;
   }
   const bodyDepth = Math.max(colDepth[0], colDepth[1], 6);
   const D = E + bodyDepth + F + WATER;
@@ -488,7 +453,6 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
     signs.push(spec);
     return spec;
   };
-  /** Fit words to a width; optionally allow a second line. */
   const fitText = (text: string | undefined, maxW: number, twoLines = false, texel = SIGN_TEXEL) => {
     if (!text) return "";
     const words = cleanText(text).split(/\s+/).filter(Boolean);
@@ -511,14 +475,12 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
     if (cur && lines.length < (twoLines ? 2 : 1)) lines.push(cur);
     return lines.join("\n");
   };
-  /** A sign plane facing +z (the default camera sees it). */
   const signAt = (node: number, text: string, x: number, y: number, z: number, bg: RGB, delay: number, texel = SIGN_TEXEL, fg: RGB = oklch(0.98, 0.01, 90)) => {
     const spec = addSign(text, bg, fg);
     if (!spec) return null;
     return push({ mesh: "sign", node, x, y, z, w: spec.w * texel, h: spec.h * texel, d: 1, color: bg, rect: [spec.x, spec.y, spec.w, spec.h], lit: 1, delay });
   };
 
-  /* integer ordered bisection (no randomness: ties split along x) */
   const partition = (items: LNode[], r: Rect, gap: { size: number; road: boolean }, out: (l: LNode, r: Rect) => void) => {
     if (!items.length) return;
     if (items.length === 1) return out(items[0], r);
@@ -574,7 +536,6 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
     partition(l.children, r, gapAt(l.level), (c, cr) => place(c, cr, y));
   };
 
-  /* ── 3. buildings ── */
   const wallOf = (u: Unit) => {
     if (u.tint) return u.tint;
     const ws = palette.walls[u.style];
@@ -715,7 +676,6 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
       const n = c.u.rank !== undefined ? 1 : Math.max(1, Math.round(c.fw / 2));
       const sw = c.fw / n;
       const floors = c.u.style === "classic" || c.u.style === "retro" ? 2 : 1;
-      // The top of a feed is its busiest corner: rank 0 is a little taller and lit.
       const featured = c.u.rank === 0;
       for (let i = 0; i < n; i++) {
         const x = c.cx - c.fw / 2 + sw * (i + 0.5);
@@ -768,7 +728,6 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
       return billboardOn(c, c.y0 + h + 0.1, Math.min(2.8, Math.max(c.fw, 1.6) * 1.05));
     },
     screen: (c) => {
-      // A standalone billboard on poles: galleries become plazas of real images.
       const w = Math.min(2.2, c.fw * 0.95);
       const h = w * 0.62;
       const lift = 0.9 + h01(c.u.node, 21) * 0.5;
@@ -778,7 +737,6 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
       return c.y0 + lift + h;
     },
     ensemble: (c) => {
-      // Feature cards: matching buildings, one family color, the card title on top.
       const fam = palette.accents[(R[sem.regionOf[c.u.node]]?.node ?? 0) % palette.accents.length];
       const floors = Math.max(2, Math.min(7, floorsFor(c.u, 2.5, 1.2)));
       const h = floors * FLOOR;
@@ -788,7 +746,6 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
       return c.y0 + h + 0.2;
     },
     pricing: (c) => {
-      // Plans as towers rising with the price; the middle plan (usually "popular") is crowned.
       const of = Math.max(1, c.u.of ?? 1);
       const rank = c.u.rank ?? 0;
       const popular = of >= 3 ? rank === Math.floor(of / 2) : rank === of - 1;
@@ -802,7 +759,6 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
       return c.y0 + h + 0.4;
     },
     statue: (c) => {
-      // Testimonials: a quiet park of statues on pedestals.
       push({ mesh: "box", node: -1, x: c.cx, y: c.y0, z: c.cz, w: c.fw, h: 0.06, d: c.fd, color: palette.grass[0], surf: Surf.GRASS, delay: c.delay });
       push({ mesh: "box", node: c.u.node, x: c.cx, y: c.y0 + 0.06, z: c.cz, w: 0.55, h: 0.5, d: 0.55, color: palette.stone, delay: c.delay });
       const bronze = oklch(0.55, 0.08, 70);
@@ -811,7 +767,6 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
       return c.y0 + 1.25;
     },
     archive: (c) => {
-      // References: long, identical, low stacks — the city's library.
       const color = mix(palette.walls[grammar.style][1] ?? palette.walls.modern[1], palette.stone, 0.3);
       body(c, 1.0, color, Surf.BRICK, { w: c.fw * 0.95, d: c.fd * 0.8 });
       for (let i = 0; i < Math.round(c.fw * 1.5); i++)
@@ -820,7 +775,6 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
       return c.y0 + 1.35;
     },
     temple: (c) => {
-      // Infobox: a little museum with columns, a pediment and the infobox picture outside.
       const st = palette.walls.classic[0];
       body(c, 0.3, palette.stone, Surf.PAVING, { w: 2.6, d: 2.2 });
       for (let i = 0; i < 5; i++) push({ mesh: "cyl", node: c.u.node, x: c.cx - 1.0 + i * 0.5, y: c.y0 + 0.3, z: c.cz + 0.85, w: 0.22, h: 1.5, d: 0.22, color: st, delay: c.delay + 0.1 });
@@ -835,7 +789,6 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
       return c.y0 + 2.7;
     },
     stall: (c) => {
-      // Link directories: a market of little stalls.
       const accent = accentOf(c.u);
       body(c, 0.55, palette.walls[grammar.style][0], Surf.PLAIN, { w: 0.8, d: 0.6 });
       push({ mesh: "prism", node: c.u.node, x: c.cx, y: c.y0 + 0.55, z: c.cz, w: 0.95, h: 0.3, d: 0.8, color: accent, surf: Surf.STRIPES, delay: c.delay + 0.1 });
@@ -919,11 +872,9 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
     push({ mesh: "pyramid", node, x, y: y + 1.0, z, w: 0.62, h: 0.25, d: 0.62, color: oklch(0.4, 0.04, 50), delay, rotY: Math.PI / 8 });
   };
 
-  /* ── 4. lay the plan out ── */
   const influences: Influence[] = [];
   const zArea = (z: Zone) => z.w * z.d;
 
-  // Entrance band: [ city sign + hero images | avenue + CTA gate | landmark ]
   const eZ = front - E;
   const eRect: Rect = { x: left, z: eZ, w: W, d: E };
   push({ mesh: "box", node: heroR?.node ?? -1, x: 0, y: 0, z: eZ + E / 2, w: W, h: 0.08, d: E, color: palette.plaza, surf: Surf.PAVING, delay: 0.1 });
@@ -940,7 +891,6 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
   else if (brandR)
     influences.push({ region: brandR.id, node: brandR.node, what: `the site name ${q(sem.siteName)} (no <h1>)`, effect: "the landmark at the city gate", score: 1.1 });
 
-  // City-name sign, big letters, on the left of the entrance.
   {
     const leftW = W / 2 - A / 2 - 1.5;
     const texel = Math.min(SIGN_TEXEL * 2.2, leftW / (textWidth(cleanText(sem.siteName)) + 4));
@@ -950,7 +900,6 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
     for (const s of [-1, 1]) push({ mesh: "box", node, x: sx + s * leftW * 0.35, y: 0.08, z: sz - 0.1, w: 0.12, h: 1.6, d: 0.12, color: steel, delay: 0.5 });
     signAt(node, sem.siteName, sx, 1.0, sz, palette.accents[1] ?? palette.accents[0], 0.55, texel);
     if (brandR) influences.push({ region: brandR.id, node: brandR.node, what: `the brand ${q(sem.siteName)}`, effect: "the city-name sign at the entrance", score: 0.35 });
-    // Hero images: big screens behind the sign.
     const heroSlots: number[] = [];
     if (heroR) for (let k2 = heroR.node; k2 < nodes[heroR.node].end && heroSlots.length < 2; k2++) if (slotOf.has(k2)) heroSlots.push(slotOf.get(k2)!);
     heroSlots.forEach((slot, i) => {
@@ -960,7 +909,6 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
       imagePanel(heroR!.node, slot, x, 2.4, eZ + 2.2, w, w * 0.62, palette.accents[0], 0.65);
     });
     if (grammar.ornament > 0.3) {
-      // fountain
       const fx = sx;
       const fz = eZ + E * 0.45;
       push({ mesh: "cyl", node: -1, x: fx, y: 0.08, z: fz, w: 1.6, h: 0.25, d: 1.6, color: palette.stone, delay: 0.5 });
@@ -969,13 +917,11 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
     }
   }
 
-  // CTA gate over the avenue at the front edge.
   {
     const gz = front - 0.6;
     const node = ctaR?.node ?? heroR?.node ?? landmarkNode;
     for (const s of [-1, 1]) push({ mesh: "box", node, x: s * (A / 2 + 0.25), y: 0.08, z: gz, w: 0.35, h: 3.0, d: 0.35, color: palette.walls[grammar.style][0], delay: 0.4 });
     push({ mesh: "box", node, x: 0, y: 3.08, z: gz, w: A + 0.9, h: 0.35, d: 0.4, color: palette.accents[0], delay: 0.45 });
-    // The whole word, set smaller if needed: a clipped “WIKIPE” reads as a bug, not a sign.
     const raw = ctaR?.title ?? sem.siteName;
     const word = raw && (textWidth(cleanText(raw)) + 4) * 0.07 <= A + 0.4 ? cleanText(raw) : keyword(raw, 8);
     const texel = word ? Math.min(SIGN_TEXEL, (A + 0.4) / (textWidth(word) + 4)) : SIGN_TEXEL;
@@ -984,7 +930,6 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
     if (ctaR) influences.push({ region: ctaR.id, node: ctaR.node, what: `call to action ${q(ctaR.title)}`, effect: "the gate over the main avenue", score: 0.45 });
   }
 
-  // Avenue (nav) with banners.
   const avTop = eZ;
   const avBottom = front - D + WATER + F;
   roads.push({ x: -A / 2, z: avBottom, w: A, d: avTop - avBottom, axis: "z", avenue: true });
@@ -992,7 +937,6 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
   if (navR) {
     let labels = navR.items.map((i) => nodes[i].label).filter((l): l is string => !!l && !CHROME_LABEL.test(l));
     if (labels.length < 3) {
-      // Links swallowed into running text (“new | past | comments”) were kept as linkLabels.
       const more: string[] = [];
       for (let k2 = navR.node; k2 < nodes[navR.node].end; k2++) more.push(...(nodes[k2].linkLabels ?? []));
       if (more.length > labels.length) labels = more;
@@ -1009,22 +953,19 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
     });
     influences.push({ region: navR.id, node: navR.node, what: `navigation (${labels.slice(0, 4).map((l) => q(l, 12)).join(", ")}…)`, effect: `the main avenue, with ${labels.length} street banners`, score: 0.75 });
   }
-  // Cross street behind the entrance.
   roads.push({ x: left + S + sideGap, z: eZ - 1, w: W - S - sideGap, d: 1, axis: "x", avenue: false });
 
-  // Districts.
   const colX = [left + S + sideGap, A / 2];
   const districtZones: Array<{ z: Zone; d: DItem }> = [];
   for (const p of placed) {
     const x = colX[p.col];
-    const z1 = eZ - 1 - p.z0; // top (front) edge
+    const z1 = eZ - 1 - p.z0;
     const rect: Rect = { x, z: z1 - p.depth, w: Cw, d: p.depth };
     const region = p.d.region;
     const isPark = region?.kind === "testimonials";
     push({ mesh: "box", node: p.d.node, x: rect.x + rect.w / 2, y: 0, z: rect.z + rect.d / 2, w: rect.w, h: 0.12, d: rect.d, color: isPark ? palette.grass[1] : palette.sidewalk, surf: isPark ? Surf.GRASS : Surf.PAVING, delay: 0.15 });
     const inner: Rect = { x: rect.x + 0.5, z: rect.z + 0.5, w: rect.w - 1, d: rect.d - 1.2 };
     place(p.d.tree, inner, 0.12);
-    // District sign at the avenue corner.
     const title = p.d.title ?? (region ? REGION_LABEL[region.kind] : undefined);
     const signW = Math.min(Cw - 1.5, 5);
     const sx = p.col === 0 ? rect.x + rect.w - signW / 2 - 0.6 : rect.x + signW / 2 + 0.6;
@@ -1033,13 +974,11 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
       for (const s of [-1, 1]) push({ mesh: "box", node: p.d.node, x: sx + s * (signW / 2 - 0.3), y: 0.12, z: rect.z + rect.d - 0.25, w: 0.08, h: 1.0, d: 0.08, color: steel, delay: 0.6 });
       signAt(p.d.node, t, sx, 0.7, rect.z + rect.d - 0.2, region && region.kind !== "section" ? palette.accents[0] : oklch(0.32, 0.04, 270), 0.65);
     }
-    // Cross street behind the district.
     roads.push({ x, z: rect.z - 1, w: Cw, d: 1, axis: "x", avenue: false });
     const zone: Zone = { region: region?.id ?? -1, role: "district", ...rect, title, nodes: [p.d.node, p.d.end ?? nodes[p.d.node].end] };
     zones.push(zone);
     districtZones.push({ z: zone, d: p.d });
   }
-  // Fill the shorter column's tail with a park.
   for (const col of [0, 1] as const) {
     const used = colDepth[col];
     const rest = bodyDepth - used;
@@ -1049,7 +988,6 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
     }
   }
 
-  // Sidebars: a strip along the left edge.
   if (sideTrees.length) {
     const sx = left;
     const z1 = eZ - 1;
@@ -1063,7 +1001,6 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
     roads.push({ x: left + S, z: avBottom, w: 1, d: eZ - avBottom - 1, axis: "z", avenue: false });
   }
 
-  // Footer: the waterfront at the back.
   const fZ = front - D + WATER;
   if (footerTree) {
     const rect: Rect = { x: left, z: fZ, w: W, d: F };
@@ -1072,10 +1009,8 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
     zones.push({ region: footerR!.id, role: "edge", ...rect, title: "Footer", nodes: span(footerR!.node) });
     influences.push({ region: footerR!.id, node: footerR!.node, what: `the footer (${nodes[footerR!.node].links} links)`, effect: "the waterfront at the back edge of the city", score: 0.3 });
   }
-  // Water along the back edge.
   push({ mesh: "box", node: footerR?.node ?? -1, x: 0, y: -0.05, z: front - D + WATER / 2, w: W, h: 0.06, d: WATER, color: palette.water, surf: Surf.WATER, delay: 0.1 });
 
-  // Monorail: the table of contents, stopping at the sections it links to.
   let rail: PixelCity["rail"] = null;
   if (tocR) {
     const targets = new Map<number, string>();
@@ -1106,7 +1041,6 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
     }
   }
 
-  // Region influences from districts.
   const cityArea = W * D;
   for (const { z, d } of districtZones) {
     const r = d.region;
@@ -1154,21 +1088,18 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
       }
     }
     const prev = r ? influences.find((f) => f.region === r.id) : undefined;
-    if (prev) prev.score += share * 3; // a feed split into blocks is still one element
+    if (prev) prev.score += share * 3;
     else influences.push({ region: r?.id ?? -1, node: r?.node ?? d.node, what, effect, score: share * 3 + bonus });
   }
-  // Style-level influences: the page's CSS, not one element.
   if (fp.darkness > 0.5) influences.push({ region: -1, node: 0, what: `page background ${fp.background ? rgbToCss(oklch(fp.background.l, fp.background.c, fp.background.h)) : "dark"}`, effect: "night: lit windows, stars, neon", score: 0.9 });
   else if (grammar.time === "golden") influences.push({ region: -1, node: 0, what: `brand color hue ${Math.round(fp.hues[0]?.h ?? 0)}° (warm)`, effect: "golden-hour light", score: 0.55 });
   if (fp.legacy > 0.5) influences.push({ region: -1, node: 0, what: "table layout and bgcolor attributes", effect: "retro architecture: brick, water towers, palms", score: 0.7 });
   if (fp.type.serif > 0.3) influences.push({ region: -1, node: 0, what: `serif headings (${Math.round(fp.type.serif * 100)}% of type rules)`, effect: "classic architecture: pitched roofs, chimneys, a clock tower", score: 0.65 });
   influences.sort((a, b) => b.score - a.score);
 
-  // Ground plate, roads, greens, lamps.
   const margin = 1.5;
   const plateW = W + margin * 2;
   const plateD = D + margin * 2;
-  // The plinth is the island frame's presentation; in the world frame the land replaces it.
   if (frame === "island") {
     push({ mesh: "box", node: -1, x: 0, y: -0.3, z: 0, w: plateW, h: 0.3, d: plateD, color: palette.grass[0], surf: Surf.GRASS, delay: 0 });
     push({ mesh: "box", node: -1, x: 0, y: -1.7, z: 0, w: plateW - 0.02, h: 1.4, d: plateD - 0.02, color: palette.soil, surf: Surf.SOIL, delay: 0 });
@@ -1190,7 +1121,6 @@ export function generatePixelCity(doc: NormalizedDocument, opts: { frame?: CityF
       push({ mesh: "glow", node: -1, x, y: 0.9, z, w: 0.16, h: 0.1, d: 0.16, color: palette.lamp, lit: night ? 1.6 : grammar.time === "golden" ? 0.9 : 0.15, delay: 0.55 });
     }
   }
-  // Rim trees frame the plinth; in the world frame they would draw its outline again.
   if (frame === "island") {
     const rim = Math.round((W + D) * (0.4 + grammar.trees * 0.6));
     for (let i = 0; i < rim; i++) {

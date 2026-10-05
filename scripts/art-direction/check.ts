@@ -1,11 +1,3 @@
-// Art Direction v1 — freeze check: npm run test:art-direction
-// 1. The current kit, with the visual polish of its assets off (`polishAssets: false`), is
-//    byte-identical to its frozen baseline (kit-v12) for every corpus page (day, golden, night,
-//    flat): the whole city object, environment included. With the polish on, the decisions are
-//    checked against kit-v12 by `npm run test:polish`.
-// 2. kit-v12 itself reproduces the hashes recorded at the freeze (kit-v12.sha1.json).
-// 3. The frozen chain still holds inside kit-v12: atmosphere off → kit-v11, street life off →
-//    kit-v10, art direction off → kit-v9 (foundation v1).
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { generateKitDistrict } from "../../src/lib/pixelcity/kit/district";

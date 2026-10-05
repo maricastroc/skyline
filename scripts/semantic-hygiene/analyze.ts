@@ -1,6 +1,3 @@
-// Semantic hygiene pass — BEFORE (kit-v3, allocation pass) vs AFTER (kit, hygiene), same corpus.
-//   npx tsx scripts/semantic-hygiene/analyze.ts
-// Writes docs/semantic-hygiene/{tables.md, report.json, trace/<id>.md}.
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { generateKitDistrict, newTrace, type KitTrace } from "../../src/lib/pixelcity/kit/district";
 import type { Plan } from "../../src/lib/pixelcity/kit/plan";
@@ -21,7 +18,6 @@ const f2 = (v: number) => (Number.isFinite(v) ? v.toFixed(2) : "–");
 const pct = (v: number) => `${(v * 100).toFixed(1)}%`;
 const FOCUS = ["forum", "oldweb", "institution", "media", "saas-2", "portfolio", "app", "docs", "shop"];
 
-/* ───────────── massing metrics (same code as the previous rounds) ───────────── */
 const G = 0.5;
 const EXT = 40;
 const HN = Math.round((2 * EXT) / G);
@@ -77,7 +73,6 @@ function histDist(a: Record<string, number>, b: Record<string, number>) {
   return d / 2;
 }
 
-/* ───────────── a run, reduced to comparable facts ───────────── */
 interface Run {
   plan: Plan | PlanV3;
   trace: KitTrace | TraceV3;
@@ -162,17 +157,14 @@ function contiguity(run: Run) {
   });
   return den ? num / den : 1;
 }
-/** Σ min(land share, weight share): the allocation's faithfulness to the weights it was given. */
 const fidelity = (run: Run, w: (t: Run["plan"]["territories"][number]) => number) => {
   const tw = run.plan.territories.reduce((s, t) => s + w(t), 0) || 1;
   return run.plan.territories.reduce((s, t, i) => s + Math.min(run.lots[i] / LOT_TOTAL, w(t) / tw), 0);
 };
 
-/* ───────────── per page ───────────── */
 const rows = DATASET.map((e) => {
   const A = after(e.id);
   const B = before(e.id);
-  // Chrome / footer judged on each run's OWN semantics (region ids differ when the analyzer differs).
   const chromeSet = (pg: { doc: typeof A.page.doc; sem: typeof A.page.sem }) => {
     const chrome = chromeOf(pg.doc, pg.sem);
     const chromeNodes = [...chrome.keys()].map((id) => pg.sem.regions[id].node);
@@ -226,7 +218,6 @@ const rows = DATASET.map((e) => {
 const main = rows.filter((r) => !r.sibling);
 const ids = rows.map((r) => r.id);
 
-/* ───────────── corpus regression ───────────── */
 const stat = (vs: number[]) => {
   const ok = vs.filter(Number.isFinite);
   return { min: Math.min(...ok), mean: ok.reduce((s, v) => s + v, 0) / ok.length, max: Math.max(...ok) };
@@ -267,7 +258,6 @@ const lmGroups = (w: "B" | "A") => {
 };
 const realLm = (w: "B" | "A") => lmGroups(w).filter(([k]) => k !== "none");
 
-/* ───────────── outputs ───────────── */
 const T: string[] = ["# Semantic hygiene — generated tables", "", "BEFORE = kit-v3 (allocation pass). AFTER = kit (hygiene). Same 14 frozen pages, seed 7, day.", ""];
 const HEAD = ["| page | territories | regions | remainders | zero-lot | images → content media | chrome raw → land B → land A | footer raw → land B → land A | largest territory B → A | named-region land B → A | media land B → A | morphology B→A | landmark B → A |", "|---|---|---|---|---|---|---|---|---|---|---|---|---|"];
 T.push("## Affected pages", "", HEAD[0], "|---|---|---|---|---|---|---|---|---|---|---|---|---|");

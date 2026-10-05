@@ -1,7 +1,3 @@
-// C1 street roles, BEFORE (kit-v9) × AFTER (current) captures, 1440×900 @2x, day, seed 7, same camera:
-//   node scripts/street-roles/shoot.mjs [variant …]   variants: before · after · roles (debug=streets)
-// Views: city · street · wide (street view at zoom 0.55: the whole district). Writes
-// docs/screenshots/street-roles/<variant>/<view>/<page>.png. Env: BASE, CHROME_PATH, PAGES, VIEWS, FORCE.
 import { existsSync, mkdirSync } from "node:fs";
 import puppeteer from "puppeteer-core";
 

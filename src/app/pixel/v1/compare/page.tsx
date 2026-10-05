@@ -2,7 +2,6 @@ import { PixelCompare } from "@/components/pixel-v1/PixelCompare";
 
 const DEFAULTS = ["https://en.wikipedia.org/wiki/Brutalist_architecture", "https://news.ycombinator.com", "https://linear.app"];
 
-/** Frozen snapshot of the first pixel-city round, kept for comparison. */
 export default async function CompareV1Page({ searchParams }: PageProps<"/pixel/v1/compare">) {
   const sp = await searchParams;
   const u = sp.u;

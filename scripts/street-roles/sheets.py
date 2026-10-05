@@ -1,5 +1,3 @@
-"""C1 street roles, sheets: python3 scripts/street-roles/sheets.py
-(after node scripts/street-roles/shoot.mjs before after roles). Writes docs/screenshots/street-roles/sheets/."""
 import random
 import subprocess
 from PIL import Image, ImageDraw, ImageFilter, ImageFont, ImageOps
@@ -13,7 +11,6 @@ VIEW = {"city": "City", "street": "Street", "wide": "Overview"}
 img = lambda variant, view, p: f"{S}/{variant}/{view}/{p}.png"
 sheet = lambda out, cols, tw, items: subprocess.run(["python3", "scripts/surface/sheet.py", f"{O}/{out}", str(cols), str(tw), *items], check=True)
 
-# A/B/C: before × after, two pages per row.
 for letter, view in (("A", "city"), ("B", "street"), ("C", "wide")):
     items = []
     for k in range(0, 8, 2):
@@ -22,16 +19,13 @@ for letter, view in (("A", "city"), ("B", "street"), ("C", "wide")):
             items += [f"{img('before', view, p)}:{NAME[p]} · before (kit-v9)", f"{img('after', view, p)}:{NAME[p]} · after (C1)"]
     sheet(f"{letter}-before-after-{view}.jpg", 4, 720, items)
 
-# D: the street-role map (debug=streets), Overview.
 sheet("D-roles.jpg", 4, 720, [f"{img('roles', 'wide', p)}:{NAME[p]} · street roles" for p in EIGHT])
 
-# E: Paul Graham × Wikipedia; F: Wikipedia × Wikipedia 2.
 pair = lambda a, b: [x for p in (a, b) for v in ("city", "street", "wide") for x in (f"{img('before', v, p)}:{NAME[p]} · {VIEW[v]} before", f"{img('after', v, p)}:{NAME[p]} · {VIEW[v]} after")]
 sheet("E-paul-graham-vs-wikipedia.jpg", 6, 520, ["-:Paul Graham vs Wikipedia · before / after", *pair("oldweb", "reference")])
 sheet("F-wikipedia-family.jpg", 4, 720, ["-:Wikipedia vs Wikipedia 2 · after (C1) and street roles",
                                         *[f"{img(v, w, p)}:{NAME[p]} · {VIEW[w]}{' roles' if v == 'roles' else ''}" for p in ("reference", "reference-2") for v, w in (("after", "city"), ("after", "street"), ("after", "wide"), ("roles", "wide"))]])
 
-# G: thumbnails. Blind (after only, shuffled, key in thumbs-key.txt) and labelled before / after.
 TW, TH, GAP, LH = 240, 150, 6, 20
 font = ImageFont.load_default(size=14)
 head = ImageFont.load_default(size=16)

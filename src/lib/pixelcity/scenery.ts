@@ -1,14 +1,3 @@
-/**
- * Scenery: what is not the page. Trees (shared with the generator) and, in the “world” frame,
- * the land around the city — ground that runs past every edge of the screen, the footer's
- * river continuing across it, the avenue and cross streets leaving town as country roads,
- * fields, woods and hedges.
- *
- * Nothing here is a building and nothing here comes from the DOM: every building on screen is
- * still a page element. The countryside only answers “what's beyond the frame?”. It is
- * decided by the grammar's existing knobs (tree density, architecture style, palette) and a
- * position hash, so it never makes two sites look different on its own.
- */
 import { mix } from "../city/palette";
 import type { CityGrammar, ArchStyle } from "./grammar";
 import { h01 } from "./hash";
@@ -17,7 +6,6 @@ import { Surf, type Part, type RoadSeg } from "./types";
 
 export type PushFn = (p: Omit<Part, "rotY" | "surf" | "lit" | "delay"> & Partial<Pick<Part, "rotY" | "surf" | "lit" | "delay">>) => Part;
 
-/** One tree in the city's architectural style (palms for retro, cubes for modern…). */
 export function plantTree(push: PushFn, palette: GamePalette, style: ArchStyle, x: number, z: number, y: number, delay: number, scale = 1) {
   const k = Math.round((x * 31 + z * 17) * 10);
   push({ mesh: "box", node: -1, x, y, z, w: 0.14 * scale, h: 0.45 * scale, d: 0.14 * scale, color: palette.trunk, delay });
@@ -43,21 +31,17 @@ export function plantTree(push: PushFn, palette: GamePalette, style: ArchStyle, 
 export interface WorldInput {
   palette: GamePalette;
   grammar: CityGrammar;
-  /** City footprint: x ∈ [-W/2, W/2], z ∈ [front - D, front]. */
   W: number;
   D: number;
   front: number;
-  /** Depth of the footer's water strip at the back of the city. */
   water: number;
   roads: RoadSeg[];
-  /** Ground surface (the blueprint home draws a survey grid). */
   groundSurf?: number;
 }
 
 export interface World {
   parts: Part[];
   roads: RoadSeg[];
-  /** Half-size of the countryside around the origin (beyond it: plain ground, under haze). */
   extent: number;
 }
 
@@ -78,17 +62,13 @@ export function addWorld({ palette, grammar, W, D, front, water, roads, groundSu
   type Rect = { x0: number; z0: number; x1: number; z1: number };
   const keepOut: Rect[] = [{ x0: -W / 2 - 1, z0: back - 8, x1: W / 2 + 1, z1: front + 1 }];
 
-  // Ground far past any frame; the haze swallows it long before its edge.
   push({ mesh: "box", node: -1, x: 0, y: -0.3, z: 0, w: FAR * 2, h: 0.3, d: FAR * 2, color: palette.grass[0], surf: groundSurf });
 
-  // The footer's waterfront becomes a river crossing the whole land.
   const RW = 7;
   push({ mesh: "box", node: -1, x: 0, y: -0.05, z: back - RW / 2, w: FAR * 2, h: 0.06, d: RW, color: palette.water, surf: Surf.WATER });
   for (const s of [-1, 1]) push({ mesh: "box", node: -1, x: s * (W / 2 + FAR / 2), y: -0.05, z: back + water / 2, w: FAR, h: 0.06, d: water, color: palette.water, surf: Surf.WATER });
   keepOut.push({ x0: -FAR, z0: back - RW - 0.6, x1: FAR, z1: back + water + 0.6 });
 
-  // Roads leave town: the avenue through the front gate, and the street behind the entrance
-  // out both sides. (Only those two: more would draw a grid over the land.)
   const L = R + 40;
   const avenue = roads.find((r) => r.axis === "z" && r.avenue);
   if (avenue) out.push({ x: avenue.x, z: front, w: avenue.w, d: L - front, axis: "z", avenue: false, rural: true });
@@ -101,7 +81,6 @@ export function addWorld({ palette, grammar, W, D, front, water, roads, groundSu
   for (const r of out) {
     push({ mesh: "box", node: -1, x: r.x + r.w / 2, y: 0, z: r.z + r.d / 2, w: r.w, h: 0.04, d: r.d, color: palette.road, surf: Surf.ROAD });
     keepOut.push({ x0: r.x - 0.6, z0: r.z - 0.6, x1: r.x + r.w + 0.6, z1: r.z + r.d + 0.6 });
-    // Street lamps thin out with distance from town.
     const len = r.axis === "x" ? r.w : r.d;
     for (let t = 2; t < len; t += 5) {
       const x = r.axis === "x" ? r.x + t : r.x - 0.15;
@@ -115,7 +94,6 @@ export function addWorld({ palette, grammar, W, D, front, water, roads, groundSu
   const blocked = (a: Rect) => keepOut.some((b) => a.x0 < b.x1 && a.x1 > b.x0 && a.z0 < b.z1 && a.z1 > b.z0);
   const tree = (x: number, z: number, scale: number) => plantTree(push, palette, grammar.style, x, z, 0, 0, scale);
 
-  // Countryside: mostly meadow and woods, a few quiet fields — background, never louder than town.
   const pWood = 0.14 + grammar.trees * 0.3;
   const pField = 0.16;
   const crop = mix(palette.grass[1], palette.leaves[1], 0.35);
@@ -137,7 +115,6 @@ export function addWorld({ palette, grammar, W, D, front, water, roads, groundSu
         const cx = (cell.x0 + cell.x1) / 2;
         const cz = (cell.z0 + cell.z1) / 2;
         push({ mesh: "box", node: -1, x: cx, y: 0, z: cz, w, h: 0.03, d, color: plowed ? tilled : crop, surf: plowed ? Surf.SOIL : Surf.GRASS });
-        // Crop rows, along x or z.
         const alongX = h01(i, j + 6) < 0.5;
         for (let k = 0; k < 4; k++) {
           const o = -0.375 + k * 0.25;
@@ -147,7 +124,6 @@ export function addWorld({ palette, grammar, W, D, front, water, roads, groundSu
         const loose = h01(i, j + 8) < 0.5 ? 1 + Math.floor(h01(i, j + 12) * 2) : 0;
         for (let t = 0; t < loose; t++) tree(cell.x0 + h01(i + t, j + 9) * w, cell.z0 + h01(i + t, j + 10) * d, 1.05);
       }
-      // Hedgerows along some plot edges.
       if (h01(i, j + 11) < 0.22) push({ mesh: "box", node: -1, x: (cell.x0 + cell.x1) / 2, y: 0, z: cell.z1 + 0.25, w, h: 0.3, d: 0.3, color: palette.leaves[0] });
     }
   }

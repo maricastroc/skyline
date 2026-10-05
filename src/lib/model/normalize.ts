@@ -3,17 +3,13 @@ import type { DomSnapshot, SnapshotNode } from "../snapshot/types";
 import { classify, STRUCTURAL } from "./classify";
 import { NodeFlag, type NNode, type NodeRole, type NormalizedDocument } from "./types";
 
-/** Budget: past this, low-importance leaves are folded into their parents. */
 export const MAX_NODES = 1600;
-/** Deeper subtrees are folded into their ancestor at this level. */
 export const MAX_LEVEL = 22;
-/** Repeated siblings are clustered; small pages keep more of them individually. */
 let CLUSTER_MIN = 12;
 let CLUSTER_KEEP = 8;
 const PROTECTED_IMAGES = 48;
 const PROTECTED_BUTTONS = 40;
 
-/** Working node. Mutable while we simplify, then flattened into NNode[]. */
 interface W {
   tag: string;
   id?: string;
@@ -31,17 +27,14 @@ interface W {
   ariaHidden: boolean;
   domDepth: number;
 
-  // Original subtree metrics, frozen after build.
   oChars: number;
   oLinks: number;
   oImages: number;
-  /** Images in the original subtree judged incidental (spacer, icon, repeated, interface). */
   oIncidental: number;
   oControls: number;
   oChildCount: number;
   oDescendants: number;
 
-  // What this node renders itself (own + absorbed).
   text: number;
   ownLinks: number;
   ownImages: number;
@@ -57,7 +50,6 @@ interface W {
 
 interface Counters {
   images: number;
-  /** Image sources on the page and their counts (for the content-media verdict). */
   sources: Map<string, number>;
   media: MediaReport;
   headings: number;
@@ -102,8 +94,6 @@ export function normalize(snapshot: DomSnapshot): NormalizedDocument {
     media: counters.media,
   };
 }
-
-/* ───────────── 1. build: snapshot → working tree, original metrics ───────────── */
 
 function build(s: SnapshotNode, depth: number, insideContent: boolean, c: Counters): W {
   const role = classify({
@@ -161,7 +151,6 @@ function build(s: SnapshotNode, depth: number, insideContent: boolean, c: Counte
     }
   }
   if (s.image) {
-    // Earlier images are usually more prominent (hero, header); alt text and declared size help.
     const area = Number(s.attrs?.width ?? 0) * Number(s.attrs?.height ?? 0);
     w.imagePriority = 1000 - Math.min(c.images * 4, 900) + (s.attrs?.alt ? 20 : 0) + Math.min(60, Math.log2(1 + area) * 3);
     c.images++;
@@ -185,8 +174,6 @@ function build(s: SnapshotNode, depth: number, insideContent: boolean, c: Counte
   return w;
 }
 
-/* ───────────── 2. simplify: absorb inline, cluster repeats, collapse wrappers ───────────── */
-
 function simplify(w: W): void {
   const kids = w.children;
   w.children = [];
@@ -207,13 +194,11 @@ function isEmpty(w: W): boolean {
 function shouldAbsorb(parent: W, c: W): boolean {
   if (c.children.length) return false;
   if (c.role === "inline" || c.role === "icon" || isEmpty(c)) return true;
-  // A link inside running text is part of the text; a link standing alone is a structure.
   if (c.role === "link" && (parent.text > 0 || parent.role === "text" || parent.role === "heading" || parent.role === "button"))
     return true;
   return false;
 }
 
-/** Merge a leaf into its parent. The parent keeps the leaf's content as its own. */
 function absorbLeaf(p: W, c: W): void {
   p.text += c.text;
   if (c.role === "link" && c.label && (p.linkLabels?.length ?? 0) < 12) (p.linkLabels ??= []).push(c.label.slice(0, 40));
@@ -223,12 +208,10 @@ function absorbLeaf(p: W, c: W): void {
   p.ownImages += c.ownImages + (c.image ? 1 : 0);
   p.ownControls += c.ownControls;
   p.absorbed += 1 + c.absorbed;
-  // The parent inherits the first meaningful label it swallows (a story title, a card's link).
   if (!p.label && c.label && (p.role === "heading" || p.role === "button" || p.role === "link" || c.role === "link" || c.role === "heading")) p.label = c.label;
   c.mergedInto = p;
 }
 
-/** Fold a whole subtree into `p` (used by the depth cap and budget fallbacks). */
 function absorbSubtree(p: W, c: W): void {
   for (const k of c.children) absorbSubtree(c, k);
   c.children = [];
@@ -242,8 +225,6 @@ function collapseWrappers(w: W): void {
     if (w.children.length !== 1 || w.text > 0 || w.image) return;
     const c = w.children[0];
     if (w.role !== "root" && isGeneric(w)) {
-      // The wrapper disappears; its child inherits it as pedestal height.
-      // We can't replace `w` in its parent from here, so we turn `w` into `c` in place.
       const self = { ...w };
       Object.assign(w, c, {
         wrappers: c.wrappers + 1 + self.wrappers,
@@ -251,7 +232,6 @@ function collapseWrappers(w: W): void {
         position: c.position ?? self.position,
         bg: c.bg ?? self.bg,
       });
-      // Pointers that referenced the child (id map, anchors) now resolve to `w`.
       c.mergedInto = w;
       continue;
     }
@@ -341,8 +321,6 @@ function clusterRepeats(w: W): void {
   w.children = out;
 }
 
-/* ───────────── 3. depth cap and global budget ───────────── */
-
 function capDepth(w: W, level: number): void {
   if (level >= MAX_LEVEL) {
     for (const c of w.children) absorbSubtree(w, c);
@@ -372,7 +350,6 @@ function importance(w: W): number {
   }
 }
 
-/** Min-heap keyed by importance. */
 class Heap {
   private a: Array<{ k: number; w: W }> = [];
   get size() {
@@ -454,8 +431,6 @@ function enforceBudget(root: W): number {
   return initial - count;
 }
 
-/* ───────────── 4. flatten into pre-order NNode[] ───────────── */
-
 function selectorOf(w: W): string {
   const id = w.id ? `#${w.id}` : "";
   const cls = w.classes?.[0] ? `.${w.classes[0]}` : "";
@@ -532,7 +507,6 @@ function flatten(root: W, finalUrl: string, idMap: Map<string, W>): NNode[] {
   };
   visit(root, -1, 0);
 
-  // Links: classify and wire in-page anchors to their (surviving) targets.
   const walk = (w: W) => {
     if (w.nid !== undefined && w.href) {
       const n = nodes[w.nid];

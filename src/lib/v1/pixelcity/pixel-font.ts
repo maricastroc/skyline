@@ -1,7 +1,3 @@
-/**
- * A 3×5 bitmap font, so signs are drawn texel-exact (no browser font smoothing, no font
- * loading). Each glyph is 5 rows of 3 bits, top to bottom.
- */
 const GLYPHS: Record<string, string> = {
   A: "010101111101101", B: "110101110101110", C: "011100100100011", D: "110101101101110",
   E: "111100110100111", F: "111100110100100", G: "011100101101011", H: "101101111101101",
@@ -21,12 +17,10 @@ const GLYPHS: Record<string, string> = {
 export const GLYPH_W = 3;
 export const GLYPH_H = 5;
 
-/** Width in texels of a horizontal line of text (1 texel between glyphs). */
 export function textWidth(text: string): number {
   return Math.max(0, text.length * (GLYPH_W + 1) - 1);
 }
 
-/** Calls `dot(x, y)` for every lit texel of `ch` at (ox, oy). */
 export function drawGlyph(ch: string, ox: number, oy: number, dot: (x: number, y: number) => void) {
   const g = GLYPHS[ch] ?? GLYPHS["?"];
   for (let r = 0; r < GLYPH_H; r++) for (let c = 0; c < GLYPH_W; c++) if (g[r * GLYPH_W + c] === "1") dot(ox + c, oy + r);

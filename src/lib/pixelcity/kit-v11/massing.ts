@@ -1,13 +1,4 @@
 // FROZEN: art direction C3, street life (the street-life kit, art direction baseline). Do not edit.
-/**
- * Detail kit — massing. Buildings are compositions of volumes; each volume carries a roof
- * family. This is what makes buildings recognisable from silhouette alone (before any façade
- * detail): footprints (rect, L, U, court), stacks (podium + tower, setbacks), and roofs
- * (flat, gable, mansard, sawtooth, dome, spire, stepped crown).
- *
- * Everything is boxes, prisms, cylinders and pyramids from the existing renderer; tilted
- * planes use Part.rotX / rotZ.
- */
 import { mix } from "../../city/palette";
 import type { RGB } from "../../city/types";
 import { Surf } from "../types";
@@ -28,7 +19,6 @@ export interface Vol {
   lit?: number;
   roof: RoofFamily;
   roofColor: RGB;
-  /** Gable ridge direction (default: along the longer side). */
   ridge?: "x" | "z";
   cornice?: "heavy" | "light" | "none";
 }
@@ -38,17 +28,13 @@ const ink: RGB = [0.12, 0.12, 0.15];
 export const trimOf = (wall: RGB) => mix(wall, white, 0.55);
 export const darkOf = (c: RGB, k = 0.55) => mix(c, ink, k);
 
-/** FRAMED façade rhythm: brick courses, bay width class (0–3 → 0.5…1.25 tiles), tall windows. */
 export const rhythm = (o: { brick?: boolean; bay?: number; tall?: boolean }) => (o.brick ? 1 : 0) + 2 * Math.max(0, Math.min(3, o.bay ?? 0)) + (o.tall ? 8 : 0);
 
 export interface VolTop {
-  /** Height of a flat deck that can take rooftop furniture, or null (pitched / sculpted). */
   deck: number | null;
-  /** Highest point. */
   top: number;
 }
 
-/** A volume and its roof. */
 export function volume(kit: Kit, v: Vol): VolTop {
   const w = v.x1 - v.x0;
   const d = v.z1 - v.z0;
@@ -62,7 +48,6 @@ export function volume(kit: Kit, v: Vol): VolTop {
       return { deck: v.y1, top: v.y1 };
     case "flat":
     case "terrace": {
-      // Flat roofs are tar and gravel whatever the style; colour belongs to pitched forms.
       const deck = mix(roof, [0.58, 0.58, 0.61], 0.78);
       const o = v.cornice === "heavy" ? 0.09 : v.cornice === "none" ? 0 : 0.04;
       let y = v.y1;
@@ -86,7 +71,6 @@ export function volume(kit: Kit, v: Vol): VolTop {
       const len = alongX ? w : d;
       const h = Math.min(1.1, span * 0.42);
       const o = 0.1;
-      // Wall-coloured gable ends (prism), roof planes over them with eaves.
       kit.part({ mesh: "prism", node: kit.node, x: cx, y: v.y1, z: cz, w: len, h, d: span, color: v.wall, rotY: alongX ? 0 : Math.PI / 2 });
       const a = Math.atan2(h, span / 2);
       const L = Math.hypot(span / 2 + o, h + o * Math.tan(a));
@@ -112,7 +96,6 @@ export function volume(kit: Kit, v: Vol): VolTop {
       kit.box(v.x0 + i / 2, y + hm / 2 - 0.02, cz, Ls, 0.05, d - 0.02, roof, Surf.ROOF, { rotZ: a });
       kit.span(v.x0 + i, v.x1 - i, y, y + hm, v.z0 + i, v.z1 - i, darkOf(roof, 0.15));
       kit.span(v.x0 + i - 0.03, v.x1 - i + 0.03, y + hm, y + hm + 0.05, v.z0 + i - 0.03, v.z1 - i + 0.03, trim);
-      // Dormers along both visible slopes.
       for (let x = v.x0 + 0.55; x < v.x1 - 0.4; x += 0.8) dormer(kit, x, y, v.z1 - i * 0.55, 0, v.wall, roof);
       for (let z = v.z1 - 0.55; z > v.z0 + 0.4; z -= 0.8) dormer(kit, v.x1 - i * 0.55, y, z, Math.PI / 2, v.wall, roof);
       return { deck: y + hm + 0.05, top: y + hm + 0.05 };
@@ -176,14 +159,12 @@ function dormer(kit: Kit, x: number, y: number, z: number, rot: number, wall: RG
   });
 }
 
-/** Corner turret: a round drum rising above the roof line with a pointed cap. */
 export function turret(kit: Kit, x: number, z: number, y0: number, y1: number, wall: RGB, roof: RGB, d = 0.9) {
   kit.cyl(x, y0, z, d, y1 - y0, d, wall, { surf: Surf.FRAMED, variant: rhythm({ tall: true }), lit: kit.night ? 0.55 : 0 });
   kit.cyl(x, y1, z, d + 0.1, 0.07, d + 0.1, trimOf(wall));
   kit.part({ mesh: "pyramid", node: kit.node, x, y: y1 + 0.07, z, w: d * 1.18, h: d * 1.05, d: d * 1.18, color: roof, rotY: Math.PI / 8 });
 }
 
-/** A clock on a vertical face (current frame, facing +z) at height y. */
 export function clockFace(kit: Kit, x: number, y: number, z: number, d: number) {
   kit.cyl(x, y, z, d + 0.08, 0.04, d + 0.08, darkOf(kit.palette.walls.classic[2], 0.3), { rotX: Math.PI / 2 });
   kit.cyl(x, y, z + 0.02, d, 0.04, d, kit.night ? [1, 0.95, 0.75] : white, { rotX: Math.PI / 2 });
@@ -192,7 +173,6 @@ export function clockFace(kit: Kit, x: number, y: number, z: number, d: number) 
   kit.box(x + d * 0.12, y - 0.015, z + 0.065, d * 0.26, 0.03, 0.015, ink);
 }
 
-/** Row of columns with an entablature (portico / arcade), along local x at z. */
 export function colonnade(kit: Kit, x0: number, x1: number, z: number, h: number, wall: RGB, pediment: boolean) {
   const trim = trimOf(wall);
   const n = Math.max(2, Math.round((x1 - x0) / 0.5));
@@ -202,11 +182,6 @@ export function colonnade(kit: Kit, x0: number, x1: number, z: number, h: number
   if (pediment) kit.part({ mesh: "prism", node: kit.node, x: (x0 + x1) / 2, y: h + 0.14, z: z - 0.04, w: x1 - x0 + 0.3, h: 0.42, d: 0.34, color: trim });
 }
 
-/**
- * Paved plaza, dressed: a grid of trees in pits, lamps, benches and planters between them,
- * people, an optional fountain — open ground that still reads as designed urban space.
- * `keep` is a rectangle left clear for a building.
- */
 export function plaza(kit: Kit, x0: number, x1: number, z0: number, z1: number, seed: number, fountain: boolean, keep?: [number, number, number, number]) {
   const p = kit.palette;
   kit.span(x0, x1, 0, 0.02, z0, z1, mix(p.plaza, white, 0.08), Surf.SLABS);

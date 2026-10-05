@@ -15,7 +15,7 @@ interface Ctl {
   pitch: number;
   vel: THREE.Vector3;
   keys: Set<string>;
-  intro: number; // seconds into intro, -1 when done
+  intro: number;
   orbit: boolean;
   orbitAngle: number;
   drag: { x: number; y: number; moved: boolean } | null;
@@ -26,16 +26,10 @@ interface Ctl {
   lastHit: number;
   painted: string;
   focusAt: number;
-  /** After a demolition, hold the next blast preview briefly so the parent doesn't flash red. */
   quietUntil: number;
   tween: { from: THREE.Vector3; to: THREE.Vector3; look: THREE.Vector3; t: number } | null;
 }
 
-/**
- * Flight, intro, picking and actions. Desktop-first:
- *   click → fly (pointer lock) · mouse → look · WASD → move · Space/E up · Shift/Q down
- *   click → inspect / destroy · scroll → target parent/child · Esc → release cursor
- */
 export function Controls({ runtime }: { runtime: CityRuntime }) {
   const { camera, gl } = useThree();
   const city = runtime.city;
@@ -88,7 +82,6 @@ export function Controls({ runtime }: { runtime: CityRuntime }) {
     useSkyline.getState().set({ introDone: true });
   };
 
-  /* actions */
   const act = () => {
     const st = useSkyline.getState();
     const target = st.hover?.node ?? null;
@@ -120,7 +113,6 @@ export function Controls({ runtime }: { runtime: CityRuntime }) {
     });
   };
 
-  /* input */
   useEffect(() => {
     const el = gl.domElement;
     const c = ctl.current;
@@ -180,7 +172,6 @@ export function Controls({ runtime }: { runtime: CityRuntime }) {
     const onPointerMove = (e: PointerEvent) => {
       const r = el.getBoundingClientRect();
       c.mouse.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
-      // Only pick when the pointer is over the city itself, not over a HUD panel.
       c.mouseInside = e.target === el;
       if (locked()) {
         c.yaw -= e.movementX * 0.0022;
@@ -205,7 +196,7 @@ export function Controls({ runtime }: { runtime: CityRuntime }) {
       c.drag = null;
       if (moved) return;
       if (c.noLock) {
-        act(); // no pointer lock available: act on what's under the cursor
+        act();
         return;
       }
       const req = el.requestPointerLock() as unknown as Promise<void> | undefined;
@@ -256,7 +247,6 @@ export function Controls({ runtime }: { runtime: CityRuntime }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gl, runtime, camera]);
 
-  /* debug / automation hooks (used for screenshots and tests) */
   useEffect(() => {
     const api = {
       runtime,
@@ -282,7 +272,6 @@ export function Controls({ runtime }: { runtime: CityRuntime }) {
         ctl.current.mouse.set(x, y);
         ctl.current.mouseInside = true;
       },
-      /** Synchronous frame timing (rAF is throttled in hidden tabs): ms per rendered frame. */
       bench(frames = 30) {
         const ctx = gl.getContext();
         const px = new Uint8Array(4);
@@ -294,7 +283,6 @@ export function Controls({ runtime }: { runtime: CityRuntime }) {
         const ms = (performance.now() - t0) / frames;
         return { ms: Math.round(ms * 100) / 100, fps: Math.round(1000 / ms), pixels: gl.domElement.width * gl.domElement.height, calls: gl.info.render.calls, triangles: gl.info.render.triangles };
       },
-      /** Screen position (CSS px) of a node's anchor, for driving real hover in tests. */
       project(node: number) {
         const a = runtime.city.anchor[node];
         const v = new THREE.Vector3(a[0], a[1], a[2]).project(camera);
@@ -346,7 +334,6 @@ export function Controls({ runtime }: { runtime: CityRuntime }) {
       c.intro += dt;
       const t = ease(Math.min(1, c.intro / INTRO_SECONDS));
       const p = introPath();
-      // Quadratic bezier from high above the model down to the entrance.
       const u = 1 - t;
       camera.position.set(
         u * u * p.start.x + 2 * u * t * p.mid.x + t * t * p.end.x,
@@ -357,7 +344,6 @@ export function Controls({ runtime }: { runtime: CityRuntime }) {
       lookFromTo(camera.position, tmp.look);
       if (c.intro >= INTRO_SECONDS) finishIntro();
     } else if (c.tween) {
-      // Fly to a focused node.
       c.tween.t = Math.min(1, c.tween.t + dt / 1.1);
       const t = ease(c.tween.t);
       camera.position.lerpVectors(c.tween.from, c.tween.to, t);
@@ -393,7 +379,6 @@ export function Controls({ runtime }: { runtime: CityRuntime }) {
     camera.rotation.order = "YXZ";
     camera.rotation.set(c.pitch, c.yaw, 0);
 
-    // Shake: decays fast, never moves the logical position.
     runtime.shake *= Math.exp(-4.5 * dt);
     if (runtime.shake > 0.002) {
       const a = runtime.shake * 0.45;
@@ -403,7 +388,6 @@ export function Controls({ runtime }: { runtime: CityRuntime }) {
     }
     camera.updateMatrixWorld();
 
-    // Picking: crosshair when flying, cursor otherwise.
     let hit: number | null = null;
     if (c.intro < 0 && !c.orbit && (st.locked || c.mouseInside)) {
       raycaster.current.setFromCamera(st.locked ? tmp.center : c.mouse, camera);
@@ -416,7 +400,6 @@ export function Controls({ runtime }: { runtime: CityRuntime }) {
     } else {
       let climb = st.climb;
       if (hit !== c.lastHit) {
-        // Keep the climb when moving between siblings of the same target; reset otherwise.
         const prevTarget = st.hover?.node;
         const keep = prevTarget !== undefined && hit >= prevTarget && hit < runtime.doc.nodes[prevTarget].end;
         if (!keep) climb = 0;

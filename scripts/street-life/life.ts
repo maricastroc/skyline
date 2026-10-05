@@ -1,6 +1,3 @@
-// C3 street life per page (read-only): npx tsx scripts/street-life/life.ts > docs/street-life/life.txt
-// Page measures, the three intensities (means over the 64 sidewalks / 40 carriageways), and what
-// they put in the street (people, trees, cars) against the stamp of kit-v10; then every sidewalk's reason.
 import { readFileSync } from "node:fs";
 import type { RGB } from "../../src/lib/city/types";
 import { generateKitDistrict, newTrace } from "../../src/lib/pixelcity/kit/district";
@@ -11,7 +8,6 @@ import type { Part } from "../../src/lib/pixelcity/types";
 
 const NAME: Record<string, string> = { shop: "IKEA", oldweb: "Paul Graham", directory: "craigslist", institution: "GOV.UK", reference: "Wikipedia", "reference-2": "Wikipedia 2", media: "NASA", saas: "Linear", docs: "Python Docs" };
 const same = (a: RGB, b: RGB) => a.every((v, k) => Math.abs(v - b[k]) < 1e-9);
-// One part per tree carries the top leaf colour; four glows (head and tail lights) per vehicle.
 const count = (parts: Part[], [a, b]: [number, number], leaf: RGB) => {
   const ps = parts.slice(a, b);
   return { trees: ps.filter((q) => q.mesh !== "glow" && same(q.color, leaf)).length, people: ps.filter((q) => q.mesh === "sprite").length };

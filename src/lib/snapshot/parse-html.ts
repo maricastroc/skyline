@@ -19,17 +19,11 @@ type P5Parent = DefaultTreeAdapterMap["parentNode"];
 const MAX_ELEMENTS = 25_000;
 const MAX_DEPTH = 160;
 
-/** Never part of the city. */
 const SKIP = new Set([
   "script", "style", "noscript", "template", "link", "meta", "title", "head", "base",
   "br", "wbr", "param", "source", "track", "slot", "dialog",
 ]);
-/** Kept, but we don't descend into them. */
 const OPAQUE = new Set(["svg", "math", "iframe", "video", "audio", "canvas", "object", "embed", "select", "textarea", "picture"]);
-/**
- * Headings animated line-by-line often carry their text twice (a visible copy and an
- * aria/measurement copy): “Plan and buildPlan and build”. Keep one.
- */
 export function unrepeat(t: string): string {
   if (t.length < 24) return t;
   const head = t.slice(0, 12);
@@ -40,14 +34,12 @@ export function unrepeat(t: string): string {
   return rest.length >= 12 && (first.startsWith(rest) || rest.startsWith(first)) ? first : t;
 }
 
-/** Elements whose descendant text we sample as a label. */
 const LABELLED = new Set(["h1", "h2", "h3", "h4", "h5", "h6", "button", "a", "label", "summary", "legend", "figcaption", "th", "caption", "title"]);
 
 const KEEP_ATTRS: SnapshotAttr[] = [
   "href", "src", "alt", "role", "type", "width", "height", "aria-label", "aria-hidden", "hidden", "name", "title",
 ];
 
-/** Tailwind/Bootstrap-ish utility classes make poor selectors; push them to the back. */
 const UTILITY_RE =
   /[:[\]/!@]|^-?(p|m|px|py|pt|pb|pl|pr|mx|my|mt|mb|ml|mr|w|h|size|flex|grid|gap|text|bg|border|rounded|shadow|items|justify|content|col|row|space|font|leading|tracking|min|max|overflow|absolute|relative|static|block|inline|hidden|z|top|left|right|bottom|inset|order|self|place|sm|md|lg|xl|2xl|dark|hover|focus|opacity|transition|duration|ease|transform|translate|scale|rotate|cursor|select|pointer|sr|not|line|object|aspect|container|mx-auto|d|align|float|clearfix|visible|invisible|shrink|grow|basis|fill|stroke|ring|outline|divide|decoration|underline|uppercase|lowercase|capitalize|italic|truncate|whitespace|break|list|table|antialiased|js|is|has|css|sc|jsx|svelte|astro|tw|_)(-|$)/i;
 const HASHY_RE = /^[a-z]{0,3}[A-Za-z0-9_-]*[0-9][A-Za-z0-9_-]{4,}$|__[A-Za-z0-9]{4,}$/;
@@ -62,7 +54,6 @@ export interface ParsedPage {
   inlineCss: string[];
 }
 
-/** Phase 1: parse and find what the acquisition layer may want to fetch (stylesheets). */
 export function parsePage(source: string, pageUrl: string): ParsedPage {
   const doc = parse(source);
   const html = findChild(doc, "html");
@@ -82,7 +73,6 @@ export function parsePage(source: string, pageUrl: string): ParsedPage {
       if (el.tagName === "style") inlineCss.push(textOf(el));
     }
   }
-  // <style> in body is common in CMS output.
   if (body) for (const el of descendants(body, 4000)) if (el.tagName === "style") inlineCss.push(textOf(el));
 
   return { doc, html, head, body, baseHref, stylesheets, inlineCss };
@@ -98,7 +88,6 @@ export interface SnapshotSource {
   redirects: string[];
 }
 
-/** Phase 2: walk <body> into a DomSnapshot. `externalCss` is whatever stylesheets were fetched. */
 export function buildSnapshot(page: ParsedPage, source: SnapshotSource, externalCss: string[] = []): DomSnapshot {
   const base = resolveUrl(page.baseHref, source.finalUrl) ?? source.finalUrl;
   const colors = new Map<string, number>();
@@ -189,7 +178,6 @@ export function buildSnapshot(page: ParsedPage, source: SnapshotSource, external
       const bg = /background(?:-image)?\s*:[^;]*url\(\s*['"]?([^'")]+)['"]?\s*\)/i.exec(style);
       if (bg) node.image = imageUrl(bg[1], base);
     }
-    // Legacy presentational attributes (bgcolor="#ff6600" is half of Hacker News' identity).
     for (const legacy of ["bgcolor", "color"]) {
       const v = attr(el, legacy)?.trim();
       if (v) collectColors(/^#|\(/.test(v) ? v : `#${v}`, colors, 4);
@@ -274,8 +262,6 @@ export function buildSnapshot(page: ParsedPage, source: SnapshotSource, external
   };
 }
 
-/* ───────────── helpers ───────────── */
-
 function isElement(n: P5Node): n is P5Element {
   return (n as P5Element).tagName !== undefined;
 }
@@ -314,7 +300,6 @@ function textOf(el: P5Element): string {
     if (n.nodeName === "#text") out += (n as DefaultTreeAdapterMap["textNode"]).value;
     else if (isElement(n)) {
       if (n.tagName === "script" || n.tagName === "template") continue;
-      // Line breaks and blocks separate words ("Intake<br>and integrations").
       if (/^(br|p|div|li|h[1-6]|section|article|td|th|tr|dt|dd)$/.test(n.tagName)) out += " ";
       for (let i = n.childNodes.length - 1; i >= 0; i--) stack.push(n.childNodes[i]);
     }
@@ -383,7 +368,6 @@ function pickFromSrcset(srcset: string | undefined, base: string): string | unde
     })
     .filter((c) => c.url);
   if (!candidates.length) return undefined;
-  // Billboards are drawn at ~256-512px; aim for something near 640w.
   candidates.sort((a, b) => Math.abs(a.w - 640) - Math.abs(b.w - 640));
   return imageUrl(candidates[0].url, base);
 }
@@ -391,13 +375,12 @@ function pickFromSrcset(srcset: string | undefined, base: string): string | unde
 function pickImgSrc(img: P5Element, base: string): string | undefined {
   const w = parseInt(attr(img, "width") ?? "");
   const h = parseInt(attr(img, "height") ?? "");
-  if ((w >= 0 && w <= 2) || (h >= 0 && h <= 2)) return undefined; // tracking pixels, spacers
+  if ((w >= 0 && w <= 2) || (h >= 0 && h <= 2)) return undefined;
   if (/(^|\/)(s|spacer|pixel|blank|clear|transparent|1x1|dot)\.(gif|png)(\?|$)/i.test(attr(img, "src") ?? "")) return undefined;
   for (const lazy of ["data-src", "data-lazy-src", "data-original", "data-url"]) {
     const v = attr(img, lazy);
     if (v) return imageUrl(v, base);
   }
-  // srcset usually carries a sharper candidate than src (thumbnails are often 120px).
   const fromSet = pickFromSrcset(attr(img, "data-srcset") ?? attr(img, "srcset"), base);
   if (fromSet) return fromSet;
   const src = attr(img, "src");

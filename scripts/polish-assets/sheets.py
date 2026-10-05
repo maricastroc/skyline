@@ -1,6 +1,3 @@
-"""Visual polish round 2 (rooftop condensers, structured billboards), BEFORE × AFTER boards:
-python3 scripts/polish-assets/sheets.py (after node scripts/polish-assets/shoot.mjs).
-BEFORE = ?v=12 (kit-v12, = polishAssets: false), AFTER = the current kit. Writes docs/screenshots/polish-assets/round/."""
 import os
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
@@ -13,9 +10,7 @@ BIG = ImageFont.truetype(FONT, 26)
 SM = ImageFont.truetype(FONT, 15)
 img = lambda v, c: f"{D}/{v}/{c}.png"
 
-
 def pairs(out, title, rows, h):
-    """rows: [(label, case, box)] — BEFORE and AFTER side by side, crops (source pixels) at height h."""
     cells = []
     for label, case, box in rows:
         r = []
@@ -40,8 +35,6 @@ def pairs(out, title, rows, h):
     sheet.save(f"{O}/{out}", quality=88)
     print(f"{O}/{out}", sheet.size)
 
-
-# ── rooftop plant ──
 pairs("A1-hvac-city.jpg", "Ar-condicionado · City · recortes 1:1 (BEFORE = kit-v12)", [
     ("Paul Graham", "pg-city", (300, 380, 1200, 940)),
     ("IKEA", "ikea-city", (600, 900, 1500, 1460)),
@@ -54,7 +47,6 @@ pairs("A2-hvac-street.jpg", "Ar-condicionado · Street · recortes 1:1", [
 ], 460)
 pairs("A3-hvac-night.jpg", "Ar-condicionado · noite (City, 1:1)", [("Guardian", "guardian-night", (1500, 1350, 2400, 1800))], 460)
 
-# ── billboards ──
 pairs("B1-billboard-street-blank.jpg", "Billboard SEM conteúdo · Street · 1:1, dia e noite", [
     ("Guardian · dia", "guardian-blank", (1100, 880, 1900, 1440)),
     ("Guardian · noite", "guardian-blank-night", (1100, 880, 1900, 1440)),
@@ -79,7 +71,6 @@ pairs("B4-guardian-whole.jpg", "Guardian · o quadro inteiro (repetição dos bi
     ("Guardian · City noite", "guardian-night", None),
 ], 700)
 
-# ── thumbnails: noise and repetition ──
 TW, TH, GAP, LH = 300, 188, 8, 24
 cases = [("Paul Graham", "pg-city"), ("IKEA", "ikea-city"), ("Guardian", "guardian-city"), ("Guardian noite", "guardian-night"), ("Linear", "linear-city"), ("Linear noite", "linear-night")]
 sh = Image.new("RGB", (150 + len(cases) * (TW + GAP), 62 + 4 * (TH + GAP)), (16, 16, 20))

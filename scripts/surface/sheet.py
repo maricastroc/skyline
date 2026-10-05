@@ -1,5 +1,3 @@
-"""Contact sheets for the surface grammar pass.
-python3 scripts/surface/sheet.py OUT.jpg COLS TILE_W "file:label" ... ("-:label" = a row heading spanning the row)."""
 import sys
 from PIL import Image, ImageDraw, ImageFont
 

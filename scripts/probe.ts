@@ -1,5 +1,3 @@
-// Dev probe: run the server pipeline (acquire → normalize → city) for a URL and print a summary.
-// Usage: npx tsx scripts/probe.ts https://example.com
 import { fetchStaticPage } from "../src/lib/acquisition/static-fetch";
 import { normalizeInputUrl } from "../src/lib/acquisition/url-policy";
 import { CaptureError } from "../src/lib/acquisition/errors";

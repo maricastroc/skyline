@@ -1,58 +1,27 @@
 // FROZEN: semantic / architectural foundation v1 (final baseline after the narrow-lot institutional pass). Do not edit.
-/**
- * Internal structure of a territory (intra-territory composition pass): how the piece of page a
- * territory stands for is organised INSIDE — one continuous sequence, or several groups.
- *
- * Purely descriptive. Nothing here changes a territory's weight, key, order, mix or allocation:
- * the plan attaches the descriptor after those are decided, and only the composition reads it.
- *
- * Evidence, strongest first:
- *
- *   explicit  headings partition the territory's content (a heading starts a group that runs to
- *             the next heading of the same or a higher level). Only LABEL headings count: a
- *             heading that is itself a link is an item's title (a story, a product card), and a
- *             list of titled items is still one list, not one group per item. The groups are at the
- *             DEEPEST heading level that still yields ≥ 2 non-empty groups and covers most of
- *             the content; a shallower level that also partitions it gives the `sections`.
- *   inferred  no label headings, but a clear series of sibling LIST containers (ul / ol / table /
- *             menu) under one parent, each holding ≥ 3 items and ≥ 10% of the territory's items.
- *             Layout wrappers (div columns) never count: a column is not a group.
- *   none      one sequence (the default): no evidence, no groups invented.
- *
- * Sizes use the normalized document's own weight model (selfWeight) and own link counts, summed
- * over the nodes of each group, so they are consistent with the territory weights.
- */
 import type { NNode, NormalizedDocument } from "../../model/types";
 
 export interface StructureGroup {
-  /** Share of the territory's content in this group (shares sum to ≤ 1; the rest is lead-in). */
   share: number;
-  /** Items (own links) and text in the group. */
   items: number;
   chars: number;
-  /** Heading level that opens the group (explicit only). */
   level?: number;
-  /** Index of the enclosing section (shallower heading level), when there is one. */
   section: number;
 }
 
 export interface Structure {
   source: "explicit" | "inferred" | "none";
   groups: StructureGroup[];
-  /** Headed sections above the groups (e.g. regions above cities), 0 when none. */
   sections: number;
-  /** Items (links) in the whole territory. */
   items: number;
   evidence: string[];
 }
 
-// Lists of items only: a <dl> is a series of entries (definitions), not a list of groups.
 const LISTS = new Set(["ul", "ol", "table", "menu"]);
 const MIN_INFERRED_SHARE = 0.1;
 const MIN_GROUP_CHARS = 20;
 const COVERAGE = 0.6;
 
-/** In-scope nodes of a territory, in document order: the roots' subtrees minus excluded subtrees. */
 export function scopeOf(nodes: NNode[], roots: number[], excluded: number[]): number[] {
   const out: number[] = [];
   const ex = [...excluded].sort((a, b) => a - b);
@@ -81,7 +50,6 @@ export function structureOf(doc: NormalizedDocument, roots: number[], excluded: 
   const none = (why: string): Structure => ({ source: "none", groups: [], sections: 0, items: totalItems, evidence: [why] });
   if (!scope.length) return none("empty territory");
 
-  /* explicit: label headings (not item titles: a heading that holds a link is an item) */
   const isLabel = (i: number) => !!nodes[i].heading && nodes[i].links === 0;
   const titles = scope.filter((i) => nodes[i].heading && nodes[i].links > 0).length;
   const levels = [...new Set(scope.filter(isLabel).map((i) => nodes[i].heading!))].sort((a, b) => a - b);
@@ -131,7 +99,6 @@ export function structureOf(doc: NormalizedDocument, roots: number[], excluded: 
     };
   }
 
-  /* inferred: a series of sibling list containers */
   const maximalLists = scope.filter((i) => LISTS.has(nodes[i].tag) && !scope.some((o) => o !== i && LISTS.has(nodes[o].tag) && i > o && i < nodes[o].end));
   const byParent = new Map<number, number[]>();
   for (const i of maximalLists) byParent.set(nodes[i].parent, [...(byParent.get(nodes[i].parent) ?? []), i]);
@@ -153,7 +120,6 @@ export function structureOf(doc: NormalizedDocument, roots: number[], excluded: 
   return none(`one sequence: ${why}`);
 }
 
-/** A plan with the descriptor removed: the composition then lays every territory out as kit-v6 did. */
 export function withoutStructure<T extends { territories: Array<{ structure?: Structure }> }>(plan: T): T {
   return {
     ...plan,

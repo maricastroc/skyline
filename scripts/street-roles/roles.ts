@@ -1,5 +1,3 @@
-// C1 street roles per page (read-only): npx tsx scripts/street-roles/roles.ts > docs/street-roles/roles.txt
-// Distribution over the 24 inner and 16 outer segments, a map of the grid, and every segment's reason.
 import { readFileSync } from "node:fs";
 import { realPage } from "../../src/lib/pixelcity/kit/real-page";
 import { planStreets, type StreetRole } from "../../src/lib/pixelcity/kit/street-roles";
@@ -18,7 +16,6 @@ for (const id of order) {
   const n = (inner: boolean, r: StreetRole) => sp.segments.filter((s) => (s.line > 0 && s.line < 4) === inner && s.role === r).length;
   rows.push(`${(NAME[id] ?? id).padEnd(13)} ${ROLES.map((r) => String(n(true, r)).padStart(r === "primary" ? 20 : r.length + 1)).join("")}   ${ROLES.map((r) => String(n(false, r)).padStart(r === "primary" ? 20 : r.length + 1)).join("")}`);
   detail.push(`\n## ${NAME[id] ?? id} (${id})`);
-  // Map: the streets along x, one row per grid line (z), and along z, one row per grid line (x).
   detail.push(`along x, lines 0–4: ${[0, 1, 2, 3, 4].map((l) => [0, 1, 2, 3].map((k) => SYM[sp.role("x", l, k)]).join("")).join(" | ")}`);
   detail.push(`along z, lines 0–4: ${[0, 1, 2, 3, 4].map((l) => [0, 1, 2, 3].map((k) => SYM[sp.role("z", l, k)]).join("")).join(" | ")}`);
   for (const s of sp.segments) detail.push(`  ${s.axis}${s.line}.${s.span} ${s.role.padEnd(10)} ${s.why}`);

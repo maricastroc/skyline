@@ -4,11 +4,6 @@ import { useEffect, useMemo, useRef } from "react";
 import type { CityRuntime } from "@/components/experience/runtime";
 import { useSkyline } from "@/components/experience/store";
 
-/**
- * The whole normalized DOM as an icicle diagram: one row per level, each node as wide as its
- * structural weight. Shows where the selection lives, what's been destroyed, and doubles as
- * navigation (click to select).
- */
 export function Icicle({ runtime, height = 132 }: { runtime: CityRuntime; height?: number }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const selected = useSkyline((s) => s.selected);

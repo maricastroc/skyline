@@ -3,11 +3,6 @@ import { mix, oklch, rgbToCss } from "../../city/palette";
 import type { RGB } from "../../city/types";
 import type { ArchStyle, CityGrammar, TimeOfDay } from "./grammar";
 
-/**
- * Game palette: a limited set of ramps, art-directed per time of day and architecture, with
- * the site's hues injected only where a pixel artist would put brand color — roofs, awnings,
- * signs, neon. Any site, however garish or grey, lands inside the same visual language.
- */
 export interface GamePalette {
   time: TimeOfDay;
   sky: { top: RGB; bottom: RGB; stars: boolean };
@@ -23,7 +18,6 @@ export interface GamePalette {
   plaza: RGB;
   walls: Record<ArchStyle, RGB[]>;
   roofs: Record<ArchStyle, RGB[]>;
-  /** Vivid site colors for awnings, signs, neon, cars. */
   accents: RGB[];
   glass: RGB;
   lit: RGB;

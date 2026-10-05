@@ -1,4 +1,3 @@
-// Print the facts of frozen pages: npx tsx scripts/real-pages/inspect.ts [id…]
 import { readFileSync } from "node:fs";
 import { normalize } from "../../src/lib/model/normalize";
 import { analyzeSemantics } from "../../src/lib/semantics/analyze";

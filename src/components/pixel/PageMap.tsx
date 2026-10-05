@@ -1,9 +1,5 @@
 "use client";
 
-/**
- * The page map (lib/pixelcity/page-map.ts) drawn as a small page: one column in reading order,
- * every block one territory of the city.
- */
 import { memo, type CSSProperties } from "react";
 import type { PageMapData, PMBlock } from "@/lib/pixelcity/page-map";
 
@@ -12,7 +8,6 @@ export type BlockState = "idle" | "active" | "dim" | "unread" | "read";
 const MIN: Record<PMBlock["form"], number> = { bar: 15, hero: 70, list: 44, toc: 54, archive: 36, text: 30, media: 46, grid: 40, box: 40, form: 17, footer: 28, quotes: 30, rest: 7 };
 const CHROME_H = 18;
 
-/** Heights ∝ weight with a legibility floor, summing to `H`. */
 function heights(blocks: PMBlock[], H: number): number[] {
   const mins = blocks.map((b) => MIN[b.form] * (b.form === "rest" ? 1 : b.lots > 0 || b.weight > 0.001 ? 1 : 0.8));
   const sumMin = mins.reduce((s, v) => s + v, 0);
@@ -48,7 +43,6 @@ export const PageMap = memo(function PageMap({
   height: number;
   stateOf?: (t: number) => BlockState;
   onHover?: (t: number | null) => void;
-  /** Small tag at the block's right edge (e.g. “→ 27 lots”). */
   tagOf?: (b: PMBlock) => string | null;
   className?: string;
   style?: CSSProperties;
@@ -165,7 +159,6 @@ function Block({ b, h }: { b: PMBlock; h: number }) {
         </div>
       );
     case "list": {
-      // Room for each entry's own small print (counted, not read: greeked).
       const meta = b.lines.length > 0 && h / b.lines.length > 17;
       return (
         <div className="pm-list">

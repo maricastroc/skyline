@@ -1,6 +1,3 @@
-// C4 atmosphere per page (read-only): npx tsx scripts/atmosphere/environment.ts > docs/atmosphere/environment.txt
-// The three environment axes, their reasons, and what they make of the sky, the haze and the light
-// at day and at night (OKLCH), next to the shared stage of kit-v11.
 import { readFileSync } from "node:fs";
 import { rgbToOklch } from "../../src/lib/city/palette";
 import type { RGB } from "../../src/lib/city/types";

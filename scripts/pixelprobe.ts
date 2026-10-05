@@ -1,4 +1,3 @@
-// Dev probe for the pixel city: npx tsx scripts/pixelprobe.ts <url…>
 import { fetchStaticPage } from "../src/lib/acquisition/static-fetch";
 import { normalizeInputUrl } from "../src/lib/acquisition/url-policy";
 import { normalize } from "../src/lib/model/normalize";

@@ -8,10 +8,6 @@ import type { CityModel } from "@/lib/city/types";
 
 const srgb = (c: [number, number, number]) => new THREE.Color().setRGB(c[0], c[1], c[2], THREE.SRGBColorSpace);
 
-/**
- * Late-afternoon light over a model table: a soft gradient sky, a low warm sun with long
- * shadows, a pale survey grid on the ground, and fog that melts the edges into the sky.
- */
 export function Environment({ city }: { city: CityModel }) {
   const p = city.palette;
   const span = Math.max(city.size.w, city.size.d);
@@ -54,14 +50,14 @@ export function Environment({ city }: { city: CityModel }) {
           uSun: { value: colors.sun },
           uSunDir: { value: sunDir },
         },
-        vertexShader: /* glsl */ `
+        vertexShader: `
           varying vec3 vDir;
           void main() {
             vDir = normalize(position);
             vec4 p = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
             gl_Position = p.xyww;
           }`,
-        fragmentShader: /* glsl */ `
+        fragmentShader: `
           uniform vec3 uTop; uniform vec3 uHorizon; uniform vec3 uSun; uniform vec3 uSunDir;
           varying vec3 vDir;
           void main() {

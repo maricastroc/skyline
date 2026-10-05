@@ -20,7 +20,6 @@ export interface SurfaceLabProps {
   fp: SiteFingerprint;
   set: LabSet;
   style: ArchStyle;
-  /** 4 = frozen kit before the surface grammar; 5 = frozen surface grammar; 6 = current. */
   version: 4 | 5 | 6;
   light: LabLight;
   time: TimeOfDay;
@@ -36,7 +35,6 @@ const KITS: Record<4 | 5 | 6, LabKit> = {
   6: { Kit: Kit as unknown as LabKit["Kit"], building: building as unknown as (kit: never, w: number, d: number, P: Program) => number },
 };
 
-/** Buildings in isolation on a controlled grid (see lib/pixelcity/kit/lab.ts). */
 export function SurfaceLabView({ fp, set, style, version, time, flat, light, focus, zoom, legend }: SurfaceLabProps) {
   const lab = useMemo(() => generateSurfaceLab(KITS[version], fp, { set, style, time, flat, light }), [fp, set, style, version, time, flat, light]);
   return (

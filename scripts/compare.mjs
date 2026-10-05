@@ -1,6 +1,3 @@
-// Side-by-side test: N cities, same camera, domains hidden.
-//   node scripts/compare.mjs <out-prefix> <url> <url> <url> [--reveal] [--az=45] [--single]
-// Env: BASE (default http://localhost:3000), CHROME_PATH, OUT (default docs/screenshots/pixel)
 import { mkdirSync } from "node:fs";
 import puppeteer from "puppeteer-core";
 
@@ -28,7 +25,7 @@ async function shoot(path, w, h, file, readySel) {
   page.on("console", (m) => m.type() === "error" && console.log("[page]", m.text().slice(0, 300)));
   await page.goto(`${BASE}${path}`, { waitUntil: "domcontentloaded" });
   await page.waitForFunction(readySel, { timeout: 120000 });
-  await sleep(5200); // build-up animation + billboard images
+  await sleep(5200);
   await page.screenshot({ path: `${OUT}${file}` });
   console.log("shot", `${OUT}${file}`);
   await page.close();

@@ -1,7 +1,3 @@
-// Visual polish audit (round 0), haze studies: the same captures as shoot.mjs with ?hazeStudy=<a|b|c>.
-// The switch exists only with scripts/polish-audit/haze-studies.patch applied on commit debceb0
-// (the haze code changed in round 1); see docs/PIXEL_POLISH_AUDIT.md.
-//   node scripts/polish-audit/shoot-study.mjs a b c      Env: BASE, PAGES, VIEWS, OUT, FORCE.
 import { existsSync, mkdirSync } from "node:fs";
 import puppeteer from "puppeteer-core";
 

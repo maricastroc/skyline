@@ -4,10 +4,7 @@ import "./pixel.css";
 import "./skyline.css";
 import "./page-map.css";
 
-// Silkscreen: only the frozen round-2 UI (/pixel/v1) still uses it. In the city, signs are
-// drawn with the bitmap font in the sign atlas, not with CSS.
 const pixel = Silkscreen({ variable: "--font-pixel", subsets: ["latin"], weight: ["400", "700"] });
-// Typography directions under test (data-ui on .sk): grotesk, editorial, bitmap.
 const geist = Geist({ variable: "--font-geist", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 const instSans = Instrument_Sans({ variable: "--font-inst-sans", subsets: ["latin"] });

@@ -1,5 +1,3 @@
-// Corpus fingerprint: npx tsx scripts/semantic-allocation/corpus.ts > docs/semantic-allocation/corpus.txt
-// Hashes everything a BEFORE/AFTER comparison depends on, so both sides provably use the same inputs.
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { generateKitDistrict as v2 } from "../../src/lib/pixelcity/kit-v2/district";

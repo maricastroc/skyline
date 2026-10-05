@@ -1,7 +1,3 @@
-"""Art-direction audit thumbnails: python3 scripts/art-audit/thumbs.py
-Small tiles of every page in City, Street and Overview, labelled and unlabelled (letters, key in
-docs/screenshots/art-audit/sheets/thumbs-key.txt), plus a 'squint' row (grey + blur: what is left
-without colour and detail)."""
 import random
 from PIL import Image, ImageDraw, ImageFilter, ImageFont, ImageOps
 

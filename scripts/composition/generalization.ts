@@ -1,4 +1,3 @@
-// Every parcelled territory of the corpus and what the pass did to it: npx tsx scripts/composition/generalization.ts
 import { readFileSync } from "node:fs";
 import { generateKitDistrict, newTrace } from "../../src/lib/pixelcity/kit/district";
 import { realPage } from "../../src/lib/pixelcity/kit/real-page";

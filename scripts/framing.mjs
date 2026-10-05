@@ -1,7 +1,3 @@
-// Framing test: A = island (whole plinth in frame) vs B = world (the city runs past the frame).
-// Same pages, same grammar, same camera angle; only composition/camera/scale differ.
-//   node scripts/framing.mjs
-// Env: BASE (default http://localhost:3000), CHROME_PATH, OUT (default docs/screenshots/framing)
 import { mkdirSync } from "node:fs";
 import puppeteer from "puppeteer-core";
 
@@ -34,14 +30,13 @@ for (const [name, url] of SITES) {
   const q = `/pixel?url=${encodeURIComponent(url)}`;
   for (const [tag, path] of [["A-island", `${q}&frame=island`], ["B-world", q]]) {
     const page = await open(path);
-    await sleep(8000); // intro glide + build-up + billboard images
+    await sleep(8000);
     await page.screenshot({ path: `${OUT}${name}-${tag}.png` });
     console.log("shot", `${OUT}${name}-${tag}.png`);
     await page.close();
   }
 }
 
-// One continuous move, sampled: City View → approach → street (Linear).
 const page = await open(`/pixel?url=${encodeURIComponent("https://linear.app")}`);
 await sleep(8000);
 await page.click(".px-enter");

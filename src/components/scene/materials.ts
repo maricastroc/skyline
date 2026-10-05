@@ -1,16 +1,5 @@
 import * as THREE from "three";
 
-/**
- * All city materials share one idea: per-instance attributes drive everything that changes
- * over time, so animation never touches React or instance matrices.
- *
- *   aAnim.x  build delay (s)      — grow from the ground in a wave
- *   aAnim.y  collapse start (s)   — lean, then implode into the ground (-1 = standing)
- *   aAnim.z  seed                 — per-instance variation
- *   aAnim.w  highlight            — 0 none, 1 selected, 2 destroy target
- *   aMeta.x  facade pattern, aMeta.y glow, aMeta.z atlas slot
- */
-
 export interface CityUniforms {
   uTime: { value: number };
   uSelect: { value: THREE.Color };
@@ -28,7 +17,7 @@ export function createUniforms(accent: THREE.Color): CityUniforms {
   };
 }
 
-const VERT_DECL = /* glsl */ `
+const VERT_DECL = `
 attribute vec4 aAnim;
 attribute vec4 aMeta;
 uniform float uTime;
@@ -40,8 +29,7 @@ varying float vHighlight;
 varying float vCollapse;
 `;
 
-/** Shared vertex transform: grow, lean, sink. `transformed` is in unit-shape space. */
-const VERT_ANIM = /* glsl */ `
+const VERT_ANIM = `
 #include <begin_vertex>
 vLocal = position;
 vObjNormal = normal;
@@ -62,7 +50,6 @@ vCollapse = collapse;
 if (collapse > 0.0) {
   float k = collapse * collapse;
   float lean = (aAnim.z - 0.5) * 0.55 * smoothstep(0.0, 0.55, collapse);
-  // Lean proportional to world height, so tall towers visibly topple.
   transformed.x += transformed.y * lean * vScale.y / max(vScale.x, 0.001);
   transformed.y -= k * 1.03;
   transformed.xz *= 1.0 - 0.3 * k;
@@ -70,7 +57,7 @@ if (collapse > 0.0) {
 }
 `;
 
-const FRAG_DECL = /* glsl */ `
+const FRAG_DECL = `
 uniform float uTime;
 uniform vec3 uSelect;
 uniform vec3 uDanger;
@@ -83,15 +70,13 @@ varying float vCollapse;
 
 float skyHash(float n) { return fract(sin(n * 127.1) * 43758.5453); }
 
-// Anti-aliased band: 1 inside [a, b] of a periodic coordinate.
 float band(float x, float a, float b) {
   float w = fwidth(x) * 0.75 + 1e-4;
   return smoothstep(a - w, a + w, x) * (1.0 - smoothstep(b - w, b + w, x));
 }
 `;
 
-/** Facades, paper edges, highlight. Runs after the instance color is applied. */
-const FRAG_SURFACE = /* glsl */ `
+const FRAG_SURFACE = `
 #include <color_fragment>
 {
   vec3 n = normalize(vObjNormal);
@@ -108,7 +93,6 @@ const FRAG_SURFACE = /* glsl */ `
   float facade = vMeta.x;
 
   #ifndef SKY_NO_RIM
-  // Crisp paper edges on every face: a thin darker rim, like a cut sheet of card.
   float ex = fs.x * 0.5 - abs(fc.x);
   float ey = min(fc.y, fs.y - fc.y);
   float edge = min(ex, ey);
@@ -120,7 +104,6 @@ const FRAG_SURFACE = /* glsl */ `
   if (side && facade > 0.5 && facade < 3.5) {
     float seed = floor(fs.x * 13.0 + fs.y * 7.0);
     if (facade < 1.5) {
-      // TEXT: rows of type. Ragged line endings, word gaps, margins.
       float rowH = 0.46;
       float y = fc.y - 0.42;
       float row = floor(y / rowH);
@@ -134,14 +117,12 @@ const FRAG_SURFACE = /* glsl */ `
       float t = band(fy, 0.34, 0.66) * inLine * word * rows * near;
       diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * vec3(0.55, 0.56, 0.6), t * 0.75);
     } else if (facade < 2.5) {
-      // TOWER: curtain wall — mullions and spandrels.
       float x = fc.x + fs.x * 0.5;
       float mull = 1.0 - band(fract(x / 0.85), 0.12, 0.88);
       float flr = 1.0 - band(fract(fc.y / 1.25), 0.16, 0.92);
       float glass = (1.0 - max(mull, flr)) * step(0.6, fc.y) * near;
       diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * vec3(0.62, 0.66, 0.74), glass * 0.65);
     } else {
-      // GRID: small punched windows.
       float x = fc.x + fs.x * 0.5;
       float w = band(fract(x / 0.7), 0.3, 0.75) * band(fract(fc.y / 0.85), 0.35, 0.75) * step(0.3, fc.y) * step(fc.y, fs.y - 0.2);
       diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * 0.6, w * near * 0.8);
@@ -154,13 +135,12 @@ const FRAG_SURFACE = /* glsl */ `
     bool danger = vHighlight > 1.5;
     vec3 hc = danger ? uDanger : uSelect;
     float pulse = danger ? 0.5 + 0.5 * sin(uTime * 7.0) : 1.0;
-    // Selection is a wash you can still read through; the blast preview is unmistakable.
     diffuseColor.rgb = mix(diffuseColor.rgb, hc, danger ? 0.58 + 0.17 * pulse : 0.24);
   }
 }
 `;
 
-const FRAG_EMISSIVE = /* glsl */ `
+const FRAG_EMISSIVE = `
 #include <emissivemap_fragment>
 #ifdef SKY_GLOW
   totalEmissiveRadiance += vColor.rgb * vMeta.y * 1.6;
@@ -187,7 +167,6 @@ function patchStandard(material: THREE.MeshStandardMaterial, uniforms: CityUnifo
   material.customProgramCacheKey = () => `skyline-standard-${glow ? "glow" : "solid"}-${rim ? "rim" : "plain"}`;
 }
 
-/** `rim: false` for curved/slanted shapes, where face-space edges are meaningless. */
 export function createSolidMaterial(uniforms: CityUniforms, rim = true): THREE.MeshStandardMaterial {
   const m = new THREE.MeshStandardMaterial({ roughness: 0.86, metalness: 0.0 });
   patchStandard(m, uniforms, false, rim);
@@ -200,7 +179,6 @@ export function createGlowMaterial(uniforms: CityUniforms): THREE.MeshStandardMa
   return m;
 }
 
-/** Billboards: unlit atlas sampling; slot -1 shows a placeholder poster in the instance color. */
 export const ATLAS = { size: 2048, cols: 8, slotW: 256, slotH: 160 } as const;
 
 export function createBillboardMaterial(uniforms: CityUniforms, atlas: THREE.Texture): THREE.MeshBasicMaterial {
@@ -247,7 +225,6 @@ export function createBillboardMaterial(uniforms: CityUniforms, atlas: THREE.Tex
   return m;
 }
 
-/** Shadow pass must replay the same vertex animation or shadows would lag behind. */
 export function createDepthMaterial(uniforms: CityUniforms): THREE.MeshDepthMaterial {
   const m = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking });
   m.onBeforeCompile = (shader) => {
@@ -260,7 +237,6 @@ export function createDepthMaterial(uniforms: CityUniforms): THREE.MeshDepthMate
   return m;
 }
 
-/** Unit shapes with their base at y = 0. */
 export function createGeometries() {
   const box = new THREE.BoxGeometry(1, 1, 1).translate(0, 0.5, 0);
   const spire = new THREE.ConeGeometry(0.5, 1, 4, 1).translate(0, 0.5, 0);

@@ -1,7 +1,3 @@
-// C4 atmosphere, BEFORE (kit-v11, C3) × AFTER (current) captures, 1440×900 @2x, day, seed 7, same camera:
-//   node scripts/atmosphere/shoot.mjs [variant …]   variants: before · after · seed8 (after, seed 8)
-// Views: city · street · wide (street view at zoom 0.55: the whole district). Writes
-// docs/screenshots/atmosphere/<variant>/<view>/<page>.png. Env: BASE, CHROME_PATH, PAGES, VIEWS, FORCE.
 import { existsSync, mkdirSync } from "node:fs";
 import puppeteer from "puppeteer-core";
 

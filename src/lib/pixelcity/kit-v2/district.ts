@@ -1,18 +1,4 @@
 // FROZEN: detail kit after the massing pass + real-page validation (baseline of the semantic allocation pass). Do not edit.
-/**
- * Detail-kit prototype: a district generated from a *page profile* — briefs in reading order
- * plus a site identity (the fingerprint the page's CSS would produce). Nothing is placed by hand.
- *
- *   grid      road centre lines every P tiles; a central intersection at the origin
- *   blocks    the landmark and each major brief take a whole block (civic, court, market,
- *             towers, slabs, works, plaza — see brief.blockFor); the rest are lots around a
- *             courtyard, filled by minor briefs (brief.programFor)
- *   streets   surfaces, a furniture pattern along every curb, signals, a bus stop, traffic,
- *             people
- *
- * Four profiles stand in for structurally different sites; they are synthetic (no capture),
- * so the comparison shows the grammar, not a particular page.
- */
 import { mix } from "../../city/palette";
 import type { RGB } from "../../city/types";
 import type { SiteFingerprint } from "../../fingerprint/fingerprint";
@@ -30,11 +16,8 @@ import { vehicle, type VehicleType } from "./vehicles";
 export type ProfileName = "mixed" | "portal" | "product" | "reference";
 
 export interface Profile {
-  /** Site identity: what the page's CSS/markup would give the fingerprint. */
   identity: Partial<SiteFingerprint>;
-  /** Landmark + majors in reading order (each takes a block). */
   majors: Brief[];
-  /** Minor briefs, cycled to fill the lots. */
   minors: Brief[];
 }
 
@@ -42,7 +25,6 @@ const L = (label: string): Partial<Brief> => ({ label });
 const minor = (content: Brief["content"], weight: number, repeat = 0, label?: string): Brief => ({ role: "minor", content, weight, repeat, label });
 
 export const PROFILES: Record<ProfileName, Profile> = {
-  // A general site: some of everything (the prototype's previous mix).
   mixed: {
     identity: { legacy: 0.6, type: { serif: 0.35, sans: 0.65, mono: 0 } },
     majors: [
@@ -54,7 +36,6 @@ export const PROFILES: Record<ProfileName, Profile> = {
     ],
     minors: [minor("links", 0.03, 0, "Pizza"), minor("text", 0.04), minor("links", 0.02, 4, "Books"), minor("media", 0.03, 0, "Cinema"), minor("text", 0.05), minor("action", 0.01, 0, "News"), minor("links", 0.02, 0, "Ramen"), minor("text", 0.03, 3), minor("structured", 0.02)],
   },
-  // A link portal / news aggregator: a feed of many short items, little media, legacy markup.
   portal: {
     identity: { legacy: 0.9, type: { serif: 0.1, sans: 0.9, mono: 0 }, hues: [{ h: 42, c: 0.16, l: 0.65 }], depth: 0.25, textDensity: 0.3, linkDensity: 0.9 },
     majors: [
@@ -65,7 +46,6 @@ export const PROFILES: Record<ProfileName, Profile> = {
     ],
     minors: [minor("links", 0.02, 6, "Ask"), minor("links", 0.02, 0, "Show"), minor("links", 0.01, 4, "New"), minor("text", 0.02), minor("links", 0.02, 0, "Past"), minor("action", 0.005, 0, "Login"), minor("links", 0.02, 5, "Best")],
   },
-  // A product landing page: few big sections, heavy media, calls to action, dark modern CSS.
   product: {
     identity: { darkness: 0.9, type: { serif: 0, sans: 0.7, mono: 0.32 }, roundness: 0.2, airiness: 0.5, ornament: 0.6, imagery: 0.8, hues: [{ h: 275, c: 0.15, l: 0.6 }], depth: 0.6, size: 0.6 },
     majors: [
@@ -77,7 +57,6 @@ export const PROFILES: Record<ProfileName, Profile> = {
     ],
     minors: [minor("media", 0.05, 0, "Demo"), minor("action", 0.01, 0, "Signup"), minor("text", 0.03), minor("media", 0.04, 0, "Docs"), minor("structured", 0.03)],
   },
-  // A reference article: long hierarchical text, tables, a table of contents, serif type.
   reference: {
     identity: { legacy: 0.1, type: { serif: 0.62, sans: 0.38, mono: 0 }, hues: [{ h: 250, c: 0.06, l: 0.5 }], depth: 0.85, size: 0.8, textDensity: 0.95 },
     majors: [
@@ -93,33 +72,26 @@ export const PROFILES: Record<ProfileName, Profile> = {
 };
 
 export interface KitOptions {
-  /** A named synthetic profile, or one built from a real page (kit/page-brief). */
   profile?: ProfileName | Profile;
   time?: TimeOfDay;
   people?: PeopleMode;
   seed?: number;
-  /** Silhouette test: every building the same colour, no surface patterns, no signs or people. */
   flat?: boolean;
-  /** Validation: filled with every block and building decision (no effect on the output). */
   trace?: KitTrace;
 }
 
 export interface KitTrace {
   grammar?: CityGrammar;
   blocks: Array<{ order: number; i: number; j: number; kind: BlockKind; brief: Brief | null; buildings: TraceBuilding[] }>;
-  /** Part index range covered by the blocks (street surfaces, furniture and traffic excluded). */
   range: [number, number];
 }
 export interface TraceBuilding {
-  /** The brief the lot was built from (minor lots), or the block's brief. */
   brief: Brief | null;
   P: Program;
   w: number;
   d: number;
-  /** Index range of this building's parts in the city's part list. */
   parts: [number, number];
 }
-/** The block being composed, while tracing. */
 let rec: KitTrace["blocks"][number] | null = null;
 
 export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): PixelCity {
@@ -140,8 +112,6 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
   streetSurfaces(kit, grid);
   const blocksFrom = kit.parts.length;
 
-  // Blocks in priority order: the four around the central intersection (back first, so tall
-  // landmarks stand behind the crossing), then the outer ring by distance.
   const blocks: Array<{ x: number; z: number; i: number; j: number }> = [];
   for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) blocks.push({ x: (lines[i] + lines[i + 1]) / 2, z: (lines[j] + lines[j + 1]) / 2, i, j });
   const prio = (b: { x: number; z: number }) => Math.hypot(b.x, b.z) * 10 + (b.z + b.x) * 0.1;
@@ -205,8 +175,6 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
   };
 }
 
-/* ───────────────────────── block compositions ───────────────────────── */
-
 interface Lot {
   x: number;
   z: number;
@@ -216,7 +184,6 @@ interface Lot {
   corner: boolean;
 }
 
-/** Corner lots L×L and one or two lots along each edge between them (front = outward). */
 function perimeterLots(B: number, Ld: number, split: number): Lot[] {
   const c = B / 2 - Ld / 2;
   const lots: Lot[] = [
@@ -238,7 +205,6 @@ function place(kit: Kit, lot: Lot, P: Program, brief: Brief | null = null) {
   kit.frame(lot.x, lot.z, lot.rot, () => build(kit, lot.w - 0.08, lot.d - 0.08, P, brief));
 }
 
-/** `building`, recorded when tracing. */
 function build(kit: Kit, w: number, d: number, P: Program, brief: Brief | null) {
   const from = kit.parts.length;
   const top = building(kit, w, d, P);
@@ -256,7 +222,6 @@ function composeBlock(kit: Kit, kind: BlockKind, brief: Brief | null, B: number,
   const seed = 1000 + bi * 37;
   switch (kind) {
     case "lots": {
-      // Lot depth and edge split vary per block, so blocks don't share one rhythm.
       const Ld = 4.2 + kit.rand(seed, 1) * 0.8;
       courtyardGarden(kit, B, Ld, seed);
       perimeterLots(B, Ld, kit.rand(seed, 2) < 0.6 ? 2 : 1).forEach((lot, k) => {
@@ -272,7 +237,6 @@ function composeBlock(kit: Kit, kind: BlockKind, brief: Brief | null, B: number,
     }
     case "court": {
       const P0 = programFor({ ...(brief as Brief), role: "minor", content: "text", weight: 0.04 }, g, p, kit, bi * 50);
-      // Classic courts are palaces (mansards, a turret); others are streets of buildings.
       build(kit, B - 0.2, B - 0.2, { ...P0, family: "courtyard", floors: Math.max(3, P0.floors + 1), corner: g.style === "classic" ? "turret" : undefined, ground: "shop", ground2: "cafe", roof: g.style === "classic" ? "mansard" : P0.roof === "mansard" ? "flat" : P0.roof, topside: g.style === "soft" ? "garden" : P0.topside === "garden" ? "hvac" : P0.topside }, brief);
       return;
     }
@@ -300,7 +264,6 @@ function composeBlock(kit: Kit, kind: BlockKind, brief: Brief | null, B: number,
       kit.span(-B / 2, B / 2, 0, 0.02, -B / 2, B / 2, mix(p.road, p.sidewalk, 0.5), Surf.PAVING);
       place(kit, { x: -1.5, z: B / 2 - 3.2, w: B - 3.4, d: 6.2, rot: 0, corner: false }, { ...P0, family: "shed", label: brief?.label?.toUpperCase() }, brief);
       place(kit, { x: B / 2 - 2.6, z: -2.4, w: 7.5, d: 5, rot: Math.PI / 2, corner: false }, { ...P0, family: "shed", roof: "gable", seed: P0.seed + 5, label: undefined }, brief);
-      // Yard: containers and pallets.
       const cs: RGB[] = [p.accents[0], p.accents[1], [0.55, 0.3, 0.2], [0.3, 0.45, 0.55]];
       for (let k = 0; k < 6; k++) kit.box(-B / 2 + 1.5 + (k % 3) * 1.6, (k >= 3 ? 0.42 : 0), -B / 2 + 1.6, 1.4, 0.42, 0.55, cs[k % cs.length], Surf.STRIPES);
       return;
@@ -333,8 +296,6 @@ function composeBlock(kit: Kit, kind: BlockKind, brief: Brief | null, B: number,
   }
 }
 
-/* ───────────────────────── streets: furniture, signals, traffic ───────────────────────── */
-
 function furniture(kit: Kit, lines: number[], B: number, S: number, palette: PixelCity["palette"]) {
   const curbZ = S - 0.32;
   for (let i = 0; i < lines.length - 1; i++)
@@ -355,7 +316,6 @@ function furniture(kit: Kit, lines: number[], B: number, S: number, palette: Pix
           () => {
             const seed = i * 97 + j * 13 + si;
             const busHere = i === 1 && j === 2 && si === 0;
-            // Spacing and the lamp/tree cadence vary per side: no single rhythm across the city.
             const step = 1.05 + kit.rand(seed, 1) * 0.35;
             const cadence = 3 + Math.floor(kit.rand(seed, 2) * 2);
             let n = 0;

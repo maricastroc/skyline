@@ -1,13 +1,4 @@
 // FROZEN: semantic / architectural foundation v1 (final baseline after the narrow-lot institutional pass). Do not edit.
-/**
- * Real-page validation: a frozen DomSnapshot → the facts the kit grammar reads.
- *
- *   snapshot ─(perturb?)─▶ normalize ─▶ analyzeSemantics ─▶ computeFingerprint ─▶ planFromPage
- *
- * Perturbations are small, page-level edits used by the invariance tests: they change the
- * snapshot (never the derived facts), so every downstream stage reacts to them as it would to
- * a slightly different page.
- */
 import { computeFingerprint, type SiteFingerprint } from "../../fingerprint/fingerprint";
 import { normalize } from "../../model/normalize";
 import type { NormalizedDocument } from "../../model/types";
@@ -23,21 +14,16 @@ export interface RealPage {
   sem: Semantics;
   fp: SiteFingerprint;
   plan: Plan;
-  /** What the perturbation actually changed, in words. */
   perturbed?: string;
 }
 
 export function realPage(snapshot: DomSnapshot, perturbation: Perturbation = "none"): RealPage {
   const { snap, note } = perturb(snapshot, perturbation);
   const doc = normalize(snap);
-  // Content media only: incidental imagery (spacers, icons, avatars…) does not make a region media.
-  // An explicit footer is the footer at any size (so it stays chrome however large it grows).
   const sem = analyzeSemantics(doc, { contentMedia: true, explicitFooter: true });
   const fp = computeFingerprint(doc);
   return { doc, sem, fp, plan: planFromPage(doc, sem, fp), perturbed: note };
 }
-
-/* ───────────────────────── perturbations ───────────────────────── */
 
 const clone = <T,>(v: T): T => JSON.parse(JSON.stringify(v));
 
@@ -53,13 +39,11 @@ function perturb(s: DomSnapshot, p: Perturbation): { snap: DomSnapshot; note?: s
   switch (p) {
     case "text-10":
     case "text+10": {
-      // Every element's own text, ±10% (as if each paragraph were a little shorter/longer).
       const k = p === "text-10" ? 0.9 : 1.1;
       walk(snap.root, (n) => (n.text = Math.round(n.text * k)));
       return { snap, note: `own text of every element ×${k}` };
     }
     case "links-10": {
-      // Remove every tenth link (document order), with its subtree.
       let i = 0;
       let removed = 0;
       walk(snap.root, (n) => {
@@ -73,8 +57,6 @@ function perturb(s: DomSnapshot, p: Perturbation): { snap: DomSnapshot; note?: s
       return { snap, note: `${removed} of ${i} links removed (every tenth)` };
     }
     case "drop-secondary": {
-      // Remove the smallest section-like element that still holds 1–6% of the page's text:
-      // a secondary block a redesign could plausibly drop.
       const total = textOf(snap.root) || 1;
       let best: { n: SnapshotNode; parent: SnapshotNode; share: number } | null = null;
       walk(snap.root, (n, parent) => {

@@ -1,5 +1,3 @@
-"""Art-direction audit sheets: python3 scripts/art-audit/sheets.py
-(after node scripts/art-audit/shoot.mjs city street wide flat own). Writes docs/screenshots/art-audit/sheets/."""
 import subprocess
 from PIL import Image, ImageDraw, ImageFont
 
@@ -22,7 +20,6 @@ fam = lambda ps: [x for p in ps for v in ("city", "street", "wide") for x in row
 sheet("G-family.jpg", 3, 960, ["-:FAMILY · Wikipedia (Suspension bridge) vs Wikipedia 2 (Lighthouse)", *fam(["reference", "reference-2"]),
                                "-:CONTRAST · IKEA vs Paul Graham", *fam(["shop", "oldweb"])])
 
-# F. The street layer: the same crop of the central crossing (Street view) in every page.
 box, tw, th = (1100, 560, 1900, 1060), 400, 250
 font = ImageFont.load_default(size=16)
 sh = Image.new("RGB", (4 * tw + 3 * 8, 2 * (th + 24) + 8), (16, 16, 20))

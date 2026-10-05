@@ -13,10 +13,6 @@ export const SAMPLE_URLS: Record<string, string> = {
   "sample:lumen": LUMEN_SAMPLE_HTML,
 };
 
-/**
- * The acquisition layer's single entry point. Callers never pick fetch vs. browser directly;
- * they state a preference and get a DomSnapshot (or a CaptureError explaining why not).
- */
 export async function acquire(input: string, prefer: StrategyPreference = "auto", signal?: AbortSignal): Promise<DomSnapshot> {
   const sample = SAMPLE_URLS[input.trim()];
   if (sample) return snapshotFromHtml(sample, "https://lumen.example/", "sample");

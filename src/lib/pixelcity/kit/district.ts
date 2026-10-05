@@ -1,15 +1,3 @@
-/**
- * Detail-kit district, semantic allocation: a page (or a synthetic profile) → territories →
- * land in proportion to weight → organisations by region type → buildings.
- *
- *   plan.ts       page → ordered territories with weights and composition mixes
- *   territory.ts  territories → contiguous runs of a 256-lot path (land ∝ weight)
- *   compose.ts    each territory's pieces → buildings; the hero's largest piece → landmark
- *   here          grid, streets, furniture, traffic, the trace and the provenance view
- *
- * The four synthetic profiles of the massing pass still render here (their briefs become
- * territories); the cycle-based generator they were designed for is frozen in kit-v2.
- */
 import type { RGB } from "../../city/types";
 import type { SiteFingerprint } from "../../fingerprint/fingerprint";
 import type { RegionKind, Semantics } from "../../semantics/analyze";
@@ -33,11 +21,8 @@ import { vehicle, type VehicleType } from "./vehicles";
 export type ProfileName = "mixed" | "portal" | "product" | "reference";
 
 export interface Profile {
-  /** Site identity: what the page's CSS/markup would give the fingerprint. */
   identity: Partial<SiteFingerprint>;
-  /** Landmark + majors in reading order (each takes a block). */
   majors: Brief[];
-  /** Minor briefs, cycled to fill the lots. */
   minors: Brief[];
 }
 
@@ -45,7 +30,6 @@ const L = (label: string): Partial<Brief> => ({ label });
 const minor = (content: Brief["content"], weight: number, repeat = 0, label?: string): Brief => ({ role: "minor", content, weight, repeat, label });
 
 export const PROFILES: Record<ProfileName, Profile> = {
-  // A general site: some of everything (the prototype's previous mix).
   mixed: {
     identity: { legacy: 0.6, type: { serif: 0.35, sans: 0.65, mono: 0 } },
     majors: [
@@ -57,7 +41,6 @@ export const PROFILES: Record<ProfileName, Profile> = {
     ],
     minors: [minor("links", 0.03, 0, "Pizza"), minor("text", 0.04), minor("links", 0.02, 4, "Books"), minor("media", 0.03, 0, "Cinema"), minor("text", 0.05), minor("action", 0.01, 0, "News"), minor("links", 0.02, 0, "Ramen"), minor("text", 0.03, 3), minor("structured", 0.02)],
   },
-  // A link portal / news aggregator: a feed of many short items, little media, legacy markup.
   portal: {
     identity: { legacy: 0.9, type: { serif: 0.1, sans: 0.9, mono: 0 }, hues: [{ h: 42, c: 0.16, l: 0.65 }], depth: 0.25, textDensity: 0.3, linkDensity: 0.9 },
     majors: [
@@ -68,7 +51,6 @@ export const PROFILES: Record<ProfileName, Profile> = {
     ],
     minors: [minor("links", 0.02, 6, "Ask"), minor("links", 0.02, 0, "Show"), minor("links", 0.01, 4, "New"), minor("text", 0.02), minor("links", 0.02, 0, "Past"), minor("action", 0.005, 0, "Login"), minor("links", 0.02, 5, "Best")],
   },
-  // A product landing page: few big sections, heavy media, calls to action, dark modern CSS.
   product: {
     identity: { darkness: 0.9, type: { serif: 0, sans: 0.7, mono: 0.32 }, roundness: 0.2, airiness: 0.5, ornament: 0.6, imagery: 0.8, hues: [{ h: 275, c: 0.15, l: 0.6 }], depth: 0.6, size: 0.6 },
     majors: [
@@ -80,7 +62,6 @@ export const PROFILES: Record<ProfileName, Profile> = {
     ],
     minors: [minor("media", 0.05, 0, "Demo"), minor("action", 0.01, 0, "Signup"), minor("text", 0.03), minor("media", 0.04, 0, "Docs"), minor("structured", 0.03)],
   },
-  // A reference article: long hierarchical text, tables, a table of contents, serif type.
   reference: {
     identity: { legacy: 0.1, type: { serif: 0.62, sans: 0.38, mono: 0 }, hues: [{ h: 250, c: 0.06, l: 0.5 }], depth: 0.85, size: 0.8, textDensity: 0.95 },
     majors: [
@@ -96,35 +77,17 @@ export const PROFILES: Record<ProfileName, Profile> = {
 };
 
 export interface KitOptions {
-  /** A named synthetic profile, or a plan built from a real page (plan.planFromPage). */
   profile?: ProfileName | Plan;
   time?: TimeOfDay;
   people?: PeopleMode;
   seed?: number;
-  /** Silhouette test: every building the same colour, no surface patterns, no signs or people. */
   flat?: boolean;
-  /** Provenance view: every territory in its own debug colour, labelled (dev only). */
   provenance?: boolean;
-  /** Street-role view (art direction, C1): the city in grey, every street in its role's colour (dev only). */
   streetRoles?: boolean;
-  /**
-   * Art direction layer (default on). Off: the foundation's uniform streets, signals and traffic,
-   * byte-identical to kit-v9 — the ablation earlier passes are checked against.
-   */
   artDirection?: boolean;
-  /** Art direction C3, street life (default on). Off: C1's streets with the stamped street layer (kit-v10). */
   streetLife?: boolean;
-  /**
-   * Art direction C4, atmosphere (default on). Off: the shared sky, haze and light of each time of
-   * day (kit-v11). The layers switch off in order: no C3 means no C4, no art direction means none.
-   */
   atmosphere?: boolean;
-  /**
-   * Visual polish (default on): how rooftop plant and façade screens are drawn. Off: kit-v12's
-   * drawing, byte for byte. It changes no decision: where, how many and why they appear.
-   */
   polishAssets?: boolean;
-  /** Validation: filled with every allocation and building decision (no effect on the output). */
   trace?: KitTrace;
 }
 
@@ -136,11 +99,8 @@ export interface TraceBuilding {
   P: Program;
   w: number;
   d: number;
-  /** Index range of this building's parts in the city's part list. */
   parts: [number, number];
-  /** Surface grammar: the anatomy of every volume the building put up (usually one). */
   anatomy: Anatomy[];
-  /** Program: the building's use and why (simple-index evidence, a composition, a convention, the fallback). */
   program: { use: Use; reason: string };
 }
 export interface TracePiece {
@@ -148,7 +108,6 @@ export interface TracePiece {
   comp: Comp;
   piece: Piece;
   block: [number, number];
-  /** Part index range of everything the piece produced (buildings, plazas, yards). */
   parts: [number, number];
 }
 export interface KitTrace {
@@ -158,25 +117,17 @@ export interface KitTrace {
   pieces: TracePiece[];
   buildings: TraceBuilding[];
   landmark: LandmarkInfo | null;
-  /** Grouped frontages (intra-territory composition): territory → groups, clusters, passages. */
   frontage: Array<{ territory: number } & Omit<FrontagePlan, "rows">>;
-  /** Part index range covered by the blocks (street surfaces, furniture and traffic excluded). */
   range: [number, number];
-  /** Art direction, C1: the role of every street segment and why (scene only; nothing upstream reads it). */
   streets?: StreetSegment[];
-  /** Part index ranges of the scene after the blocks: sidewalk furniture, crossings (signals), traffic. */
   scene?: { furniture: [number, number]; crossings: [number, number]; traffic: [number, number] };
-  /** Art direction, C3: the life of every sidewalk and carriageway, and why (scene only). */
   life?: StreetLife;
-  /** Art direction, C4: the page's environment (air, tint, light) and why (sky, haze, light only). */
   environment?: Environment;
-  /** Visual polish: the part range of every rooftop plant and façade screen, in build order. */
   assets?: Array<{ asset: "hvac" | "screen"; range: [number, number] }>;
 }
 
 export const newTrace = (): KitTrace => ({ pieces: [], buildings: [], landmark: null, frontage: [], range: [0, 0] });
 
-/** Synthetic profile → plan: each brief once, weights normalised, landmark first. */
 export function planFromProfile(prof: Profile, base: SiteFingerprint): Plan {
   const fp: SiteFingerprint = { ...base, ...prof.identity, type: { ...base.type, ...(prof.identity.type ?? {}) } };
   const KIND: Record<Brief["content"], RegionKind> = { text: "section", links: "feed", media: "showcase", action: "form", structured: "pricing" };
@@ -205,7 +156,6 @@ export function planFromProfile(prof: Profile, base: SiteFingerprint): Plan {
   return { identity: fp, territories, hero: territories.findIndex((t) => t.kind === "hero") };
 }
 
-/** Stable debug colour per territory identity (hash of its key). */
 export function debugColor(key: string): RGB {
   let h = 2166136261;
   for (let i = 0; i < key.length; i++) h = Math.imul(h ^ key.charCodeAt(i), 16777619);
@@ -235,7 +185,6 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
   const grammar: CityGrammar = { ...g0, time: o.time ?? g0.time };
   const palette = buildGamePalette(fp, grammar);
   const kit = new Kit(palette, o.seed ?? 7, o.people ?? "sprite");
-  // Page signals the surface grammar may spend (unused at territory, composition and massing).
   kit.surface = { regularity: fp.regularity, headings: fp.headings, interactivity: fp.interactivity, linkDensity: fp.linkDensity };
   const trace = o.trace ?? (o.provenance ? newTrace() : undefined);
   kit.polishAssets = o.polishAssets !== false;
@@ -244,13 +193,11 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
   const grid: Grid = { lines: LINES, road: R, side: S, block: B, ext: 14 };
   const ground: Part[] = [{ mesh: "box", node: -1, x: 0, y: -0.3, z: 0, w: 3000, h: 0.3, d: 3000, rotY: 0, color: palette.sidewalk.map((v) => v * 0.9) as RGB, surf: Surf.PAVING, lit: 0, delay: 0 }];
   const alloc = allocate(plan);
-  // Art direction (downstream of the foundation): street roles read from the allocation.
   const roles = o.artDirection === false ? null : planStreets(plan, alloc);
   if (roles) streetSurfaces(kit, grid, roles);
   else uniformStreetSurfaces(kit, grid);
   const blocksFrom = kit.parts.length;
 
-  // The hero's landmark goes on its largest piece (earliest along the path on ties).
   const pieceRank: Record<PieceType, number> = { full: 3, half: 2, quad: 1, lot: 0 };
   const pathIndex = new Map(alloc.path.map(([x, y], k) => [x * N + y, k]));
   let lmPiece: { i: number; j: number; k: number } | null = null;
@@ -272,7 +219,6 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
   }
 
   let current: { territory: number; comp: Comp; piece: PieceType; block: [number, number] } | null = null;
-  // What the street sees of each building (bookkeeping only: read by street life, never by the blocks).
   const built: Built[] = [];
   const record = (P: Program, w: number, d: number, fn: () => number) => {
     const from = kit.parts.length;
@@ -286,8 +232,6 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
     }
     return top;
   };
-  // Intra-territory composition: parcelled territories with internal structure lay out their
-  // frontage group by group (pieces in path order). Without structure nothing is planned.
   const frontage = new Map<Piece, Run[][]>();
   const parcelledPieces = new Map<number, Array<{ pc: Piece; at: number }>>();
   for (let i = 0; i < BLOCKS; i++)
@@ -349,7 +293,6 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
     if (roles) trace.streets = roles.segments;
   }
 
-  // Art direction C3: street life from the frontage, the street roles and the page (or the stamp, off).
   const life = roles && o.streetLife !== false ? planStreetLife({ plan, alloc, roles, grammar, built, parts: kit.parts, lines: LINES, block: B }) : null;
   const f0 = kit.parts.length;
   if (life) lifeSidewalks(kit, life, LINES, B, S, palette);
@@ -360,7 +303,6 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
   const f2 = kit.parts.length;
   if (life) lifeTraffic(kit, life, LINES, R, palette);
   else traffic(kit, LINES, R, P_, palette, roles);
-  // Art direction C4: the page's environment over the time of day (sky, haze, light; no part reads it).
   const env = life && o.atmosphere !== false ? planEnvironment(fp, grammar, alloc) : null;
   const lit = env ? applyEnvironment(palette, env) : null;
   if (trace) {
@@ -415,11 +357,6 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
   };
 }
 
-/**
- * Provenance view: territory parts in the territory's debug colour (no textures, no light),
- * a tint on every lot it owns (so plazas and yards show their owner too), a label over each
- * territory with at least 4 lots; streets, cars and furniture greyed out, people hidden.
- */
 function provenance(kit: Kit, plan: Plan, alloc: Allocation, trace: KitTrace) {
   const owner = new Int32Array(kit.parts.length).fill(-1);
   for (const pc of trace.pieces) for (let k = pc.parts[0]; k < pc.parts[1]; k++) owner[k] = pc.territory;
@@ -433,7 +370,6 @@ function provenance(kit: Kit, plan: Plan, alloc: Allocation, trace: KitTrace) {
     const shade = t >= 0 && q.y + q.h <= SIDEWALK_H + 0.12 ? 0.75 : 1;
     parts.push({ ...q, color: c.map((v) => v * shade) as RGB, surf: Surf.PLAIN, variant: 0, lit: 0 });
   });
-  // Lot tints.
   for (let X = 0; X < N; X++)
     for (let Y = 0; Y < N; Y++) {
       const si = alloc.owner[X * N + Y];
@@ -444,7 +380,6 @@ function provenance(kit: Kit, plan: Plan, alloc: Allocation, trace: KitTrace) {
       const z = bz - 7 + 3.5 * (Y & 3) + 1.75;
       parts.push({ mesh: "box", node: -1, x, y: SIDEWALK_H + 0.005, z, w: 3.42, h: 0.03, d: 3.42, rotY: 0, color: cols[t].map((v) => v * 0.6) as RGB, surf: Surf.PLAIN, lit: 0, delay: 0 });
     }
-  // Labels: index and kind over the centroid of each territory's lots.
   const signKit = new Kit(kit.palette, kit.seed);
   plan.territories.forEach((t, ti) => {
     if (alloc.lots[ti] < 4) return;
@@ -469,13 +404,8 @@ function provenance(kit: Kit, plan: Plan, alloc: Allocation, trace: KitTrace) {
   return { parts: [...parts, ...signKit.parts], signs: signKit.signs };
 }
 
-/** Debug colours of the street roles (street-role view and its legend). */
 export const ROLE_COLOR: Record<StreetRole, RGB> = { primary: [0.88, 0.26, 0.2], street: [0.27, 0.47, 0.86], lane: [0.96, 0.74, 0.18], pedestrian: [0.3, 0.74, 0.42] };
 
-/**
- * Street-role view: everything in two greys (built ≠ ground), no signs, people or glow; over each
- * road band, a flat strip in its segment's role colour (crossings in the role that wins there).
- */
 function streetRoleView(kit: Kit, roles: StreetPlan): Part[] {
   const parts: Part[] = kit.parts
     .filter((q) => q.mesh !== "sign" && q.mesh !== "sprite" && q.mesh !== "glow")
@@ -492,8 +422,6 @@ function streetRoleView(kit: Kit, roles: StreetPlan): Part[] {
   for (const [i, cx] of LINES.entries()) for (const [j, cz] of LINES.entries()) strip(cx - H, cx + H, cz - H, cz + H, ROLE_COLOR[roles.crossing(i, j)].map((v) => v * 0.8) as RGB);
   return parts;
 }
-
-/* ───────────────────────── streets: furniture, signals, traffic ───────────────────────── */
 
 function furniture(kit: Kit, lines: number[], B: number, S: number, palette: PixelCity["palette"]) {
   const curbZ = S - 0.32;
@@ -515,7 +443,6 @@ function furniture(kit: Kit, lines: number[], B: number, S: number, palette: Pix
           () => {
             const seed = i * 97 + j * 13 + si;
             const busHere = i === 1 && j === 2 && si === 0;
-            // Spacing and the lamp/tree cadence vary per side: no single rhythm across the city.
             const step = 1.05 + kit.rand(seed, 1) * 0.35;
             const cadence = 3 + Math.floor(kit.rand(seed, 2) * 2);
             let n = 0;
@@ -563,7 +490,6 @@ function intersections(kit: Kit, lines: number[], R: number, P: number, roles: S
       const o = R / 2 + 0.3;
       const goX = (ci + cj) % 2 === 0;
       const centre = ci === 2 && cj === 2;
-      // Signals only where two streets with traffic cross (a lane gives way; a promenade has none).
       const alongX = traffic(role("x", cj, ci - 1)) || traffic(role("x", cj, ci));
       const alongZ = traffic(role("z", ci, cj - 1)) || traffic(role("z", ci, cj));
       if (alongX && alongZ)
@@ -582,18 +508,12 @@ function intersections(kit: Kit, lines: number[], R: number, P: number, roles: S
       if (centre && centrePeople) {
         for (let k = 0; k < 3; k++) kit.person(R / 2 + 0.45 + k * 0.25, R / 2 + 0.6 - (k % 2) * 0.2, { variant: 20 + k, pose: "stand", flip: k % 2 === 0, y: SIDEWALK_H });
         for (let k = 0; k < 2; k++) kit.person(-R / 2 - 0.5 - k * 0.3, R / 2 + 0.55, { variant: 30 + k, pose: "stand", y: SIDEWALK_H });
-        // Walking across the eastern approach: on its zebra, or on the raised surface that replaces it.
         const east = role("x", cj, ci);
         for (let k = 0; k < 3; k++) kit.person(R / 2 + 0.4, -0.8 + k * 0.6, { variant: 36 + k, pose: k % 2 ? "walkA" : "walkB", flip: k === 1, y: traffic(east) ? 0.05 : SIDEWALK_H });
       }
     }
 }
 
-/**
- * Traffic: the same draws as before C1, each car then kept on its street's carriageway (two
- * lanes, one-way single file on a lane, none on a promenade). Cars follow the street role; they
- * never decide it.
- */
 function traffic(kit: Kit, lines: number[], R: number, P: number, palette: PixelCity["palette"], roles: StreetPlan | null) {
   const carColors: RGB[] = [palette.accents[0], palette.accents[1], [0.92, 0.92, 0.9], [0.2, 0.22, 0.26], [0.75, 0.2, 0.18], [0.55, 0.6, 0.66]];
   const types: VehicleType[] = ["sedan", "hatch", "sedan", "van", "hatch", "taxi"];
@@ -617,7 +537,6 @@ function traffic(kit: Kit, lines: number[], R: number, P: number, palette: Pixel
         }
     }
   if (!roles) {
-    // The foundation's placed vehicles (art direction off).
     vehicle(kit, R / 2 + 1.6, -0.62, Math.PI, "sedan", palette.accents[2]);
     vehicle(kit, R / 2 + 2.8, -0.62, Math.PI, "taxi", [0.98, 0.78, 0.18]);
     vehicle(kit, -0.62, -0.4, -Math.PI / 2, "hatch", [0.2, 0.55, 0.85]);
@@ -626,7 +545,6 @@ function traffic(kit: Kit, lines: number[], R: number, P: number, palette: Pixel
     kit.person(P / 2 + 0.55, R / 2 - 0.35, { variant: 44, pose: "walkA", y: 0.05 });
     return;
   }
-  // Placed vehicles around the central crossing, on their streets' carriageways.
   const at = (axis: "x" | "z", line: number, span: number, side: number) => laneOffset(roles.role(axis, line, span), side);
   const w = at("x", 2, 2, -1);
   if (w !== null) {

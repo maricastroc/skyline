@@ -1,4 +1,3 @@
-// Pre-surface baseline: npx tsx scripts/surface/corpus.ts > docs/surface/corpus-before.txt
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { generateKitDistrict } from "../../src/lib/pixelcity/kit-v4/district";

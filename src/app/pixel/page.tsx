@@ -4,10 +4,6 @@ import { vacantFingerprint } from "@/lib/pixelcity/vacant-fingerprint";
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
 const pick = <T extends string>(v: string | undefined, options: readonly T[], fallback: T): T => (options.includes(v as T) ? (v as T) : fallback);
 
-/**
- * Round 5 directions are chosen by query: ?ui=grotesk|editorial|bitmap,
- * ?home=refined|vacant|blueprint, ?cv=meta|minimal|bare. The defaults are only defaults.
- */
 export default async function PixelPage({ searchParams }: PageProps<"/pixel">) {
   const sp = await searchParams;
   const url = one(sp.url);

@@ -1,9 +1,8 @@
-"""Contact sheets for the direction round: python3 scripts/sheet.py OUT.jpg COLS "file:label" ..."""
 import sys
 from PIL import Image, ImageDraw, ImageFont
 
 out, cols, items = sys.argv[1], int(sys.argv[2]), sys.argv[3:]
-W = 1440  # each tile is drawn at 1x (1440×900)
+W = 1440
 H = 900
 gap, pad = 16, 56
 font = ImageFont.load_default(size=26)

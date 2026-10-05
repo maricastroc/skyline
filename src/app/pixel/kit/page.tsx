@@ -23,23 +23,6 @@ import type { DomSnapshot } from "@/lib/snapshot/types";
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
 const PROFILES: ProfileName[] = ["mixed", "portal", "product", "reference"];
 
-/**
- * Detail-kit prototype: a district built only from the procedural kit.
- *   ?view=city|street|close  ?time=day|night  ?people=sprite|voxel  ?flat=1 (silhouette test)
- *   ?profile=mixed|portal|product|reference
- *   ?page=<id> (a frozen real page, docs/real-pages/snapshots)  &perturb=text-10|…  &seed=<n>
- *   ?debug=provenance (territories in debug colours + legend; current generator)
- *   ?debug=surface (click a building: its anatomy, why each zone, what is absent and why)
- *   ?debug=streets (art direction C1: every street in its role's colour + legend; current generator)
- *   ?v=1 first kit · ?v=2 massing pass with cycled minors · ?v=3 semantic allocation pass ·
- *   ?v=4 semantic hygiene pass · ?v=5 architectural surface grammar · ?v=6 openings depth ·
- *   ?v=7 intra-territory composition · ?v=8 simple-index program experiment ·
- *   ?v=9 semantic / architectural foundation v1 · ?v=10 art direction C1, street roles ·
- *   ?v=11 art direction C3, street life · ?v=12 art direction v1, final (C4 atmosphere) (all frozen) ·
- *   default: current
- *   ?style=classic|retro|modern|soft|tech (diagnostic: the same page forced into a style)
- *   ?groups=60,60 (fixture: one parcelled territory whose content is in groups of these sizes)
- */
 export default async function KitPage({ searchParams }: PageProps<"/pixel/kit">) {
   const sp = await searchParams;
   const profile = one(sp.profile) as ProfileName;
@@ -69,7 +52,6 @@ export default async function KitPage({ searchParams }: PageProps<"/pixel/kit">)
     const perturbation = PERTURBATIONS.includes(pt) ? pt : "none";
     if (v === 2) {
       const page = realPageV2(snap, perturbation);
-      // Only what the generator reads crosses to the client.
       const { identity, majors, minors } = page.profile;
       return <KitView {...common} fp={page.fp} source={{ v: 2, profile: { identity, majors, minors } }} />;
     }
@@ -114,12 +96,10 @@ export default async function KitPage({ searchParams }: PageProps<"/pixel/kit">)
       return <KitView {...common} fp={page.fp} source={{ v: 12, profile: page.plan }} />;
     }
     const page = realPage(snap, perturbation);
-    // Diagnostic (end-to-end validation): the same page forced into another style.
     const st = one(sp.style) as ArchStyle;
     if (STYLES.includes(st)) return <KitView {...common} fp={forceStyle(page.fp, st)} source={{ v: 13, profile: { ...page.plan, identity: forceStyle(page.plan.identity, st) } }} />;
     return <KitView {...common} fp={page.fp} source={{ v: 13, profile: page.plan }} />;
   }
-  // Fixture (intra-territory composition): one parcelled territory, its content in groups of these sizes.
   const groups = one(sp.groups)?.split(",").map(Number);
   if (groups && groups.length && groups.every((g) => Number.isInteger(g) && g > 0)) return <KitView {...common} fp={vacantFingerprint()} source={{ v: 13, profile: groupFixture(groups, vacantFingerprint()) }} />;
   const name = PROFILES.includes(profile) ? profile : "mixed";

@@ -1,33 +1,19 @@
 import type { SiteFingerprint } from "../fingerprint/fingerprint";
 
-/**
- * CityGrammar — the rules a city is built with, derived *only* from a SiteFingerprint.
- *
- * The DOM still decides what gets built and where (and every building stays traceable to
- * its element). The grammar decides how the city looks and is shaped: time of day,
- * architecture, density, height, street network, greenery, traffic, signage.
- */
 export type TimeOfDay = "day" | "golden" | "night";
 export type ArchStyle = "classic" | "modern" | "soft" | "retro" | "tech";
 
 export interface CityGrammar {
   time: TimeOfDay;
   style: ArchStyle;
-  /** Second-strongest style; a share of buildings use it so cities aren't monocultures. */
   secondary: ArchStyle;
   secondaryShare: number;
 
-  /** Target number of buildings (DOM groups become buildings until this budget). */
   units: number;
-  /** Share of each lot the building covers (rest is garden/plaza). */
   coverage: number;
-  /** Tiles of avenue between districts. */
   avenue: number;
-  /** How many hierarchy levels below districts get their own streets. */
   streetLevels: number;
-  /** 0 flat village … 1 skyline. */
   verticality: number;
-  /** How strongly headings become towers. */
   towers: number;
   parks: number;
   trees: number;
@@ -35,12 +21,10 @@ export interface CityGrammar {
   billboards: number;
   neon: number;
   industry: number;
-  /** Repeated DOM siblings become identical buildings in a row. */
   repetition: number;
   roundness: number;
   ornament: number;
 
-  /** Why each decision was made — shown in the debug overlay and the comparison page. */
   notes: string[];
 }
 

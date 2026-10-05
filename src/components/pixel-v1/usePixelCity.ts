@@ -14,7 +14,6 @@ export interface PixelCityState {
   city: PixelCity | null;
 }
 
-/** Same capture pipeline as the maquette (/api/capture), new generator. */
 export function usePixelCity(url: string | null): PixelCityState {
   const [state, setState] = useState<PixelCityState>({ loading: Boolean(url), error: null, doc: null, city: null });
   useEffect(() => {

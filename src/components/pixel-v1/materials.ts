@@ -1,15 +1,5 @@
 import * as THREE from "three";
 
-/**
- * Pixel-diorama materials. Lighting is cel-shaded (three hard bands), shadows are hard, and
- * every surface pattern — windows, lane markings, grass dither, brick courses, awning stripes
- * — is drawn in the shader at roughly one-texel scale, so the low-res render turns it into
- * actual pixel art instead of blur.
- *
- *   aAnim: x build delay, y collapse start (-1), z seed, w highlight
- *   aMeta: x surface, y lit (windows lit chance / glow strength)
- */
-
 export interface PixelUniforms {
   uTime: { value: number };
   uNight: { value: number };
@@ -21,7 +11,6 @@ export interface PixelUniforms {
 }
 
 export function toonRamp(): THREE.DataTexture {
-  // Three bands: shadow side, lit side, full sun. Nearest, so the steps stay hard.
   const data = new Uint8Array([90, 90, 90, 255, 170, 170, 170, 255, 255, 255, 255, 255]);
   const t = new THREE.DataTexture(data, 3, 1, THREE.RGBAFormat);
   t.minFilter = THREE.NearestFilter;
@@ -31,7 +20,7 @@ export function toonRamp(): THREE.DataTexture {
   return t;
 }
 
-const VERT_DECL = /* glsl */ `
+const VERT_DECL = `
 attribute vec4 aAnim;
 attribute vec4 aMeta;
 uniform float uTime;
@@ -44,7 +33,7 @@ varying float vSeed;
 varying float vHighlight;
 `;
 
-const VERT_ANIM = /* glsl */ `
+const VERT_ANIM = `
 #include <begin_vertex>
 vLocal = position;
 vObjNormal = normal;
@@ -56,7 +45,6 @@ vHighlight = aAnim.w;
 #else
   vScale = vec3(1.0);
 #endif
-// Pop up from the ground with a little overshoot — game-like, not architectural.
 float tb = clamp((uTime - aAnim.x) / 0.55, 0.0, 1.0);
 float grow = tb >= 1.0 ? 1.0 : 1.0 + 2.70158 * pow(tb - 1.0, 3.0) + 1.70158 * pow(tb - 1.0, 2.0);
 transformed.y *= max(grow, 0.0005);
@@ -73,7 +61,7 @@ if (aAnim.y >= 0.0) {
 }
 `;
 
-const FRAG_DECL = /* glsl */ `
+const FRAG_DECL = `
 uniform float uTime;
 uniform float uNight;
 uniform vec3 uLit;
@@ -90,11 +78,7 @@ varying float vHighlight;
 float pxHash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 `;
 
-/**
- * Surface patterns. Face coordinates are in world units: fc.x across the face, fc.y up the
- * face (0 at the bottom) for sides; fc = plan coordinates for tops.
- */
-const FRAG_SURFACE = /* glsl */ `
+const FRAG_SURFACE = `
 #include <color_fragment>
 float pxEmit = 0.0;
 vec3 pxEmitColor = uLit;
@@ -112,7 +96,6 @@ vec3 pxEmitColor = uLit;
   int surf = int(vMeta.x + 0.5);
   float seed = floor(vSeed * 97.0);
 
-  // Windows on office / house / brick facades.
   if (side && (surf == 1 || surf == 2 || surf == 7)) {
     float cw = surf == 2 ? 0.62 : 0.5;
     float ch = 0.5;
@@ -127,7 +110,6 @@ vec3 pxEmitColor = uLit;
       if (h < vMeta.y) { pxEmit = 1.0; diffuseColor.rgb = uLit; }
     }
   }
-  // Curtain wall: glass bands between floor slabs, mullions, random lit bays at night.
   if (side && surf == 3) {
     float slab = step(fract(fc.y / 0.5), 0.16);
     float mull = step(fract(fc.x / 0.5), 0.12);
@@ -138,7 +120,6 @@ vec3 pxEmitColor = uLit;
       if (pxHash(cell + seed) < vMeta.y) { pxEmit = 1.0; diffuseColor.rgb = uLit; }
     } else diffuseColor.rgb *= 0.78;
   }
-  // Road: asphalt with a dashed centre line along the long axis; avenues get a solid pair.
   if (top && surf == 4) {
     bool alongX = fs.x >= fs.y;
     float across = alongX ? fc.y - fs.y * 0.5 : fc.x - fs.x * 0.5;
@@ -149,28 +130,23 @@ vec3 pxEmitColor = uLit;
     diffuseColor.rgb = mix(diffuseColor.rgb, uMark, mark);
     diffuseColor.rgb *= 1.0 - 0.06 * step(pxHash(floor(vWorld.xz * 6.0)), 0.18);
   }
-  // Grass: two-tone pixel dither.
   if (top && surf == 5) {
     float g = pxHash(floor(vWorld.xz * 5.0));
     diffuseColor.rgb *= 0.92 + 0.12 * step(0.55, g) - 0.06 * step(g, 0.12);
   }
-  // Paving: tile joints every tile.
   if (top && surf == 6) {
     vec2 j = fract(vWorld.xz);
     float joint = step(j.x, 0.07) + step(j.y, 0.07);
     diffuseColor.rgb *= 1.0 - 0.08 * min(joint, 1.0);
   }
-  // Roofs: a darker rim and a little gravel noise.
   if (top && surf == 9) {
     float rim = step(min(min(fc.x, fs.x - fc.x), min(fc.y, fs.y - fc.y)), 0.1);
     diffuseColor.rgb *= (1.0 - 0.14 * rim) * (0.96 + 0.06 * step(0.7, pxHash(floor(vWorld.xz * 6.0))));
   }
-  // Earth strata on the diorama sides.
   if (side && surf == 10) {
     float band = floor(vWorld.y / 0.45);
     diffuseColor.rgb *= 0.9 + 0.12 * pxHash(vec2(band, 3.0)) - 0.12 * step(0.86, pxHash(floor(vec2(vWorld.x + vWorld.z, vWorld.y) * 4.0)));
   }
-  // Awnings and chimneys: stripes.
   if (surf == 11) {
     float s = side && fs.y > 1.5 ? step(0.5, fract(fc.y / 0.5)) : step(0.5, fract((fc.x) / 0.25));
     diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.95), s * 0.85);
@@ -179,7 +155,7 @@ vec3 pxEmitColor = uLit;
 }
 `;
 
-const FRAG_EMIT = /* glsl */ `
+const FRAG_EMIT = `
 #include <emissivemap_fragment>
 totalEmissiveRadiance += pxEmitColor * pxEmit * (0.35 + 1.25 * uNight);
 `;
@@ -200,7 +176,6 @@ export function createToonMaterial(uniforms: PixelUniforms, ramp: THREE.Texture,
   return m;
 }
 
-/** Unlit glow: lamps, neon, beacons. Blinks when lit > 1.5 (aviation lights). */
 export function createGlowMaterial(uniforms: PixelUniforms): THREE.MeshBasicMaterial {
   const m = new THREE.MeshBasicMaterial({ toneMapped: false });
   m.onBeforeCompile = (shader) => {
@@ -221,7 +196,6 @@ export function createGlowMaterial(uniforms: PixelUniforms): THREE.MeshBasicMate
   return m;
 }
 
-/** Image planes (billboards) and signs: unlit, texel-exact, sampling a rect of an atlas. */
 export function createAtlasMaterial(uniforms: PixelUniforms, atlas: THREE.Texture, mode: "slots" | "rects", atlasSize: [number, number], cols = 8, slot: [number, number] = [256, 160]) {
   const m = new THREE.MeshBasicMaterial({ map: atlas, toneMapped: false, side: THREE.FrontSide });
   m.onBeforeCompile = (shader) => {
@@ -271,7 +245,6 @@ export function createDepthMaterial(uniforms: PixelUniforms): THREE.MeshDepthMat
 
 export function pixelGeometries() {
   const box = new THREE.BoxGeometry(1, 1, 1).translate(0, 0.5, 0);
-  // Triangular prism (pitched roof): ridge along x.
   const prism = new THREE.CylinderGeometry(0.5, 0.5, 1, 3, 1).rotateZ(Math.PI / 2).rotateX(-Math.PI / 2);
   prism.computeBoundingBox();
   const bb = prism.boundingBox!;

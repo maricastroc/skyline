@@ -17,9 +17,7 @@ export interface CaptureMeta {
 }
 
 export interface Hover {
-  /** Node the action would apply to (after climbing). */
   node: number;
-  /** Node actually under the pointer. */
   hit: number;
 }
 
@@ -41,15 +39,12 @@ interface SkylineState {
 
   integrity: number;
   destroyed: number;
-  /** Bumped on every destruction so tree views re-read the runtime's alive flags. */
   aliveVersion: number;
   lastHit: { node: number; weight: number; percent: number; at: number } | null;
-  /** Most recent demolitions, newest first. */
   demolitions: Array<{ at: number; node: number; percent: number; nodes: number }>;
 
   hudHidden: boolean;
   muted: boolean;
-  /** A request to fly the camera to a node. */
   focus: { node: number; at: number } | null;
 
   set: (patch: Partial<SkylineState>) => void;

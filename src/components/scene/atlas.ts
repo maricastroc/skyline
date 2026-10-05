@@ -5,17 +5,7 @@ import * as THREE from "three";
 import type { BillboardImage, RGB } from "@/lib/city/types";
 import { ATLAS } from "./materials";
 
-/**
- * All billboard images live in one 2048² canvas texture (8×12 slots of 256×160), so every
- * billboard in the city is a single draw call. Images arrive through the same-origin
- * /api/asset proxy, so the canvas never becomes tainted.
- */
 export interface AtlasOptions {
-  /**
-   * Pixel-art billboards: each image is reduced to this many texels per slot (w, h — divisors of
-   * the slot, so every texel is a whole block) and sampled nearest, so photos keep a fixed
-   * texel size in the world whatever the render resolution.
-   */
   pixelate?: [number, number];
 }
 
@@ -56,7 +46,6 @@ export function useAtlas(images: BillboardImage[], paper: RGB, options: AtlasOpt
       const row = Math.floor(slot / ATLAS.cols);
       const x = col * ATLAS.slotW;
       const y = row * ATLAS.slotH;
-      // "cover" crop into the slot
       const sr = img.naturalWidth / img.naturalHeight;
       const dr = ATLAS.slotW / ATLAS.slotH;
       let sw = img.naturalWidth;
@@ -66,7 +55,6 @@ export function useAtlas(images: BillboardImage[], paper: RGB, options: AtlasOpt
       const sx = (img.naturalWidth - sw) / 2;
       const sy = (img.naturalHeight - sh) / 2;
       if (pw > 0) {
-        // Reduce (smoothly) to the texel grid, then enlarge with hard edges into the slot.
         const small = document.createElement("canvas");
         small.width = pw;
         small.height = ph;

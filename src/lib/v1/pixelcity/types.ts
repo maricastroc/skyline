@@ -3,10 +3,8 @@ import type { SiteFingerprint } from "../fingerprint/fingerprint";
 import type { CityGrammar } from "./grammar";
 import type { GamePalette } from "./palette";
 
-/** Unit shapes, base at y = 0. */
 export type PartMesh = "box" | "prism" | "cyl" | "pyramid" | "glow" | "image" | "sign";
 
-/** Surface patterns, drawn in the shader at pixel scale. */
 export const Surf = {
   PLAIN: 0,
   OFFICE: 1,
@@ -24,7 +22,6 @@ export const Surf = {
 
 export interface Part {
   mesh: PartMesh;
-  /** Normalized DOM node this part belongs to (-1 = scenery). */
   node: number;
   x: number;
   y: number;
@@ -35,10 +32,8 @@ export interface Part {
   rotY: number;
   color: RGB;
   surf: number;
-  /** Windows: chance a window is lit at night. Glow: emissive strength. */
   lit: number;
   delay: number;
-  /** image: atlas slot; sign: uv rect in the sign atlas (texels). */
   slot?: number;
   rect?: [number, number, number, number];
 }
@@ -48,7 +43,6 @@ export interface RoadSeg {
   z: number;
   w: number;
   d: number;
-  /** Long axis: cars travel along it. */
   axis: "x" | "z";
   avenue: boolean;
 }
@@ -57,7 +51,6 @@ export interface SignSpec {
   text: string;
   bg: RGB;
   fg: RGB;
-  /** Position and size in the sign atlas, texels. */
   x: number;
   y: number;
   w: number;
@@ -81,7 +74,6 @@ export interface PixelCity {
   fingerprint: SiteFingerprint;
   grammar: CityGrammar;
   palette: GamePalette;
-  /** City plate in tiles, centered on the origin. */
   size: { w: number; d: number };
   parts: Part[];
   roads: RoadSeg[];
@@ -90,8 +82,6 @@ export interface PixelCity {
   signs: SignSpec[];
   signAtlas: { w: number; h: number };
   maxHeight: number;
-  /** Chimney tops, for smoke. */
   smokestacks: Array<[number, number, number]>;
-  /** Seconds until the build-up animation settles. */
   buildDuration: number;
 }

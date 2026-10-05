@@ -1,10 +1,4 @@
 // FROZEN: art direction C3, street life (the street-life kit, art direction baseline). Do not edit.
-/**
- * Detail kit — streets. Surfaces (asphalt, intersections, zebras, stop lines, sidewalks,
- * curbs) and street furniture, each a small function of a position and orientation.
- * Furniture is authored in a "curb frame": local x runs along the curb, local +z points at
- * the road, the sidewalk top is y = 0.
- */
 import { mix } from "../../city/palette";
 import type { RGB } from "../../city/types";
 import { Surf } from "../types";
@@ -16,50 +10,23 @@ const white: RGB = [0.97, 0.96, 0.92];
 const metal: RGB = [0.2, 0.21, 0.24];
 
 export interface Grid {
-  /** Road centre lines (both axes use the same list). */
   lines: number[];
   road: number;
   side: number;
   block: number;
-  /** How far roads run past the outer lines. */
   ext: number;
 }
 
-/**
- * Half-width of the surface each street role keeps at road level inside the road band (R = 2.6):
- * the carriageway, or a lane's shared surface. The rest of the band becomes sidewalk, so no role
- * ever opens space outside its corridor.
- */
 export const CARRIAGEWAY: Record<StreetRole, number> = { primary: 1.3, street: 0.8, lane: 1.3, pedestrian: 0 };
-/** Half-width of a primary street's central median (refuge). */
 const MEDIAN = 0.25;
 const CURB = 0.07;
 
-/** Lateral offset of a car's lane from the street's centre line (side ±1), or null: no cars. */
 export function laneOffset(role: StreetRole, side: number): number | null {
   if (role === "pedestrian") return null;
-  // A lane is one-way, in single file down its middle.
   if (role === "lane") return side > 0 ? 0 : null;
   return side * (CARRIAGEWAY[role] - 0.32);
 }
 
-/**
- * Street surfaces (C1, street roles): every segment of the grid is drawn by its role inside the
- * corridor the grid reserves (the road band between two sidewalk rings), each with its own tone
- * across the whole band, so the role still reads when the city is a thumbnail:
- *
- *   primary     full-width, darker asphalt; a planted median (refuge) splits it into two
- *               carriageways with their own lane lines                                   dark
- *   street      a narrower asphalt carriageway with a dashed centre line; the rest is
- *               sidewalk                                                                 grey
- *   lane        a shared surface of setts from curb to curb, no markings, one-way single
- *               file; a raised footway crosses its mouth where it meets a street        warm stone
- *   pedestrian  no carriageway: the band is paved like the squares it joins             light
- *
- * Crossings take the highest role that meets there; their corners are built out to the
- * carriageways that actually cross. Zebras and stop lines only cross streets with traffic.
- * The sidewalk rings around the blocks are the same for every role.
- */
 export function streetSurfaces(kit: Kit, g: Grid, roles: StreetPlan) {
   const p = kit.palette;
   const R = g.road;
@@ -71,11 +38,9 @@ export function streetSurfaces(kit: Kit, g: Grid, roles: StreetPlan) {
   const asphalt = (r: StreetRole) => (r === "primary" ? (p.road.map((v) => v * 0.76) as RGB) : p.road);
   const setts = mix(p.stone, p.soilDark, 0.4);
   const paving = mix(p.plaza, white, 0.08);
-  // Draws in a frame where the street runs along local x on z = 0 (axis "z" swaps the axes).
   const along = (axis: "x" | "z", c: number) => (u0: number, u1: number, y0: number, y1: number, v0: number, v1: number, color: RGB, surf: number = Surf.PLAIN, extra = {}) =>
     axis === "x" ? kit.span(u0, u1, y0, y1, c + v0, c + v1, color, surf, extra) : kit.span(c + v0, c + v1, y0, y1, u0, u1, color, surf, extra);
 
-  // Segments: the stretch of a line between two crossings, and the stretches into the void.
   for (const axis of ["x", "z"] as const)
     for (const [line, c] of L.entries())
       for (let span = -1; span <= L.length - 1; span++) {
@@ -94,24 +59,20 @@ export function streetSurfaces(kit: Kit, g: Grid, roles: StreetPlan) {
           draw(a, b, 0, 0.04, -H, -MEDIAN, asphalt(role), Surf.ROAD);
           draw(a, b, 0, 0.04, MEDIAN, H, asphalt(role), Surf.ROAD);
           draw(a, b, 0, 0.04, -MEDIAN, MEDIAN, asphalt(role));
-          // The median stops short of each end to let the crossings through (a refuge at the zebra).
           draw(a + 0.85, b - 0.85, 0.04, SIDEWALK_H, -MEDIAN, MEDIAN, curb);
           draw(a + 0.85 + CURB, b - 0.85 - CURB, SIDEWALK_H, SIDEWALK_H + 0.005, -MEDIAN + CURB, MEDIAN - CURB, p.grass[1], Surf.GRASS);
         } else draw(a, b, 0, 0.04, -h, h, asphalt(role), Surf.ROAD, role === "primary" ? { lit: 1 } : {});
         if (!inside) continue;
-        // The rest of the band is sidewalk, with the curb at the carriageway's edge.
         for (const s of [-1, 1]) {
           if (h < H) draw(a, b, 0, SIDEWALK_H, s > 0 ? h : -H, s > 0 ? H : -h, p.sidewalk, Surf.SLABS);
           draw(a, b, 0, SIDEWALK_H + 0.01, s > 0 ? h : -h - CURB, s > 0 ? h + CURB : -h, curb);
         }
       }
 
-  // Crossings.
   const zw = 0.7;
   for (const [i, cx] of L.entries())
     for (const [j, cz] of L.entries()) {
       const role = roles.crossing(i, j);
-      // Half-widths of the carriageways that cross here: the street along x (line j) and along z (line i).
       const hx = Math.max(CARRIAGEWAY[roles.role("x", j, i - 1)], CARRIAGEWAY[roles.role("x", j, i)]);
       const hz = Math.max(CARRIAGEWAY[roles.role("z", i, j - 1)], CARRIAGEWAY[roles.role("z", i, j)]);
       if (role === "pedestrian") {
@@ -119,7 +80,6 @@ export function streetSurfaces(kit: Kit, g: Grid, roles: StreetPlan) {
         continue;
       }
       kit.span(cx - H, cx + H, 0, 0.04, cz - H, cz + H, role === "lane" ? setts : mix(asphalt(role), white, 0.03), role === "lane" ? Surf.SLABS : Surf.PLAIN);
-      // Corner build-outs: whatever of the square no carriageway crosses is sidewalk.
       for (const sx of [-1, 1])
         for (const sz of [-1, 1]) {
           const x0 = cx + sx * hz;
@@ -131,7 +91,6 @@ export function streetSurfaces(kit: Kit, g: Grid, roles: StreetPlan) {
           kit.span(x0, x0 + sx * CURB, 0, SIDEWALK_H + 0.01, z0, z1, curb);
           kit.span(x0, x1, 0, SIDEWALK_H + 0.01, z0, z0 + sz * CURB, curb);
         }
-      // Arms toward a narrower approach: the square narrows to it (a promenade's arm is paved).
       for (const s of [-1, 1])
         for (const [axis, r, wide, cross] of [
           ["x", roles.role("x", j, s < 0 ? i - 1 : i), hx, hz],
@@ -150,8 +109,6 @@ export function streetSurfaces(kit: Kit, g: Grid, roles: StreetPlan) {
               arm(v > 0 ? a : -a - CURB, v > 0 ? a + CURB : -a, curb, SIDEWALK_H + 0.01, Surf.PLAIN);
             }
         }
-      // Each approach: a zebra and a stop line across a street with traffic; a raised footway
-      // across the mouth of a lane that meets one; nothing across a promenade.
       for (const s of [-1, 1]) {
         const approaches: Array<["x" | "z", StreetRole]> = [
           ["x", roles.role("x", j, s < 0 ? i - 1 : i)],
@@ -167,7 +124,6 @@ export function streetSurfaces(kit: Kit, g: Grid, roles: StreetPlan) {
               box(e, zw, 0.05, -H + 0.05, -MEDIAN, p.road, Surf.ZEBRA);
               box(e, zw, 0.05, MEDIAN, H - 0.05, p.road, Surf.ZEBRA);
             } else box(e, zw, 0.05, -h + 0.05, h - 0.05, p.road, Surf.ZEBRA);
-            // Stop line on the incoming half.
             const u = s * (H + zw + 0.15);
             const v0 = s > 0 ? -h + 0.06 : r === "primary" ? MEDIAN : 0;
             const v1 = s > 0 ? (r === "primary" ? -MEDIAN : 0) : h - 0.06;
@@ -177,7 +133,6 @@ export function streetSurfaces(kit: Kit, g: Grid, roles: StreetPlan) {
       }
     }
 
-  // Sidewalk rings around every block (the curbs belong to the streets).
   const B = g.block;
   const S = g.side;
   for (let i = 0; i < L.length - 1; i++)
@@ -192,11 +147,6 @@ export function streetSurfaces(kit: Kit, g: Grid, roles: StreetPlan) {
     }
 }
 
-/**
- * Uniform streets (the foundation's streets, before art direction): every segment the same asphalt,
- * zebras and stop lines on every approach, sidewalks and curbs around every block. Kept as the
- * ablation of C1 (`artDirection: false`), so earlier passes can be checked on their own effect.
- */
 export function uniformStreetSurfaces(kit: Kit, g: Grid) {
   const p = kit.palette;
   const R = g.road;
@@ -213,7 +163,6 @@ export function uniformStreetSurfaces(kit: Kit, g: Grid) {
     }
     for (const c2 of L) kit.span(c - R / 2, c + R / 2, 0, 0.04, c2 - R / 2, c2 + R / 2, mix(p.road, white, 0.03));
   }
-  // Crossings and stop lines on every approach.
   const zw = 0.7;
   for (const cx of L)
     for (const cz of L)
@@ -222,11 +171,9 @@ export function uniformStreetSurfaces(kit: Kit, g: Grid) {
         const ez = cz + s * (R / 2 + zw / 2 + 0.05);
         kit.box(ex, 0, cz, zw, 0.05, R - 0.1, p.road, Surf.ZEBRA);
         kit.box(cx, 0, ez, R - 0.1, 0.05, zw, p.road, Surf.ZEBRA);
-        // Stop line on the incoming half of each approach.
         kit.span(cx + s * (R / 2 + zw + 0.12), cx + s * (R / 2 + zw + 0.18), 0, 0.05, cz + (s > 0 ? -R / 2 + 0.06 : 0), cz + (s > 0 ? 0 : R / 2 - 0.06), p.roadMark);
         kit.span(cx + (s > 0 ? 0 : -R / 2 + 0.06), cx + (s > 0 ? R / 2 - 0.06 : 0), 0, 0.05, cz + s * (R / 2 + zw + 0.12), cz + s * (R / 2 + zw + 0.18), p.roadMark);
       }
-  // Sidewalk rings with curbs.
   const B = g.block;
   const S = g.side;
   const curb = mix(p.stone, white, 0.35);
@@ -247,8 +194,6 @@ export function uniformStreetSurfaces(kit: Kit, g: Grid) {
     }
 }
 
-/* ───────────────────────── furniture (curb frame) ───────────────────────── */
-
 export function streetLamp(kit: Kit, x: number, z: number) {
   kit.box(x, 0, z, 0.06, 1.25, 0.06, metal);
   kit.box(x, 0, z, 0.12, 0.08, 0.12, metal);
@@ -262,7 +207,6 @@ export function streetTree(kit: Kit, x: number, z: number, seed: number) {
   tree(kit, x, z, seed, 1);
 }
 
-/** A tree with a designed, layered silhouette (round or conical by seed). */
 export function tree(kit: Kit, x: number, z: number, seed: number, s: number, y = 0) {
   const [l0, l1] = kit.palette.leaves;
   const dark = mix(l1, [0.05, 0.12, 0.1], 0.25);
@@ -323,7 +267,6 @@ export function bollards(kit: Kit, x: number, z: number, n = 3) {
   for (let i = 0; i < n; i++) kit.cyl(x + (i - (n - 1) / 2) * 0.3, 0, z, 0.07, 0.16, 0.07, mix(metal, white, 0.2));
 }
 
-/** Signal pole at a corner; the arm reaches over the road along local +z. */
 export function trafficSignal(kit: Kit, x: number, z: number, rot: number, go: boolean, street?: string) {
   kit.frame(x, z, rot, () => {
     kit.box(0, 0, 0, 0.07, 1.45, 0.07, metal);
@@ -338,7 +281,6 @@ export function trafficSignal(kit: Kit, x: number, z: number, rot: number, go: b
       const on = go ? i === 2 : i === 0;
       kit.glow(0, 1.32 - i * 0.11, 1.16, 0.08, 0.07, 0.03, on ? c : mix(c, [0.1, 0.1, 0.1], 0.75), on ? 2.2 : 0.2);
     });
-    // Pedestrian head on the pole.
     kit.box(0.07, 0.62, 0, 0.1, 0.12, 0.08, [0.13, 0.13, 0.15]);
     kit.glow(0.12, 0.65, 0, 0.02, 0.07, 0.06, go ? [1, 0.55, 0.15] : [0.95, 0.95, 0.9], 1.6);
     if (street) {
@@ -348,7 +290,6 @@ export function trafficSignal(kit: Kit, x: number, z: number, rot: number, go: b
   });
 }
 
-/** Bus shelter (curb frame), opening toward the road, with an ad panel and a stop sign. */
 export function busShelter(kit: Kit, x: number, z: number, accent: RGB, route: string) {
   const glass = mix(kit.palette.glass, white, 0.35);
   kit.frame(x, z, 0, () => {

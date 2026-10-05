@@ -1,6 +1,3 @@
-// Records the frozen Art Direction v1 city hashes (kit-v12, every corpus page, day / golden /
-// night / flat, seed 7): npx tsx scripts/art-direction/record.ts
-// Run once, at the freeze; test:art-direction then checks that kit-v12 still reproduces them.
 import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync } from "node:fs";
 import { generateKitDistrict } from "../../src/lib/pixelcity/kit-v12/district";

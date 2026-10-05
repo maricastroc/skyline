@@ -1,7 +1,3 @@
-// Screenshot harness: drives a locally installed Chrome against a running dev server.
-//   npm run shoot -- <site-url> <prefix> [scenes...]
-// Scenes: landing intro entrance aerial street inspect destroy orbit (default: most of them)
-// Env: BASE (default http://localhost:3000), CHROME_PATH, OUT (default docs/screenshots), Q (quality tier 0-4)
 import { mkdirSync } from "node:fs";
 import puppeteer from "puppeteer-core";
 
@@ -58,13 +54,13 @@ if (scenes.includes("intro")) {
   await shot("intro");
 }
 await sk(() => window.__skyline.skipIntro());
-await sleep(4200); // let the build finish and billboards load
+await sleep(4200);
 
 const span = Math.max(info.size.w, info.size.d);
 const front = info.size.d / 2;
 
 if (scenes.includes("entrance")) {
-  await page.mouse.move(120, 120); // over a HUD panel: no hover
+  await page.mouse.move(120, 120);
   await shot("entrance");
 }
 if (scenes.includes("aerial")) {
@@ -97,7 +93,6 @@ const frame = async (id, k = 1, lift = 1) =>
   );
 
 const hoverNode = async (id) => {
-  // Aim at a leaf inside the target (a container's own anchor is often covered by its children).
   const p = await sk((id) => {
     const s = window.__skyline;
     const nodes = s.runtime.doc.nodes;
@@ -109,7 +104,6 @@ const hoverNode = async (id) => {
   }, id);
   await page.mouse.move(p.x, p.y);
   await sleep(250);
-  // Climb from whatever leaf is under the cursor to the target, with the real scroll wheel.
   const climb = await sk((id) => {
     const s = window.__skyline;
     const h = s.state().hover;

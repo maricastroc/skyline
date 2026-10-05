@@ -1,4 +1,3 @@
-// Pre-openings baseline: npx tsx scripts/openings/corpus.ts > docs/openings/corpus-before.txt
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { generateKitDistrict } from "../../src/lib/pixelcity/kit-v5/district";

@@ -1,5 +1,3 @@
-"""Image features and component distances shared by visual.py and the composition checks."""
-
 import json, os, itertools
 import numpy as np
 from PIL import Image

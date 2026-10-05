@@ -1,5 +1,3 @@
-"""C3 street life, sheets: python3 scripts/street-life/sheets.py
-(after node scripts/street-life/shoot.mjs before after seed8). Writes docs/screenshots/street-life/sheets/."""
 import random
 import subprocess
 from PIL import Image, ImageDraw, ImageFilter, ImageFont, ImageOps
@@ -23,7 +21,6 @@ for letter, view in (("A", "city"), ("B", "street"), ("C", "wide")):
             items += [f"{img('before', view, p)}:{NAME[p]} · before (kit-v10, C1)", f"{img('after', view, p)}:{NAME[p]} · after (C3)"]
     sheet(f"{letter}-before-after-{view}.jpg", 4, 720, items)
 
-# D: the same crossing in the 8 pages (the crop that revealed the stamp), before row / after row.
 box, tw, th, gap = (1100, 560, 1900, 1060), 400, 250, 8
 font = ImageFont.load_default(size=16)
 big = ImageFont.load_default(size=20)
@@ -43,13 +40,11 @@ for variant, title in (("before", "BEFORE (kit-v10): the same street layer in ev
 sh.save(f"{O}/D-same-crossing.jpg", quality=88)
 print(f"{O}/D-same-crossing.jpg", sh.size)
 
-# E: Wikipedia × Wikipedia 2, after; F: seed 7 / seed 8 (same page, street view).
 sheet("E-wikipedia-family.jpg", 3, 960, ["-:Wikipedia vs Wikipedia 2 · after (C3)",
                                         *[f"{img('after', v, p)}:{NAME[p]} · {VIEW[v]}" for p in ("reference", "reference-2") for v in ("city", "street", "wide")]])
 sheet("F-seed.jpg", 4, 720, ["-:Same page, seed 7 / seed 8 (Street): the seed moves things, never how much",
                              *[x for p in ("shop", "oldweb", "media", "docs") for x in (f"{img('after', 'street', p)}:{NAME[p]} · seed 7", f"{img('seed8', 'street', p)}:{NAME[p]} · seed 8")]])
 
-# G / H: thumbnails, blind (after) and before / after.
 TW, TH, GAP, LH = 240, 150, 6, 20
 f14 = ImageFont.load_default(size=14)
 f16 = ImageFont.load_default(size=16)

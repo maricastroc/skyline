@@ -83,9 +83,7 @@ export interface ClassifyInput {
   classes?: string[];
   role?: string;
   type?: string;
-  /** Original DOM depth (body = 1). */
   depth: number;
-  /** True if an ancestor is an article/section — headers/footers inside those are local. */
   insideContent: boolean;
 }
 
@@ -108,8 +106,6 @@ export function classify(n: ClassifyInput): NodeRole {
   if (direct) return direct;
   if (INLINE.has(tag)) return "inline";
 
-  // Generic containers: borrow meaning from id/class names. Shallow ones only for districts;
-  // deep "header" classes are usually card headers, not page headers.
   const names = `${n.id ?? ""} ${(n.classes ?? []).slice(0, 3).join(" ")}`.toLowerCase();
   if (names.trim()) {
     if (n.depth <= 6 && !n.insideContent) {
@@ -125,10 +121,8 @@ export function classify(n: ClassifyInput): NodeRole {
   return "container";
 }
 
-/** Roles that read as "districts" and are never pruned away. */
 export const STRUCTURAL: ReadonlySet<NodeRole> = new Set([
   "root", "header", "nav", "main", "footer", "aside", "section", "article", "form",
 ]);
 
-/** Roles whose own text makes them a text block (so inline links inside get absorbed). */
 export const TEXT_BEARING: ReadonlySet<NodeRole> = new Set(["text", "heading", "item", "button", "control"]);

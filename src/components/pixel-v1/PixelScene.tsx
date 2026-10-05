@@ -24,17 +24,13 @@ import { PixelPostEffect } from "./PixelPost";
 const srgb = (c: RGB) => new THREE.Color().setRGB(c[0], c[1], c[2], THREE.SRGBColorSpace);
 
 export interface ViewState {
-  /** Azimuth in degrees (45 = classic iso from the +x/+z corner). */
   azimuth: number;
-  /** Zoom multiplier on top of "fit". */
   zoom: number;
-  /** Pan offset in world units. */
   pan: [number, number];
 }
 
 export interface PixelSceneProps {
   city: PixelCity;
-  /** Target internal resolution (lines). The canvas is upscaled with nearest-neighbour. */
   lines?: number;
   view?: ViewState;
   interactive?: boolean;
@@ -68,7 +64,6 @@ export default function PixelScene({ city, lines = 360, view, interactive = true
   );
 }
 
-/** Integer device pixels per art pixel, so the nearest-neighbour upscale is perfectly even. */
 function useArtPixelDpr(ref: React.RefObject<HTMLDivElement | null>, lines: number): number {
   const [dpr, setDpr] = useState(0);
   useLayoutEffect(() => {
@@ -87,8 +82,6 @@ function useArtPixelDpr(ref: React.RefObject<HTMLDivElement | null>, lines: numb
   }, [ref, lines]);
   return dpr;
 }
-
-/* ─────────────────────────── world ─────────────────────────── */
 
 interface Batch {
   mesh: PartMesh;
@@ -146,7 +139,6 @@ function useSignAtlas(city: PixelCity): THREE.CanvasTexture {
     for (const s of city.signs) {
       g.fillStyle = css(s.bg);
       g.fillRect(s.x, s.y, s.w, s.h);
-      // 1-texel darker frame
       g.fillStyle = css(s.bg.map((v) => v * 0.55) as RGB);
       g.fillRect(s.x, s.y, s.w, 1);
       g.fillRect(s.x, s.y + s.h - 1, s.w, 1);
@@ -253,8 +245,6 @@ function World({ city, view, interactive, onHover, onPick }: { city: PixelCity }
   );
 }
 
-/* ─────────────────────────── post ─────────────────────────── */
-
 const PixelPost = forwardRef<PixelPostEffect, { city: PixelCity }>(function PixelPost({ city }, ref) {
   const p = city.palette;
   const effect = useMemo(
@@ -281,8 +271,6 @@ function Post({ city }: { city: PixelCity }) {
     </EffectComposer>
   );
 }
-
-/* ─────────────────────────── camera ─────────────────────────── */
 
 function Rig({
   city,
@@ -371,9 +359,8 @@ function Rig({
     s.az += (s.azTarget - s.az) * (1 - Math.exp(-dt * 8));
     const cam = camera as THREE.OrthographicCamera;
     const az = (s.az * Math.PI) / 180;
-    const el = (30 * Math.PI) / 180; // 2:1 dimetric
+    const el = (30 * Math.PI) / 180;
     const dir = new THREE.Vector3(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el));
-    // Fit: the plate's projected extent plus the skyline.
     const half = city.size.w / 2;
     const extX = half * 2 * Math.SQRT2;
     const extY = half * 2 * Math.SQRT2 * Math.sin(el) + (city.maxHeight + 3.5) * Math.cos(el);
@@ -383,7 +370,6 @@ function Rig({
     cam.position.copy(target).addScaledVector(dir, 600);
     cam.up.set(0, 1, 0);
     cam.lookAt(target);
-    // Snap to the art-pixel grid so panning doesn't shimmer.
     const texel = 1 / (cam.zoom * viewport.dpr);
     const right = new THREE.Vector3(1, 0, 0).applyQuaternion(cam.quaternion);
     const up = new THREE.Vector3(0, 1, 0).applyQuaternion(cam.quaternion);
@@ -416,8 +402,6 @@ function Rig({
   });
   return null;
 }
-
-/* ─────────────────────────── life ─────────────────────────── */
 
 function Life({ city, uniforms }: { city: PixelCity; uniforms: PixelUniforms }) {
   const p = city.palette;
@@ -454,7 +438,6 @@ function Life({ city, uniforms }: { city: PixelCity; uniforms: PixelUniforms }) 
         const parts: Array<[number, number, number, number]> = [];
         const k = 3 + Math.floor(rand() * 4);
         for (let j = 0; j < k; j++) parts.push([(rand() - 0.5) * 3, rand() * 0.5, (rand() - 0.5) * 1.6, 1 + rand() * 1.4]);
-        // Keep clouds behind the diorama (screen-top), never over the city's centre.
         const a = rand() * half * 1.6;
         clouds.push({ x: -half * 0.35 - a + (rand() - 0.5) * half, z: -half * 0.35 - (half * 1.6 - a) * 0.8, y: city.maxHeight * 0.7 + 8 + rand() * 6, s: 1 + rand() * 1.2, v: 0.4 + rand() * 0.5, parts });
       }

@@ -1,5 +1,3 @@
-"""Visual polish round 2 (placeholder assets), study boards:
-python3 scripts/polish-assets/sheets-study.py (after node scripts/polish-assets/shoot-study.mjs hvac / screen). Writes docs/screenshots/polish-assets/sheets/."""
 import os
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
@@ -11,9 +9,7 @@ BIG = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial.ttf", 26)
 V = {"hvac": [("cur", "atual"), ("a", "A · condensador"), ("b", "B · ventilador frontal"), ("c", "C · cercado técnico")],
      "screen": [("cur", "atual"), ("a", "A · tela apagada"), ("b", "B · LED modular"), ("c", "C · outdoor estruturado")]}
 
-
 def board(out, title, asset, rows, h):
-    """rows: [(label, case, box)] — one row per case, one column per variant, crops at height h."""
     cells = []
     for label, case, box in rows:
         r = []
@@ -38,9 +34,7 @@ def board(out, title, asset, rows, h):
     sheet.save(f"{O}/{out}", quality=88)
     print(f"{O}/{out}", sheet.size)
 
-
 def thumbs(out, title, asset, cases):
-    """City frames at 300 px: colour, then grey + blur, per variant (does the asset add noise?)."""
     TW, TH, GAP, LH = 300, 188, 8, 24
     cols = len(V[asset])
     sh = Image.new("RGB", (150 + cols * (TW + GAP), 40 + len(cases) * 2 * (TH + GAP) + LH), (16, 16, 20))
@@ -61,8 +55,6 @@ def thumbs(out, title, asset, cases):
     sh.save(f"{O}/{out}", quality=90)
     print(f"{O}/{out}", sh.size)
 
-
-# ── HVAC ──
 board("P1-hvac-city.jpg", "Ar-condicionado de cobertura · City (recortes 1:1 das capturas @2x)", "hvac", [
     ("Paul Graham", "pg-city", (300, 380, 1200, 940)),
     ("Hacker News", "hn-city", (600, 400, 1600, 1000)),
@@ -77,7 +69,6 @@ board("P2-hvac-street.jpg", "Ar-condicionado de cobertura · Street (1:1)", "hva
 board("P3-hvac-night.jpg", "Ar-condicionado de cobertura · noite (City, 1:1)", "hvac", [("Paul Graham", "pg-night", (300, 380, 1200, 940))], 420)
 thumbs("P4-hvac-thumbs.jpg", "Ar-condicionado · thumbnails da City (ruído?)", "hvac", [("Paul Graham", "pg-city"), ("IKEA", "ikea-city"), ("GOV.UK", "govuk-city")])
 
-# ── screen without content ──
 board("Q1-screen-street.jpg", "Tela de fachada sem conteúdo · Street (1:1), dia e noite", "screen", [
     ("Guardian · dia", "guardian-street", (1100, 880, 1900, 1440)),
     ("Guardian · noite", "guardian-street-night", (1100, 880, 1900, 1440)),
@@ -92,9 +83,7 @@ board("Q2-screen-city.jpg", "Tela de fachada sem conteúdo · City (1:1), dia e 
 ], 380)
 thumbs("Q3-screen-thumbs.jpg", "Tela sem conteúdo · thumbnails da City (ruído?)", "screen", [("Guardian", "guardian-city"), ("Linear", "linear-city"), ("Guardian noite", "guardian-night")])
 
-# ── R · the two recommendations against the current asset ──
 def pairs(out, title, rows, h):
-    """rows: [(caption_cur, file_cur, caption_new, file_new, box)]."""
     cells = []
     for c0, f0, c1, f1, box in rows:
         r = []
@@ -116,7 +105,6 @@ def pairs(out, title, rows, h):
         y += h + 40
     sheet.save(f"{O}/{out}", quality=88)
     print(f"{O}/{out}", sheet.size)
-
 
 h = lambda v, c: f"{D}/hvac/{v}/{c}.png"
 s = lambda v, c: f"{D}/screen/{v}/{c}.png"

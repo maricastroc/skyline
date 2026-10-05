@@ -1,15 +1,3 @@
-/**
- * The page map: a simplified, recognisable drawing of the ORIGINAL PAGE, built only from what
- * the pipeline already knows — reading order, regions and their territories, headings, link labels, item
- * titles, short snippets, real image URLs, region tints and the page's colours / type.
- * Nothing is invented: a block shows real text when the page model has it, and greeked lines
- * (bars) for text it only counts.
- *
- * The static capture has no layout boxes, so the map is the page in READING ORDER (one
- * column), not a screenshot: each block is one territory of the plan, in document order, its
- * height ∝ the territory's weight (the same weight that buys its land), with a floor so it stays
- * legible small.
- */
 import type { SiteFingerprint } from "../fingerprint/fingerprint";
 import type { NNode, NormalizedDocument } from "../model/types";
 import type { Semantics } from "../semantics/analyze";
@@ -23,7 +11,6 @@ export interface PMImage {
 }
 
 export interface PMBlock {
-  /** Territory index in the plan (links the block to its land). */
   t: number;
   kind: string;
   form: PMForm;
@@ -32,27 +19,21 @@ export interface PMBlock {
   weight: number;
   lots: number;
   order: number;
-  /** Real short texts: link labels, item titles, toc entries, button labels. */
   lines: string[];
-  /** First real sentence of the block's own text. */
   snippet?: string;
   images: PMImage[];
-  /** Items the page has (the map shows only some). */
   count: number;
   chars: number;
   links: number;
   controls: number;
   tint?: string;
-  /** Composition the territory became (for the explanation). */
   comp: string;
-  /** Navigation: its first link when the page title names it (the site's own name). */
   brand?: string;
 }
 
 export interface PageMapData {
   host: string;
   title: string;
-  /** The site's name as the semantic pass reads it (what the City View card shows). */
   siteName: string;
   theme: { bg: string; fg: string; muted: string; link: string; accent: string; rule: string; serif: boolean; mono: boolean; dark: boolean };
   blocks: PMBlock[];
@@ -91,12 +72,10 @@ const clean = (s: string | undefined, n = 90) => {
   return t.length > n ? `${t.slice(0, n - 1)}…` : t;
 };
 
-/** Images go through the capture's signed proxy (`node.image.proxy`); one without it is left out. */
 export function buildPageMap(doc: NormalizedDocument, sem: Semantics, fp: SiteFingerprint, plan: Plan, lots: number[]): PageMapData {
   const nodes = doc.nodes;
   const N = nodes.length;
 
-  /* ── theme: the page's own colours and type ── */
   const cols = doc.colors.map((c) => c.hex.toLowerCase()).filter((h) => hexRgb(h));
   const dark = fp.darkness > 0.5;
   const bg =
@@ -111,7 +90,6 @@ export function buildPageMap(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
   const accent = chromatic[0] ?? fg;
   const link = chromatic.find((h) => contrast(h, bg) >= 3) ?? fg;
 
-  /* ── which territory owns each node ── */
   const terrOfRegion = new Map<number, number>();
   plan.territories.forEach((t, i) => {
     if (t.region >= 0 && (t.source === "region" || t.source === "remainder")) terrOfRegion.set(t.region, i);
@@ -131,7 +109,6 @@ export function buildPageMap(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
   const text = (n: NNode) => n.label ?? n.snippet ?? "";
   const isContentImage = (n: NNode) => !!n.image && !(n.incidentalImages && n.incidentalImages >= n.images) && !/\.svg(\?|$)/i.test(n.image.src);
 
-  /** Title of an item subtree: its first heading, else its longest link label. */
   const itemTitle = (i: number) => {
     const end = nodes[i].end;
     let best = "";
@@ -157,7 +134,6 @@ export function buildPageMap(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
     const own = nodesOf(ti);
     const ownSet = new Set(own);
     const comp = [...t.mix].sort((a, b) => b.share - a.share)[0]?.comp ?? "continuous";
-    // Heading: the territory's label, else its first own heading.
     let label = t.label && t.label !== "page" ? clean(t.label, 70) : undefined;
     let level: number | undefined;
     for (const k of own)
@@ -167,7 +143,6 @@ export function buildPageMap(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
         break;
       }
     if (t.kind === "nav" || t.kind === "footer" || t.kind === "feed" || t.kind === "showcase" || t.kind === "testimonials") label = t.kind === "showcase" || t.kind === "testimonials" ? label : undefined;
-    // Link labels, in order (deduped).
     const linkLabels: string[] = [];
     const seen = new Set<string>();
     for (const k of own) {
@@ -180,7 +155,6 @@ export function buildPageMap(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
         linkLabels.push(c);
       }
     }
-    // Items: the region's repeated items, else the item series found by the plan.
     const items = r ? r.items.filter((k) => ownSet.has(k) || t.source === "region") : [];
     const titles = items.map(itemTitle).filter((s) => s && !CHROME.test(s));
     const images: PMImage[] = [];
@@ -191,7 +165,6 @@ export function buildPageMap(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
     };
     if (items.length) items.forEach((k) => pushImg(itemImage(k)));
     for (const k of own) if (images.length < 8 && isContentImage(nodes[k])) pushImg(nodes[k]);
-    // First own sentence of running text.
     let snippet: string | undefined;
     for (const k of own) {
       const m = nodes[k];
@@ -200,7 +173,6 @@ export function buildPageMap(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
         break;
       }
     }
-    // Buttons / controls with a label.
     const buttons: string[] = [];
     for (const k of own) {
       const m = nodes[k];
@@ -294,7 +266,6 @@ export function buildPageMap(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
     title: doc.document.title ?? host,
     siteName: sem.siteName || host,
     theme: { bg, fg, muted, link, accent, rule, serif: fp.type.serif > 0.3, mono: fp.type.mono > 0.3, dark },
-    // Territories with no land (a brand mark, say) still belong to the page.
     blocks,
     totalLots: lots.reduce((s, v) => s + v, 0),
   };

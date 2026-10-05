@@ -1,7 +1,3 @@
-/**
- * Every way a capture can fail, with copy the landing can show as-is.
- * Codes are stable API; copy can evolve.
- */
 export type CaptureErrorCode =
   | "invalid_url"
   | "unsupported_scheme"

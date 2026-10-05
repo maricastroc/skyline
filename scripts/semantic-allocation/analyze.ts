@@ -1,6 +1,3 @@
-// Semantic allocation pass — BEFORE (kit-v2, cycled minors) vs AFTER (kit, territories), same corpus.
-//   npx tsx scripts/semantic-allocation/analyze.ts
-// Writes docs/semantic-allocation/{tables.md, report.json, trace/<id>.md}.
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import type { SiteFingerprint } from "../../src/lib/fingerprint/fingerprint";
 import type { Region, Semantics } from "../../src/lib/semantics/analyze";
@@ -23,8 +20,6 @@ const LOT_AREA = 3.5 * 3.5;
 const load = (id: string): DomSnapshot => JSON.parse(readFileSync(`docs/real-pages/snapshots/${id}.json`, "utf8"));
 const f2 = (v: number) => (Number.isFinite(v) ? v.toFixed(2) : "–");
 const pct = (v: number) => `${(v * 100).toFixed(1)}%`;
-
-/* ───────────── shared massing metrics (same code as the validation round) ───────────── */
 
 const G = 0.5;
 const EXT = 40;
@@ -100,21 +95,14 @@ interface Decisions {
 }
 const decisionDist = (a: Decisions, b: Decisions) => (histDist(a.org, b.org) + histDist(a.families, b.families) + histDist(a.roofs, b.roofs) + histDist(a.styles, b.styles)) / 4;
 
-/* ───────────── a run of either generator, reduced to comparable facts ───────────── */
-
 interface Run {
-  /** Lot-grid owner key per lot (X*N+Y), "" = nobody. */
   owner: string[];
-  /** Area per owner key (tiles²). */
   area: Map<string, number>;
-  /** Buildings per owner key. */
   buildings: Map<string, number>;
   blocks: BlockShape[];
   dec: Decisions;
   landmark: { family: string; block: string; piece: string; floors: number } | null;
-  /** Area by provenance class. */
   sources: Record<string, number>;
-  /** "Blocks that speak": composed (BEFORE) or fully owned by one named region (AFTER). */
   speaking: number;
 }
 
@@ -170,7 +158,6 @@ function runBefore(page: RealPageV2, profile: ProfileV2, seed = SEED): Run & { t
   const trace: TraceV2 = { blocks: [], range: [0, 0] };
   const city = genV2(page.fp, { profile, time: "day", seed, trace });
   const keyOf = (b: SourcedBrief | null | undefined) => (!b ? "" : b.region < 0 ? "page|body|" : regionKey(page.doc, page.sem.regions[b.region], page.sem));
-  // Rasterise ownership on 0.5-tile cells, then a lot cell's owner = the majority (≥ 25%).
   const cells = new Map<number, Map<string, number>>();
   const area = new Map<string, number>();
   const buildings = new Map<string, number>();
@@ -255,8 +242,6 @@ function runBefore(page: RealPageV2, profile: ProfileV2, seed = SEED): Run & { t
   };
 }
 
-/* ───────────── elements: the AFTER partition is the reference description of the page ───────────── */
-
 interface Element {
   key: string;
   label: string;
@@ -266,7 +251,6 @@ interface Element {
   region: number;
 }
 
-/** Map BEFORE owner keys onto elements (a container's area splits over its elements by weight). */
 function toElements(run: Run, els: Element[], sem: Semantics, doc: RealPage["doc"]): { area: number[]; buildings: number[]; owner: number[] } {
   const byKey = new Map(els.map((e, i) => [e.key, i]));
   const nodes = doc.nodes;
@@ -275,10 +259,8 @@ function toElements(run: Run, els: Element[], sem: Semantics, doc: RealPage["doc
     if (key === "") return [];
     const r = sem.regions.find((x) => regionKey(doc, x, sem) === key);
     if (!r) return byKey.has("page|body|") ? [[byKey.get("page|body|")!, 1]] : [];
-    // Inside an element's region?
     const host = els.findIndex((e) => e.region >= 0 && e.source === "region" && r.node > sem.regions[e.region].node && r.node < nodes[sem.regions[e.region].node].end);
     if (host >= 0) return [[host, 1]];
-    // A container that the plan opened: its elements are the ones inside it.
     const inside = els.map((e, i) => [e, i] as const).filter(([e]) => e.region >= 0 && (e.region === r.id || (sem.regions[e.region].node >= r.node && sem.regions[e.region].node < nodes[r.node].end)));
     const tw = inside.reduce((s, [e]) => s + e.weight, 0);
     if (inside.length && tw > 0) return inside.map(([e, i]) => [i, e.weight / tw]);
@@ -315,7 +297,6 @@ function fidelity(w: number[], area: number[]) {
   return { a, faithful, rho, over };
 }
 
-/** Connected components of each element on the 16×16 lot grid (4-neighbourhood). */
 function contiguity(owner: number[], els: Element[]) {
   const comps = els.map(() => [] as number[]);
   const seen = new Uint8Array(LOT_TOTAL);
@@ -361,7 +342,6 @@ function contiguity(owner: number[], els: Element[]) {
   return { comps, score: den ? num / den : NaN, split5 };
 }
 
-/** Fraction of owned lots whose owner changed; weighted centroid shift (tiles) of surviving owners. */
 function ownershipChange(a: string[], b: string[], ignore?: string) {
   let changed = 0;
   let n = 0;
@@ -396,8 +376,6 @@ function ownershipChange(a: string[], b: string[], ignore?: string) {
   return { changed: n ? changed / n : 0, shift: w ? s / w : 0 };
 }
 
-/* ───────────── per page ───────────── */
-
 interface PageRun {
   id: string;
   sibling?: string;
@@ -423,13 +401,11 @@ const pages: PageRun[] = DATASET.map((e) => {
 const main = pages.filter((p) => !p.sibling);
 const ids = pages.map((p) => p.id);
 
-/* A. fidelity, B. contiguity, F. coverage */
 const fid = pages.map((p) => {
   const w = p.els.map((e) => e.weight);
   return { id: p.id, before: fidelity(w, p.eb.area), after: fidelity(w, p.ea.area), cb: contiguity(p.eb.owner, p.els), ca: contiguity(p.ea.owner, p.els) };
 });
 
-/* C. stability */
 type Stab = { block: number; decision: number; owner: number; shift: number; note?: string };
 const stab: Record<string, Record<string, { before: Stab; after: Stab }>> = {};
 for (const p of pages) {
@@ -448,7 +424,6 @@ for (const p of pages) {
   }
 }
 
-/* C'. the specific effect: remove ONE small region (0.5–5% of the page), nothing else */
 const removal: Array<{ id: string; label: string; w: number; before: { owner: number; block: number } | null; after: { owner: number; block: number } }> = [];
 for (const p of main) {
   p.page.plan.territories.forEach((t, ti) => {
@@ -470,7 +445,6 @@ for (const p of main) {
   });
 }
 
-/* D. differentiation */
 const pair = (f: (a: PageRun, b: PageRun) => number) => ids.map((a) => ids.map((b) => (a === b ? NaN : f(pages.find((p) => p.id === a)!, pages.find((p) => p.id === b)!))));
 const pairBlockA = pair((a, b) => blockDist(a.after.blocks, b.after.blocks));
 const pairBlockB = pair((a, b) => blockDist(a.before.blocks, b.before.blocks));
@@ -497,7 +471,6 @@ const stat = (vs: number[]) => {
   return { min: Math.min(...ok), mean: ok.reduce((s, v) => s + v, 0) / ok.length, max: Math.max(...ok) };
 };
 
-/* E. landmark diversity */
 const lmKey = (l: Run["landmark"]) => {
   if (!l) return "none";
   const fb = l.floors <= 4 ? "≤4f" : l.floors <= 9 ? "5–9f" : l.floors <= 14 ? "10–14f" : l.floors <= 19 ? "15–19f" : "≥20f";
@@ -512,7 +485,6 @@ const groups = (which: "before" | "after") => {
   return [...m.entries()].sort((a, b) => b[1].length - a[1].length);
 };
 
-/* style independence of the landmark: four style variants per page */
 function styleVariants(fp: SiteFingerprint): Array<[string, SiteFingerprint]> {
   return [
     ["serif", { ...fp, type: { serif: 0.8, sans: 0.2, mono: 0 } }],
@@ -534,7 +506,6 @@ const styleLm = main.map((p) => {
   return { id: p.id, after, before, styles: styleVariants(p.page.fp).map(([n, fp]) => `${n}:${deriveGrammar(fp).style}`) };
 });
 
-/* Monotonicity: change ONE element's weight, rescale the rest, everything else constant. */
 interface MonoRow {
   page: string;
   label: string;
@@ -553,7 +524,6 @@ function mono(id: string, match: (e: Element) => boolean, levels: number[]): Mon
     const ra = runAfter(p.page, plan);
     const lots = ra.trace.alloc!.lots[ti];
     const comps = contiguity(toElements(ra, p.els, p.page.sem, p.page.doc).owner, p.els).comps[ti].length;
-    // BEFORE: the same region's brief(s) at the same share, others rescaled.
     const scale = (bs: SourcedBrief[]) => bs.map((b) => (b.region === regionId ? { ...b, weight: w } : { ...b, weight: b.weight * k }));
     const prof = profileV2(p.pageV2);
     const rb = runBefore(p.pageV2, { ...prof, majors: scale(prof.majors as SourcedBrief[]), minors: scale(prof.minors as SourcedBrief[]) });
@@ -574,8 +544,6 @@ const monoRows = [
   mono("news", (e) => e.kind === "nav", SMALL),
 ];
 const monotone = (xs: number[]) => (Math.max(...xs) - Math.min(...xs) < 1e-9 ? "constant (ignores weight)" : xs.every((v, i) => i === 0 || v >= xs[i - 1] - 1e-9) ? "yes" : "**no**");
-
-/* ───────────── outputs ───────────── */
 
 const T: string[] = [];
 T.push("# Semantic allocation — generated tables", "", `BEFORE = kit-v2 (massing pass, cycled minors). AFTER = kit (territories). Seed ${SEED}, day, same 14 frozen pages. Elements = the AFTER partition of each page (regions, container remainders, page remainder).`, "");
@@ -671,7 +639,6 @@ for (const r of monoRows) {
 }
 writeFileSync(`${OUT}/tables.md`, T.join("\n") + "\n");
 
-/* per-page audit traces */
 for (const p of pages) {
   const f = fid.find((x) => x.id === p.id)!;
   const plan = p.page.plan;

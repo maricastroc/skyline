@@ -1,8 +1,3 @@
-/**
- * Synthesized sound, no assets (as in the prototype). Three layers per collapse:
- * a low thump, a crumble of filtered noise whose length follows the shockwave spread,
- * and a few clicks of falling debris. All of it scales with structural weight.
- */
 let ctx: AudioContext | null = null;
 let master: GainNode | null = null;
 let muted = false;
@@ -41,14 +36,12 @@ function noiseBuffer(a: AudioContext, seconds: number, decay: number): AudioBuff
   const d = buf.getChannelData(0);
   let last = 0;
   for (let i = 0; i < len; i++) {
-    // Brown-ish noise: heavier, more "concrete" than white.
     last = last * 0.92 + (Math.random() * 2 - 1) * 0.35;
     d[i] = last * Math.pow(1 - i / len, decay);
   }
   return buf;
 }
 
-/** power 0..1 (structural weight), spread = seconds the collapse lasts. */
 export function collapseSound(power: number, spread: number) {
   const a = audio();
   if (!a || !master || muted) return;
@@ -56,7 +49,6 @@ export function collapseSound(power: number, spread: number) {
   if (performance.now() - lastAt < 40) return;
   lastAt = performance.now();
 
-  // Thump
   const o = a.createOscillator();
   const og = a.createGain();
   o.type = "sine";
@@ -69,7 +61,6 @@ export function collapseSound(power: number, spread: number) {
   o.start(now);
   o.stop(now + 1.3);
 
-  // Crumble
   const dur = 0.6 + spread * 1.1 + power * 1.2;
   const src = a.createBufferSource();
   src.buffer = noiseBuffer(a, dur, 1.6);
@@ -82,7 +73,6 @@ export function collapseSound(power: number, spread: number) {
   src.connect(lp).connect(ng).connect(master);
   src.start(now + 0.02);
 
-  // Debris clicks
   const clicks = 3 + Math.round(power * 10);
   for (let i = 0; i < clicks; i++) {
     const t = now + 0.15 + Math.random() * (0.3 + spread);
@@ -99,7 +89,6 @@ export function collapseSound(power: number, spread: number) {
   }
 }
 
-/** Soft tick for selection. */
 export function tick(high = false) {
   const a = audio();
   if (!a || !master || muted) return;

@@ -1,5 +1,3 @@
-// Invariants of the semantic allocation pass: npm run test:allocation
-// Exits non-zero on the first failed group. No test runner: plain assertions over the real corpus.
 import { createHash } from "node:crypto";
 import { readdirSync, readFileSync } from "node:fs";
 import { generateKitDistrict, newTrace } from "../../src/lib/pixelcity/kit/district";
@@ -19,13 +17,11 @@ const check = (name: string, ok: boolean, detail = "") => {
 const sha = (s: string) => createHash("sha1").update(s).digest("hex");
 const snap = (id: string) => JSON.parse(readFileSync(`docs/real-pages/snapshots/${id}.json`, "utf8"));
 
-/* 1. the path */
 const path = lotPath();
 const unique = new Set(path.map(([x, y]) => x * N + y)).size;
 const steps = path.slice(1).every((p, k) => Math.abs(p[0] - path[k][0]) + Math.abs(p[1] - path[k][1]) === 1);
 check("path visits all 256 lots once, every step between neighbours", path.length === LOT_TOTAL && unique === LOT_TOTAL && steps);
 
-/* 2. allocation on every page: sum, proportionality, contiguity */
 const contiguous = (lots: Array<[number, number]>) => {
   if (lots.length < 2) return true;
   const set = new Set(lots.map(([x, y]) => x * N + y));
@@ -61,7 +57,6 @@ check("every page's lots sum to 256", sums);
 check("every territory within ±1 lot of 256·weight (+ one per extra mix segment)", worstErr < 2, `worst ${worstErr.toFixed(2)} lots`);
 check("every territory is one connected piece", allContig);
 
-/* 3. monotonicity on random plans */
 let mono = true;
 const base = realPage(snap("institution")).plan;
 for (let ti = 0; ti < base.territories.length; ti++) {
@@ -76,7 +71,6 @@ for (let ti = 0; ti < base.territories.length; ti++) {
 }
 check("raising one territory's weight never lowers its lots (every territory of a real page, 0.2% → 95%)", mono);
 
-/* 4. no invalid parts, deterministic, across pages × perturbations × seeds × modes */
 let bad = 0;
 let det = true;
 let n = 0;
@@ -102,7 +96,6 @@ for (const prof of ["mixed", "portal", "product", "reference"] as const) {
   check(`synthetic profile “${prof}” still renders`, c.parts.length > 1000);
 }
 
-/* 5. the baseline is untouched */
 const corpus = readFileSync("docs/semantic-allocation/corpus-before.txt", "utf8");
 let baseOk = true;
 for (const e of DATASET) {
@@ -113,9 +106,6 @@ for (const e of DATASET) {
 }
 check("kit-v2 cities and snapshots match the recorded corpus hashes", baseOk);
 
-/* 6. no site-specific rules in the generator */
-// Full hostnames of every candidate URL, plus the brands (generic hostname words like "docs",
-// "news" or "store" are ordinary vocabulary and would be false positives).
 const hosts = DATASET.flatMap((e) => e.urls.map((u) => new URL(u).hostname.replace(/^www\./, "")));
 const brands = ["wikipedia", "ikea", "lobste", "vercel", "theguardian", "nasa.gov", "craigslist", "github", "paulgraham", "brittanychiang", "svelte", "allbirds", "patagonia", "unsplash", "berkshire", "spacejam", "danluu", "notion", "steampowered", "everlane", "toscrape", "hostname", "location.host"];
 const words = [...new Set([...hosts, ...brands])];

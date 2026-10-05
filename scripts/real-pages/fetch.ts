@@ -1,5 +1,3 @@
-// Freeze the dataset: npx tsx scripts/real-pages/fetch.ts [id…]
-// Fetches each entry's URLs in order and keeps the first clean capture as a snapshot file.
 import { mkdirSync, writeFileSync } from "node:fs";
 import { fetchStaticPage } from "../../src/lib/acquisition/static-fetch";
 import { normalizeInputUrl } from "../../src/lib/acquisition/url-policy";
@@ -25,7 +23,6 @@ async function main() {
         const shell = snap.warnings.some((w) => w.code === "spa_shell" || w.code === "few_elements");
         const line = `${e.id.padEnd(12)} ${u}  → ${snap.source.finalUrl}  ${snap.stats.elementCount} el, ${doc.nodes.length} nodes, ${sem.regions.length} regions, ${sem.districts.length} districts${snap.warnings.length ? `  [${snap.warnings.map((w) => w.code).join(",")}]` : ""}`;
         console.log(line);
-        // Rejected captures are kept (".rejected.json") for the failure-case analysis.
         const why = shell ? "shell" : doc.nodes.length < 60 ? "under 60 nodes" : sem.districts.length === 0 ? "no districts" : "";
         if (why) {
           log.push(`${line}  REJECTED (${why})`);

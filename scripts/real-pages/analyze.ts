@@ -1,7 +1,3 @@
-// Real-page validation: npx tsx scripts/real-pages/analyze.ts
-// For every frozen page: facts → brief → block/building decisions (traced), a massing signature,
-// and the controlled comparisons (pairwise, seed, perturbations, input sensitivity).
-// Writes docs/real-pages/report.json, docs/real-pages/trace/<id>.md and docs/real-pages/tables.md.
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import type { SiteFingerprint } from "../../src/lib/fingerprint/fingerprint";
 import { deriveGrammar } from "../../src/lib/pixelcity/grammar";
@@ -17,11 +13,8 @@ const OUT = "docs/real-pages";
 mkdirSync(`${OUT}/trace`, { recursive: true });
 const SEED = 7;
 
-/* ───────────── generation + massing signature ───────────── */
-
 interface Run {
   trace: KitTrace;
-  /** Buildings only (no trees, plazas, street furniture, people). */
   hm: Float32Array;
   blocks: BlockShape[];
 }
@@ -43,7 +36,6 @@ function run(fp: SiteFingerprint, profile: Profile, seed = SEED): Run {
   return { trace, hm, blocks: blockShapes(hm) };
 }
 
-/** Per block (fixed grid position): built coverage, mean/max/std of building height. */
 const P_ = 14 + 2 * 1.1 + 2.6;
 function blockShapes(hm: Float32Array): BlockShape[] {
   const out: BlockShape[] = [];
@@ -71,14 +63,12 @@ function blockShapes(hm: Float32Array): BlockShape[] {
     }
   return out;
 }
-/** 0 = every block has the same coverage and height profile. */
 function blockDist(a: BlockShape[], b: BlockShape[]) {
   let d = 0;
   for (let k = 0; k < a.length; k++) d += (Math.abs(a[k].cov - b[k].cov) + Math.min(1, Math.abs(a[k].mean - b[k].mean) / 4) + Math.min(1, Math.abs(a[k].max - b[k].max) / 8) + Math.min(1, Math.abs(a[k].std - b[k].std) / 2)) / 4;
   return d / a.length;
 }
 
-/** Max top height per 0.5-tile cell over the blocks (people, glows and signs excluded). */
 function heightmap(parts: Part[]): Float32Array {
   const hm = new Float32Array(N * N);
   for (const q of parts) {
@@ -97,7 +87,6 @@ function heightmap(parts: Part[]): Float32Array {
   return hm;
 }
 
-/** 0 = identical massing, 1 = nothing in common (weighted Jaccard distance on heights). */
 function massDist(a: Float32Array, b: Float32Array) {
   let num = 0;
   let den = 0;
@@ -107,8 +96,6 @@ function massDist(a: Float32Array, b: Float32Array) {
   }
   return den ? num / den : 0;
 }
-
-/* ───────────── decision summaries ───────────── */
 
 const hist = <T extends string>(xs: T[]) => xs.reduce((m, x) => ((m[x] = (m[x] ?? 0) + 1), m), {} as Record<string, number>);
 function histDist(a: Record<string, number>, b: Record<string, number>) {
@@ -144,8 +131,6 @@ function summary(t: KitTrace) {
 type Summary = ReturnType<typeof summary>;
 const decisionDist = (a: Summary, b: Summary) => (histDist(a.blockHist, b.blockHist) + histDist(a.families, b.families) + histDist(a.roofs, b.roofs) + histDist(a.styles, b.styles)) / 4;
 
-/* ───────────── pages ───────────── */
-
 interface PageRun {
   id: string;
   category: string;
@@ -169,14 +154,12 @@ const pages: PageRun[] = DATASET.map((e) => {
 });
 const main = pages.filter((p) => !p.sibling);
 
-/* pairwise */
 const pair: Record<string, Record<string, { mass: number; block: number; decision: number }>> = {};
 for (const a of pages) {
   pair[a.id] = {};
   for (const b of pages) pair[a.id][b.id] = { mass: massDist(a.base.hm, b.base.hm), block: blockDist(a.base.blocks, b.base.blocks), decision: decisionDist(a.sum, b.sum) };
 }
 
-/* seed control */
 const seedCtl: Record<string, Array<{ mass: number; block: number; decision: number }>> = {};
 for (const p of pages)
   seedCtl[p.id] = [8, 9, 10].map((s) => {
@@ -184,7 +167,6 @@ for (const p of pages)
     return { mass: massDist(p.base.hm, r.hm), block: blockDist(p.base.blocks, r.blocks), decision: decisionDist(p.sum, summary(r.trace)) };
   });
 
-/* perturbations */
 const perturb: Record<string, Record<string, { mass: number; block: number; decision: number; note?: string; changes: string[] }>> = {};
 for (const p of pages) {
   perturb[p.id] = {};
@@ -221,7 +203,6 @@ function diffChanges(p: PageRun, q: RealPage, s: Summary): string[] {
   return out;
 }
 
-/* fingerprint sensitivity: one field at a time, ±0.25 toward the middle */
 const FIELDS = ["size", "depth", "breadth", "regularity", "sections", "textDensity", "imagery", "linkDensity", "headings", "interactivity", "forms", "roundness", "airiness", "ornament", "darkness", "legacy", "colorfulness", "type.serif", "type.mono", "hues"] as const;
 function nudge(fp: SiteFingerprint, f: (typeof FIELDS)[number]): SiteFingerprint {
   const c = structuredClone(fp);
@@ -255,7 +236,6 @@ for (const p of main) {
   }
 }
 
-/* brief-level sensitivity */
 const briefSens: Record<string, Record<string, number>> = {};
 const scale = (bs: Brief[], k: number, roles: Brief["role"][]) => bs.map((b) => (roles.includes(b.role) ? { ...b, weight: Math.min(1, b.weight * k) } : b));
 for (const p of main) {
@@ -270,7 +250,6 @@ for (const p of main) {
   };
 }
 
-/* information collapse: which distinct facts end in the same decision */
 const collapse: Record<string, Set<string>> = {};
 const famFrom: Record<string, Set<string>> = {};
 for (const p of pages) {
@@ -283,8 +262,6 @@ for (const p of pages) {
     }
   }
 }
-
-/* ───────────── outputs ───────────── */
 
 const f2 = (v: number) => v.toFixed(2);
 const pct = (v: number) => `${(v * 100).toFixed(1)}%`;

@@ -1,7 +1,3 @@
-// Art direction C1 (street roles) checks: npm run test:streets
-// The roles are read from the frozen foundation only (plan + allocation), deterministically and
-// without the seed or the site; the street surfaces stay inside the corridor the grid reserves;
-// the sidewalk furniture is untouched; related pages keep related street structures.
 import { readFileSync } from "node:fs";
 import { generateKitDistrict, LINES, newTrace, type KitTrace } from "../../src/lib/pixelcity/kit/district";
 import { PERTURBATIONS, realPage } from "../../src/lib/pixelcity/kit/real-page";
@@ -31,7 +27,6 @@ const shares = (t: KitTrace) => ROLES.map((r) => inner(t).filter((s) => s.role =
 
 const runs = DATASET.map((e) => ({ id: e.id, ...build(e.id) }));
 
-// 1. Determinism: the plan alone decides the roles (no seed, nothing but the plan and its allocation).
 let seedFree = 0;
 let fromPlan = 0;
 for (const r of runs) {
@@ -41,15 +36,12 @@ for (const r of runs) {
 check("street roles do not depend on the seed (7 / 8 / 11)", seedFree === runs.length, `${seedFree}/${runs.length}`);
 check("street roles are a function of the plan and its allocation only", fromPlan === runs.length, `${fromPlan}/${runs.length}`);
 
-// 2. No site knowledge in the art-direction code.
-// Code only: comments may say what the code does NOT read.
 const src = ["src/lib/pixelcity/kit/street-roles.ts", "src/lib/pixelcity/kit/street.ts"]
   .map((f) => readFileSync(f, "utf8").replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, ""))
   .join("\n");
 const site = /hostname|location\.|\burl\b|siteName|wikipedia|ikea|craigslist|graham|nasa|linear|gov\.uk|python/i;
 check("no hostname, URL or site name in the street-role code", !site.test(src), site.exec(src)?.[0] ?? "");
 
-// 3. Corridor: every street surface stays off the blocks (the lots inside each sidewalk ring).
 const B = 14;
 let outside = 0;
 let surfaces = 0;
@@ -69,8 +61,6 @@ for (const r of runs) {
 }
 check("street surfaces stay inside the street corridors (no part over a block)", outside === runs.length, `${outside}/${runs.length} pages, ${surfaces} surface parts`);
 
-// 4. Street roles alone leave the sidewalk furniture (trees, lamps, benches, people along the curbs)
-//    as kit-v9's, part for part: with street life (C3) off, only the street surfaces moved.
 let furniture = 0;
 for (const r of runs) {
   const q = r9(snap(r.id));
@@ -83,11 +73,9 @@ for (const r of runs) {
 }
 check("with street life off, sidewalk furniture identical to kit-v9 (C1 moves streets only)", furniture === runs.length, `${furniture}/${runs.length}`);
 
-// 5. Every role is carried by its own signal and used by several pages.
 const usedBy = ROLES.map((role) => runs.filter((r) => inner(r.t).some((s) => s.role === role)).length);
 check("each of the four roles appears in at least 3 corpus pages", usedBy.every((n) => n >= 3), ROLES.map((r, i) => `${r} ${usedBy[i]}`).join(", "));
 
-// 6. Family: the two Wikipedia articles are closer in street structure than the median pair.
 const dist = (a: number[], b: number[]) => a.reduce((s, v, i) => s + Math.abs(v - b[i]), 0) / 2;
 const pairs: number[] = [];
 for (let i = 0; i < runs.length; i++) for (let j = i + 1; j < runs.length; j++) pairs.push(dist(shares(runs[i].t), shares(runs[j].t)));
@@ -97,7 +85,6 @@ const by = (id: string) => runs.find((r) => r.id === id)!.t;
 const wiki = dist(shares(by("reference")), shares(by("reference-2")));
 check("Wikipedia × Wikipedia closer than the median pair (role shares, inner streets)", wiki < median, `${wiki.toFixed(2)} vs median ${median.toFixed(2)}; Wikipedia × Paul Graham ${dist(shares(by("reference")), shares(by("oldweb"))).toFixed(2)}`);
 
-// 7. Equivalent pages, equivalent streets: small page edits move few street roles.
 let changed = 0;
 let total = 0;
 for (const r of runs)

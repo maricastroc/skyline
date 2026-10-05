@@ -1,4 +1,3 @@
-/* Pixel city: game UI. Small, chunky, out of the way. */
 .pixel-root {
   position: fixed;
   inset: 0;
@@ -51,7 +50,6 @@
   background: #f3efe6;
 }
 
-/* start screen */
 .px-start {
   position: absolute;
   inset: 0;
@@ -192,7 +190,6 @@
   color: #ffcf5a;
 }
 
-/* compare */
 .px-compare {
   position: absolute;
   inset: 0;
@@ -242,7 +239,6 @@
   text-decoration: none;
 }
 
-/* ───────── round 3: city view / explore / inspector ───────── */
 .px-stage {
   position: absolute;
   inset: 0;
@@ -402,7 +398,6 @@
   color: var(--px-accent, #ffcf5a);
 }
 
-/* inspector: small, precise, never a wall of data */
 .px-inspect {
   position: absolute;
   z-index: 6;
@@ -557,7 +552,6 @@
   color: #a9a2d0;
 }
 
-/* ───────── world frame: the city is the screen ───────── */
 .px-layer {
   position: absolute;
   inset: 0;
@@ -578,7 +572,6 @@
 .px-layer[data-on="0"] > * {
   pointer-events: none;
 }
-/* Explore HUD arrives once the camera has come down. */
 .px-layer-late {
   animation: px-arrive 360ms steps(6) 1.1s both;
 }
@@ -590,7 +583,6 @@
     opacity: 1;
   }
 }
-/* The title sits over the city now, not over empty sky: a low, dithered-looking shade. */
 .px-scrim {
   position: absolute;
   left: 0;

@@ -1,14 +1,7 @@
-/**
- * Inspector text: why a piece of the city exists, in terms of the page it came from.
- *
- * Pure function of (city, doc, node) so the identity test can print exactly what the
- * inspector shows.
- */
 import type { NormalizedDocument } from "../model/types";
 import { REGION_LABEL, type Region, type RegionKind } from "../semantics/analyze";
 import type { BuildingKind, PixelCity, Zone } from "./types";
 
-/** What each region became, as a city noun (the inspector's kicker). */
 export const CITY_FORM: Record<RegionKind, string> = {
   page: "City",
   brand: "Landmark",
@@ -63,20 +56,15 @@ const ROLE_FORM: Record<Zone["role"], string> = {
 };
 
 export interface Explanation {
-  /** “LANDMARK”, “DISTRICT”, “BUILDING”… */
   kicker: string;
-  /** Region kind label, e.g. “Hero”. */
   kind: string;
   selector: string;
   title?: string;
   depth: number;
   descendants: number;
-  /** Region path from the page down to the subject; `here` marks the subject. */
   path: Array<{ label: string; here?: boolean; leaf?: boolean }>;
-  /** Evidence from the page, then what the city did with it. */
   why: string[];
   effect?: string;
-  /** Node range the inspector is about (for the soft highlight). */
   range: [number, number];
 }
 
@@ -115,7 +103,6 @@ function buildingWhy(kind: BuildingKind, n: NormalizedDocument["nodes"][number])
   }
 }
 
-/** Explain a picked node: the region it belongs to and, if it isn't the region itself, the building. */
 export function explainNode(city: PixelCity, doc: NormalizedDocument, node: number): Explanation | null {
   const n = doc.nodes[node];
   if (!n) return null;
@@ -127,7 +114,6 @@ export function explainNode(city: PixelCity, doc: NormalizedDocument, node: numb
 
   if (r && (atRoot || !building)) return explainRegion(city, doc, r);
 
-  // A building inside a region (or outside any region).
   const path: Explanation["path"] = r ? regionPath(city, r).map((x) => ({ label: tag(x) })) : [{ label: "PAGE" }];
   path.push({ label: n.tag.toUpperCase(), here: true, leaf: true });
   const why: string[] = [];
@@ -168,12 +154,10 @@ export function explainRegion(city: PixelCity, doc: NormalizedDocument, r: Regio
   };
 }
 
-/** Explain a zone (City view hover/click): the region it stands for, or a plain description. */
 export function explainZone(city: PixelCity, doc: NormalizedDocument, z: Zone): Explanation | null {
   if (z.region >= 0) {
     const e = explainRegion(city, doc, city.semantics.regions[z.region]);
     const kind = city.semantics.regions[z.region].kind;
-    // A long feed is split into blocks (“1-10”): keep the feed's own title, name the block.
     if (kind === "feed" && z.title) e.kind = `${e.kind} · items ${z.title}`;
     else if (z.title && z.title !== e.title && z.role === "district") e.title = z.title;
     if (z.role !== "district") e.kicker = ROLE_FORM[z.role].toUpperCase();
@@ -195,7 +179,6 @@ export function explainZone(city: PixelCity, doc: NormalizedDocument, z: Zone): 
   };
 }
 
-/** The zone under a world point, preferring the most specific (smallest) one. */
 export function zoneAt(city: PixelCity, x: number, z: number): Zone | null {
   let best: Zone | null = null;
   for (const zone of city.zones) {
@@ -205,7 +188,6 @@ export function zoneAt(city: PixelCity, x: number, z: number): Zone | null {
   return best;
 }
 
-/** The zone a node belongs to (smallest node range that contains it). */
 export function zoneOfNode(city: PixelCity, node: number): Zone | null {
   let best: Zone | null = null;
   for (const zone of city.zones) {

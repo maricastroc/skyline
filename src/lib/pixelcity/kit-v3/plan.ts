@@ -1,36 +1,4 @@
 // FROZEN: detail kit after the semantic allocation pass (baseline of the semantic hygiene pass). Do not edit.
-/**
- * Semantic allocation, step 1: a page → an ordered list of TERRITORIES that partition it.
- *
- * Every territory is a piece of the page with a weight (its share of the page's structural
- * weight) and a COMPOSITION MIX (what urban organisation it becomes). Weights sum to 1, so
- * the city can hand out land in proportion to them (territory.ts).
- *
- *   T1 PARTITION   The semantic regions form a tree. Generic containers (main, section,
- *                  sidebar) that have child regions are opened: each child becomes a territory
- *                  and the container keeps a REMAINDER territory for its own content. Typed
- *                  regions (feed, gallery, pricing, hero …) are never opened: they are one
- *                  organisation. Content outside every region is the PAGE remainder.
- *   T2 ORDER       Territories follow the page's reading order inside four tiers: the hero,
- *                  then the main content (inside <main> or a semantic district), then the
- *                  chrome (navigation, forms, brand, sidebars), then the footer; the page
- *                  remainder last. Order decides placement along the city's path (centre
- *                  first), never size.
- *   T3 COMPOSITION Structural kinds map to one organisation:
- *                    hero → landmark · brand → marker · feed → parcelled · toc / references /
- *                    directory → archive · nav → navigation · footer → support ·
- *                    pricing → grid · infobox → structured · form / cta → interactive
- *                  Generic regions, remainders AND the kinds the semantic pass itself decides
- *                  by a content ratio (gallery / showcase / logos: < 140 chars per image;
- *                  faq / testimonials: the fall-through when that ratio fails) are classified
- *                  by their metrics with SOFT gates (logistic around the validation-round
- *                  thresholds): a region close to a threshold becomes a mixture, and a ±10%
- *                  change moves the mix a little instead of flipping the whole territory (or
- *                  the whole city, when the region is most of the page). Shares under
- *                  MIN_SHARE are dropped.
- *
- * Nothing here knows any particular site.
- */
 import type { SiteFingerprint } from "../../fingerprint/fingerprint";
 import type { NormalizedDocument } from "../../model/types";
 import type { Region, RegionKind, Semantics } from "../../semantics/analyze";
@@ -45,27 +13,22 @@ export interface Metrics {
   images: number;
   controls: number;
   descendants: number;
-  /** Elements inside tables (absolute count, so remainders can subtract). */
   inTables: number;
   items: number;
 }
 
 export interface Territory {
-  /** Stable identity across runs and perturbations: selector + title (+ "~n" repeat). */
   key: string;
   region: number;
   kind: RegionKind | "remainder";
   source: Source;
   label?: string;
-  /** Share of the page (all territories sum to 1). */
   weight: number;
   repeat: number;
   metrics: Metrics;
   tier: number;
-  /** Document order (node index of the region). */
   order: number;
   mix: Array<{ comp: Comp; share: number }>;
-  /** The content class used for styling (programFor): the strongest of the mix. */
   content: Content;
   why: string[];
 }
@@ -73,12 +36,10 @@ export interface Territory {
 export interface Plan {
   identity: SiteFingerprint;
   territories: Territory[];
-  /** Index (in `territories`) of the hero, if the page has a real hero (with an <h1>). */
   hero: number;
 }
 
 export const MIN_SHARE = 0.15;
-/** Soft-gate width in log space: ±16% around a threshold ≈ 26/74 split. */
 const TAU = 0.15;
 const OPENABLE = new Set<RegionKind>(["main", "section", "sidebar", "page"]);
 const BY_KIND: Partial<Record<RegionKind, Comp>> = {
@@ -112,12 +73,6 @@ const COMP_CONTENT: Record<Comp, Content> = {
 const sig = (v: number) => 1 / (1 + Math.exp(-v));
 const lg = (v: number) => Math.log(Math.max(v, 1e-6));
 
-/**
- * Soft content mix of a generic piece of page, from its metrics. Sequential gates in the same
- * order and at the same thresholds as the validation round's B2 rule (tables 30%, ≥ 3 images
- * and ≥ 2 per 1000 chars, ≥ 2.5 links per 100 chars, ≥ 3 controls), but logistic instead of
- * step, so the boundary is a gradient.
- */
 export function softMix(m: Metrics): Array<{ comp: Comp; share: number }> {
   const tableShare = m.inTables / Math.max(m.descendants, 1);
   const imgK = m.images / Math.max(m.chars / 1000, 1);
@@ -138,11 +93,6 @@ export function softMix(m: Metrics): Array<{ comp: Comp; share: number }> {
   return kept.map((x) => ({ comp: x.comp, share: x.share / t }));
 }
 
-/**
- * Stable identity of every region: selector + title, with "~n" for the n-th repeat in document
- * order (nested wrappers often share both). The kind is NOT part of it: a region the semantic
- * pass re-labels (showcase → faq) is still the same piece of the page, with the same colour.
- */
 export function regionKeys(doc: NormalizedDocument, sem: Semantics): Map<number, string> {
   const seen = new Map<string, number>();
   const out = new Map<number, string>();
@@ -242,7 +192,6 @@ export function planFromPage(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
     push(null, "page", 1 - covered, minus(metricsOf(root), roots.map(metricsOf)), ["T1 page content outside every detected region"]);
   }
 
-  // T2: tiers, then reading order.
   const order = out.map((t, i) => i).sort((a, b) => out[a].tier - out[b].tier || out[a].order - out[b].order);
   const territories = order.map((i) => out[i]);
   for (const t of territories) t.why.unshift(`T2 tier ${t.tier} (${["hero", "main content", "chrome", "footer", "page remainder"][t.tier]})`);

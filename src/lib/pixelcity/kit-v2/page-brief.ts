@@ -1,27 +1,4 @@
 // FROZEN: detail kit after the massing pass + real-page validation (baseline of the semantic allocation pass). Do not edit.
-/**
- * Real page → architectural brief. The bridge the four hand-written profiles stood in for.
- *
- * It reads only facts the pipeline already extracts (semantic regions with their kind,
- * evidence and repeated items; subtree metrics of the normalized DOM; the fingerprint) and
- * applies five general rules. Nothing here knows about any particular site.
- *
- *   B1 ROLE      landmark = the hero region (else the brand). Majors = the districts that hold
- *                at least MAJOR_SHARE of the page (at most MAX_MAJORS, the largest), kept in
- *                reading order. A district holding more than CONTAINER_SHARE of the page is a
- *                container: its own child regions are considered instead. Footer = support.
- *                Every other region outside the landmark and the majors is a minor.
- *   B2 CONTENT   from the region's kind when the semantic pass already named what it is for
- *                (feed → links, gallery → media, pricing → structured, form → action …);
- *                generic kinds (section, features, main, sidebar, hero, brand) are classified
- *                by their subtree metrics: table share, images per 1000 characters, links per
- *                100 characters, controls.
- *   B3 WEIGHT    the region's share of the page's structural weight.
- *   B4 REPEAT    the number of repeated items the semantic pass found (cards, rows, stories).
- *   B5 LABEL     the region's title (or the site name for the landmark).
- *
- * The site identity is the fingerprint itself — not a profile.
- */
 import type { SiteFingerprint } from "../../fingerprint/fingerprint";
 import type { NormalizedDocument } from "../../model/types";
 import type { Region, RegionKind, Semantics } from "../../semantics/analyze";
@@ -31,7 +8,6 @@ export const MAJOR_SHARE = 0.04;
 export const MAX_MAJORS = 5;
 export const CONTAINER_SHARE = 0.5;
 
-/** Content thresholds for generic regions (B2). */
 export const CONTENT_RULES = { tableShare: 0.3, imagesPerK: 2, minImages: 3, linksPer100: 2.5, minControls: 3 };
 
 const BY_KIND: Partial<Record<RegionKind, Content>> = {
@@ -52,12 +28,10 @@ const BY_KIND: Partial<Record<RegionKind, Content>> = {
   testimonials: "text",
 };
 
-/** A brief plus where it came from. */
 export interface SourcedBrief extends Brief {
   region: number;
   kind: RegionKind;
   selector: string;
-  /** The facts and rules that produced it, in words. */
   why: string[];
   metrics: RegionMetrics;
 }
@@ -77,9 +51,7 @@ export interface PageProfile {
   identity: SiteFingerprint;
   majors: SourcedBrief[];
   minors: SourcedBrief[];
-  /** Regions that produced nothing, and why (containers, inside a major, too small …). */
   skipped: Array<{ region: number; kind: RegionKind; title?: string; why: string }>;
-  /** Decisions without a page fact behind them (fallbacks). */
   suspicious: string[];
 }
 
@@ -129,12 +101,10 @@ export function pageProfile(doc: NormalizedDocument, sem: Semantics, fp: SiteFin
     };
   };
 
-  /* B1: landmark */
   const lmRegion = sem.hero >= 0 ? regions[sem.hero] : sem.brand >= 0 ? regions[sem.brand] : null;
   const landmark = lmRegion ? brief(lmRegion, "landmark", [sem.hero >= 0 ? `B1 the hero region → landmark (${lmRegion.evidence[0] ?? ""})` : "B1 no hero; the brand region → landmark"], sem.siteName || lmRegion.title) : null;
   if (!lmRegion) suspicious.push("no hero and no brand: the city has no landmark");
 
-  /* B1: majors — districts, opening containers */
   const candidates: Region[] = [];
   const open = (r: Region, path: string[]) => {
     const kids = regions.filter((c) => c.parent === r.id && share(c) >= MAJOR_SHARE);
@@ -157,10 +127,8 @@ export function pageProfile(doc: NormalizedDocument, sem: Semantics, fp: SiteFin
   const majorRegions = candidates.filter((r) => chosen.has(r.id)).sort((a, b) => a.node - b.node);
   const majors = majorRegions.map((r) => brief(r, "major", [`B1 district with ${(share(r) * 100).toFixed(1)}% of the page (≥ ${MAJOR_SHARE * 100}%) → major`]));
 
-  /* B1: minors — everything else that is not a container of, or inside, the landmark/majors */
   const owners = [...(lmRegion ? [lmRegion] : []), ...majorRegions];
   const minors: SourcedBrief[] = [];
-  // Document order, so a region's parent is seen before it.
   for (const r of [...regions].sort((a, b) => a.node - b.node)) {
     if (r.kind === "page" || r.kind === "main" || r === lmRegion || chosen.has(r.id)) continue;
     const owner = owners.find((o) => inside(r, o));
@@ -183,7 +151,6 @@ export function pageProfile(doc: NormalizedDocument, sem: Semantics, fp: SiteFin
   minors.sort((a, b) => regions[a.region].node - regions[b.region].node);
 
   if (!minors.length) {
-    // Objective bug otherwise: the kit cycles minors to fill lots and has nothing to cycle.
     const root = nodes[0];
     const l100 = root.links / Math.max(root.chars / 100, 1);
     minors.push({

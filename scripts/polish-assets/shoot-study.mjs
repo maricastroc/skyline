@@ -1,10 +1,3 @@
-// Visual polish round 2 (placeholder assets), studies: real cases where each defect shows, with
-// ?hvacStudy= / ?screenStudy=. The switch exists only with scripts/polish-assets/asset-studies.patch
-// applied on commit 55d9303 (git apply); see docs/PIXEL_POLISH_ASSETS.md. "cur" = no switch: the
-// current asset (BEFORE).
-//   node scripts/polish-assets/shoot-study.mjs <hvac|screen> [variant …]   (default: cur a b c)
-// Writes <OUT>/<asset>/<variant>/<case>.png (default OUT: docs/screenshots/polish-assets/studies).
-// Env: BASE, OUT, CASES (comma list), FORCE.
 import { existsSync, mkdirSync } from "node:fs";
 import puppeteer from "puppeteer-core";
 

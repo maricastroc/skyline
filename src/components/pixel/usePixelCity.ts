@@ -13,7 +13,6 @@ export interface PixelCityState {
   kit: KitCity | null;
 }
 
-/** Same capture pipeline as the maquette (/api/capture); the city is the kit's (lib/pixelcity/kit-city.ts). */
 export function usePixelCity(url: string | null): PixelCityState {
   const [state, setState] = useState<PixelCityState>({ loading: Boolean(url), error: null, doc: null, kit: null });
   useEffect(() => {

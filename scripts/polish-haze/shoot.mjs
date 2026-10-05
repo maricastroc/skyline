@@ -1,8 +1,3 @@
-// Visual polish round 1 (low haze): AFTER captures, 1440×900 @2x, seed 7, the audit's framing.
-// BEFORE is the audit's own capture of the same views (docs/screenshots/polish-audit/<view>/),
-// taken from the same source before the change.
-//   node scripts/polish-haze/shoot.mjs      Env: BASE, PAGES, VIEWS, OUT, FORCE.
-// Writes <OUT>/<view>/<page>.png (default OUT: docs/screenshots/polish-haze/after).
 import { existsSync, mkdirSync } from "node:fs";
 import puppeteer from "puppeteer-core";
 

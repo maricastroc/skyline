@@ -12,10 +12,6 @@ const CHALLENGE_RE =
 const CHALLENGE_MARKERS = /cf-browser-verification|challenge-platform|_cf_chl_opt|perimeterx|px-captcha|datadome|captcha-delivery|akamai.*bot manager/i;
 const LOGIN_PATH_RE = /\/(login|log-in|signin|sign-in|sign_in|auth|sso|account\/login|session\/new|oauth)(\/|\?|$)/i;
 
-/**
- * Strategy 1: fetch the HTML exactly as the server sends it. Fast and cheap, but blind to
- * anything assembled by client-side JavaScript (see captureRenderedPage).
- */
 export async function fetchStaticPage(url: URL, signal?: AbortSignal): Promise<DomSnapshot> {
   const res = await safeFetch(url, {
     accept: "text/html,application/xhtml+xml;q=0.9,*/*;q=0.5",
@@ -67,7 +63,6 @@ function checkHtmlResponse(head: SafeResponseHead): void {
     throw new CaptureError("not_html", contentType.split(";")[0]);
 }
 
-/** Up to a few stylesheets, in parallel, with their own small budget. Failures are ignored. */
 async function fetchStylesheets(urls: string[], signal?: AbortSignal): Promise<string[]> {
   const picked = [...new Set(urls)].filter((u) => u.startsWith("https://")).slice(0, MAX_STYLESHEETS);
   const results = await Promise.allSettled(
@@ -88,7 +83,6 @@ async function fetchStylesheets(urls: string[], signal?: AbortSignal): Promise<s
   return results.flatMap((r) => (r.status === "fulfilled" ? [r.value] : []));
 }
 
-/** A page that is little more than a password form is a login wall. */
 function looksLikeLoginWall(s: DomSnapshot): boolean {
   let password = false;
   let text = 0;

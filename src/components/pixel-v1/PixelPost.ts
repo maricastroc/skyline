@@ -1,14 +1,7 @@
 import { BlendFunction, Effect, EffectAttribute } from "postprocessing";
 import * as THREE from "three";
 
-/**
- * One full-screen pass at the low internal resolution:
- *  - paints the sky behind the diorama: banded gradient with ordered (Bayer) dithering,
- *    plus single-texel stars at night;
- *  - draws pixel outlines where a neighbour texel is clearly farther away (silhouettes),
- *    darkening toward the ink color instead of pure black, like hand-made sprites.
- */
-const FRAG = /* glsl */ `
+const FRAG = `
 uniform vec3 uSkyTop;
 uniform vec3 uSkyBottom;
 uniform vec3 uInk;
@@ -27,7 +20,6 @@ float h12(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453
 void mainImage(const in vec4 inputColor, const in vec2 uv, const in float depth, out vec4 outputColor) {
   vec2 px = floor(uv * resolution);
   if (depth >= 0.9999) {
-    // Sky: 7 bands, dithered at the seams.
     float t = clamp(uv.y * 1.1 - 0.05, 0.0, 1.0);
     float bands = 7.0;
     float q = floor(t * bands + bayer4(px)) / bands;

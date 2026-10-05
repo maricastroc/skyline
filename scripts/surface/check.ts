@@ -1,5 +1,3 @@
-// Acceptance tests of the architectural surface grammar: npm run test:surface
-// The Surface Grammar Lab (controlled fixtures, no page) + real snapshots (determinism, massing, frozen kits).
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { FLOOR, building, type Program } from "../../src/lib/pixelcity/kit/buildings";
@@ -27,7 +25,6 @@ const check = (name: string, ok: boolean, detail = "") => {
 const sha = (s: string | Buffer) => createHash("sha1").update(s).digest("hex");
 const snap = (id: string) => JSON.parse(readFileSync(`docs/real-pages/snapshots/${id}.json`, "utf8"));
 
-/* ───────────── Lab fixtures, with every part tagged by anatomy zone ───────────── */
 class ZoneKit extends Kit {
   override zones: Array<string | null> = [];
 }
@@ -48,7 +45,7 @@ for (const set of LAB_SETS)
     };
     labs.push({ set, style, lab: generateSurfaceLab(api, fp, { set, style }), zones });
   }
-const BASE_Y = 0.1; // the lab's pad
+const BASE_Y = 0.1;
 const EPS = 0.02;
 interface Bad { what: string; n: number; worst: number; at: string }
 const bad = (what: string): Bad => ({ what, n: 0, worst: 0, at: "" });
@@ -86,7 +83,6 @@ for (const { set, style, lab, zones } of labs) {
       const z = zones[k];
       const y0 = q.y - BASE_Y;
       const y1 = q.y + q.h - BASE_Y;
-      // Footprint test on the part's axis-aligned extent (side faces are built rotated a quarter turn).
       const c0 = Math.abs(Math.cos(q.rotY));
       const s0 = Math.abs(Math.sin(q.rotY));
       const hw = (q.w * c0 + q.d * s0) / 2;
@@ -108,7 +104,6 @@ for (const { set, style, lab, zones } of labs) {
 console.log(`\n# Anatomy invariants — ${cellsChecked} lab buildings (${LAB_SETS.length} sets × 3 styles), ${crownCells} with a crown floor, ${roofParts} roof-zone parts`);
 for (const b of [groundB, baseB, crownB, roofB, footB]) check(`no ${b.what}`, b.n === 0, b.n ? `${b.n} part(s), worst ${b.worst.toFixed(2)} at ${b.at}` : "");
 
-/* ───────────── Programs differ in the controlled fixture ───────────── */
 console.log("\n# Program legibility (same box, same palette, only the use changes)");
 for (const style of ["classic", "modern"] as ArchStyle[]) {
   const { lab } = labs.find((l) => l.set === "programs" && l.style === style)!;
@@ -126,7 +121,6 @@ for (const style of ["classic", "modern"] as ArchStyle[]) {
   check(`${style}: the roof alone separates ≥ 4 of 7 uses`, roofs.size >= 4, [...roofs].join(", "));
 }
 
-/* ───────────── Style is expression, not structure ───────────── */
 console.log("\n# Style invariance (same use, same lot, five styles)");
 {
   const g = deriveGrammar(fp);
@@ -148,7 +142,6 @@ console.log("\n# Style invariance (same use, same lot, five styles)");
   }
 }
 
-/* ───────────── Real pages: determinism, provenance, massing, frozen kits ───────────── */
 const before = new Map<string, string>();
 for (const l of readFileSync("docs/surface/corpus-before.txt", "utf8").split("\n")) {
   const m = l.match(/^v4-normal (\S+)\s+([0-9a-f]{40})/);
@@ -179,7 +172,6 @@ for (const id of ["reference", "shop", "institution"]) {
   check(`${id}: same page → same city and same surface trace`, a.hash === b.hash && anatomies(a.t) === anatomies(b.t));
 }
 {
-  // The surface grammar never sees the host: the same page served from another host keeps every anatomy.
   const a = traceOf("reference");
   const b = traceOf("reference", (s) => {
     s.source.requestedUrl = "https://elsewhere.test/a/b";
@@ -199,7 +191,6 @@ for (const id of ["reference", "shop", "institution"]) {
     for (const b of t.buildings) {
       total++;
       if (b.anatomy.length) traced++;
-      // Program pass: a parcelled / grid territory whose items are a simple index is institutional.
       const want = b.program.reason === "simple-index evidence" ? "institutional" : USE[b.comp];
       if (want && b.P.family !== "kiosk" && b.anatomy.some((A) => A.use !== want)) mismatched++;
     }
@@ -227,8 +218,6 @@ console.log("\n# Massing preserved (current kit vs kit-v4, per building)");
     const q = realPageV4(snap(e.id));
     const ta = newTrace();
     const tb = newTraceV4();
-    // The intra-territory composition pass (later) changes structured parcelled land on purpose;
-    // this compares the surface grammar's own effect, so the descriptor is left out.
     const a = generateKitDistrict(p.fp, { profile: withoutItems(withoutStructure(p.plan)), time: "day", seed: 7, trace: ta });
     const b = v4(q.fp, { profile: q.plan, time: "day", seed: 7, trace: tb });
     if (ta.buildings.length !== tb.buildings.length) structural++;

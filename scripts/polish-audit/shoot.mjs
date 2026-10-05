@@ -1,7 +1,3 @@
-// Visual polish audit (round 0): captures of the current kit (= kit-v12), 1440×900 @2x, seed 7, no debug overlays.
-//   node scripts/polish-audit/shoot.mjs
-// Views: city (day) · night · street (focus 0,0) · wide (street at zoom 0.55) · close.
-// Writes docs/screenshots/polish-audit/<view>/<page>.png. Env: BASE, CHROME_PATH, PAGES, VIEWS, FORCE.
 import { existsSync, mkdirSync } from "node:fs";
 import puppeteer from "puppeteer-core";
 

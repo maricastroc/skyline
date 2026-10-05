@@ -7,11 +7,6 @@ export const runtime = "nodejs";
 
 const MAX_IMAGE_BYTES = 3 * 1024 * 1024;
 
-/**
- * Same-origin image proxy so WebGL can use page images as textures (most sites don't send
- * CORS headers). Only URLs signed by /api/capture are served, the bytes must actually be a
- * raster image (magic-number sniffing, SVG excluded), and the response is locked down.
- */
 export async function GET(req: Request): Promise<Response> {
   const params = new URL(req.url).searchParams;
   const u = params.get("u");

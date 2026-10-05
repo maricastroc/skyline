@@ -1,9 +1,3 @@
-/**
- * Cheap, regex-level signals from CSS. We don't compute styles (that is the rendered
- * capture's job); we only want two hints: the site's palette and which simple selectors
- * are position: fixed/sticky.
- */
-
 export interface PositionRule {
   tag?: string;
   id?: string;
@@ -100,7 +94,6 @@ export interface BackgroundRule {
 
 const BG_RE = /background(?:-color)?\s*:\s*([^;!}]+)/i;
 
-/** First solid color in a background declaration (gradients contribute their first stop). */
 export function firstColor(value: string): string | undefined {
   const tmp = new Map<string, number>();
   const hex = /#([0-9a-f]{3,8})\b/i.exec(value);
@@ -121,7 +114,6 @@ export function collectBackgroundRules(css: string, into: BackgroundRule[], max 
     if (!hex) continue;
     for (const raw of m[1].split(",")) {
       const sel = raw.trim();
-      // Only selectors that target an element by itself; descendant/state selectors are too fuzzy.
       if (/[\s>+~:[]/.test(sel)) continue;
       const s = SIMPLE_RE.exec(sel);
       if (!s || (!s[2] && !s[3])) continue;
@@ -136,7 +128,7 @@ export function matchBackground(rules: BackgroundRule[], tag: string, id: string
     if (r.tag && r.tag !== tag) continue;
     if (r.id && r.id !== id) continue;
     if (r.cls && !classes?.includes(r.cls)) continue;
-    found = r.hex; // later rules win, as in the cascade
+    found = r.hex;
   }
   return found;
 }

@@ -1,13 +1,3 @@
-// Acceptance tests of the program differentiation pass:
-//   npm run test:program
-// 1. Territory.items must describe the page (golden cases, controls, synthetic forms) and leave
-//    everything kit-v7 decides identical.
-// 2. Experiment: a parcelled / grid territory whose items are a simple index is institutional
-//    ("simple-index evidence"); parcelled commerce is a declared fallback; nothing else changes.
-// 3. Narrow lots: an attached institutional series whose units are narrower than the ceremonial
-//    entrance needs has ONE marked entrance (and sign); kit-v8 otherwise, volumes untouched.
-// The current kit runs with `polishAssets: false` (visual polish off): this suite checks its own
-// pass against the kits before it; the polish is checked by `npm run test:polish`.
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { normalize } from "../../src/lib/model/normalize";
@@ -161,7 +151,6 @@ console.log("\n# experiment: simple index → institutional");
   check("lobste.rs: the stories (10 links each) stay commercial, as a declared fallback", reasonOf("forum", "faq") === FB, reasonOf("forum", "faq"));
   check("IKEA: the product grid keeps its use and reason", reasonOf("shop", "pricing") === "commercial: region kind: pricing / product grid", reasonOf("shop", "pricing"));
 
-  // Only uses change, only on simple indexes, only in parcelled / grid; the same buildings for every seed.
   let wrong = 0;
   let changed = 0;
   let seedsSame = 0;
@@ -177,7 +166,6 @@ console.log("\n# experiment: simple index → institutional");
       const ch: number[] = [];
       ta.buildings.forEach((b, i) => {
         const before = tb.buildings[i].anatomy.map((x) => x.use).join();
-        // (the narrow-lot pass changes the ground floor of narrow institutional series: uses only here)
         const after = b.anatomy.map((x) => x.use).join();
         const strip = (P: object) => JSON.stringify({ ...P, use: undefined, useReason: undefined });
         if (before !== after) {
@@ -193,7 +181,7 @@ console.log("\n# experiment: simple index → institutional");
   check("every changed building: parcelled / grid, simple-index evidence, institutional, same program otherwise", wrong === 0, `${changed} buildings changed, ${wrong} wrong`);
   check("seeds 7, 8, 9 change the same buildings", seedsSame === DATASET.length, `${seedsSame}/${DATASET.length}`);
   const src = readFileSync("src/lib/pixelcity/kit/compose.ts", "utf8");
-  check("the rule reads no URL, host, site name or words", !/\.(label|snippet|sample)\b|hostname|finalUrl|requestedUrl|siteName/.test(src.slice(src.indexOf("export function simpleIndex"), src.indexOf("/** Base program for a segment piece"))));
+  check("the rule reads no URL, host, site name or words", !/\.(label|snippet|sample)\b|hostname|finalUrl|requestedUrl|siteName/.test(src.slice(src.indexOf("export function simpleIndex"), src.indexOf("function prog("))));
 }
 
 console.log("\n# narrow lots: one marked entrance per narrow institutional series");
@@ -222,7 +210,6 @@ console.log("\n# narrow lots: one marked entrance per narrow institutional serie
         const a = generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time: "day", seed, flat, trace: ta, artDirection: false });
         const b = v8(q.fp, { profile: q.plan, time: "day", seed, flat, trace: tb });
         if (flat) {
-          // Flat drops signs, sprites and glows after generation: compare the volumes of the whole city.
           if (volumes(a.parts) !== volumes(b.parts)) volumeDiff++;
           continue;
         }
@@ -248,7 +235,6 @@ console.log("\n# narrow lots: one marked entrance per narrow institutional serie
             if (B.anatomy.filter((A) => A.ground.entrance === "central").length === 1) oneMarked++;
           }
         });
-        // No sign on a secondary unit: every sign of a series sits on its main unit (one unit).
         for (const B of ta.buildings.filter((x) => x.anatomy.some((A) => A.ground.entrance === "secondary"))) {
           const marked = B.anatomy.filter((A) => A.ground.entrance === "central").length;
           const signs = a.parts.slice(...B.parts).filter((x) => x.mesh === "sign").length;

@@ -1,9 +1,3 @@
-// End-to-end differentiation validation (diagnostic only): npx tsx scripts/e2e/analyze.ts
-// Writes docs/e2e/metrics.json (fingerprints, distance matrices, noise, retention, signals).
-// Each layer gets a small fingerprint of what the system actually holds there; distances are
-// total-variation for distributions and range-normalised differences for scalars, averaged per
-// layer, so every layer distance is in [0, 1] and layers can be compared by RELATION (ranks,
-// ratios to noise), not by absolute value.
 import { readFileSync, writeFileSync } from "node:fs";
 import { forceStyle, STYLES } from "../../src/lib/pixelcity/diagnostics";
 import { deriveGrammar, type ArchStyle } from "../../src/lib/pixelcity/grammar";
@@ -37,7 +31,6 @@ const bin = (v: number, edges: number[]) => {
   return `b${i}`;
 };
 
-/* ───────────── fingerprints ───────────── */
 const KIND_GROUP: Record<string, string> = {
   hero: "hero",
   nav: "chrome", brand: "chrome", footer: "chrome", form: "chrome", cta: "chrome", sidebar: "chrome",
@@ -52,7 +45,6 @@ function semanticsFP(p: RealPage): FP {
   const content: Dist = {};
   for (const t of p.plan.territories) {
     add(kind, KIND_GROUP[t.kind] ?? "text", t.weight);
-    // Content make-up of the page, by territory weight: what each territory mostly holds.
     const m = t.metrics;
     const tot = m.chars / 200 + m.links + m.images * 3 + m.controls * 2 || 1;
     add(content, "text", (t.weight * m.chars) / 200 / tot);
@@ -82,7 +74,6 @@ function territoryFP(t: KitTrace): FP {
   const total = lots.reduce((x, y) => x + y, 0) || 1;
   const rank: Dist = {};
   lots.forEach((n, i) => add(rank, `r${Math.min(i, 7)}`, n / total));
-  // Boundary density and the dominant territory's place in the city.
   const N = 16;
   const terr = (X: number, Y: number) => {
     const s = a.owner[X * N + Y];
@@ -181,7 +172,6 @@ function surfaceFP(t: KitTrace): { surface: FP; expression: FP } {
   return { surface: { dists: n(d), scalars: {} }, expression: { dists: n(e), scalars: {} } };
 }
 
-/* ───────────── distances ───────────── */
 const tvd = (a: Dist, b: Dist) => {
   const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
   let s = 0;
@@ -203,7 +193,6 @@ function scalesOf(fps: FP[]): Scales {
   }
   return s;
 }
-/** Per-component distances (for "where do two pages differ"). */
 function breakdown(a: FP, b: FP, scales: Scales): Record<string, number> {
   const o: Record<string, number> = {};
   for (const k of Object.keys(a.dists)) o[k] = tvd(a.dists[k], b.dists[k] ?? {});
@@ -211,7 +200,6 @@ function breakdown(a: FP, b: FP, scales: Scales): Record<string, number> {
   return o;
 }
 
-/* ───────────── run ───────────── */
 const ids = DATASET.map((e) => e.id);
 const pages = new Map(ids.map((id) => [id, realPage(snap(id))] as const));
 function cityFPs(p: RealPage, o: { seed?: number; style?: ArchStyle }) {
@@ -228,7 +216,6 @@ const scales = Object.fromEntries(LAYERS.map((L) => [L, scalesOf(ids.map((id) =>
 const matrix: Record<Layer, number[][]> = {} as Record<Layer, number[][]>;
 for (const L of LAYERS) matrix[L] = ids.map((a) => ids.map((b) => distance(base.get(a)!.fp[L], base.get(b)!.fp[L], scales[L])));
 
-// Seed noise: the same page with kit seeds 8..11.
 const SEEDS = [8, 9, 10, 11];
 const seedNoise: Record<Layer, number[]> = {} as Record<Layer, number[]>;
 for (const L of LAYERS) seedNoise[L] = [];
@@ -237,7 +224,6 @@ for (const id of ids)
     const r = cityFPs(pages.get(id)!, { seed: s });
     for (const L of LAYERS) seedNoise[L].push(distance(base.get(id)!.fp[L], r.fp[L], scales[L]));
   }
-// Style noise: the same page forced into each of the five styles.
 const styleNoise: Record<Layer, number[]> = {} as Record<Layer, number[]>;
 for (const L of LAYERS) styleNoise[L] = [];
 const styleRuns = new Map<string, Record<Layer, FP>>();
@@ -247,7 +233,6 @@ for (const id of ids)
     styleRuns.set(`${id}/${st}`, r.fp);
     for (const L of LAYERS) styleNoise[L].push(distance(base.get(id)!.fp[L], r.fp[L], scales[L]));
   }
-// Ablation: every page in one style (classic) — page-to-page distances with style held fixed.
 const sameStyle: Record<Layer, number[][]> = {} as Record<Layer, number[][]>;
 for (const L of LAYERS) sameStyle[L] = ids.map((a) => ids.map((b) => distance(styleRuns.get(`${a}/classic`)![L], styleRuns.get(`${b}/classic`)![L], scales[L])));
 
@@ -284,7 +269,6 @@ const summary = Object.fromEntries(
 );
 const consecutive = LAYERS.slice(1).map((L, i) => ({ from: LAYERS[i], to: L, rho: spearman(offDiag(matrix[LAYERS[i]]), offDiag(matrix[L])) }));
 
-// Per-pair rank movement: where does a pair converge (rank falls) or diverge?
 const pct = (m: number[][]) => {
   const v = offDiag(m);
   const r = ranks(v);
@@ -296,7 +280,6 @@ const movement = pairs.map(([a, b], k) => ({
   raw: Object.fromEntries(LAYERS.map((L) => [L, offDiag(matrix[L])[k]])),
 }));
 
-/* ───────────── signal survival ───────────── */
 const sig = (f: (id: string) => number) => ids.map(f);
 const T = (id: string) => base.get(id)!.trace;
 const lotsOf = (id: string, comps: string[]) => T(id).alloc!.segments.filter((s) => comps.includes(s.comp)).reduce((a, s) => a + s.count, 0) / 256;
@@ -345,7 +328,6 @@ const SIGNALS: Array<{ name: string; page: (id: string) => number; stages: Array
   { name: "page size / depth (verticality)", page: (id) => base.get(id)!.trace.grammar!.verticality, stages: [
     { layer: "massing", what: "median height", f: (id) => base.get(id)!.fp.massing.scalars.medianTop } ] },
   { name: "darkness", page: (id) => pages.get(id)!.fp.darkness, stages: [
-    // The analysis holds every city at day; the signal is read at the page's own time of day.
     { layer: "palette", what: "night palette (own time of day)", f: (id) => (deriveGrammar(pages.get(id)!.fp).time === "night" ? 1 : 0) } ] },
 ];
 const signals = SIGNALS.map((s) => {

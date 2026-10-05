@@ -1,9 +1,3 @@
-// Content form and observable function of every territory + simulated program distributions.
-// Nothing here is connected to the city:
-//   npx tsx scripts/program/forms.ts > docs/program/forms.md
-// CONTENT FORM is read from Territory.items / structure / metrics only (it describes the page).
-// FUNCTION is what the page lets the reader do there, read from the form (and from the kind only for
-// chrome and identity). Neither is a program: the program columns below are simulations.
 import { readFileSync } from "node:fs";
 import { generateKitDistrict, newTrace } from "../../src/lib/pixelcity/kit/district";
 import { withoutItems } from "../../src/lib/pixelcity/kit/items";
@@ -25,15 +19,6 @@ export function formOf(t: Territory): Form {
 }
 
 export type Fn = "identity" | "wayfinding" | "support" | "interaction" | "data" | "transaction" | "showcase" | "reading" | "index" | "listing with metadata" | "unknown";
-/**
- * Observable function of a volume's territory. Chrome and identity come from the kind / composition
- * the semantic pass already decided; content functions only from the item form:
- *   index — items with ONE destination each (≤ 1 link), no media, no controls (a catalogue);
- *   listing with metadata — items with several links each (a destination + author, date, comments,
- *     tags, a second file…): an index entry, a publication or a discussion — not separable here;
- *   transaction — media cards in a territory that also holds controls (≥ 3 images and ≥ 3 controls);
- *   showcase — media cards without controls.
- */
 export function functionOf(t: Territory, comp: Comp): Fn {
   if (comp === "landmark") return "identity";
   if (comp === "navigation") return "wayfinding";
@@ -52,16 +37,8 @@ export function functionOf(t: Territory, comp: Comp): Fn {
 
 const USES = ["commercial", "residential", "office", "institutional", "service", "civic"];
 const MULTI = new Set(["grid", "parcelled"]);
-/**
- * Revised candidate (simulation only). Only where the kit's own vocabulary already names the
- * function: an INDEX (single-destination items, at least 5 of them) in a grid / parcelled territory
- * takes the use the kit already gives indexes (`archive`: toc, references, directories →
- * institutional). Everything else keeps its current use.
- */
 const proposed = (comp: string, t: Territory, fn: Fn, use: string) => (MULTI.has(comp) && fn === "index" && t.items!.count >= 5 ? "institutional" : use);
-/** Why a volume would still be commercial under the candidate. */
 const reason = (comp: string, fn: Fn) => (fn === "transaction" ? "evidence: transaction" : comp === "navigation" ? "convention: wayfinding arcade" : "fallback: no function the vocabulary names");
-/** The earlier dry run (reverted): every link list in grid / parcelled → institutional. */
 const dryRun = (comp: string, t: Territory, use: string) => {
   const m = t.metrics;
   if (!MULTI.has(comp)) return use;
@@ -78,7 +55,6 @@ const cases = new Map<string, string[]>();
 for (const e of DATASET) {
   const p = realPage(snap(e.id));
   const t = newTrace();
-  // BEFORE = the uses without the item descriptor (byte-identical to kit-v7; test:program).
   generateKitDistrict(p.fp, { profile: withoutItems(p.plan), time: "day", seed: 7, trace: t });
   const lots = t.alloc!.lots;
   for (const b of t.buildings) {

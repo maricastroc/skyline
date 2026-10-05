@@ -1,6 +1,3 @@
-// Internal-structure index per page (for the retention measure): npx tsx scripts/composition/structure-index.ts
-// For the land each territory receives, how segmented is its content? Σ lots × log2(groups) / 256 over
-// parcelled land (one sequence → log2(1) = 0). Printed as JSON {page: index}.
 import { readFileSync } from "node:fs";
 import { realPage } from "../../src/lib/pixelcity/kit/real-page";
 import { allocate } from "../../src/lib/pixelcity/kit/territory";

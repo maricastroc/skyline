@@ -1,5 +1,3 @@
-"""Boards with accented labels: python3 scripts/polish-audit/board.py OUT.jpg COLS TILE_W [crop=x0,y0,x1,y1] "file:label" ... ("-:label" = row heading).
-crop is in source pixels (2880×1800 captures); omitted = whole frame."""
 import sys
 from PIL import Image, ImageDraw, ImageFont
 

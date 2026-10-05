@@ -1,4 +1,3 @@
-// Openings depth tables: npx tsx scripts/openings/analyze.ts > docs/openings/tables.md
 import { readFileSync } from "node:fs";
 import { generateKitDistrict, newTrace } from "../../src/lib/pixelcity/kit/district";
 import { decodeOpening } from "../../src/lib/pixelcity/kit/openings";

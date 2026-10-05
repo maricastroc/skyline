@@ -1,5 +1,3 @@
-// Identity test, text half: what shaped each city, and what its landmarks say about themselves.
-//   npx tsx scripts/identity.ts [url…]   (defaults: Wikipedia, Hacker News, Linear)
 import { fetchStaticPage } from "../src/lib/acquisition/static-fetch";
 import { normalizeInputUrl } from "../src/lib/acquisition/url-policy";
 import { normalize } from "../src/lib/model/normalize";

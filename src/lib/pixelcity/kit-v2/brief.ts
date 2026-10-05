@@ -1,43 +1,4 @@
 // FROZEN: detail kit after the massing pass + real-page validation (baseline of the semantic allocation pass). Do not edit.
-/**
- * The brief grammar: what a part of the page *is* → what kind of building it becomes.
- *
- * Deliberately small. Five rules, each tied to one kind of page fact, so a building's look can
- * be read back as a statement about the page:
- *
- *   1. CONTENT decides the typology (what the building is for):
- *        text        → dwellings and blocks: punched windows, stoops, courtyards
- *        links       → markets: attached narrow rows, a shop on every frontage, many small signs
- *        media       → showcases: glass podiums and towers, façade screens, billboards
- *        action      → public ground: arcades, cafés, kiosks, plazas
- *        structured  → regular grids: ribbon-window slabs; works (sheds, sawtooth, docks) on
- *                      retro sites; archive courts on classic ones
- *
- *   2. PROMINENCE (role + weight) decides height, footprint scale and silhouette complexity:
- *        landmark → a whole block and a unique silhouette (civic dome, clock tower, stepped
- *                   crown, needle) — one per page
- *        major    → a whole block, composed (court, podium + tower, slabs, market, works)
- *        minor    → a lot; height from weight
- *        support  → low, plain, at the back
- *
- *   3. REPETITION decides seriality: repeated siblings become attached series with a shared
- *      rhythm (rows, courtyard wings); singular content becomes singular, asymmetric massing.
- *
- *   4. SITE IDENTITY (the grammar's style, from the page's CSS) decides the roof family,
- *      cornice weight, window proportions, awning kind and rooftop furniture — the same for the
- *      whole city, which is what keeps it one place:
- *        classic → mansards, gables, turrets, domes, tall windows, heavy cornices, solid awnings
- *        retro   → flat roofs with water tanks, gables, brick, fire escapes, striped awnings
- *        modern  → flat roofs without cornices, setbacks, terraces, canopies, solar
- *        soft    → terraces and gardens, rounded corners, balconies
- *        tech    → glass, crowns with beacons, sawtooth works, HVAC, no awnings
- *
- *   5. LINKS & MEDIA decide the street face: link-heavy content gets shopfronts and blade
- *      signs; media gets screens and billboards; text gets doors and plaques.
- *
- * Nothing else is mapped. Two sites that differ in what they contain (rule 1), how they're
- * organised (2, 3) or how they're styled (4) get visibly different cities.
- */
 import { mix } from "../../city/palette";
 import type { ArchStyle, CityGrammar } from "../grammar";
 import type { GamePalette } from "../palette";
@@ -48,18 +9,14 @@ import { rhythm, type RoofFamily } from "./massing";
 export type Role = "landmark" | "major" | "minor" | "support";
 export type Content = "text" | "links" | "media" | "action" | "structured";
 
-/** One part of a page, as the generator already sees it (region kind + unit metrics). */
 export interface Brief {
   role: Role;
   content: Content;
-  /** Share of the page (0..1). */
   weight: number;
-  /** Repeated siblings (feed items, cards, rows); 0 when singular. */
   repeat: number;
   label?: string;
 }
 
-/** Block-scale compositions for landmark and major briefs. */
 export type BlockKind = "lots" | "civic" | "court" | "market" | "towers" | "slabs" | "works" | "plaza";
 
 export function blockFor(b: Brief, g: CityGrammar): BlockKind {
@@ -79,7 +36,6 @@ export function blockFor(b: Brief, g: CityGrammar): BlockKind {
   }
 }
 
-/** The landmark's family follows the site's style (rule 4 applied to rule 2). */
 export function landmarkFamily(style: ArchStyle): { family: Family; roof: RoofFamily } {
   switch (style) {
     case "classic":
@@ -117,10 +73,6 @@ const ROOF: Record<ArchStyle, RoofFamily[]> = {
   tech: ["flat", "flat", "crown"],
 };
 
-/**
- * Brief → Program. `i` decorrelates choices between buildings; `corner` is the lot position.
- * Style: the site's primary style, with the grammar's secondary share for variety.
- */
 export function programFor(b: Brief, g: CityGrammar, p: GamePalette, kit: Kit, i: number, corner = false): Program {
   const r = (k: number) => kit.rand(i * 31 + 7, k);
   const style: ArchStyle = r(1) < Math.max(0.15, g.secondaryShare) ? g.secondary : g.style;
@@ -129,12 +81,10 @@ export function programFor(b: Brief, g: CityGrammar, p: GamePalette, kit: Kit, i
   const accent = p.accents[(i + Math.floor(r(3) * 4)) % p.accents.length];
   const roofColor = style === "classic" ? pick(p.roofs.classic, 4) : style === "retro" ? mix(pick(p.roofs.retro, 4), [0.9, 0.9, 0.9], 0.25) : pick(p.roofs[style], 4);
   const vert = 0.6 + g.verticality * 0.9;
-  // Rule 2: height from prominence and weight.
   const floorsBase = b.role === "landmark" ? 12 : b.role === "major" ? 4 + Math.round(b.weight * 10) : b.role === "support" ? 1 : 2 + Math.round(Math.log2(1 + b.weight * 40));
   const floors = Math.max(1, Math.round(floorsBase * vert + (r(5) - 0.5) * 2));
   const base = { seed: 100 + i * 17, style, wall, accent, roofColor, label: b.label, awning: pick(AWNING[style], 6), topside: pick(TOPSIDE[style], 7) };
   const roof = pick(ROOF[style], 8);
-  // Rule 1 (+3, +5): typology, ground, rhythm, signage from content.
   let family: Family;
   let ground: Ground;
   let signage: Signage;
@@ -166,7 +116,7 @@ export function programFor(b: Brief, g: CityGrammar, p: GamePalette, kit: Kit, i
       signage = "painted";
       facade = "bands";
       break;
-    default: // text
+    default:
       family = b.weight > 0.08 ? "lshape" : style === "soft" || b.repeat >= 3 ? "apartments" : corner ? "corner" : "walkup";
       ground = corner ? "shop" : "homes";
       signage = corner ? "shop" : "plaque";

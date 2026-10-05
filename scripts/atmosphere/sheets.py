@@ -1,5 +1,3 @@
-"""C4 atmosphere, sheets: python3 scripts/atmosphere/sheets.py
-(after node scripts/atmosphere/shoot.mjs before after). Writes docs/screenshots/atmosphere/sheets/."""
 import os
 import random
 import subprocess
@@ -23,7 +21,6 @@ for letter, view in (("A", "city"), ("B", "night"), ("C", "street")):
             items += [f"{img('before', view, p)}:{NAME[p]} · before (kit-v11)", f"{img('after', view, p)}:{NAME[p]} · after (C4)"]
     sheet(f"{letter}-before-after-{view}.jpg", 4, 720, items)
 
-# D: day × night, after: the same environment at two hours.
 items = []
 for k in range(0, 8, 4):
     items.append("-:after (C4) · day")
@@ -32,7 +29,6 @@ for k in range(0, 8, 4):
     items += [f"{img('after', 'night', p)}:{NAME[p]} · night" for p in EIGHT[k:k + 4]]
 sheet("D-day-night.jpg", 4, 720, items)
 
-# E: the sky / skyline band of City (top 45% of the frame): before, after day, after night.
 crop = (0, 0, 2880, 810)
 tw, th, gap = 360, 101, 6
 f16 = ImageFont.load_default(size=16)
@@ -50,11 +46,9 @@ for r, (variant, view, label) in enumerate(rows):
 sh.save(f"{O}/E-sky.jpg", quality=90)
 print(f"{O}/E-sky.jpg", sh.size)
 
-# F: Wikipedia × Wikipedia 2.
 sheet("F-wikipedia-family.jpg", 3, 960, ["-:Wikipedia vs Wikipedia 2 · after (C4)",
                                         *[f"{img('after', v, p)}:{NAME[p]} · {VIEW[v]}" for p in ("reference", "reference-2") for v in ("city", "night", "street")]])
 
-# G / H: City thumbnails, blind (after) and before / after.
 TW, TH, GAP, LH = 240, 150, 6, 20
 def tile(variant, view, p, grey=False):
     im = Image.open(img(variant, view, p)).convert("RGB")

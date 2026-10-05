@@ -1,23 +1,4 @@
 // FROZEN: detail kit after the surface grammar pass (baseline of the openings depth pass). Do not edit.
-/**
- * Semantic allocation, step 2: territories → land.
- *
- * The district is 4×4 blocks; each block is 4×4 LOTS of 3.5×3.5 tiles (256 lots). The lots
- * are threaded on one PATH that visits every lot once and in which consecutive lots are always
- * neighbours (inside a block, or facing each other across a street):
- *
- *   blocks   a square spiral from the block behind the central crossing, outwards
- *   inside   each block, then each quadrant, is walked as a 2×2 that enters on the side the
- *            path came from (facing the previous lot) and leaves towards the next block
- *
- * Territories take consecutive runs of the path, in plan order, with lengths set by CUMULATIVE
- * rounding of their weights: boundary k sits at round(256 · Σ weights before k). So
- *
- *   A1 land ∝ weight     a territory's lots differ from 256·w by less than one lot
- *   A2 contiguity        a run of a path whose steps are all neighbours is one connected piece
- *   A3 locality          changing one weight by δ moves boundaries by at most 256·δ lots; it
- *                        never reorders territories (no cycle to reshuffle)
- */
 import type { Comp, Plan } from "./plan";
 
 export const LOTS = 4;
@@ -28,25 +9,20 @@ export const LOT_TOTAL = N * N;
 export interface Segment {
   territory: number;
   comp: Comp;
-  /** First path index and count. */
   from: number;
   count: number;
 }
 
 export interface Allocation {
-  /** Path index → lot coordinate (X, Y in 0..15; X along world x, Y along world z). */
   path: Array<[number, number]>;
-  /** Lot (X*N + Y) → segment index, or -1. */
   owner: Int32Array;
   segments: Segment[];
-  /** Lots per territory. */
   lots: number[];
 }
 
 type Side = "-x" | "+x" | "-z" | "+z";
 const OPP: Record<Side, Side> = { "-x": "+x", "+x": "-x", "-z": "+z", "+z": "-z" };
 
-/** Square spiral over the 4×4 blocks, starting behind the central crossing. */
 export const SPIRAL: Array<[number, number]> = [
   [1, 1], [2, 1], [2, 2], [1, 2],
   [0, 2], [0, 1], [0, 0], [1, 0], [2, 0], [3, 0],
@@ -62,11 +38,6 @@ const CYCLE: Array<[number, number]> = [
   [0, 1],
 ];
 
-/**
- * Walk a size×size square at (x0, y0) (size 4 = block, 2 = quadrant, 1 = lot), entering on
- * `entry` as close as possible to `hint` (the lot the path must continue from) and leaving
- * on `exit`.
- */
 function walk(out: Array<[number, number]>, x0: number, y0: number, size: number, entry: Side | null, exit: Side | null, hint: [number, number]) {
   if (size === 1) {
     out.push([x0, y0]);
@@ -105,7 +76,6 @@ export function lotPath(): Array<[number, number]> {
   SPIRAL.forEach((b, k) => {
     const entry = k === 0 ? null : OPP[sideBetween(SPIRAL[k - 1], b)];
     const exit = k === SPIRAL.length - 1 ? null : sideBetween(b, SPIRAL[k + 1]);
-    // First block: start at the lot on the central crossing; then continue across the street.
     let hint: [number, number];
     if (k === 0) hint = [b[0] * LOTS + LOTS - 1, b[1] * LOTS + LOTS - 1];
     else {
@@ -118,7 +88,6 @@ export function lotPath(): Array<[number, number]> {
   return out;
 }
 
-/** Cumulative rounding of the plan's segment weights onto the path (A1–A3). */
 export function allocate(plan: Plan): Allocation {
   const path = lotPath();
   const segs: Array<{ territory: number; comp: Comp; w: number }> = [];

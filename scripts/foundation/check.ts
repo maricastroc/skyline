@@ -1,15 +1,3 @@
-// Semantic / architectural foundation v1 — freeze check:
-//   npm run test:foundation
-// 1. The current kit's page model is the frozen baseline's (kit-v9).
-// 2. Everything the foundation decides is byte-identical to kit-v9 for every corpus page (day,
-//    night, flat): the allocation, every part of every block (lots, pieces, buildings, plazas, yards)
-//    and the trace of buildings, pieces, landmark and frontage. Only the scene downstream of the
-//    foundation (art direction: street surfaces, signals, traffic) may differ; with the art
-//    direction layer switched off (`artDirection: false`) the whole city is kit-v9's, byte for byte.
-// 3. kit-v9 itself still reproduces the city hashes recorded at the freeze (kit-v9.sha1.json).
-// 4. Every older frozen kit still builds the corpus.
-// The current kit runs with `polishAssets: false` (visual polish off): this suite checks its own
-// pass against the kits before it; the polish is checked by `npm run test:polish`.
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { generateKitDistrict, newTrace, type KitTrace } from "../../src/lib/pixelcity/kit/district";
@@ -42,7 +30,6 @@ const check = (name: string, ok: boolean, detail = "") => {
 const sha = (s: string) => createHash("sha1").update(s).digest("hex");
 const snap = (id: string) => JSON.parse(readFileSync(`docs/real-pages/snapshots/${id}.json`, "utf8")) as DomSnapshot;
 
-// What the foundation decided, without the part indices (the scene before the blocks may change length).
 const decided = (t: KitTrace | KitTrace9) =>
   JSON.stringify({
     alloc: { path: t.alloc!.path, owner: Array.from(t.alloc!.owner), segments: t.alloc!.segments, lots: t.alloc!.lots },
@@ -52,8 +39,6 @@ const decided = (t: KitTrace | KitTrace9) =>
     frontage: t.frontage,
   });
 const recorded = JSON.parse(readFileSync("scripts/foundation/kit-v9.sha1.json", "utf8")) as Record<string, string>;
-// The blocks of a city. The flat view filters signs, people and glows out AFTER generation, so the
-// trace's indices (which count them) are mapped onto the filtered list.
 const kept = (q: { mesh: string }) => q.mesh !== "sign" && q.mesh !== "sprite" && q.mesh !== "glow";
 const blocksOf = (parts: Array<{ mesh: string }>, range: [number, number], full: Array<{ mesh: string }> | null) => {
   if (!full) return parts.slice(range[0], range[1]);
@@ -74,7 +59,6 @@ for (const e of DATASET) {
     const tb = newTrace9();
     const a = generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time, seed: 7, flat, trace: ta });
     const b = g9(q.fp, { profile: q.plan, time, seed: 7, flat, trace: tb });
-    // For the flat view, the same city unfiltered tells which parts the filter removed.
     const fullA = flat ? generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time, seed: 7 }).parts : null;
     const fullB = flat ? g9(q.fp, { profile: q.plan, time, seed: 7 }).parts : null;
     const blocksA = sha(JSON.stringify(blocksOf(a.parts, ta.range, fullA)));
@@ -91,7 +75,6 @@ check("allocation, blocks (lots, pieces, buildings) and their trace byte-identic
 check("with the art direction layer off, the whole city is byte-identical to kit-v9 (day, night, flat)", ablated === DATASET.length * 3, `${ablated}/${DATASET.length * 3}`);
 check("kit-v9 reproduces the city hashes recorded at the freeze (day, night, flat)", reproduced === DATASET.length * 3, `${reproduced}/${DATASET.length * 3}`);
 
-// Older frozen kits: each still builds every corpus page (v1 has no page input: its one district).
 const kits: Array<[string, (s: DomSnapshot) => number]> = [
   ["v2", (s) => { const p = r2(s); return g2(p.fp, { profile: p.profile, seed: 7 }).parts.length; }],
   ["v3", (s) => { const p = r3(s); return g3(p.fp, { profile: p.plan, seed: 7 }).parts.length; }],

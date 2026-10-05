@@ -1,4 +1,3 @@
-// Corpus fingerprint before the hygiene pass: npx tsx scripts/semantic-hygiene/corpus.ts > docs/semantic-hygiene/corpus-before.txt
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { generateKitDistrict } from "../../src/lib/pixelcity/kit-v3/district";

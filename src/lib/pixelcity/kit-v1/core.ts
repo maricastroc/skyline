@@ -1,12 +1,3 @@
-/**
- * Detail kit — core. Every piece of the kit is a function of (kit, local frame, parameters)
- * that emits ordinary `Part`s, so anything built with it goes through the same instancing,
- * materials, lighting, outlines and build animation as the rest of the city.
- *
- * Frames: pieces are authored in a local frame (front = local +z, base at y = 0) and placed
- * with `kit.frame(x, z, rotation, …)`; frames nest (a lot inside a block, a storefront
- * inside a façade).
- */
 import type { RGB } from "../../city/types";
 import { h01 } from "../hash";
 import type { GamePalette } from "../palette";
@@ -23,7 +14,6 @@ export class Kit {
   readonly parts: Part[] = [];
   readonly signs: SignSpec[] = [];
   readonly signAtlas = SIGN_ATLAS;
-  /** DOM node the next parts belong to (-1 = scenery). */
   node = -1;
   private shelf = { x: 1, y: 1, h: 0 };
   private f = { x: 0, y: 0, z: 0, r: 0 };
@@ -38,7 +28,6 @@ export class Kit {
     return this.palette.time === "night";
   }
 
-  /** Deterministic 0..1 for a pair of integers (decoration and choices — never structure input). */
   rand(a: number, b = 0) {
     return h01(Math.round(a * 7919) + this.seed * 31, Math.round(b * 104729) + 13);
   }
@@ -46,7 +35,6 @@ export class Kit {
     return list[Math.floor(this.rand(a, b) * list.length) % list.length];
   }
 
-  /** Run `fn` in a local frame offset by (x, y, z) and rotated by `rot` about y. */
   frame<T>(x: number, z: number, rot: number, fn: () => T, y = 0): T {
     const p = this.f;
     const c = Math.cos(p.r);
@@ -79,11 +67,9 @@ export class Kit {
     return p;
   }
 
-  /** Box with its base centred at (x, y, z). */
   box(x: number, y: number, z: number, w: number, h: number, d: number, color: RGB, surf: number = Surf.PLAIN, extra: Partial<Part> = {}) {
     return this.part({ mesh: "box", node: this.node, x, y, z, w, h, d, color, surf, ...extra });
   }
-  /** Box given by its extents (x0..x1, y0..y1, z0..z1). */
   span(x0: number, x1: number, y0: number, y1: number, z0: number, z1: number, color: RGB, surf: number = Surf.PLAIN, extra: Partial<Part> = {}) {
     return this.box((x0 + x1) / 2, y0, (z0 + z1) / 2, Math.abs(x1 - x0), Math.abs(y1 - y0), Math.abs(z1 - z0), color, surf, extra);
   }
@@ -94,10 +80,6 @@ export class Kit {
     return this.part({ mesh: "glow", node: this.node, x, y, z, w, h, d, color, lit: strength });
   }
 
-  /**
-   * A sign in the pixel font, facing local +z (or `rotY`). `vertical` stacks the letters
-   * (blade signs). Returns the world width it took, or 0 if the atlas is full.
-   */
   sign(text: string, x: number, y: number, z: number, o: { bg: RGB; fg?: RGB; texel?: number; rotY?: number; vertical?: boolean; maxW?: number }) {
     const clean = text
       .toUpperCase()
@@ -118,10 +100,6 @@ export class Kit {
     return w * texel;
   }
 
-  /**
-   * A person standing on (x, y, z). Sprite mode: a generated pixel figure facing the camera
-   * plus a small ground shadow. Voxel mode: the same look built from boxes (for comparison).
-   */
   person(x: number, z: number, o: { variant: number; pose?: Pose; flip?: boolean; y?: number }) {
     const y = o.y ?? 0;
     const pose = o.pose ?? "stand";

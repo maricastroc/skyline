@@ -1,6 +1,3 @@
-// Surface grammar evaluation tables: npx tsx scripts/surface/analyze.ts > docs/surface/tables.md
-// Per page: performance (parts, generation time), RNG draws, repetition (City / Street) for kit-v4
-// and the current kit; then the anatomy census and the page signals the surface spent.
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { building, type Program } from "../../src/lib/pixelcity/kit/buildings";
@@ -22,7 +19,6 @@ const snap = (id: string) => JSON.parse(readFileSync(`docs/real-pages/snapshots/
 const sha = (s: string) => createHash("sha1").update(s).digest("hex").slice(0, 12);
 const pct = (a: number, b: number) => `${b ? Math.round((100 * a) / b) : 0}%`;
 
-// RNG draws: count every kit.rand (kit.pick goes through it).
 let draws = 0;
 for (const K of [Kit, KitV4] as Array<{ prototype: { rand: (a: number, b?: number) => number } }>) {
   const r = K.prototype.rand;
@@ -32,7 +28,6 @@ for (const K of [Kit, KitV4] as Array<{ prototype: { rand: (a: number, b?: numbe
   };
 }
 
-/** Geometry of one building in its own frame (front = +z of its main volume); colour ignored. */
 function signature(parts: Part[], r: [number, number]) {
   const ps = parts.slice(r[0], r[1]).filter((q) => q.mesh !== "sprite" && q.mesh !== "sign");
   const main = ps.reduce((m, q) => (q.w * q.d * q.h > m.w * m.d * m.h ? q : m), ps[0]);

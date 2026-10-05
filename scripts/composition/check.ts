@@ -1,9 +1,3 @@
-// Acceptance tests of the intra-territory composition pass: npm run test:composition
-//   A. Page Model — the structure descriptor (kit/structure.ts) on synthetic pages and the corpus,
-//      and that it is purely additive (allocation, segments, territories identical to kit-v6).
-//   B. Composition — parcelled consuming it (section added with the composition rule).
-// The current kit runs with `polishAssets: false` (visual polish off): this suite checks its own
-// pass against the kits before it; the polish is checked by `npm run test:polish`.
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { normalize } from "../../src/lib/model/normalize";
@@ -29,7 +23,6 @@ const check = (name: string, ok: boolean, detail = "") => {
 const sha = (s: string) => createHash("sha1").update(s).digest("hex");
 const snap = (id: string) => JSON.parse(readFileSync(`docs/real-pages/snapshots/${id}.json`, "utf8")) as DomSnapshot;
 
-/* ───────────── synthetic pages ───────────── */
 const el = (tag: string, o: Partial<SnapshotNode> = {}, children: SnapshotNode[] = []): SnapshotNode => ({ tag, text: 0, ...o, children });
 const txt = (tag: string, chars: number, sample?: string) => el(tag, { text: chars, sample, own: sample });
 let n = 0;
@@ -44,7 +37,6 @@ const structure = (body: SnapshotNode[]) => {
   const doc = normalize(page(body));
   return structureOf(doc, [0], []);
 };
-/** A headed list per group: <h4>name</h4><ul>…</ul>. */
 const headed = (sizes: number[], level = 4) => sizes.flatMap((k, i) => [txt(`h${level}`, 8, `Group ${i}`), ul(k)]);
 
 console.log("# A. Page Model — the structure descriptor");
@@ -70,7 +62,6 @@ for (const [name, sizes] of [
   check("h2 sections above h4 groups: 5 groups in 2 sections", s.groups.length === 5 && s.sections === 2 && s.groups.map((g) => g.section).join("") === "00111", `${s.groups.length} groups, ${s.sections} sections, sections ${s.groups.map((g) => g.section).join("")}`);
 }
 {
-  // Item titles: each item's heading IS its link (a feed / story list / product cards).
   const items = Array.from({ length: 20 }, () => el("article", {}, [el("h2", {}, [link(40)]), txt("p", 60), link(8)]));
   const s = structure(items);
   check("headings that are item titles (links) do not make groups", s.source === "none" && s.groups.length === 0, s.evidence[0]);
@@ -123,7 +114,6 @@ const pages = new Map(DATASET.map((e) => [e.id, realPage(snap(e.id))] as const))
   check("lobste.rs: 25 titled stories are one list, not 49 groups", forum.structure?.source === "none", forum.structure?.evidence[0] ?? "");
 }
 {
-  // Parcelled territories are the ones the composition will reorganise: only craigslist's have structure.
   const parcelled = [...pages].flatMap(([id, p]) => p.plan.territories.filter((t) => t.mix.some((m) => m.comp === "parcelled")).map((t) => ({ id, t })));
   const structured = parcelled.filter(({ t }) => t.structure!.source !== "none");
   check("among parcelled territories, only the explicitly grouped ones carry structure", structured.every(({ id }) => id === "directory"), structured.map(({ id, t }) => `${id}/${t.kind}`).join(", "));
@@ -146,14 +136,12 @@ console.log("\n## additive only: everything the descriptor could disturb is iden
     const a = allocate(p.plan);
     const b = allocateV6(q.plan);
     if (JSON.stringify({ path: a.path, owner: [...a.owner], segments: a.segments, lots: a.lots }) === JSON.stringify({ path: b.path, owner: [...b.owner], segments: b.segments, lots: b.lots })) alloc++;
-    // Later descriptive fields (Territory.items, program pass) are stripped too.
     const descriptive = withoutStructure(p.plan).territories.map((t) => {
       const c = { ...t };
       delete c.items;
       return c;
     });
     if (JSON.stringify(descriptive) === JSON.stringify(q.plan.territories)) terr++;
-    // Ignoring the field (stripped from the plan) reproduces kit-v6 byte for byte.
     const bare = withoutItems(withoutStructure(p.plan));
     for (const flat of [false, true]) {
       const c = generateKitDistrict(p.fp, { polishAssets: false, profile: bare, time: "day", seed: 7, flat, artDirection: false });
@@ -169,7 +157,6 @@ console.log("\n## additive only: everything the descriptor could disturb is iden
   check("the descriptor and its evidence are in the trace", t.plan!.territories.every((x) => x.structure && x.structure.evidence.length > 0));
 }
 
-/* ───────────── B. Composition ───────────── */
 console.log("\n# B. Composition — parcelled consuming the descriptor");
 const raster = (parts: Part[]) => {
   const m = new Map<number, number>();
@@ -187,7 +174,6 @@ const raster = (parts: Part[]) => {
   }
   return m;
 };
-/** Share of the ground plan (quarter-tile cells) whose built height changes by more than 0.15. */
 const planChange = (a: Map<number, number>, b: Map<number, number>, inside?: (k: number) => boolean) => {
   let n = 0;
   let d = 0;
@@ -241,7 +227,6 @@ console.log("\n## real pages: only territories with structure change");
   for (const e of DATASET) {
     const p = pages.get(e.id)!;
     const q = realPageV6(snap(e.id));
-    // The program pass (simple indexes → institutional) changes uses on purpose: left out here.
     const c = generateKitDistrict(p.fp, { polishAssets: false, profile: withoutItems(p.plan), time: "day", seed: 7, flat: true, artDirection: false });
     const d = v6(q.fp, { profile: q.plan, time: "day", seed: 7, flat: true });
     if (sha(JSON.stringify(c.parts)) === sha(JSON.stringify(d.parts))) identical++;

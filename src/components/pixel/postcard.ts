@@ -1,13 +1,7 @@
-/**
- * “Postcard”: the current frame, upscaled with hard pixels, captioned in the interface's
- * typography (not the city's bitmap font: the world is pixel art, the caption is not).
- */
-
 interface PostcardOptions {
   name: string;
   host: string;
   accent: string;
-  /** CSS font-family stacks, read from the live UI tokens. */
   display: string;
   mono: string;
   displayWeight: string;
@@ -27,7 +21,6 @@ export async function makePostcard(source: HTMLCanvasElement, o: PostcardOptions
   const W = out.width;
   const H = out.height;
   const m = Math.round(H * 0.055);
-  // A low shade for the caption, as in the City View.
   const g = ctx.createRadialGradient(0, H, 0, 0, H, H * 0.9);
   g.addColorStop(0, "rgba(8,8,12,0.62)");
   g.addColorStop(0.5, "rgba(8,8,12,0.25)");

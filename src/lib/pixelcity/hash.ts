@@ -1,4 +1,3 @@
-/** Deterministic 0..1 from integers (decoration only: never decides structure). */
 export function h01(a: number, b = 0): number {
   let h = (a * 374761393 + b * 668265263) | 0;
   h = Math.imul(h ^ (h >>> 13), 1274126177);

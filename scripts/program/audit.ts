@@ -1,7 +1,3 @@
-// Program (surface use) audit: npx tsx scripts/program/audit.ts [kit] > docs/program/audit-<kit>.md
-// kit = "current" (default) or "v7" (the frozen baseline). For every volume the surface grammar
-// built: which page origin (territory kind / source), which composition, which use; per page
-// and in the corpus, by volume count and by land; seed dependence; which uses never occur.
 import { readFileSync } from "node:fs";
 import { generateKitDistrict as current, newTrace as newTraceCurrent } from "../../src/lib/pixelcity/kit/district";
 import { realPage as realPageCurrent } from "../../src/lib/pixelcity/kit/real-page";
@@ -10,7 +6,6 @@ import { realPage as realPageV7 } from "../../src/lib/pixelcity/kit-v7/real-page
 import { DATASET } from "../real-pages/dataset";
 
 const KIT = process.argv[2] === "v7" ? "v7" : "current";
-// The current trace is a superset of kit-v7's (it adds the building's program and reason).
 const gen = (KIT === "v7" ? v7 : current) as unknown as typeof v7;
 const rp = KIT === "v7" ? realPageV7 : realPageCurrent;
 const nt = (KIT === "v7" ? newTraceV7 : newTraceCurrent) as unknown as typeof newTraceV7;
@@ -28,7 +23,6 @@ for (const e of DATASET) {
     return t;
   });
   const t = runs[0];
-  // Land of each building: its piece's lots shared among the piece's buildings.
   const lotsOf = new Map<number, number>();
   t.pieces.forEach((pc, k) => {
     const n = t.buildings.filter((b) => b.parts[0] >= pc.parts[0] && b.parts[1] <= pc.parts[1]).length;

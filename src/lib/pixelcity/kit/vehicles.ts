@@ -1,8 +1,3 @@
-/**
- * Detail kit — vehicles. Built from parts like everything else (so they light, shadow and
- * outline with the city), at the miniature's chunky scale. Local frame: forward = +x, the
- * road surface at y = 0.
- */
 import { mix } from "../../city/palette";
 import type { RGB } from "../../city/types";
 import { Surf } from "../types";
@@ -16,7 +11,6 @@ const white: RGB = [0.97, 0.96, 0.92];
 function wheels(kit: Kit, xs: number[], w: number, r = 0.085) {
   for (const x of xs)
     for (const s of [-1, 1]) {
-      // A cylinder lying on its side: rotX turns its axis across the car.
       const z = s > 0 ? w / 2 - 0.05 : -w / 2 - 0.02;
       kit.cyl(x, r, z, r * 2, 0.07, r * 2, tyre, { rotX: Math.PI / 2 });
     }
@@ -70,7 +64,6 @@ export function vehicle(kit: Kit, x: number, z: number, rot: number, type: Vehic
         lights(kit, L, w, 0.2);
         return;
       }
-      // Cars: chassis, cabin with glass, roof, wheels, lights.
       const L = type === "hatch" ? 0.78 : 0.95;
       const w = 0.46;
       kit.box(0, 0.1, 0, L, 0.15, w, color);

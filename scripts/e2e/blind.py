@@ -1,5 +1,3 @@
-"""Blind sheets: python3 scripts/e2e/blind.py — writes docs/screenshots/e2e/sheets/blind-<view>.jpg with
-tiles in a shuffled order labelled only by a letter, and docs/e2e/blind-key.json (open it only after judging)."""
 import json, random, os
 from PIL import Image, ImageDraw, ImageFont
 PAGES = "reference,docs,app,saas,shop,news,portfolio,forum,institution,oldweb,media,directory,reference-2,saas-2".split(",")

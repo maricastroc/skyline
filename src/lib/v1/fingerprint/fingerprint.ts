@@ -1,60 +1,29 @@
 import type { NormalizedDocument } from "../../model/types";
 import { hexToRgb, rgbToOklch, type Lch } from "../../city/palette";
 
-/**
- * SiteFingerprint — what makes a page *this* page, as a handful of normalized numbers.
- *
- * Every field is 0..1 (or a small categorical) and is computed from data we actually
- * captured: the normalized DOM (structure + content metrics) and the style signals read
- * from CSS. The city grammar consumes only this — never the raw DOM — so two pages produce
- * different cities exactly to the extent that their fingerprints differ.
- */
 export interface SiteFingerprint {
-  /* structure */
-  /** log-scaled element count: 0 ≈ 30 elements, 1 ≈ 6000+. */
   size: number;
-  /** max DOM depth: 0 ≈ 6, 1 ≈ 30+. */
   depth: number;
-  /** mean children per container: narrow chains (0) vs wide fans (1). */
   breadth: number;
-  /** share of nodes that belong to repeated sibling runs (lists, feeds, tables). */
   regularity: number;
-  /** count of section/article-like blocks, log-scaled. */
   sections: number;
 
-  /* content */
-  /** characters per element: 0 = chrome, 1 = wall of text. */
   textDensity: number;
-  /** images relative to text blocks. */
   imagery: number;
-  /** links per element. */
   linkDensity: number;
-  /** headings per 100 elements. */
   headings: number;
-  /** buttons + controls + CTA-like links. */
   interactivity: number;
-  /** presence of forms (0/0.5/1). */
   forms: number;
 
-  /* style */
-  /** border radius: 0 sharp, 1 pill/rounded everything. */
   roundness: number;
-  /** whitespace: padding/margin/gap magnitudes. */
   airiness: number;
-  /** shadows + gradients + animation. */
   ornament: number;
-  /** 0 light page, 1 dark page. */
   darkness: number;
-  /** presentational/legacy HTML (tables for layout, bgcolor, <font>). */
   legacy: number;
-  /** typography votes, normalized to sum 1. */
   type: { serif: number; sans: number; mono: number };
-  /** palette vividness: how saturated and varied the site's colors are. */
   colorfulness: number;
 
-  /** Site colors as OKLCH, most significant first (chromatic only). */
   hues: Lch[];
-  /** Page background as OKLCH, if known. */
   background?: Lch;
   seed: number;
 }
@@ -90,7 +59,6 @@ export function computeFingerprint(doc: NormalizedDocument): SiteFingerprint {
     if (n.role === "link" && /\b(btn|button|cta|primary|signup|get-started)\b/i.test(n.selector)) ctaLinks++;
   }
 
-  // Repeated sibling runs (same tag + class) beyond clusters.
   let repeated = 0;
   for (const n of nodes) {
     if (n.children.length < 4) continue;
@@ -140,8 +108,6 @@ export function computeFingerprint(doc: NormalizedDocument): SiteFingerprint {
     imagery: clamp01(doc.stats.images / (textBlocks + doc.stats.images) / 0.5),
     linkDensity: clamp01(doc.stats.links / elements / 0.35),
     headings: clamp01((doc.stats.headings / elements) * 100 / 8),
-    // CTA density, not raw count: a big encyclopedia's 20 toolbar buttons are chrome, a landing
-    // page's 12 "Get started" buttons are the point.
     interactivity: clamp01((((buttons + ctaLinks * 2 + root.controls) / elements) * 100) / 4),
     forms: doc.stats.forms === 0 ? 0 : doc.stats.forms < 3 ? 0.5 : 1,
     roundness: style ? clamp01(style.radius.median / 14 * 0.7 + Math.min(style.radius.pill, 20) / 20 * 0.3) : 0.2,

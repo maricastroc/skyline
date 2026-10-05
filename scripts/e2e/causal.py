@@ -1,6 +1,3 @@
-"""Pixels vs layers: python3 scripts/e2e/causal.py > docs/e2e/causal.txt
-Rank agreement (Spearman over page pairs) between final-pixel distances and each layer; noise
-floors per view (seed / style, excluding pages already in the forced style); pairs within noise."""
 import json, statistics as st
 m = json.load(open("docs/e2e/metrics.json")); v = json.load(open("docs/e2e/visual.json"))
 ids = m["ids"]; B = m["breakdown"]

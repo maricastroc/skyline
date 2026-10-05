@@ -4,19 +4,6 @@ import { Facade, type Arc, type BillboardImage, type Bounds, type CityModel, typ
 
 export const MAX_BILLBOARD_IMAGES = 48;
 
-/* ─────────────────────────────────────────────────────────────────────────────
- * DOM → city
- *
- * 1. Required area, bottom-up: leaves by role and content; containers add streets and
- *    sidewalks around their children.
- * 2. Ordered balanced bisection, top-down (evolved from the prototype): children are split
- *    into two halves of similar weight, without reordering, on whichever axis gives better
- *    proportions. Reading order is left→right, front(+z)→back(−z).
- * 3. Elevation: each container is a plinth on top of its parent's plinth; wrappers that were
- *    collapsed make the plinth taller (deep nesting reads as a pedestal).
- * 4. Leaves become structures according to their role.
- * ──────────────────────────────────────────────────────────────────────────── */
-
 interface Rect {
   x: number;
   z: number;
@@ -74,7 +61,6 @@ export function generateCity(doc: NormalizedDocument): CityModel {
   const palette = buildPalette(doc.colors, doc.document.themeColor);
   const seed = Math.floor(hash(N, doc.source.finalUrl.length) * 1e6);
 
-  // Which images get real textures: the most prominent ones, in priority order.
   const imageNodes = nodes
     .filter((n) => n.image && (n.image.proxy || n.image.src))
     .sort((a, b) => b.image!.priority - a.image!.priority)
@@ -85,7 +71,6 @@ export function generateCity(doc: NormalizedDocument): CityModel {
     return { node: n.id, slot, src: n.image!.proxy ?? n.image!.src };
   });
 
-  /* 1 ─ required area */
   const req = new Float64Array(N);
   for (let i = N - 1; i >= 0; i--) {
     const n = nodes[i];
@@ -117,11 +102,7 @@ export function generateCity(doc: NormalizedDocument): CityModel {
 
   const structures: Structure[] = [];
   const anchor: Array<[number, number, number]> = new Array(N);
-  const top = new Float64Array(N); // y of each node's plinth top (containers) or base (leaves)
-  // Districts: descend the "heavy chain" (a child holding most of its parent's weight) so a
-  // page-wide wrapper (Wikipedia's page container, an SPA root) doesn't swallow the whole
-  // city into one district. Siblings met on the way and the children of the first real
-  // branching point become districts, in document order.
+  const top = new Float64Array(N);
   const districtRoots: number[] = [];
   {
     let cur = 0;
@@ -134,8 +115,6 @@ export function generateCity(doc: NormalizedDocument): CityModel {
     }
     districtRoots.sort((a, b) => a - b);
   }
-  // Districts of the same kind (30 × tr.athing) share a card stock: repetition reads as an
-  // urban pattern instead of a patchwork.
   const district = new Int32Array(N).fill(-1);
   const stockOfKind = new Map<string, number>();
   for (const d of districtRoots) {
@@ -166,7 +145,6 @@ export function generateCity(doc: NormalizedDocument): CityModel {
     structures.push({ glow: 0, slot: -1, facade: Facade.NONE, ...s });
   };
 
-  /* 4 ─ leaves (and synthetic "own content") */
   const placeLeaf = (i: number, kind: ItemKind, r: Rect, baseY: number) => {
     const n = nodes[i];
     const cx = r.x + r.w / 2;
@@ -191,7 +169,7 @@ export function generateCity(doc: NormalizedDocument): CityModel {
 
     if (isImage) {
       const big = (slotOf.get(i) ?? 99) < 3;
-      const along = fw >= fd; // panel spans the longer side of the lot
+      const along = fw >= fd;
       const width = Math.min(big ? 26 : 16, Math.max(2.6, (along ? fw : fd) * 0.95));
       const height = width / 1.6;
       const lift = 1.4 + width * 0.16 + Math.min(level, 10) * 0.12;
@@ -203,7 +181,6 @@ export function generateCity(doc: NormalizedDocument): CityModel {
         push({ mesh: "solid", node: i, x: cx + sgn * poleOff * ax, y: baseY, z: cz + sgn * poleOff * az, w: 0.28, h: lift + height * 0.5, d: 0.28, rotY: 0, color: palette.structure, delay });
       }
       push({ mesh: "solid", node: i, x: cx, y: baseY + lift - 0.18, z: cz, w: width + 0.36, h: height + 0.36, d: 0.3, rotY, color: palette.structure, delay: delay + 0.05 });
-      // The image faces both ways, just proud of the frame, so it reads from any street.
       const off = 0.17;
       for (const side of [0, Math.PI]) {
         const r = rotY + side;
@@ -222,7 +199,6 @@ export function generateCity(doc: NormalizedDocument): CityModel {
         const h = lvl === 1 ? h1 : lvl === 2 ? 12 + span * 0.045 : lvl === 3 ? 7.5 + span * 0.018 : 5 + Math.log2(1 + n.ownChars / 20);
         const color = lvl === 1 ? palette.accent : lvl === 2 ? mix(palette.accent, palette.building, 0.35) : mix(palette.accent, palette.building, 0.7);
         if (lvl === 1) {
-          // Landmark: a podium, a shaft and a spire.
           push({ mesh: "solid", node: i, x: cx, y: baseY, z: cz, w: side * 1.25, h: 1.6, d: side * 1.25, rotY: 0, color: buildingColor(i), delay, facade: Facade.GRID });
           push({ mesh: "solid", node: i, x: cx, y: baseY + 1.6, z: cz, w: side, h: h * 0.62, d: side, rotY: 0, color, delay: delay + 0.1, facade: Facade.TOWER, glow: 0.4 });
           push({ mesh: "spire", node: i, x: cx, y: baseY + 1.6 + h * 0.62, z: cz, w: side * 0.92, h: h * 0.38, d: side * 0.92, rotY: Math.PI / 4, color, delay: delay + 0.25 });
@@ -253,18 +229,15 @@ export function generateCity(doc: NormalizedDocument): CityModel {
         return;
       }
       case "link": {
-        if (n.ownChars > 40) break; // long link text: a regular block
+        if (n.ownChars > 40) break;
         const laneColor = n.link?.kind === "external" ? palette.accent2 : palette.glow;
         if (linkSiblings[i] > 2) {
-          // Link-dense lists (menus, TOCs, reference lists) become streets: paving with a
-          // lit lane marking. A few links stay lamps; hundreds would be noise.
           const along = fw >= fd;
           push({ mesh: "solid", node: i, x: cx, y: baseY, z: cz, w: fw, h: 0.16, d: fd, rotY: 0, color: palette.paving, delay, facade: Facade.NONE });
           push({ mesh: "glow", node: i, x: cx, y: baseY + 0.16, z: cz, w: along ? fw * 0.86 : 0.14, h: 0.04, d: along ? 0.14 : fd * 0.86, rotY: 0, color: laneColor, glow: 0.8, delay: delay + 0.1 });
           anchor[i] ??= [cx, baseY + 0.2, cz];
           return;
         }
-        // Lamp post: links are the city's lights.
         const h = 1.9 + hash(i, 11) * 0.6;
         push({ mesh: "solid", node: i, x: cx, y: baseY, z: cz, w: 0.16, h, d: 0.16, rotY: 0, color: palette.structure, delay });
         push({ mesh: "glow", node: i, x: cx, y: baseY + h, z: cz, w: 0.42, h: 0.3, d: 0.42, rotY: 0, color: laneColor, glow: 1.1, delay: delay + 0.1 });
@@ -300,7 +273,6 @@ export function generateCity(doc: NormalizedDocument): CityModel {
       }
     }
 
-    // Text-like blocks: paragraphs, list items, cells, pruned containers.
     const chars = n.ownChars;
     const isItem = role === "item";
     let h = (1.1 + 2.5 * Math.log2(1 + chars / 50)) * (isItem ? 0.8 : 1);
@@ -310,7 +282,6 @@ export function generateCity(doc: NormalizedDocument): CityModel {
     const color = own ? mix(buildingColor(i), own, 0.7) : n.role === "form" ? palette.accent2 : buildingColor(i);
     push({ mesh: "solid", node: i, x: cx, y: baseY, z: cz, w: fw, h, d: fd, rotY: 0, color, delay, facade: chars > 0 ? Facade.TEXT : Facade.GRID, glow: chars > 400 ? 0.35 : 0.15 });
     if (n.links > 2 && n.role !== "link") {
-      // Link-dense text gets a little roof light per few links.
       const lights = Math.min(4, Math.floor(n.links / 3));
       for (let k = 0; k < lights; k++) {
         const t = (k + 0.5) / lights;
@@ -321,14 +292,12 @@ export function generateCity(doc: NormalizedDocument): CityModel {
     anchor[i] ??= [cx, baseY + h, cz];
   };
 
-  /* 2+3 ─ containers */
   const layoutContainer = (i: number, cell: Rect, parentTop: number) => {
     const n = nodes[i];
     const level = n.level;
     let baseY = parentTop;
     let r = cell;
 
-    // Elevated structures: the header is the gate; sticky floats on columns; fixed hovers.
     let lift = 0;
     let columns = false;
     if (n.flags & NodeFlag.FIXED) lift = 9;
@@ -341,7 +310,6 @@ export function generateCity(doc: NormalizedDocument): CityModel {
     }
     if (level === 0) lift = 0;
     if (n.role === "header" && level === 1 && !(n.flags & NodeFlag.FIXED)) {
-      // The gate spans the main avenue, not the whole city.
       r = { x: r.x + r.w * 0.14, z: r.z, w: r.w * 0.72, d: r.d };
     }
     const cx = r.x + r.w / 2;
@@ -366,7 +334,6 @@ export function generateCity(doc: NormalizedDocument): CityModel {
 
     let thick: number;
     if (level === 0) {
-      // The model's base board, then the terrain.
       push({ mesh: "solid", node: i, x: cx, y: -0.9, z: cz, w: r.w + 26, h: 0.9, d: r.d + 26, rotY: 0, color: mix(palette.structure, palette.base, 0.55), delay: 0 });
       push({ mesh: "solid", node: i, x: cx, y: 0, z: cz, w: r.w + 8, h: 1.2, d: r.d + 8, rotY: 0, color: palette.base, delay: 0, facade: Facade.PLINTH });
       thick = 1.2;
@@ -401,7 +368,6 @@ export function generateCity(doc: NormalizedDocument): CityModel {
 
   layoutContainer(0, { x: -W / 2, z: -D / 2, w: W, d: D }, 0);
 
-  /* bounds: structures → nodes → ancestors */
   const bounds: Bounds[] = Array.from({ length: N }, () => ({ min: [Infinity, Infinity, Infinity], max: [-Infinity, -Infinity, -Infinity] }));
   let maxHeight = 0;
   for (const s of structures) {
@@ -427,7 +393,6 @@ export function generateCity(doc: NormalizedDocument): CityModel {
   }
   for (let i = 0; i < N; i++) anchor[i] ??= [(bounds[i].min[0] + bounds[i].max[0]) / 2, bounds[i].max[1], (bounds[i].min[2] + bounds[i].max[2]) / 2];
 
-  /* in-page anchors become arcs */
   const arcs: Arc[] = [];
   for (const n of nodes) {
     if (arcs.length >= 24) break;
@@ -456,14 +421,12 @@ export function generateCity(doc: NormalizedDocument): CityModel {
     maxHeight,
     buildDuration,
     entrance: {
-      // Above the gate, looking down the main avenue: the gate sits in the lower third.
       position: [0, Math.min(16 + span * 0.2, 95), front + 12 + span * 0.26],
       target: [0, 0, front - D * 0.42],
     },
   };
 }
 
-/** Ordered balanced bisection. `bands` forces front-to-back splits (used for the root). */
 function partition(items: Item[], r: Rect, gap: number, bands: boolean, out: (item: Item, r: Rect) => void): void {
   if (!items.length) return;
   if (items.length === 1) {
@@ -497,7 +460,6 @@ function partition(items: Item[], r: Rect, gap: number, bands: boolean, out: (it
   const splitZ = (): [Rect, Rect] => {
     const g = Math.min(gap, r.d * 0.2);
     const dl = (r.d - g) * f;
-    // First half goes to the FRONT (+z): the page reads from the entrance inwards.
     return [
       { x: r.x, z: r.z + r.d - dl, w: r.w, d: dl },
       { x: r.x, z: r.z, w: r.w, d: r.d - dl - g },

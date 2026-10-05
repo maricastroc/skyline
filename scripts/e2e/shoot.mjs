@@ -1,6 +1,3 @@
-// End-to-end differentiation captures (1440×900 @2x): node scripts/e2e/shoot.mjs [variant …]
-// Variants: normal (city, street, close, flat) · seed8 · classic · modern · v5 (street, close) · v4
-// Writes docs/screenshots/e2e/<variant>/<page>-<view>.png. Env: BASE, CHROME_PATH, PAGES (comma list).
 import { existsSync, mkdirSync } from "node:fs";
 import puppeteer from "puppeteer-core";
 
