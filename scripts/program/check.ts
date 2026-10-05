@@ -6,6 +6,8 @@
 //    ("simple-index evidence"); parcelled commerce is a declared fallback; nothing else changes.
 // 3. Narrow lots: an attached institutional series whose units are narrower than the ceremonial
 //    entrance needs has ONE marked entrance (and sign); kit-v8 otherwise, volumes untouched.
+// The current kit runs with `polishAssets: false` (visual polish off): this suite checks its own
+// pass against the kits before it; the polish is checked by `npm run test:polish`.
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { normalize } from "../../src/lib/model/normalize";
@@ -112,7 +114,7 @@ console.log("\n# additive only: everything kit-v7 decides is identical");
     const y = allocateV7(q.plan);
     if (JSON.stringify({ path: x.path, owner: [...x.owner], segments: x.segments, lots: x.lots }) === JSON.stringify({ path: y.path, owner: [...y.owner], segments: y.segments, lots: y.lots })) alloc++;
     for (const flat of [false, true]) {
-      const c = generateKitDistrict(p.fp, { profile: withoutItems(p.plan), time: "day", seed: 7, flat, artDirection: false });
+      const c = generateKitDistrict(p.fp, { polishAssets: false, profile: withoutItems(p.plan), time: "day", seed: 7, flat, artDirection: false });
       const d = v7(q.fp, { profile: q.plan, time: "day", seed: 7, flat });
       if (sha(JSON.stringify([c.parts, c.signs])) === sha(JSON.stringify([d.parts, d.signs]))) cities++;
     }
@@ -121,7 +123,7 @@ console.log("\n# additive only: everything kit-v7 decides is identical");
   check("allocation, segments and lots identical to kit-v7", alloc === DATASET.length, `${alloc}/${DATASET.length}`);
   check("without items, the city (normal and flat) is byte-identical to kit-v7 — the program rule is the only reader", cities === DATASET.length * 2, `${cities}/${DATASET.length * 2}`);
   const t = newTrace();
-  generateKitDistrict(pages.get("forum")!.fp, { profile: pages.get("forum")!.plan, time: "day", seed: 7, trace: t });
+  generateKitDistrict(pages.get("forum")!.fp, { polishAssets: false, profile: pages.get("forum")!.plan, time: "day", seed: 7, trace: t });
   check("items and their evidence are in the trace", t.plan!.territories.every((x) => x.items && x.items.evidence.length > 0));
   const again = realPage(snap("forum"));
   check("deterministic", JSON.stringify(again.plan.territories.map((x) => x.items)) === JSON.stringify(pages.get("forum")!.plan.territories.map((x) => x.items)));
@@ -143,7 +145,7 @@ console.log("\n# experiment: simple index → institutional");
   const uses = (id: string) => {
     const p = pages.get(id)!;
     const t = newTrace();
-    generateKitDistrict(p.fp, { profile: p.plan, time: "day", seed: 7, trace: t });
+    generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time: "day", seed: 7, trace: t });
     return { p, t };
   };
   const reasonOf = (id: string, kind: string) => {
@@ -170,7 +172,7 @@ console.log("\n# experiment: simple index → institutional");
     for (const seed of [7, 8, 9]) {
       const ta = newTrace();
       const tb = newTraceV7();
-      generateKitDistrict(p.fp, { profile: p.plan, time: "day", seed, trace: ta });
+      generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time: "day", seed, trace: ta });
       v7(q.fp, { profile: q.plan, time: "day", seed, trace: tb });
       const ch: number[] = [];
       ta.buildings.forEach((b, i) => {
@@ -217,7 +219,7 @@ console.log("\n# narrow lots: one marked entrance per narrow institutional serie
       for (const flat of seed === 7 ? [false, true] : [false]) {
         const ta = newTrace();
         const tb = newTraceV8();
-        const a = generateKitDistrict(p.fp, { profile: p.plan, time: "day", seed, flat, trace: ta, artDirection: false });
+        const a = generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time: "day", seed, flat, trace: ta, artDirection: false });
         const b = v8(q.fp, { profile: q.plan, time: "day", seed, flat, trace: tb });
         if (flat) {
           // Flat drops signs, sprites and glows after generation: compare the volumes of the whole city.

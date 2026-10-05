@@ -1,6 +1,8 @@
 // Art Direction v1 — freeze check: npm run test:art-direction
-// 1. The current kit is byte-identical to its frozen baseline (kit-v12) for every corpus page
-//    (day, golden, night, flat): the whole city object, environment included.
+// 1. The current kit, with the visual polish of its assets off (`polishAssets: false`), is
+//    byte-identical to its frozen baseline (kit-v12) for every corpus page (day, golden, night,
+//    flat): the whole city object, environment included. With the polish on, the decisions are
+//    checked against kit-v12 by `npm run test:polish`.
 // 2. kit-v12 itself reproduces the hashes recorded at the freeze (kit-v12.sha1.json).
 // 3. The frozen chain still holds inside kit-v12: atmosphere off → kit-v11, street life off →
 //    kit-v10, art direction off → kit-v9 (foundation v1).
@@ -43,7 +45,7 @@ for (const e of DATASET) {
   for (const [time, flat] of MODES) {
     const key = `${e.id}/${time}${flat ? "/flat" : ""}`;
     const b = g12(q.fp, { profile: q.plan, time, seed: 7, flat });
-    if (sha(generateKitDistrict(p.fp, { profile: p.plan, time, seed: 7, flat })) === sha(b)) same++;
+    if (sha(generateKitDistrict(p.fp, { profile: p.plan, time, seed: 7, flat, polishAssets: false })) === sha(b)) same++;
     else moved.push(key);
     if (recorded[key] === sha(b)) reproduced++;
     const o = { profile: q.plan, time, seed: 7, flat } as const;
@@ -56,7 +58,7 @@ for (const e of DATASET) {
   }
 }
 const n = DATASET.length * MODES.length;
-check("current kit byte-identical to Art Direction v1 (kit-v12) (day, golden, night, flat)", same === n, `${same}/${n}${moved.length ? `; moved: ${moved.join(", ")}` : ""}`);
+check("current kit (polish assets off) byte-identical to Art Direction v1 (kit-v12) (day, golden, night, flat)", same === n, `${same}/${n}${moved.length ? `; moved: ${moved.join(", ")}` : ""}`);
 check("kit-v12 reproduces the city hashes recorded at the freeze", reproduced === n, `${reproduced}/${n}`);
 check("inside kit-v12: atmosphere off → kit-v11, street life off → kit-v10, art direction off → kit-v9", chain === n, `${chain}/${n}`);
 

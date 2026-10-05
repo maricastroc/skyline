@@ -8,6 +8,8 @@
 //    direction layer switched off (`artDirection: false`) the whole city is kit-v9's, byte for byte.
 // 3. kit-v9 itself still reproduces the city hashes recorded at the freeze (kit-v9.sha1.json).
 // 4. Every older frozen kit still builds the corpus.
+// The current kit runs with `polishAssets: false` (visual polish off): this suite checks its own
+// pass against the kits before it; the polish is checked by `npm run test:polish`.
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { generateKitDistrict, newTrace, type KitTrace } from "../../src/lib/pixelcity/kit/district";
@@ -70,17 +72,17 @@ for (const e of DATASET) {
   for (const [time, flat] of [["day", false], ["night", false], ["day", true]] as const) {
     const ta = newTrace();
     const tb = newTrace9();
-    const a = generateKitDistrict(p.fp, { profile: p.plan, time, seed: 7, flat, trace: ta });
+    const a = generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time, seed: 7, flat, trace: ta });
     const b = g9(q.fp, { profile: q.plan, time, seed: 7, flat, trace: tb });
     // For the flat view, the same city unfiltered tells which parts the filter removed.
-    const fullA = flat ? generateKitDistrict(p.fp, { profile: p.plan, time, seed: 7 }).parts : null;
+    const fullA = flat ? generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time, seed: 7 }).parts : null;
     const fullB = flat ? g9(q.fp, { profile: q.plan, time, seed: 7 }).parts : null;
     const blocksA = sha(JSON.stringify(blocksOf(a.parts, ta.range, fullA)));
     const blocksB = sha(JSON.stringify(blocksOf(b.parts, tb.range, fullB)));
     if (blocksA === blocksB && decided(ta) === decided(tb)) same++;
     else moved.push(`${e.id}/${time}${flat ? "/flat" : ""}`);
     if (recorded[`${e.id}/${time}${flat ? "/flat" : ""}`] === sha(JSON.stringify([b.parts, b.signs]))) reproduced++;
-    const off = generateKitDistrict(p.fp, { profile: p.plan, time, seed: 7, flat, artDirection: false });
+    const off = generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time, seed: 7, flat, artDirection: false });
     if (sha(JSON.stringify([off.parts, off.signs])) === sha(JSON.stringify([b.parts, b.signs]))) ablated++;
   }
 }

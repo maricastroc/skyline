@@ -2,6 +2,8 @@
 // The environment is read from the page and the foundation only (never the seed, the time or the
 // site); it changes sky, haze and light and nothing else; it stays inside legible bands at every
 // time of day; the ablations peel the art direction back layer by layer to the frozen kits.
+// The current kit runs with `polishAssets: false` (visual polish off): this suite checks its own
+// pass against the kits before it; the polish is checked by `npm run test:polish`.
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { rgbToOklch } from "../../src/lib/city/palette";
@@ -39,7 +41,7 @@ for (const e of DATASET) {
   const q10 = r10(s);
   const q9 = r9(s);
   for (const [time, flat] of MODES) {
-    const o = { profile: p.plan, time, seed: 7, flat } as const;
+    const o = { profile: p.plan, time, seed: 7, flat, polishAssets: false } as const;
     const b11 = g11(q11.fp, { profile: q11.plan, time, seed: 7, flat });
     if (sha(generateKitDistrict(p.fp, { ...o, atmosphere: false })) === sha(b11)) off4++;
     if (sha(generateKitDistrict(p.fp, { ...o, streetLife: false })) === sha(g10(q10.fp, { profile: q10.plan, time, seed: 7, flat }))) off3++;
@@ -52,7 +54,7 @@ for (const e of DATASET) {
   }
   // 3. C1's roles and C3's street life are kit-v11's.
   const t: KitTrace = newTrace();
-  generateKitDistrict(p.fp, { profile: p.plan, time: "day", seed: 7, trace: t });
+  generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time: "day", seed: 7, trace: t });
   const t11 = newTrace11();
   g11(q11.fp, { profile: q11.plan, time: "day", seed: 7, trace: t11 });
   if (sha([t.streets, t.life]) === sha([t11.streets, t11.life])) upstream++;
@@ -69,7 +71,7 @@ check("C1 street roles and C3 street life unchanged (kit-v11)", upstream === DAT
 const env = (id: string, seed: number, time: "day" | "night" | "golden") => {
   const p = realPage(snap(id));
   const t: KitTrace = newTrace();
-  const c = generateKitDistrict(p.fp, { profile: p.plan, time, seed, trace: t });
+  const c = generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time, seed, trace: t });
   return { env: JSON.stringify(t.environment), haze: JSON.stringify(c.atmosphere), c };
 };
 let seedFree = 0;
@@ -91,8 +93,8 @@ for (const e of DATASET)
   for (const time of ["day", "golden", "night"] as const) {
     total++;
     const p = realPage(snap(e.id));
-    const a = generateKitDistrict(p.fp, { profile: p.plan, time, seed: 7 });
-    const b = generateKitDistrict(p.fp, { profile: p.plan, time, seed: 7, atmosphere: false });
+    const a = generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time, seed: 7 });
+    const b = generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time, seed: 7, atmosphere: false });
     const top = rgbToOklch(a.palette.sky.top);
     const bot = rgbToOklch(a.palette.sky.bottom);
     const B = BANDS[time];
@@ -116,7 +118,7 @@ check("no hostname, URL or site name in the atmosphere code", !site.test(src), s
 const vec = (id: string) => {
   const p = realPage(snap(id));
   const t: KitTrace = newTrace();
-  generateKitDistrict(p.fp, { profile: p.plan, time: "day", seed: 7, trace: t });
+  generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time: "day", seed: 7, trace: t });
   const e = t.environment!;
   const r = (e.tint.h * Math.PI) / 180;
   return [e.air, e.tint.strength * Math.cos(r), e.tint.strength * Math.sin(r), e.vivid, e.hardness];
@@ -139,7 +141,7 @@ for (const e of DATASET) {
   for (const pt of PERTURBATIONS) {
     const p = realPage(snap(e.id), pt);
     const t: KitTrace = newTrace();
-    generateKitDistrict(p.fp, { profile: p.plan, time: "day", seed: 7, trace: t });
+    generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time: "day", seed: 7, trace: t });
     const x = t.environment!;
     const r = (x.tint.h * Math.PI) / 180;
     change += dist(base, [x.air, x.tint.strength * Math.cos(r), x.tint.strength * Math.sin(r), x.vivid, x.hardness]);

@@ -2,6 +2,8 @@
 // Street life is read from the foundation and C1 (frontage, street roles, two page measures), never
 // from the seed or the site; it leaves C1 and the blocks untouched; the stamp is gone; related pages
 // keep related street life; small page edits move it little.
+// The current kit runs with `polishAssets: false` (visual polish off): this suite checks its own
+// pass against the kits before it; the polish is checked by `npm run test:polish`.
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { generateKitDistrict, LINES, newTrace, type KitTrace } from "../../src/lib/pixelcity/kit/district";
@@ -22,7 +24,7 @@ const snap = (id: string) => JSON.parse(readFileSync(`docs/real-pages/snapshots/
 const build = (id: string, seed = 7) => {
   const p = realPage(snap(id));
   const t: KitTrace = newTrace();
-  const c = generateKitDistrict(p.fp, { profile: p.plan, time: "day", seed, trace: t });
+  const c = generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time: "day", seed, trace: t });
   return { p, t, c };
 };
 const intensities = (t: KitTrace) => JSON.stringify([t.life!.sides.map((s) => [s.footfall, s.canopy, s.busStop]), t.life!.segments.map((s) => s.traffic)]);
@@ -36,7 +38,7 @@ let blocksSame = 0;
 for (const r of runs) {
   const q = r10(snap(r.id));
   for (const [time, flat] of [["day", false], ["night", false], ["day", true]] as const) {
-    const a = generateKitDistrict(r.p.fp, { profile: r.p.plan, time, seed: 7, flat, streetLife: false });
+    const a = generateKitDistrict(r.p.fp, { polishAssets: false, profile: r.p.plan, time, seed: 7, flat, streetLife: false });
     const b = g10(q.fp, { profile: q.plan, time, seed: 7, flat });
     if (sha(JSON.stringify([a.parts, a.signs])) === sha(JSON.stringify([b.parts, b.signs]))) ablated++;
   }
@@ -129,7 +131,7 @@ for (const r of runs)
   for (const pt of PERTURBATIONS) {
     const p = realPage(snap(r.id), pt);
     const t: KitTrace = newTrace();
-    generateKitDistrict(p.fp, { profile: p.plan, time: "day", seed: 7, trace: t });
+    generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time: "day", seed: 7, trace: t });
     t.life!.sides.forEach((s, k) => {
       change += Math.abs(s.footfall - r.t.life!.sides[k].footfall) + Math.abs(s.canopy - r.t.life!.sides[k].canopy);
       n += 2;

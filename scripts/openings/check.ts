@@ -1,5 +1,7 @@
 // Acceptance tests of the openings depth pass: npm run test:openings
 // The opening model (kit/openings.ts, mirrored by the shader), the Surface Lab, real snapshots.
+// The current kit runs with `polishAssets: false` (visual polish off): this suite checks its own
+// pass against the kits before it; the polish is checked by `npm run test:polish`.
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { deriveGrammar, type ArchStyle } from "../../src/lib/pixelcity/grammar";
@@ -180,7 +182,7 @@ for (const e of DATASET) {
     for (const q of a.parts) maxV5 = Math.max(maxV5, q.variant ?? 0);
     // Without the intra-territory and item descriptors (later passes that change structured
     // parcelled land and the use of simple indexes).
-    const b = generateKitDistrict(p6.fp, { profile: withoutItems(withoutStructure(p6.plan)), time: mode === "night" ? "night" : "day", seed: 7, flat: mode === "flat", artDirection: false });
+    const b = generateKitDistrict(p6.fp, { polishAssets: false, profile: withoutItems(withoutStructure(p6.plan)), time: mode === "night" ? "night" : "day", seed: 7, flat: mode === "flat", artDirection: false });
     if (mode === "flat") {
       if (sha(JSON.stringify([b.parts, b.signs])) === before.get(`flat/${e.id}`)) flatSame++;
       continue;
@@ -214,8 +216,8 @@ check("most windowed parts get a treatment", treated > windowed * 0.6, `${treate
   const a = realPage(snap("reference"));
   const t1 = newTrace();
   const t2 = newTrace();
-  const c1 = generateKitDistrict(a.fp, { profile: a.plan, time: "day", seed: 7, trace: t1 });
-  const c2 = generateKitDistrict(a.fp, { profile: a.plan, time: "day", seed: 7, trace: t2 });
+  const c1 = generateKitDistrict(a.fp, { polishAssets: false, profile: a.plan, time: "day", seed: 7, trace: t1 });
+  const c2 = generateKitDistrict(a.fp, { polishAssets: false, profile: a.plan, time: "day", seed: 7, trace: t2 });
   const op = (t: typeof t1) => JSON.stringify(t.buildings.map((b) => b.anatomy.map((A) => A.opening)));
   check("same page + seed → same openings and same city", op(t1) === op(t2) && sha(JSON.stringify(c1.parts)) === sha(JSON.stringify(c2.parts)));
 }
