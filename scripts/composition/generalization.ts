@@ -15,6 +15,6 @@ for (const e of DATASET) {
     const f = t.frontage.find((x) => x.territory === ti);
     const s = T.structure!;
     const verdict = f ? "changed — explicit groups" : s.source === "none" ? "unchanged — one sequence / no evidence" : "unchanged — structure but frontage too short";
-    console.log(`| ${e.id} | ${T.kind} «${(T.label ?? "").slice(0, 22)}» | ${n} | ${s.source}${s.groups.length ? ` ${s.groups.length}` : ""} | ${s.evidence[0].slice(0, 70)} | ${f ? `${f.clusters} clusters, ${f.passages} passages / ${f.slots} slots` : "kit-v6 layout"} | ${verdict} |`);
+    console.log(`| ${e.id} | ${T.kind} «${(T.label ?? "").slice(0, 22)}» | ${n} | ${s.source}${s.groups.length ? ` ${s.groups.length}` : ""} | ${s.evidence[0].slice(0, 70)} | ${f ? `${f.clusters} clusters, ${f.passages} passages / ${f.slots} slots` : "no frontage plan"} | ${verdict} |`);
   }
 }

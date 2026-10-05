@@ -1,20 +1,9 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { KitView, type KitSource } from "@/components/pixel/KitView";
+import { KitView } from "@/components/pixel/KitView";
 import type { ArchStyle, TimeOfDay } from "@/lib/pixelcity/grammar";
 import type { ProfileName } from "@/lib/pixelcity/kit/district";
 import { PERTURBATIONS, realPage, type Perturbation } from "@/lib/pixelcity/kit/real-page";
-import { realPage as realPageV2 } from "@/lib/pixelcity/kit-v2/real-page";
-import { realPage as realPageV3 } from "@/lib/pixelcity/kit-v3/real-page";
-import { realPage as realPageV4 } from "@/lib/pixelcity/kit-v4/real-page";
-import { realPage as realPageV5 } from "@/lib/pixelcity/kit-v5/real-page";
-import { realPage as realPageV6 } from "@/lib/pixelcity/kit-v6/real-page";
-import { realPage as realPageV7 } from "@/lib/pixelcity/kit-v7/real-page";
-import { realPage as realPageV8 } from "@/lib/pixelcity/kit-v8/real-page";
-import { realPage as realPageV9 } from "@/lib/pixelcity/kit-v9/real-page";
-import { realPage as realPageV10 } from "@/lib/pixelcity/kit-v10/real-page";
-import { realPage as realPageV11 } from "@/lib/pixelcity/kit-v11/real-page";
-import { realPage as realPageV12 } from "@/lib/pixelcity/kit-v12/real-page";
 import { forceStyle, STYLES } from "@/lib/pixelcity/diagnostics";
 import { groupFixture } from "@/lib/pixelcity/kit/fixtures";
 import { vacantFingerprint } from "@/lib/pixelcity/vacant-fingerprint";
@@ -28,7 +17,6 @@ export default async function KitPage({ searchParams }: PageProps<"/pixel/kit">)
   const profile = one(sp.profile) as ProfileName;
   const time = one(sp.time);
   const seed = Number(one(sp.seed));
-  const v = one(sp.v) === "1" ? 1 : one(sp.v) === "2" ? 2 : one(sp.v) === "3" ? 3 : one(sp.v) === "4" ? 4 : one(sp.v) === "5" ? 5 : one(sp.v) === "6" ? 6 : one(sp.v) === "7" ? 7 : one(sp.v) === "8" ? 8 : one(sp.v) === "9" ? 9 : one(sp.v) === "10" ? 10 : one(sp.v) === "11" ? 11 : one(sp.v) === "12" ? 12 : 13;
   const common = {
     time: time === "night" || time === "golden" || time === "day" ? (time as TimeOfDay) : undefined,
     people: one(sp.people) === "voxel" ? ("voxel" as const) : ("sprite" as const),
@@ -50,59 +38,12 @@ export default async function KitPage({ searchParams }: PageProps<"/pixel/kit">)
     const snap = JSON.parse(await readFile(file, "utf8")) as DomSnapshot;
     const pt = one(sp.perturb) as Perturbation;
     const perturbation = PERTURBATIONS.includes(pt) ? pt : "none";
-    if (v === 2) {
-      const page = realPageV2(snap, perturbation);
-      const { identity, majors, minors } = page.profile;
-      return <KitView {...common} fp={page.fp} source={{ v: 2, profile: { identity, majors, minors } }} />;
-    }
-    if (v === 3) {
-      const page = realPageV3(snap, perturbation);
-      return <KitView {...common} fp={page.fp} source={{ v: 3, profile: page.plan }} />;
-    }
-    if (v === 4) {
-      const page = realPageV4(snap, perturbation);
-      return <KitView {...common} fp={page.fp} source={{ v: 4, profile: page.plan }} />;
-    }
-    if (v === 5) {
-      const page = realPageV5(snap, perturbation);
-      return <KitView {...common} fp={page.fp} source={{ v: 5, profile: page.plan }} />;
-    }
-    if (v === 6) {
-      const page = realPageV6(snap, perturbation);
-      return <KitView {...common} fp={page.fp} source={{ v: 6, profile: page.plan }} />;
-    }
-    if (v === 7) {
-      const page = realPageV7(snap, perturbation);
-      return <KitView {...common} fp={page.fp} source={{ v: 7, profile: page.plan }} />;
-    }
-    if (v === 8) {
-      const page = realPageV8(snap, perturbation);
-      return <KitView {...common} fp={page.fp} source={{ v: 8, profile: page.plan }} />;
-    }
-    if (v === 9) {
-      const page = realPageV9(snap, perturbation);
-      return <KitView {...common} fp={page.fp} source={{ v: 9, profile: page.plan }} />;
-    }
-    if (v === 10) {
-      const page = realPageV10(snap, perturbation);
-      return <KitView {...common} fp={page.fp} source={{ v: 10, profile: page.plan }} />;
-    }
-    if (v === 11) {
-      const page = realPageV11(snap, perturbation);
-      return <KitView {...common} fp={page.fp} source={{ v: 11, profile: page.plan }} />;
-    }
-    if (v === 12) {
-      const page = realPageV12(snap, perturbation);
-      return <KitView {...common} fp={page.fp} source={{ v: 12, profile: page.plan }} />;
-    }
     const page = realPage(snap, perturbation);
     const st = one(sp.style) as ArchStyle;
-    if (STYLES.includes(st)) return <KitView {...common} fp={forceStyle(page.fp, st)} source={{ v: 13, profile: { ...page.plan, identity: forceStyle(page.plan.identity, st) } }} />;
-    return <KitView {...common} fp={page.fp} source={{ v: 13, profile: page.plan }} />;
+    if (STYLES.includes(st)) return <KitView {...common} fp={forceStyle(page.fp, st)} profile={{ ...page.plan, identity: forceStyle(page.plan.identity, st) }} />;
+    return <KitView {...common} fp={page.fp} profile={page.plan} />;
   }
   const groups = one(sp.groups)?.split(",").map(Number);
-  if (groups && groups.length && groups.every((g) => Number.isInteger(g) && g > 0)) return <KitView {...common} fp={vacantFingerprint()} source={{ v: 13, profile: groupFixture(groups, vacantFingerprint()) }} />;
-  const name = PROFILES.includes(profile) ? profile : "mixed";
-  const source: KitSource = v === 1 ? { v: 1 } : v === 2 ? { v: 2, profile: name } : v === 3 ? { v: 3, profile: name } : v === 4 ? { v: 4, profile: name } : v === 5 ? { v: 5, profile: name } : v === 6 ? { v: 6, profile: name } : v === 7 ? { v: 7, profile: name } : v === 8 ? { v: 8, profile: name } : v === 9 ? { v: 9, profile: name } : v === 10 ? { v: 10, profile: name } : v === 11 ? { v: 11, profile: name } : v === 12 ? { v: 12, profile: name } : { v: 13, profile: name };
-  return <KitView {...common} fp={vacantFingerprint()} source={source} />;
+  if (groups && groups.length && groups.every((g) => Number.isInteger(g) && g > 0)) return <KitView {...common} fp={vacantFingerprint()} profile={groupFixture(groups, vacantFingerprint())} />;
+  return <KitView {...common} fp={vacantFingerprint()} profile={PROFILES.includes(profile) ? profile : "mixed"} />;
 }

@@ -19,10 +19,6 @@ $SH $S/E-page-vs-seed.jpg 4 700 "${args[@]}"
 args=()
 for p in shop docs reference oldweb; do args+=("-:$(nm $p) · own style / classic / modern (same page)"); for v in street close; do args+=("$E/normal/$p-$v.png:$v own" "$E/classic/$p-$v.png:$v classic" "$E/modern/$p-$v.png:$v modern"); done; done
 $SH $S/F-page-vs-style.jpg 6 600 "${args[@]}"
-# G. ablations: surface grammar off (kit-v4) and openings off (kit-v5), street
-args=()
-for p in shop docs reference oldweb; do args+=("-:$(nm $p) · street: no surface grammar (kit-v4) / no openings (kit-v5) / full"); args+=("$E/v4/$p-street.png:kit-v4" "$E/v5/$p-street.png:kit-v5" "$E/normal/$p-street.png:now"); done
-$SH $S/G-ablations.jpg 3 900 "${args[@]}"
 echo SHEETS DONE
 # H / I: most similar and most different pairs
 python3 - <<'PY'

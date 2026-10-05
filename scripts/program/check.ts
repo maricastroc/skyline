@@ -1,19 +1,12 @@
-import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { normalize } from "../../src/lib/model/normalize";
 import { CEREMONIAL_SPAN } from "../../src/lib/pixelcity/kit/buildings";
 import { simpleIndex } from "../../src/lib/pixelcity/kit/compose";
 import { generateKitDistrict, newTrace } from "../../src/lib/pixelcity/kit/district";
 import { itemsOf, withoutItems, type ItemForm } from "../../src/lib/pixelcity/kit/items";
-import type { Plan, Territory } from "../../src/lib/pixelcity/kit/plan";
+import type { Territory } from "../../src/lib/pixelcity/kit/plan";
 import { realPage } from "../../src/lib/pixelcity/kit/real-page";
 import { allocate } from "../../src/lib/pixelcity/kit/territory";
-import { generateKitDistrict as v7, newTrace as newTraceV7 } from "../../src/lib/pixelcity/kit-v7/district";
-import { realPage as realPageV7 } from "../../src/lib/pixelcity/kit-v7/real-page";
-import { generateKitDistrict as v8, newTrace as newTraceV8 } from "../../src/lib/pixelcity/kit-v8/district";
-import { realPage as realPageV8 } from "../../src/lib/pixelcity/kit-v8/real-page";
-import type { Part } from "../../src/lib/pixelcity/types";
-import { allocate as allocateV7 } from "../../src/lib/pixelcity/kit-v7/territory";
 import type { DomSnapshot, SnapshotNode } from "../../src/lib/snapshot/types";
 import { DATASET } from "../real-pages/dataset";
 
@@ -22,7 +15,6 @@ const check = (name: string, ok: boolean, detail = "") => {
   console.log(`${ok ? "✓" : "✗"} ${name}${detail ? ` — ${detail}` : ""}`);
   if (!ok) failed++;
 };
-const sha = (s: string) => createHash("sha1").update(s).digest("hex");
 const snap = (id: string) => JSON.parse(readFileSync(`docs/real-pages/snapshots/${id}.json`, "utf8")) as DomSnapshot;
 const pages = new Map(DATASET.map((e) => [e.id, realPage(snap(e.id))] as const));
 const main = (id: string) => {
@@ -86,34 +78,18 @@ console.log("\n# controls (no invented forms)");
   check("Linear: no link-list form (its items are text blocks or cards, ≤ 1 link)", linear.every((t) => t.items!.linksPerItem <= 1), `${linear.length} territories with items, max ${Math.max(...linear.map((t) => t.items!.linksPerItem))} links/item`);
 }
 
-console.log("\n# additive only: everything kit-v7 decides is identical");
+console.log("\n# additive only: items never move the land");
 {
-  let plans = 0;
   let alloc = 0;
-  let cities = 0;
   for (const e of DATASET) {
     const p = pages.get(e.id)!;
-    const q = realPageV7(snap(e.id));
-    const strip = (pl: Plan) => JSON.stringify(pl.territories.map((t) => {
-      const c = { ...t };
-      delete c.items;
-      return c;
-    }));
-    if (strip(p.plan) === JSON.stringify(q.plan.territories)) plans++;
     const x = allocate(p.plan);
-    const y = allocateV7(q.plan);
+    const y = allocate(withoutItems(p.plan));
     if (JSON.stringify({ path: x.path, owner: [...x.owner], segments: x.segments, lots: x.lots }) === JSON.stringify({ path: y.path, owner: [...y.owner], segments: y.segments, lots: y.lots })) alloc++;
-    for (const flat of [false, true]) {
-      const c = generateKitDistrict(p.fp, { polishAssets: false, profile: withoutItems(p.plan), time: "day", seed: 7, flat, artDirection: false });
-      const d = v7(q.fp, { profile: q.plan, time: "day", seed: 7, flat });
-      if (sha(JSON.stringify([c.parts, c.signs])) === sha(JSON.stringify([d.parts, d.signs]))) cities++;
-    }
   }
-  check("territories (weights, keys, order, mix, metrics, structure…) identical to kit-v7 apart from items", plans === DATASET.length, `${plans}/${DATASET.length}`);
-  check("allocation, segments and lots identical to kit-v7", alloc === DATASET.length, `${alloc}/${DATASET.length}`);
-  check("without items, the city (normal and flat) is byte-identical to kit-v7 — the program rule is the only reader", cities === DATASET.length * 2, `${cities}/${DATASET.length * 2}`);
+  check("items on × off: allocation, segments and lots identical", alloc === DATASET.length, `${alloc}/${DATASET.length}`);
   const t = newTrace();
-  generateKitDistrict(pages.get("forum")!.fp, { polishAssets: false, profile: pages.get("forum")!.plan, time: "day", seed: 7, trace: t });
+  generateKitDistrict(pages.get("forum")!.fp, { profile: pages.get("forum")!.plan, time: "day", seed: 7, trace: t });
   check("items and their evidence are in the trace", t.plan!.territories.every((x) => x.items && x.items.evidence.length > 0));
   const again = realPage(snap("forum"));
   check("deterministic", JSON.stringify(again.plan.territories.map((x) => x.items)) === JSON.stringify(pages.get("forum")!.plan.territories.map((x) => x.items)));
@@ -135,7 +111,7 @@ console.log("\n# experiment: simple index → institutional");
   const uses = (id: string) => {
     const p = pages.get(id)!;
     const t = newTrace();
-    generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time: "day", seed: 7, trace: t });
+    generateKitDistrict(p.fp, { profile: p.plan, time: "day", seed: 7, trace: t });
     return { p, t };
   };
   const reasonOf = (id: string, kind: string) => {
@@ -156,13 +132,12 @@ console.log("\n# experiment: simple index → institutional");
   let seedsSame = 0;
   for (const e of DATASET) {
     const p = pages.get(e.id)!;
-    const q = realPageV7(snap(e.id));
     const sets: string[] = [];
     for (const seed of [7, 8, 9]) {
       const ta = newTrace();
-      const tb = newTraceV7();
-      generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time: "day", seed, trace: ta });
-      v7(q.fp, { profile: q.plan, time: "day", seed, trace: tb });
+      const tb = newTrace();
+      generateKitDistrict(p.fp, { profile: p.plan, time: "day", seed, trace: ta });
+      generateKitDistrict(p.fp, { profile: withoutItems(p.plan), time: "day", seed, trace: tb });
       const ch: number[] = [];
       ta.buildings.forEach((b, i) => {
         const before = tb.buildings[i].anatomy.map((x) => x.use).join();
@@ -178,8 +153,8 @@ console.log("\n# experiment: simple index → institutional");
     }
     if (sets.every((x) => x === sets[0])) seedsSame++;
   }
-  check("every changed building: parcelled / grid, simple-index evidence, institutional, same program otherwise", wrong === 0, `${changed} buildings changed, ${wrong} wrong`);
-  check("seeds 7, 8, 9 change the same buildings", seedsSame === DATASET.length, `${seedsSame}/${DATASET.length}`);
+  check("items on × off: every changed building is parcelled / grid, simple-index evidence, institutional, same program otherwise", wrong === 0, `${changed} buildings changed, ${wrong} wrong`);
+  check("items on × off: seeds 7, 8, 9 change the same buildings", seedsSame === DATASET.length, `${seedsSame}/${DATASET.length}`);
   const src = readFileSync("src/lib/pixelcity/kit/compose.ts", "utf8");
   check("the rule reads no URL, host, site name or words", !/\.(label|snippet|sample)\b|hostname|finalUrl|requestedUrl|siteName/.test(src.slice(src.indexOf("export function simpleIndex"), src.indexOf("function prog("))));
 }
@@ -187,70 +162,28 @@ console.log("\n# experiment: simple index → institutional");
 console.log("\n# narrow lots: one marked entrance per narrow institutional series");
 {
   check("threshold: the full-size portal with its steps (0.9 + 0.7) takes at most half the frontage → 3.2 tiles", Math.abs(CEREMONIAL_SPAN - 3.2) < 1e-9, `CEREMONIAL_SPAN = ${CEREMONIAL_SPAN}`);
-  const key = (q: Part) => JSON.stringify({ ...q, rect: undefined });
-  const geom = (ps: Part[]) => JSON.stringify(ps.filter((q) => q.mesh !== "sign").map(key));
-  const volumes = (ps: Part[]) => JSON.stringify(ps.filter((q) => q.mesh !== "sign" && q.mesh !== "glow" && q.mesh !== "sprite" && q.y + q.h > 1.0 && Math.min(q.w, q.d) >= 0.3).map(key).sort());
-  let wide = 0;
-  let wideChanged = 0;
-  let notNarrow = 0;
-  let volumeDiff = 0;
-  let outsideDiff = 0;
   let series = 0;
   let oneMarked = 0;
   let secondarySigns = 0;
-  let seedsSame = 0;
   for (const e of DATASET) {
     const p = pages.get(e.id)!;
-    const q = realPageV8(snap(e.id));
-    const sets: string[] = [];
     for (const seed of [7, 8, 9]) {
-      for (const flat of seed === 7 ? [false, true] : [false]) {
-        const ta = newTrace();
-        const tb = newTraceV8();
-        const a = generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time: "day", seed, flat, trace: ta, artDirection: false });
-        const b = v8(q.fp, { profile: q.plan, time: "day", seed, flat, trace: tb });
-        if (flat) {
-          if (volumes(a.parts) !== volumes(b.parts)) volumeDiff++;
-          continue;
+      const t = newTrace();
+      const c = generateKitDistrict(p.fp, { profile: p.plan, time: "day", seed, trace: t });
+      for (const B of t.buildings) {
+        if (B.P.family === "rows" && B.anatomy.some((A) => A.why.some((w) => w.includes("institutional row")))) {
+          series++;
+          if (B.anatomy.filter((A) => A.ground.entrance === "central").length === 1) oneMarked++;
         }
-        const changed: number[] = [];
-        ta.buildings.forEach((B, i) => {
-          if (geom(a.parts.slice(...B.parts)) !== geom(b.parts.slice(...tb.buildings[i].parts))) changed.push(i);
-        });
-        sets.push(JSON.stringify(changed));
-        if (seed !== 7) continue;
-        const inRanges = (ps: Part[], t: typeof ta) => ps.filter((_, k) => !changed.some((i) => k >= t.buildings[i].parts[0] && k < t.buildings[i].parts[1]));
-        if (geom(inRanges(a.parts, ta)) !== geom(inRanges(b.parts, tb as unknown as typeof ta))) outsideDiff++;
-        ta.buildings.forEach((B, i) => {
-          const inst = B.anatomy.some((A) => A.use === "institutional");
-          const isSeries = B.P.family === "rows" && B.anatomy.some((A) => A.why.some((w) => w.includes("institutional row")));
-          if (inst && !isSeries) {
-            wide++;
-            if (changed.includes(i)) wideChanged++;
-          }
-          if (changed.includes(i) && !isSeries) notNarrow++;
-          if (changed.includes(i) && volumes(a.parts.slice(...B.parts)) !== volumes(b.parts.slice(...tb.buildings[i].parts))) volumeDiff++;
-          if (isSeries) {
-            series++;
-            if (B.anatomy.filter((A) => A.ground.entrance === "central").length === 1) oneMarked++;
-          }
-        });
-        for (const B of ta.buildings.filter((x) => x.anatomy.some((A) => A.ground.entrance === "secondary"))) {
-          const marked = B.anatomy.filter((A) => A.ground.entrance === "central").length;
-          const signs = a.parts.slice(...B.parts).filter((x) => x.mesh === "sign").length;
-          if (marked !== 1 || signs > 1 + (B.P.signage === "blade" || B.P.signage === "screen" || B.P.signage === "billboard" ? 1 : 0)) secondarySigns++;
-        }
+        if (!B.anatomy.some((A) => A.ground.entrance === "secondary")) continue;
+        const marked = B.anatomy.filter((A) => A.ground.entrance === "central").length;
+        const signs = c.parts.slice(...B.parts).filter((x) => x.mesh === "sign").length;
+        if (marked !== 1 || signs > 1 + (B.P.signage === "blade" || B.P.signage === "screen" || B.P.signage === "billboard" ? 1 : 0)) secondarySigns++;
       }
     }
-    if (sets.every((x) => x === sets[0])) seedsSame++;
   }
-  check("wide institutional (not a narrow series) keeps kit-v8's geometry", wideChanged === 0, `${wideChanged} of ${wide} changed`);
-  check("only narrow institutional series change", notNarrow === 0, `${notNarrow} other building(s) changed`);
-  check("every narrow series has exactly one marked entrance", series > 0 && oneMarked === series, `${oneMarked}/${series}`);
+  check("every narrow series has exactly one marked entrance (seeds 7, 8, 9)", series > 0 && oneMarked === series, `${oneMarked}/${series}`);
   check("signs only at the series' entrance (no plaque, blade, screen or billboard on a secondary unit)", secondarySigns === 0, `${secondarySigns} series with extra signs`);
-  check("volumes (floors, base, crown, roof plant) untouched — normal and flat", volumeDiff === 0, `${volumeDiff} difference(s)`);
-  check("geometry outside the changed buildings identical to kit-v8", outsideDiff === 0, `${outsideDiff} page(s) differ`);
-  check("seeds 7, 8, 9 change the same buildings", seedsSame === DATASET.length, `${seedsSame}/${DATASET.length}`);
 }
 
 console.log(failed ? `\n${failed} check(s) failed` : "\nall program checks passed");

@@ -11,17 +11,16 @@
     "shoot": "node scripts/shoot.mjs",
     "typecheck": "tsc --noEmit",
     "fingerprint": "tsx scripts/fingerprint.ts",
+    "test": "npm run test:allocation && npm run test:hygiene && npm run test:surface && npm run test:openings && npm run test:composition && npm run test:program && npm run test:streets && npm run test:life && npm run test:atmosphere && npm run test:polish",
     "test:allocation": "tsx scripts/semantic-allocation/check.ts",
     "test:hygiene": "tsx scripts/semantic-hygiene/check.ts",
     "test:surface": "tsx scripts/surface/check.ts",
     "test:openings": "tsx scripts/openings/check.ts",
     "test:composition": "tsx scripts/composition/check.ts",
     "test:program": "tsx scripts/program/check.ts",
-    "test:foundation": "tsx scripts/foundation/check.ts",
     "test:streets": "tsx scripts/street-roles/check.ts",
     "test:life": "tsx scripts/street-life/check.ts",
     "test:atmosphere": "tsx scripts/atmosphere/check.ts",
-    "test:art-direction": "tsx scripts/art-direction/check.ts",
     "test:polish": "tsx scripts/polish-assets/check.ts"
   },
   "dependencies": {

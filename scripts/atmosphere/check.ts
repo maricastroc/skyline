@@ -3,12 +3,6 @@ import { readFileSync } from "node:fs";
 import { rgbToOklch } from "../../src/lib/city/palette";
 import { generateKitDistrict, newTrace, type KitTrace } from "../../src/lib/pixelcity/kit/district";
 import { PERTURBATIONS, realPage } from "../../src/lib/pixelcity/kit/real-page";
-import { generateKitDistrict as g9 } from "../../src/lib/pixelcity/kit-v9/district";
-import { realPage as r9 } from "../../src/lib/pixelcity/kit-v9/real-page";
-import { generateKitDistrict as g10 } from "../../src/lib/pixelcity/kit-v10/district";
-import { realPage as r10 } from "../../src/lib/pixelcity/kit-v10/real-page";
-import { generateKitDistrict as g11, newTrace as newTrace11 } from "../../src/lib/pixelcity/kit-v11/district";
-import { realPage as r11 } from "../../src/lib/pixelcity/kit-v11/real-page";
 import type { DomSnapshot } from "../../src/lib/snapshot/types";
 import { DATASET } from "../real-pages/dataset";
 
@@ -21,47 +15,34 @@ const sha = (v: unknown) => createHash("sha1").update(JSON.stringify(v)).digest(
 const snap = (id: string) => JSON.parse(readFileSync(`docs/real-pages/snapshots/${id}.json`, "utf8")) as DomSnapshot;
 const MODES = [["day", false], ["night", false], ["day", true]] as const;
 
-let off4 = 0;
-let off3 = 0;
-let off1 = 0;
 let partsSame = 0;
 let onlyEnv = 0;
 let upstream = 0;
 for (const e of DATASET) {
-  const s = snap(e.id);
-  const p = realPage(s);
-  const q11 = r11(s);
-  const q10 = r10(s);
-  const q9 = r9(s);
+  const p = realPage(snap(e.id));
   for (const [time, flat] of MODES) {
-    const o = { profile: p.plan, time, seed: 7, flat, polishAssets: false } as const;
-    const b11 = g11(q11.fp, { profile: q11.plan, time, seed: 7, flat });
-    if (sha(generateKitDistrict(p.fp, { ...o, atmosphere: false })) === sha(b11)) off4++;
-    if (sha(generateKitDistrict(p.fp, { ...o, streetLife: false })) === sha(g10(q10.fp, { profile: q10.plan, time, seed: 7, flat }))) off3++;
-    if (sha(generateKitDistrict(p.fp, { ...o, artDirection: false })) === sha(g9(q9.fp, { profile: q9.plan, time, seed: 7, flat }))) off1++;
+    const o = { profile: p.plan, time, seed: 7, flat } as const;
     const a = generateKitDistrict(p.fp, o);
-    if (sha([a.parts, a.signs, a.scenery, a.smokestacks]) === sha([b11.parts, b11.signs, b11.scenery, b11.smokestacks])) partsSame++;
+    const b = generateKitDistrict(p.fp, { ...o, atmosphere: false });
+    if (sha([a.parts, a.signs, a.scenery, a.smokestacks]) === sha([b.parts, b.signs, b.scenery, b.smokestacks])) partsSame++;
     const strip = (pal: typeof a.palette) => ({ ...pal, sky: null, sun: null, ambient: null });
-    if (sha(strip(a.palette)) === sha(strip(b11.palette))) onlyEnv++;
+    if (sha(strip(a.palette)) === sha(strip(b.palette))) onlyEnv++;
   }
-  const t: KitTrace = newTrace();
-  generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time: "day", seed: 7, trace: t });
-  const t11 = newTrace11();
-  g11(q11.fp, { profile: q11.plan, time: "day", seed: 7, trace: t11 });
-  if (sha([t.streets, t.life]) === sha([t11.streets, t11.life])) upstream++;
+  const ta: KitTrace = newTrace();
+  const tb: KitTrace = newTrace();
+  generateKitDistrict(p.fp, { profile: p.plan, time: "day", seed: 7, trace: ta });
+  generateKitDistrict(p.fp, { profile: p.plan, time: "day", seed: 7, trace: tb, atmosphere: false });
+  if (sha([ta.streets, ta.life]) === sha([tb.streets, tb.life])) upstream++;
 }
-const n3 = DATASET.length * 3;
-check("atmosphere off → kit-v11 (C3) byte for byte (day, night, flat)", off4 === n3, `${off4}/${n3}`);
-check("street life off → kit-v10 (C1) byte for byte", off3 === n3, `${off3}/${n3}`);
-check("art direction off → kit-v9 (foundation v1) byte for byte", off1 === n3, `${off1}/${n3}`);
-check("with C4 on, parts, signs, scenery and smoke are kit-v11's", partsSame === n3, `${partsSame}/${n3}`);
-check("with C4 on, the palette differs from kit-v11 only in sky, sun and ambient light", onlyEnv === n3, `${onlyEnv}/${n3}`);
-check("C1 street roles and C3 street life unchanged (kit-v11)", upstream === DATASET.length, `${upstream}/${DATASET.length}`);
+const n3 = DATASET.length * MODES.length;
+check("atmosphere on × off: parts, signs, scenery and smoke identical (day, night, flat)", partsSame === n3, `${partsSame}/${n3}`);
+check("atmosphere on × off: the palette differs only in sky, sun and ambient light", onlyEnv === n3, `${onlyEnv}/${n3}`);
+check("atmosphere on × off: street roles and street life identical", upstream === DATASET.length, `${upstream}/${DATASET.length}`);
 
 const env = (id: string, seed: number, time: "day" | "night" | "golden") => {
   const p = realPage(snap(id));
   const t: KitTrace = newTrace();
-  const c = generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time, seed, trace: t });
+  const c = generateKitDistrict(p.fp, { profile: p.plan, time, seed, trace: t });
   return { env: JSON.stringify(t.environment), haze: JSON.stringify(c.atmosphere), c };
 };
 let seedFree = 0;
@@ -82,8 +63,8 @@ for (const e of DATASET)
   for (const time of ["day", "golden", "night"] as const) {
     total++;
     const p = realPage(snap(e.id));
-    const a = generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time, seed: 7 });
-    const b = generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time, seed: 7, atmosphere: false });
+    const a = generateKitDistrict(p.fp, { profile: p.plan, time, seed: 7 });
+    const b = generateKitDistrict(p.fp, { profile: p.plan, time, seed: 7, atmosphere: false });
     const top = rgbToOklch(a.palette.sky.top);
     const bot = rgbToOklch(a.palette.sky.bottom);
     const B = BANDS[time];
@@ -105,7 +86,7 @@ check("no hostname, URL or site name in the atmosphere code", !site.test(src), s
 const vec = (id: string) => {
   const p = realPage(snap(id));
   const t: KitTrace = newTrace();
-  generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time: "day", seed: 7, trace: t });
+  generateKitDistrict(p.fp, { profile: p.plan, time: "day", seed: 7, trace: t });
   const e = t.environment!;
   const r = (e.tint.h * Math.PI) / 180;
   return [e.air, e.tint.strength * Math.cos(r), e.tint.strength * Math.sin(r), e.vivid, e.hardness];
@@ -127,7 +108,7 @@ for (const e of DATASET) {
   for (const pt of PERTURBATIONS) {
     const p = realPage(snap(e.id), pt);
     const t: KitTrace = newTrace();
-    generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time: "day", seed: 7, trace: t });
+    generateKitDistrict(p.fp, { profile: p.plan, time: "day", seed: 7, trace: t });
     const x = t.environment!;
     const r = (x.tint.h * Math.PI) / 180;
     change += dist(base, [x.air, x.tint.strength * Math.cos(r), x.tint.strength * Math.sin(r), x.vivid, x.hardness]);

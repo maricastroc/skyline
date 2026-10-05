@@ -9,8 +9,6 @@ const VARIANTS = {
   seed8: { q: "&seed=8", views: ["city", "street", "close"] },
   classic: { q: "&style=classic", views: ["city", "street", "close"] },
   modern: { q: "&style=modern", views: ["city", "street", "close"] },
-  v5: { q: "&v=5", views: ["street", "close"] },
-  v4: { q: "&v=4", views: ["city", "street", "close"] },
 };
 const want = process.argv.slice(2).length ? process.argv.slice(2) : Object.keys(VARIANTS);
 const browser = await puppeteer.launch({

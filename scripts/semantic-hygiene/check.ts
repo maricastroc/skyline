@@ -1,17 +1,11 @@
-import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { computeFingerprint } from "../../src/lib/fingerprint/fingerprint";
 import { normalize } from "../../src/lib/model/normalize";
 import { planFromPage, type Plan } from "../../src/lib/pixelcity/kit/plan";
-import { generateKitDistrict as v2 } from "../../src/lib/pixelcity/kit-v2/district";
-import { realPage as realPageV2 } from "../../src/lib/pixelcity/kit-v2/real-page";
-import { generateKitDistrict as v3 } from "../../src/lib/pixelcity/kit-v3/district";
-import { realPage as realPageV3 } from "../../src/lib/pixelcity/kit-v3/real-page";
 import { analyzeSemantics } from "../../src/lib/semantics/analyze";
 import { chromeFactors } from "../../src/lib/semantics/hygiene";
 import { countSources, imageVerdict } from "../../src/lib/snapshot/media";
 import type { DomSnapshot, SnapshotNode } from "../../src/lib/snapshot/types";
-import { DATASET } from "../real-pages/dataset";
 
 let failed = 0;
 const check = (name: string, ok: boolean, detail = "") => {
@@ -115,23 +109,6 @@ const mediaShare = (plan: Plan, pred: (t: Plan["territories"][number]) => boolea
       .filter(([, , l]) => words.test(l)),
   );
   check("extraction / page-model modules never mention the city", hits.length === 0, hits.map(([f, i, l]) => `${f}:${i} ${l.trim().slice(0, 60)}`).join(" | "));
-}
-
-{
-  const sha = (s: string) => createHash("sha1").update(s).digest("hex");
-  const corpus = readFileSync("docs/semantic-hygiene/corpus-before.txt", "utf8");
-  let ok = true;
-  for (const e of DATASET) {
-    const snap = JSON.parse(readFileSync(`docs/real-pages/snapshots/${e.id}.json`, "utf8"));
-    const p3 = realPageV3(snap);
-    const p2 = realPageV2(snap);
-    ok &&= corpus.includes(`v3 ${e.id.padEnd(12)} ${sha(JSON.stringify([...Object.values(pick(v3(p3.fp, { profile: p3.plan, time: "day", seed: 7 })))]))}`);
-    ok &&= corpus.includes(`v2 ${e.id.padEnd(12)} ${sha(JSON.stringify([...Object.values(pick(v2(p2.fp, { profile: p2.profile, time: "day", seed: 7 })))]))}`);
-  }
-  check("kit-v3 (allocation pass) and kit-v2 cities match the recorded hashes", ok);
-}
-function pick(c: { parts: unknown; signs: unknown }) {
-  return { parts: c.parts, signs: c.signs };
 }
 
 if (failed) {

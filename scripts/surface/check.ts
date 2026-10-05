@@ -7,11 +7,7 @@ import { generateSurfaceLab, LAB_SETS, labProgram, USES, type LabKit, type LabRe
 import { deriveGrammar } from "../../src/lib/pixelcity/grammar";
 import { buildGamePalette } from "../../src/lib/pixelcity/palette";
 import { realPage } from "../../src/lib/pixelcity/kit/real-page";
-import { withoutItems } from "../../src/lib/pixelcity/kit/items";
-import { withoutStructure } from "../../src/lib/pixelcity/kit/structure";
 import { surfaceTrace, type Anatomy } from "../../src/lib/pixelcity/kit/surface";
-import { generateKitDistrict as v4, newTrace as newTraceV4 } from "../../src/lib/pixelcity/kit-v4/district";
-import { realPage as realPageV4 } from "../../src/lib/pixelcity/kit-v4/real-page";
 import type { ArchStyle } from "../../src/lib/pixelcity/grammar";
 import type { Part } from "../../src/lib/pixelcity/types";
 import { vacantFingerprint } from "../../src/lib/pixelcity/vacant-fingerprint";
@@ -142,21 +138,7 @@ console.log("\n# Style invariance (same use, same lot, five styles)");
   }
 }
 
-const before = new Map<string, string>();
-for (const l of readFileSync("docs/surface/corpus-before.txt", "utf8").split("\n")) {
-  const m = l.match(/^v4-normal (\S+)\s+([0-9a-f]{40})/);
-  if (m) before.set(m[1], m[2]);
-}
-console.log("\n# Frozen baseline (kit-v4 = before the surface grammar)");
-let frozen = 0;
-for (const e of DATASET) {
-  const p = realPageV4(snap(e.id));
-  const c = v4(p.fp, { profile: p.plan, time: "day", seed: 7 });
-  if (sha(JSON.stringify([c.parts, c.signs])) === before.get(e.id)) frozen++;
-}
-check("kit-v4 reproduces docs/surface/corpus-before.txt", frozen === DATASET.length && before.size === DATASET.length, `${frozen}/${DATASET.length}`);
-
-console.log("\n# Determinism and provenance (current kit)");
+console.log("\n# Determinism and provenance");
 const traceOf = (id: string, mutate?: (s: ReturnType<typeof snap>) => void) => {
   const s = snap(id);
   mutate?.(s);
@@ -197,44 +179,6 @@ for (const id of ["reference", "shop", "institution"]) {
   }
   check("every non-kiosk building records its anatomy", traced >= total * 0.9, `${traced}/${total} (kiosks and civic pavilions have none)`);
   check("use follows the composition (region type) or simple-index evidence, never the style", mismatched === 0, `${mismatched} mismatches`);
-}
-
-console.log("\n# Massing preserved (current kit vs kit-v4, per building)");
-{
-  const vtop = (parts: Part[], r: [number, number], area: number) => {
-    let top = 0;
-    for (let k = r[0]; k < r[1]; k++) {
-      const q = parts[k];
-      if (q.mesh !== "sign" && q.mesh !== "sprite" && q.mesh !== "glow" && q.w * q.d >= area && q.h >= 0.3) top = Math.max(top, q.y + q.h);
-    }
-    return top;
-  };
-  let n = 0;
-  let same = 0;
-  let worst = 0;
-  let structural = 0;
-  for (const e of DATASET) {
-    const p = realPage(snap(e.id));
-    const q = realPageV4(snap(e.id));
-    const ta = newTrace();
-    const tb = newTraceV4();
-    const a = generateKitDistrict(p.fp, { profile: withoutItems(withoutStructure(p.plan)), time: "day", seed: 7, trace: ta });
-    const b = v4(q.fp, { profile: q.plan, time: "day", seed: 7, trace: tb });
-    if (ta.buildings.length !== tb.buildings.length) structural++;
-    for (let i = 0; i < Math.min(ta.buildings.length, tb.buildings.length); i++) {
-      const A = ta.buildings[i];
-      const B = tb.buildings[i];
-      if (A.P.family !== B.P.family || A.w !== B.w || A.d !== B.d || A.P.floors !== B.P.floors || A.P.roof !== B.P.roof) structural++;
-      const area = 0.2 * A.w * A.d;
-      const d = Math.abs(vtop(a.parts, A.parts, area) - vtop(b.parts, B.parts, area));
-      n++;
-      if (d <= 0.05) same++;
-      worst = Math.max(worst, d);
-    }
-  }
-  check("same buildings, families, footprints, floors and roof forms as kit-v4", structural === 0, `${structural} differences`);
-  check("main volume height unchanged for ≥ 99% of buildings", same >= n * 0.99, `${same}/${n}; worst +${worst.toFixed(2)} (a roof prop on a small lot)`);
-  check("no building changes height by more than one floor-and-a-bit", worst <= 0.7, worst.toFixed(2));
 }
 
 console.log(failed ? `\n${failed} check(s) failed` : "\nall surface checks passed");

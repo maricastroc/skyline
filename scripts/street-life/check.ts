@@ -2,8 +2,6 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { generateKitDistrict, LINES, newTrace, type KitTrace } from "../../src/lib/pixelcity/kit/district";
 import { PERTURBATIONS, realPage } from "../../src/lib/pixelcity/kit/real-page";
-import { generateKitDistrict as g10, newTrace as newTrace10 } from "../../src/lib/pixelcity/kit-v10/district";
-import { realPage as r10 } from "../../src/lib/pixelcity/kit-v10/real-page";
 import type { Part } from "../../src/lib/pixelcity/types";
 import type { DomSnapshot } from "../../src/lib/snapshot/types";
 import { DATASET } from "../real-pages/dataset";
@@ -18,31 +16,23 @@ const snap = (id: string) => JSON.parse(readFileSync(`docs/real-pages/snapshots/
 const build = (id: string, seed = 7) => {
   const p = realPage(snap(id));
   const t: KitTrace = newTrace();
-  const c = generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time: "day", seed, trace: t });
+  const c = generateKitDistrict(p.fp, { profile: p.plan, time: "day", seed, trace: t });
   return { p, t, c };
 };
 const intensities = (t: KitTrace) => JSON.stringify([t.life!.sides.map((s) => [s.footfall, s.canopy, s.busStop]), t.life!.segments.map((s) => s.traffic)]);
 const sprites = (c: { parts: Part[] }, t: KitTrace) => c.parts.slice(t.scene!.furniture[0], t.scene!.traffic[1]).filter((q) => q.mesh === "sprite").length;
 const runs = DATASET.map((e) => ({ id: e.id, ...build(e.id) }));
 
-let ablated = 0;
 let rolesSame = 0;
 let blocksSame = 0;
 for (const r of runs) {
-  const q = r10(snap(r.id));
-  for (const [time, flat] of [["day", false], ["night", false], ["day", true]] as const) {
-    const a = generateKitDistrict(r.p.fp, { polishAssets: false, profile: r.p.plan, time, seed: 7, flat, streetLife: false });
-    const b = g10(q.fp, { profile: q.plan, time, seed: 7, flat });
-    if (sha(JSON.stringify([a.parts, a.signs])) === sha(JSON.stringify([b.parts, b.signs]))) ablated++;
-  }
-  const tb = newTrace10();
-  const b = g10(q.fp, { profile: q.plan, time: "day", seed: 7, trace: tb });
+  const tb: KitTrace = newTrace();
+  const b = generateKitDistrict(r.p.fp, { profile: r.p.plan, time: "day", seed: 7, trace: tb, streetLife: false });
   if (JSON.stringify(r.t.streets) === JSON.stringify(tb.streets)) rolesSame++;
   if (sha(JSON.stringify(r.c.parts.slice(...r.t.range))) === sha(JSON.stringify(b.parts.slice(...tb.range)))) blocksSame++;
 }
-check("with street life off, the whole city is byte-identical to kit-v10 (C1) (day, night, flat)", ablated === runs.length * 3, `${ablated}/${runs.length * 3}`);
-check("C1 street roles unchanged (identical to kit-v10)", rolesSame === runs.length, `${rolesSame}/${runs.length}`);
-check("blocks (lots, pieces, buildings) byte-identical to kit-v10", blocksSame === runs.length, `${blocksSame}/${runs.length}`);
+check("street life on × off: street roles identical", rolesSame === runs.length, `${rolesSame}/${runs.length}`);
+check("street life on × off: blocks (lots, pieces, buildings) byte-identical", blocksSame === runs.length, `${blocksSame}/${runs.length}`);
 
 let seedFree = 0;
 let moved = 0;
@@ -65,7 +55,7 @@ const audit = ["shop", "oldweb", "directory", "institution", "reference", "media
 const sets = audit.map((r) => new Set(r.c.parts.slice(...r.t.scene!.furniture).map(key)));
 const common = [...sets[0]].filter((k) => sets.every((s) => s.has(k))).length;
 const avg = sets.reduce((s, x) => s + x.size, 0) / sets.length;
-check("the sidewalk layer is no longer a stamp (parts identical in all 8 audit pages < 10%)", common / avg < 0.1, `${common} common parts, ${((100 * common) / avg).toFixed(1)}% of a page's (kit-v10: 100%)`);
+check("the sidewalk layer is no longer a stamp (parts identical in all 8 audit pages < 10%)", common / avg < 0.1, `${common} common parts, ${((100 * common) / avg).toFixed(1)}% of a page's`);
 
 const B = 14;
 let inside = 0;
@@ -117,7 +107,7 @@ for (const r of runs)
   for (const pt of PERTURBATIONS) {
     const p = realPage(snap(r.id), pt);
     const t: KitTrace = newTrace();
-    generateKitDistrict(p.fp, { polishAssets: false, profile: p.plan, time: "day", seed: 7, trace: t });
+    generateKitDistrict(p.fp, { profile: p.plan, time: "day", seed: 7, trace: t });
     t.life!.sides.forEach((s, k) => {
       change += Math.abs(s.footfall - r.t.life!.sides[k].footfall) + Math.abs(s.canopy - r.t.life!.sides[k].canopy);
       n += 2;

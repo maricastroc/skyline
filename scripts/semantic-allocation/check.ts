@@ -4,8 +4,6 @@ import { generateKitDistrict, newTrace } from "../../src/lib/pixelcity/kit/distr
 import type { Plan } from "../../src/lib/pixelcity/kit/plan";
 import { PERTURBATIONS, realPage } from "../../src/lib/pixelcity/kit/real-page";
 import { allocate, lotPath, LOT_TOTAL, N } from "../../src/lib/pixelcity/kit/territory";
-import { generateKitDistrict as v2 } from "../../src/lib/pixelcity/kit-v2/district";
-import { realPage as realPageV2 } from "../../src/lib/pixelcity/kit-v2/real-page";
 import { vacantFingerprint } from "../../src/lib/pixelcity/vacant-fingerprint";
 import { DATASET } from "../real-pages/dataset";
 
@@ -95,16 +93,6 @@ for (const prof of ["mixed", "portal", "product", "reference"] as const) {
   const c = generateKitDistrict(vacantFingerprint(), { profile: prof });
   check(`synthetic profile “${prof}” still renders`, c.parts.length > 1000);
 }
-
-const corpus = readFileSync("docs/semantic-allocation/corpus-before.txt", "utf8");
-let baseOk = true;
-for (const e of DATASET) {
-  const p = realPageV2(snap(e.id));
-  const c = v2(p.fp, { profile: p.profile, time: "day", seed: 7 });
-  baseOk &&= corpus.includes(`${e.id.padEnd(12)} ${sha(JSON.stringify([c.parts, c.signs]))}`);
-  baseOk &&= corpus.includes(`${e.id.padEnd(12)} ${createHash("sha1").update(readFileSync(`docs/real-pages/snapshots/${e.id}.json`)).digest("hex")}`);
-}
-check("kit-v2 cities and snapshots match the recorded corpus hashes", baseOk);
 
 const hosts = DATASET.flatMap((e) => e.urls.map((u) => new URL(u).hostname.replace(/^www\./, "")));
 const brands = ["wikipedia", "ikea", "lobste", "vercel", "theguardian", "nasa.gov", "craigslist", "github", "paulgraham", "brittanychiang", "svelte", "allbirds", "patagonia", "unsplash", "berkshire", "spacejam", "danluu", "notion", "steampowered", "everlane", "toscrape", "hostname", "location.host"];

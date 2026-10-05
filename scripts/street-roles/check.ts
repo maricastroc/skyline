@@ -3,8 +3,6 @@ import { generateKitDistrict, LINES, newTrace, type KitTrace } from "../../src/l
 import { PERTURBATIONS, realPage } from "../../src/lib/pixelcity/kit/real-page";
 import { planStreets, type StreetRole } from "../../src/lib/pixelcity/kit/street-roles";
 import { allocate } from "../../src/lib/pixelcity/kit/territory";
-import { generateKitDistrict as g9, newTrace as newTrace9 } from "../../src/lib/pixelcity/kit-v9/district";
-import { realPage as r9 } from "../../src/lib/pixelcity/kit-v9/real-page";
 import type { DomSnapshot } from "../../src/lib/snapshot/types";
 import { DATASET } from "../real-pages/dataset";
 
@@ -61,17 +59,43 @@ for (const r of runs) {
 }
 check("street surfaces stay inside the street corridors (no part over a block)", outside === runs.length, `${outside}/${runs.length} pages, ${surfaces} surface parts`);
 
+const kept = (q: { mesh: string }) => q.mesh !== "sign" && q.mesh !== "sprite" && q.mesh !== "glow";
+const blocksOf = (parts: Array<{ mesh: string }>, range: [number, number], full: Array<{ mesh: string }> | null) => {
+  if (!full) return parts.slice(range[0], range[1]);
+  const from = full.slice(0, range[0]).filter(kept).length;
+  return parts.slice(from, from + full.slice(range[0], range[1]).filter(kept).length);
+};
+const decided = (t: KitTrace) =>
+  JSON.stringify({
+    alloc: { path: t.alloc!.path, owner: Array.from(t.alloc!.owner), segments: t.alloc!.segments, lots: t.alloc!.lots },
+    buildings: t.buildings.map((b) => ({ ...b, parts: b.parts[1] - b.parts[0] })),
+    pieces: t.pieces.map((pc) => ({ ...pc, parts: pc.parts[1] - pc.parts[0] })),
+    landmark: t.landmark,
+    frontage: t.frontage,
+  });
 let furniture = 0;
+let blocks = 0;
+const moved: string[] = [];
 for (const r of runs) {
-  const q = r9(snap(r.id));
-  const tb = newTrace9();
-  const b = g9(q.fp, { profile: q.plan, time: "day", seed: 7, trace: tb });
   const ta: KitTrace = newTrace();
+  const tb: KitTrace = newTrace();
   const a = generateKitDistrict(r.p.fp, { profile: r.p.plan, time: "day", seed: 7, trace: ta, streetLife: false });
+  const b = generateKitDistrict(r.p.fp, { profile: r.p.plan, time: "day", seed: 7, trace: tb, artDirection: false });
   const [f0, f1] = ta.scene!.furniture;
   if (JSON.stringify(a.parts.slice(f0, f1)) === JSON.stringify(b.parts.slice(tb.range[1], tb.range[1] + (f1 - f0)))) furniture++;
+  for (const [time, flat] of [["day", false], ["night", false], ["day", true]] as const) {
+    const on: KitTrace = newTrace();
+    const off: KitTrace = newTrace();
+    const c = generateKitDistrict(r.p.fp, { profile: r.p.plan, time, seed: 7, flat, trace: on });
+    const d = generateKitDistrict(r.p.fp, { profile: r.p.plan, time, seed: 7, flat, trace: off, artDirection: false });
+    const fullC = flat ? generateKitDistrict(r.p.fp, { profile: r.p.plan, time, seed: 7 }).parts : null;
+    const fullD = flat ? generateKitDistrict(r.p.fp, { profile: r.p.plan, time, seed: 7, artDirection: false }).parts : null;
+    if (decided(on) === decided(off) && JSON.stringify(blocksOf(c.parts, on.range, fullC)) === JSON.stringify(blocksOf(d.parts, off.range, fullD))) blocks++;
+    else moved.push(`${r.id}/${time}${flat ? "/flat" : ""}`);
+  }
 }
-check("with street life off, sidewalk furniture identical to kit-v9 (C1 moves streets only)", furniture === runs.length, `${furniture}/${runs.length}`);
+check("art direction on × off: allocation, blocks (lots, pieces, buildings) and their trace byte-identical (day, night, flat)", blocks === runs.length * 3, `${blocks}/${runs.length * 3}${moved.length ? `; moved: ${moved.join(", ")}` : ""}`);
+check("street roles move streets only: with street life off, sidewalk furniture identical to art direction off", furniture === runs.length, `${furniture}/${runs.length}`);
 
 const usedBy = ROLES.map((role) => runs.filter((r) => inner(r.t).some((s) => s.role === role)).length);
 check("each of the four roles appears in at least 3 corpus pages", usedBy.every((n) => n >= 3), ROLES.map((r, i) => `${r} ${usedBy[i]}`).join(", "));

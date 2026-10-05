@@ -8,42 +8,18 @@ import type { PeopleMode } from "@/lib/pixelcity/kit/core";
 import { debugColor, generateKitDistrict, newTrace, ROLE_COLOR, type KitTrace, type ProfileName } from "@/lib/pixelcity/kit/district";
 import type { Plan } from "@/lib/pixelcity/kit/plan";
 import { surfaceTrace } from "@/lib/pixelcity/kit/surface";
-import { generateKitDistrict as generateKitDistrictV1 } from "@/lib/pixelcity/kit-v1/district";
-import { generateKitDistrict as generateKitDistrictV2, type Profile as ProfileV2, type ProfileName as ProfileNameV2 } from "@/lib/pixelcity/kit-v2/district";
-import { generateKitDistrict as generateKitDistrictV3, type ProfileName as ProfileNameV3 } from "@/lib/pixelcity/kit-v3/district";
-import type { Plan as PlanV3 } from "@/lib/pixelcity/kit-v3/plan";
-import { generateKitDistrict as generateKitDistrictV4, type ProfileName as ProfileNameV4 } from "@/lib/pixelcity/kit-v4/district";
-import type { Plan as PlanV4 } from "@/lib/pixelcity/kit-v4/plan";
-import { generateKitDistrict as generateKitDistrictV5, type ProfileName as ProfileNameV5 } from "@/lib/pixelcity/kit-v5/district";
-import type { Plan as PlanV5 } from "@/lib/pixelcity/kit-v5/plan";
-import { generateKitDistrict as generateKitDistrictV6, type ProfileName as ProfileNameV6 } from "@/lib/pixelcity/kit-v6/district";
-import type { Plan as PlanV6 } from "@/lib/pixelcity/kit-v6/plan";
-import { generateKitDistrict as generateKitDistrictV7, type ProfileName as ProfileNameV7 } from "@/lib/pixelcity/kit-v7/district";
-import type { Plan as PlanV7 } from "@/lib/pixelcity/kit-v7/plan";
-import { generateKitDistrict as generateKitDistrictV8, type ProfileName as ProfileNameV8 } from "@/lib/pixelcity/kit-v8/district";
-import type { Plan as PlanV8 } from "@/lib/pixelcity/kit-v8/plan";
-import { generateKitDistrict as generateKitDistrictV9, type ProfileName as ProfileNameV9 } from "@/lib/pixelcity/kit-v9/district";
-import type { Plan as PlanV9 } from "@/lib/pixelcity/kit-v9/plan";
-import { generateKitDistrict as generateKitDistrictV10, type ProfileName as ProfileNameV10 } from "@/lib/pixelcity/kit-v10/district";
-import type { Plan as PlanV10 } from "@/lib/pixelcity/kit-v10/plan";
-import { generateKitDistrict as generateKitDistrictV11, type ProfileName as ProfileNameV11 } from "@/lib/pixelcity/kit-v11/district";
-import type { Plan as PlanV11 } from "@/lib/pixelcity/kit-v11/plan";
-import { generateKitDistrict as generateKitDistrictV12, type ProfileName as ProfileNameV12 } from "@/lib/pixelcity/kit-v12/district";
-import type { Plan as PlanV12 } from "@/lib/pixelcity/kit-v12/plan";
 import type { ViewState } from "./PixelScene";
 
 const PixelScene = dynamic(() => import("./PixelScene"), { ssr: false });
 
 const CITY: ViewState = { azimuth: 45, zoom: 0.9, pan: [0, 0] };
 
-export type KitSource = { v: 1 } | { v: 2; profile: ProfileNameV2 | ProfileV2 } | { v: 3; profile: ProfileNameV3 | PlanV3 } | { v: 4; profile: ProfileNameV4 | PlanV4 } | { v: 5; profile: ProfileNameV5 | PlanV5 } | { v: 6; profile: ProfileNameV6 | PlanV6 } | { v: 7; profile: ProfileNameV7 | PlanV7 } | { v: 8; profile: ProfileNameV8 | PlanV8 } | { v: 9; profile: ProfileNameV9 | PlanV9 } | { v: 10; profile: ProfileNameV10 | PlanV10 } | { v: 11; profile: ProfileNameV11 | PlanV11 } | { v: 12; profile: ProfileNameV12 | PlanV12 } | { v: 13; profile: ProfileName | Plan };
-
 export interface KitViewProps {
   fp: SiteFingerprint;
   time?: TimeOfDay;
   people: PeopleMode;
   view: "city" | "street" | "close";
-  source: KitSource;
+  profile: ProfileName | Plan;
   flat: boolean;
   seed?: number;
   provenance?: boolean;
@@ -53,35 +29,18 @@ export interface KitViewProps {
   zoom?: number;
 }
 
-export function KitView({ fp, time, people, view, source, flat, seed, provenance, inspect, streets, focus, zoom }: KitViewProps) {
+export function KitView({ fp, time, people, view, profile, flat, seed, provenance, inspect, streets, focus, zoom }: KitViewProps) {
   const [picked, setPicked] = useState<number | null>(null);
   const { city, trace } = useMemo(() => {
-    if (source.v === 1) {
-      const c = generateKitDistrictV1(fp, { time, people });
-      if (!flat) return { city: c, trace: null };
-      const grey: [number, number, number] = [0.62, 0.62, 0.66];
-      return { city: { ...c, signs: [], parts: c.parts.filter((q) => q.mesh !== "sign" && q.mesh !== "sprite" && q.mesh !== "glow").map((q) => ({ ...q, color: q.y + q.h > 0.4 ? grey : q.color, surf: 0, variant: 0, lit: 0 })) }, trace: null };
-    }
-    if (source.v === 2) return { city: generateKitDistrictV2(fp, { time, people, profile: source.profile, flat, seed }), trace: null };
-    if (source.v === 3) return { city: generateKitDistrictV3(fp, { time, people, profile: source.profile, flat, seed, provenance }), trace: null };
-    if (source.v === 4) return { city: generateKitDistrictV4(fp, { time, people, profile: source.profile, flat, seed, provenance }), trace: null };
-    if (source.v === 5) return { city: generateKitDistrictV5(fp, { time, people, profile: source.profile, flat, seed, provenance }), trace: null };
-    if (source.v === 6) return { city: generateKitDistrictV6(fp, { time, people, profile: source.profile, flat, seed, provenance }), trace: null };
-    if (source.v === 7) return { city: generateKitDistrictV7(fp, { time, people, profile: source.profile, flat, seed, provenance }), trace: null };
-    if (source.v === 8) return { city: generateKitDistrictV8(fp, { time, people, profile: source.profile, flat, seed, provenance }), trace: null };
-    if (source.v === 9) return { city: generateKitDistrictV9(fp, { time, people, profile: source.profile, flat, seed, provenance }), trace: null };
-    if (source.v === 10) return { city: generateKitDistrictV10(fp, { time, people, profile: source.profile, flat, seed, provenance }), trace: null };
-    if (source.v === 11) return { city: generateKitDistrictV11(fp, { time, people, profile: source.profile, flat, seed, provenance }), trace: null };
-    if (source.v === 12) return { city: generateKitDistrictV12(fp, { time, people, profile: source.profile, flat, seed, provenance }), trace: null };
     const tr: KitTrace = newTrace();
-    const c = generateKitDistrict(fp, { time, people, profile: source.profile, flat, seed, provenance, streetRoles: streets, trace: tr });
+    const c = generateKitDistrict(fp, { time, people, profile, flat, seed, provenance, streetRoles: streets, trace: tr });
     if (!inspect || flat || provenance || streets) return { city: c, trace: tr };
     const parts = c.parts.map((q) => ({ ...q, node: -1 }));
     tr.buildings.forEach((b, i) => {
       for (let k = b.parts[0]; k < b.parts[1]; k++) parts[k].node = i;
     });
     return { city: { ...c, parts }, trace: tr };
-  }, [fp, time, people, source, flat, seed, provenance, inspect, streets]);
+  }, [fp, time, people, profile, flat, seed, provenance, inspect, streets]);
   const sel = inspect && picked !== null ? trace?.buildings[picked] : undefined;
   return (
     <div className="kit-stage" data-ready="1" style={{ position: "absolute", inset: 0 }}>

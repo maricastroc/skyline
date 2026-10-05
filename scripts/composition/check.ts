@@ -7,9 +7,6 @@ import { realPage } from "../../src/lib/pixelcity/kit/real-page";
 import { withoutItems } from "../../src/lib/pixelcity/kit/items";
 import { structureOf, withoutStructure } from "../../src/lib/pixelcity/kit/structure";
 import { allocate } from "../../src/lib/pixelcity/kit/territory";
-import { generateKitDistrict as v6, newTrace as newTraceV6 } from "../../src/lib/pixelcity/kit-v6/district";
-import { realPage as realPageV6 } from "../../src/lib/pixelcity/kit-v6/real-page";
-import { allocate as allocateV6 } from "../../src/lib/pixelcity/kit-v6/territory";
 import type { Part } from "../../src/lib/pixelcity/types";
 import { vacantFingerprint } from "../../src/lib/pixelcity/vacant-fingerprint";
 import type { DomSnapshot, SnapshotNode } from "../../src/lib/snapshot/types";
@@ -125,35 +122,18 @@ const pages = new Map(DATASET.map((e) => [e.id, realPage(snap(e.id))] as const))
   check("the descriptor never reads a URL, host, site name or specific words", !/hostname|finalUrl|requestedUrl|siteName|country|essay|product/i.test(src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "")));
 }
 
-console.log("\n## additive only: everything the descriptor could disturb is identical to kit-v6");
+console.log("\n## additive only: the descriptor never moves the land");
 {
   let alloc = 0;
-  let terr = 0;
-  let cities = 0;
   for (const e of DATASET) {
     const p = pages.get(e.id)!;
-    const q = realPageV6(snap(e.id));
     const a = allocate(p.plan);
-    const b = allocateV6(q.plan);
+    const b = allocate(withoutStructure(p.plan));
     if (JSON.stringify({ path: a.path, owner: [...a.owner], segments: a.segments, lots: a.lots }) === JSON.stringify({ path: b.path, owner: [...b.owner], segments: b.segments, lots: b.lots })) alloc++;
-    const descriptive = withoutStructure(p.plan).territories.map((t) => {
-      const c = { ...t };
-      delete c.items;
-      return c;
-    });
-    if (JSON.stringify(descriptive) === JSON.stringify(q.plan.territories)) terr++;
-    const bare = withoutItems(withoutStructure(p.plan));
-    for (const flat of [false, true]) {
-      const c = generateKitDistrict(p.fp, { polishAssets: false, profile: bare, time: "day", seed: 7, flat, artDirection: false });
-      const d = v6(q.fp, { profile: q.plan, time: "day", seed: 7, flat });
-      if (sha(JSON.stringify([c.parts, c.signs])) === sha(JSON.stringify([d.parts, d.signs]))) cities++;
-    }
   }
-  check("allocation, path, owners, segments and lots byte-identical to kit-v6", alloc === DATASET.length, `${alloc}/${DATASET.length}`);
-  check("territories (key, weight, rawWeight, order, tier, mix, metrics, why…) identical to kit-v6 apart from the new field", terr === DATASET.length, `${terr}/${DATASET.length}`);
-  check("without the field, the city (normal and flat) is byte-identical to kit-v6", cities === DATASET.length * 2, `${cities}/${DATASET.length * 2}`);
+  check("structure on × off: allocation, path, owners, segments and lots byte-identical", alloc === DATASET.length, `${alloc}/${DATASET.length}`);
   const t = newTrace();
-  generateKitDistrict(pages.get("directory")!.fp, { polishAssets: false, profile: pages.get("directory")!.plan, time: "day", seed: 7, trace: t });
+  generateKitDistrict(pages.get("directory")!.fp, { profile: pages.get("directory")!.plan, time: "day", seed: 7, trace: t });
   check("the descriptor and its evidence are in the trace", t.plan!.territories.every((x) => x.structure && x.structure.evidence.length > 0));
 }
 
@@ -186,7 +166,7 @@ const planChange = (a: Map<number, number>, b: Map<number, number>, inside?: (k:
 };
 const fx = (sizes: number[]) => {
   const t = newTrace();
-  const c = generateKitDistrict(vacantFingerprint(), { polishAssets: false, profile: groupFixture(sizes, vacantFingerprint()), time: "day", seed: 7, flat: true, trace: t });
+  const c = generateKitDistrict(vacantFingerprint(), { profile: groupFixture(sizes, vacantFingerprint()), time: "day", seed: 7, flat: true, trace: t });
   return { c, t, r: raster(c.parts) };
 };
 console.log("\n## synthetic: same land, items, program, style and seed; only the organisation changes");
@@ -196,7 +176,7 @@ console.log("\n## synthetic: same land, items, program, style and seed; only the
   const rows = runs.map(({ s, t, r }) => ({ groups: s.length, passages: t.frontage[0]?.passages ?? 0, clusters: t.frontage[0]?.clusters ?? 1, change: planChange(base.r, r) }));
   console.log("  groups · clusters · passages · ground plan changed vs 1 group");
   for (const x of rows) console.log(`  ${String(x.groups).padStart(6)} · ${String(x.clusters).padStart(8)} · ${String(x.passages).padStart(8)} · ${(100 * x.change).toFixed(2)}%`);
-  check("1 group (no structure): no frontage plan, the kit-v6 layout", !base.t.frontage.length);
+  check("1 group (no structure): no frontage plan", !base.t.frontage.length);
   check("passages grow strictly with the number of groups", rows.every((x, i) => i === 0 || x.passages > rows[i - 1].passages), rows.map((x) => x.passages).join(" < "));
   check("the ground plan changes more as the organisation is more segmented", rows.every((x, i) => i === 0 || x.change > rows[i - 1].change), rows.map((x) => (100 * x.change).toFixed(2) + "%").join(" < "));
   check("segmentation is limited: ≤ 5% of the ground plan even at 12 groups", rows[rows.length - 1].change <= 0.05, `${(100 * rows[rows.length - 1].change).toFixed(2)}%`);
@@ -226,25 +206,21 @@ console.log("\n## real pages: only territories with structure change");
   const changed: string[] = [];
   for (const e of DATASET) {
     const p = pages.get(e.id)!;
-    const q = realPageV6(snap(e.id));
-    const c = generateKitDistrict(p.fp, { polishAssets: false, profile: withoutItems(p.plan), time: "day", seed: 7, flat: true, artDirection: false });
-    const d = v6(q.fp, { profile: q.plan, time: "day", seed: 7, flat: true });
+    const c = generateKitDistrict(p.fp, { profile: p.plan, time: "day", seed: 7, flat: true });
+    const d = generateKitDistrict(p.fp, { profile: withoutStructure(p.plan), time: "day", seed: 7, flat: true });
     if (sha(JSON.stringify(c.parts)) === sha(JSON.stringify(d.parts))) identical++;
     else changed.push(e.id);
   }
-  check("every city without structured parcelled land is byte-identical to kit-v6 (IKEA, Wikipedia ×2, Python Docs, GOV.UK, lobste.rs, Paul Graham…)", identical === DATASET.length - 1 && changed.join() === "directory", `${identical}/${DATASET.length} identical; changed: ${changed.join(", ")}`);
+  check("structure on × off: every city without structured parcelled land is byte-identical (IKEA, Wikipedia ×2, Python Docs, GOV.UK, lobste.rs, Paul Graham…)", identical === DATASET.length - 1 && changed.join() === "directory", `${identical}/${DATASET.length} identical; changed: ${changed.join(", ")}`);
 }
-const golden = () => {
-  const p = pages.get("directory")!;
-  return { p, q: realPageV6(snap("directory")) };
-};
+const golden = () => pages.get("directory")!;
 {
-  const { p, q } = golden();
+  const p = golden();
   const t = newTrace();
-  const tv = newTraceV6();
-  const c = generateKitDistrict(p.fp, { polishAssets: false, profile: withoutItems(p.plan), time: "day", seed: 7, flat: true, trace: t, artDirection: false });
-  const d = v6(q.fp, { profile: q.plan, time: "day", seed: 7, flat: true, trace: tv });
-  check("craigslist: same pieces (type, position, size) as kit-v6 — the land is untouched", JSON.stringify(t.pieces.map((x) => [x.territory, x.piece])) === JSON.stringify(tv.pieces.map((x) => [x.territory, x.piece])));
+  const tv = newTrace();
+  const c = generateKitDistrict(p.fp, { profile: p.plan, time: "day", seed: 7, flat: true, trace: t });
+  const d = generateKitDistrict(p.fp, { profile: withoutStructure(p.plan), time: "day", seed: 7, flat: true, trace: tv });
+  check("craigslist: structure on × off, same pieces (type, position, size) — the land is untouched", JSON.stringify(t.pieces.map((x) => [x.territory, x.piece])) === JSON.stringify(tv.pieces.map((x) => [x.territory, x.piece])));
   check("craigslist: 6 parcelled territories planned, every one from explicit headings", t.frontage.length === 6 && t.frontage.every((f) => p.plan.territories[f.territory].structure!.source === "explicit"), t.frontage.map((f) => `${f.groups}→${f.clusters}`).join(", "));
   check("craigslist: clusters ≤ ⌈slots/2⌉ (no micro-fragmentation)", t.frontage.every((f) => f.clusters <= Math.ceil(f.slots / 2)));
   const change = planChange(raster(d.parts), raster(c.parts));
@@ -253,13 +229,13 @@ const golden = () => {
 
 console.log("\n## stability: small changes of the page move few cuts");
 {
-  const { p } = golden();
+  const p = golden();
   const ti = p.plan.territories.findIndex((x) => x.kind === "remainder");
   const base = p.plan.territories[ti].structure!;
   const cityOf = (s: typeof base) => {
     const plan = withoutItems({ ...p.plan, territories: p.plan.territories.map((x, i) => (i === ti ? { ...x, structure: s } : x)) });
     const t = newTrace();
-    const c = generateKitDistrict(p.fp, { polishAssets: false, profile: plan, time: "day", seed: 7, flat: true, trace: t });
+    const c = generateKitDistrict(p.fp, { profile: plan, time: "day", seed: 7, flat: true, trace: t });
     return { r: raster(c.parts), f: t.frontage.find((x) => x.territory === ti)! };
   };
   const ref = cityOf(base);

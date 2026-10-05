@@ -5,15 +5,11 @@ import { building, type Program } from "../../src/lib/pixelcity/kit/buildings";
 import { Kit } from "../../src/lib/pixelcity/kit/core";
 import { generateKitDistrict, newTrace } from "../../src/lib/pixelcity/kit/district";
 import { generateSurfaceLab, labProgram, LAB_SETS, USES, type LabKit } from "../../src/lib/pixelcity/kit/lab";
-import { withoutItems } from "../../src/lib/pixelcity/kit/items";
-import { withoutStructure } from "../../src/lib/pixelcity/kit/structure";
 import { decodeOpening, DEPTH_M, FRAME_W, OPENING, punchedOpening, recessPart } from "../../src/lib/pixelcity/kit/openings";
 import { realPage } from "../../src/lib/pixelcity/kit/real-page";
 import { PATTERN_BITS, type Anatomy } from "../../src/lib/pixelcity/kit/surface";
-import { generateKitDistrict as v5 } from "../../src/lib/pixelcity/kit-v5/district";
-import { realPage as realPageV5 } from "../../src/lib/pixelcity/kit-v5/real-page";
 import { buildGamePalette } from "../../src/lib/pixelcity/palette";
-import { Surf, type Part } from "../../src/lib/pixelcity/types";
+import { Surf } from "../../src/lib/pixelcity/types";
 import { vacantFingerprint } from "../../src/lib/pixelcity/vacant-fingerprint";
 import { DATASET } from "../real-pages/dataset";
 
@@ -148,63 +144,31 @@ for (const use of USES) {
   check("recessed shop / lobby glazing stays in the ground floor or glazed base", above === 0 && glazing > 0, `${glazing} glazing parts${above ? `, ${above} above: ${worst}` : ""}`);
 }
 
-console.log("\n# Real pages against the frozen surface-grammar kit (kit-v5)");
-const before = new Map<string, string>();
-for (const l of readFileSync("docs/openings/corpus-before.txt", "utf8").split("\n")) {
-  const m = l.match(/^v5-(normal|flat|night) (\S+)\s+([0-9a-f]{40})/);
-  if (m) before.set(`${m[1]}/${m[2]}`, m[3]);
-}
-let frozen = 0;
-let flatSame = 0;
-let structural = 0;
-let foreign = 0;
+console.log("\n# Real pages");
 let windowed = 0;
 let treated = 0;
-let maxV5 = 0;
+let foreign = 0;
 const surfOn = new Set<number>([Surf.FRAMED, Surf.BANDS, Surf.STORE]);
 for (const e of DATASET) {
-  const p5 = realPageV5(snap(e.id));
-  const p6 = realPage(snap(e.id));
-  for (const mode of ["normal", "flat", "night"] as const) {
-    const a = v5(p5.fp, { profile: p5.plan, time: mode === "night" ? "night" : "day", seed: 7, flat: mode === "flat" });
-    if (sha(JSON.stringify([a.parts, a.signs])) === before.get(`${mode}/${e.id}`)) frozen++;
-    for (const q of a.parts) maxV5 = Math.max(maxV5, q.variant ?? 0);
-    const b = generateKitDistrict(p6.fp, { polishAssets: false, profile: withoutItems(withoutStructure(p6.plan)), time: mode === "night" ? "night" : "day", seed: 7, flat: mode === "flat", artDirection: false });
-    if (mode === "flat") {
-      if (sha(JSON.stringify([b.parts, b.signs])) === before.get(`flat/${e.id}`)) flatSame++;
-      continue;
-    }
-    if (a.parts.length !== b.parts.length) {
-      structural++;
-      continue;
-    }
-    for (let k = 0; k < a.parts.length; k++) {
-      const x: Part = a.parts[k];
-      const y: Part = b.parts[k];
-      const vx = x.variant ?? 0;
+  const p = realPage(snap(e.id));
+  for (const time of ["day", "night"] as const)
+    for (const y of generateKitDistrict(p.fp, { profile: p.plan, time, seed: 7 }).parts) {
       const vy = y.variant ?? 0;
-      if (x.surf !== y.surf || x.x !== y.x || x.y !== y.y || x.z !== y.z || x.w !== y.w || x.h !== y.h || x.d !== y.d || x.mesh !== y.mesh) structural++;
-      else if ((vy & ~OPENING_MASK) !== vx) structural++;
       if ((vy & OPENING_MASK) !== 0 && !surfOn.has(y.surf)) foreign++;
       if (surfOn.has(y.surf)) {
         windowed++;
         if ((vy & OPENING_MASK) !== 0) treated++;
       }
     }
-  }
 }
-check("kit-v5 reproduces docs/openings/corpus-before.txt (normal, flat, night)", frozen === DATASET.length * 3, `${frozen}/${DATASET.length * 3}`);
-check("no frozen kit uses the openings bits", maxV5 < OPENING, `kit-v5 max variant ${maxV5}`);
-check("flat=1 is byte-identical to the frozen kit", flatSame === DATASET.length, `${flatSame}/${DATASET.length}`);
-check("same parts, positions, sizes and surfaces as kit-v5; variants differ only by openings bits", structural === 0, `${structural} differences`);
 check("openings bits only on windowed surfaces (punched, ribbon, shop glazing)", foreign === 0, `${foreign} elsewhere`);
 check("most windowed parts get a treatment", treated > windowed * 0.6, `${treated}/${windowed} (curtain walls and families outside the grammar stay flush)`);
 {
   const a = realPage(snap("reference"));
   const t1 = newTrace();
   const t2 = newTrace();
-  const c1 = generateKitDistrict(a.fp, { polishAssets: false, profile: a.plan, time: "day", seed: 7, trace: t1 });
-  const c2 = generateKitDistrict(a.fp, { polishAssets: false, profile: a.plan, time: "day", seed: 7, trace: t2 });
+  const c1 = generateKitDistrict(a.fp, { profile: a.plan, time: "day", seed: 7, trace: t1 });
+  const c2 = generateKitDistrict(a.fp, { profile: a.plan, time: "day", seed: 7, trace: t2 });
   const op = (t: typeof t1) => JSON.stringify(t.buildings.map((b) => b.anatomy.map((A) => A.opening)));
   check("same page + seed → same openings and same city", op(t1) === op(t2) && sha(JSON.stringify(c1.parts)) === sha(JSON.stringify(c2.parts)));
 }

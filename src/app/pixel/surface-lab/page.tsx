@@ -18,7 +18,6 @@ export default async function SurfaceLabPage({ searchParams }: PageProps<"/pixel
       fp={vacantFingerprint()}
       set={set}
       style={style}
-      version={one(sp.v) === "4" ? 4 : one(sp.v) === "5" ? 5 : 6}
       light={(["front", "side", "shadow"] as string[]).includes(one(sp.light) ?? "") ? (one(sp.light) as LabLight) : "default"}
       time={time}
       flat={one(sp.flat) === "1"}

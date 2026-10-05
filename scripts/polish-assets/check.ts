@@ -3,8 +3,6 @@ import { existsSync, readFileSync } from "node:fs";
 import ts from "typescript";
 import { generateKitDistrict, newTrace, type KitTrace } from "../../src/lib/pixelcity/kit/district";
 import { realPage } from "../../src/lib/pixelcity/kit/real-page";
-import { generateKitDistrict as g12, newTrace as newTrace12, type KitTrace as KitTrace12 } from "../../src/lib/pixelcity/kit-v12/district";
-import { realPage as r12 } from "../../src/lib/pixelcity/kit-v12/real-page";
 import type { Part, SignSpec } from "../../src/lib/pixelcity/types";
 import { generateVacantWorld } from "../../src/lib/pixelcity/vacant";
 import { vacantFingerprint } from "../../src/lib/pixelcity/vacant-fingerprint";
@@ -20,7 +18,7 @@ const sha = (v: unknown) => createHash("sha1").update(JSON.stringify(v)).digest(
 const snap = (id: string) => JSON.parse(readFileSync(`docs/real-pages/snapshots/${id}.json`, "utf8")) as DomSnapshot;
 const MODES = [["day", false], ["golden", false], ["night", false], ["day", true]] as const;
 
-const decided = (t: KitTrace | KitTrace12) =>
+const decided = (t: KitTrace) =>
   sha({
     grammar: t.grammar,
     plan: t.plan,
@@ -62,7 +60,7 @@ const box = (ps: Part[]) => {
 };
 const panelOf = (ps: Part[]) => ps.find((p) => p.mesh === "glow" && p.w > 0.3)!;
 
-let ablation = 0, decisions = 0, settings = 0, rest = 0, assets = 0, plantsIn = 0, panels = 0, signs = 0;
+let decisions = 0, settings = 0, rest = 0, assets = 0, plantsIn = 0, panels = 0, signs = 0;
 let nPlants = 0, nScreens = 0;
 const notes: string[] = [];
 const drawn = new Map<string, SignSpec>();
@@ -71,20 +69,15 @@ toDraw(generateVacantWorld(vacantFingerprint(), "lot").signs);
 for (const e of DATASET) {
   const s = snap(e.id);
   const p = realPage(s);
-  const q = r12(s);
   for (const [time, flat] of MODES) {
     const key = `${e.id}/${time}${flat ? "/flat" : ""}`;
     const tOn = newTrace();
     const tOff = newTrace();
-    const t12 = newTrace12();
     const on = generateKitDistrict(p.fp, { profile: p.plan, time, seed: 7, flat, trace: tOn });
     const off = generateKitDistrict(p.fp, { profile: p.plan, time, seed: 7, flat, trace: tOff, polishAssets: false });
-    const v12 = g12(q.fp, { profile: q.plan, time, seed: 7, flat, trace: t12 });
-    if (sha(off) === sha(v12)) ablation++;
-    else notes.push(`${key}: polishAssets:false differs from kit-v12`);
-    if (decided(tOn) === decided(t12)) decisions++;
+    if (decided(tOn) === decided(tOff)) decisions++;
     else notes.push(`${key}: a decision moved`);
-    if (setting(on) === setting(v12)) settings++;
+    if (setting(on) === setting(off)) settings++;
     else notes.push(`${key}: palette / haze / scenery moved`);
     const fullOn = flat ? generateKitDistrict(p.fp, { profile: p.plan, time, seed: 7 }).parts : null;
     const fullOff = flat ? generateKitDistrict(p.fp, { profile: p.plan, time, seed: 7, polishAssets: false }).parts : null;
@@ -123,9 +116,8 @@ for (const e of DATASET) {
 }
 const n = DATASET.length * MODES.length;
 const nLit = DATASET.length * (MODES.length - 1);
-check("polishAssets: false → kit-v12 (Art Direction v1), byte for byte (day, golden, night, flat)", ablation === n, `${ablation}/${n}`);
-check("with the polish on, every decision is kit-v12's (plan, allocation, buildings, streets, life, environment)", decisions === n, `${decisions}/${n}`);
-check("with the polish on, palette, haze, scenery and smoke are kit-v12's", settings === n, `${settings}/${n}`);
+check("polish on × off: every decision identical (plan, allocation, buildings, streets, life, environment)", decisions === n, `${decisions}/${n}`);
+check("polish on × off: palette, haze, scenery and smoke identical", settings === n, `${settings}/${n}`);
 check("every part outside the rooftop plant and the billboards is byte-identical to the ablation", rest === n, `${rest}/${n}`);
 check("the same rooftop plants and billboards, in the same order (none added, none removed)", assets === n, `${assets}/${n}`);
 check("every rooftop plant inside its old footprint and no taller", plantsIn === nLit, `${plantsIn}/${nLit} cities, ${nPlants} plants`);

@@ -26,7 +26,7 @@ for (const id of ids) {
   detail.push(`\n## ${NAME[id] ?? id} (${id})`, ...e.why.map((w) => `  ${w}`));
   detail.push(`  day   sky ${lch(d.palette.sky.top)} → ${lch(d.palette.sky.bottom)} · sun ${lch(d.palette.sun.color)} ×${d.palette.sun.intensity.toFixed(2)} · ambient ×${d.palette.ambient.intensity.toFixed(2)}`);
   detail.push(`  night sky ${lch(n.palette.sky.top)} → ${lch(n.palette.sky.bottom)} · moon ${lch(n.palette.sun.color)} ×${n.palette.sun.intensity.toFixed(2)} · ambient ×${n.palette.ambient.intensity.toFixed(2)}`);
-  detail.push(`  kit-v11 day sky ${lch(base.sky.top)} → ${lch(base.sky.bottom)} (the same for every page)`);
+  detail.push(`  atmosphere off day sky ${lch(base.sky.top)} → ${lch(base.sky.bottom)} (the same for every page)`);
 }
 console.log(rows.join("\n"));
 console.log(detail.join("\n"));
