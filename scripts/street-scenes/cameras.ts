@@ -45,6 +45,15 @@ for (const id of PAGES) {
     const st = t.stories?.find((x) => x.kind === kind);
     if (st) out[id][kind] = `view=close&focus=${f([st.x, st.z])}`;
   }
+  const t2 = newTrace();
+  const all = generateKitDistrict(p.fp, { profile: p.plan, trace: t2 });
+  const foci = all.parts.slice(...t2.scene!.foci!);
+  const first = (ps: typeof foci, ok: (q: (typeof foci)[number]) => boolean) => ps.find(ok);
+  const shots: Array<[string, (typeof foci)[number] | undefined]> = [
+    ["door", first(foci, (q) => q.mesh === "glow" && q.w === 0.1)],
+    ["taxi", first(foci, (q) => q.mesh === "sprite")],
+  ];
+  for (const [name, q] of shots) if (q) out[id][name] = `view=close&focus=${f([q.x, q.z])}`;
   console.log(id, t.grammar?.time, JSON.stringify(out[id]));
 }
 writeFileSync("scripts/street-scenes/cameras.json", JSON.stringify(out, null, 1) + "\n");
