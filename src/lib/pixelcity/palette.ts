@@ -50,11 +50,12 @@ export function buildGamePalette(fp: SiteFingerprint, g: CityGrammar): GamePalet
     retro: [oklch(0.6, 0.15, 32), oklch(0.86, 0.07, 85), oklch(0.68, 0.11, 175), oklch(0.74, 0.12, 60), oklch(0.62, 0.12, 250)],
     tech: [oklch(0.42, 0.015, 250), oklch(0.32, 0.02, 262), oklch(0.56, 0.02, 240)],
   };
+  const dusk = (c: RGB) => (night ? mix(c, oklch(0.3, 0.05, 270), 0.18) : c);
   const roofs: Record<ArchStyle, RGB[]> = {
-    classic: [oklch(0.52, 0.13, 32), oklch(0.44, 0.04, 250), oklch(0.55, 0.12, h1)],
+    classic: [oklch(0.5, 0.1, 36), oklch(0.43, 0.035, 250), oklch(0.36, 0.02, 265), oklch(0.46, 0.06, 55), oklch(0.47, 0.03, 215), oklch(0.52, 0.085, h1)].map(dusk),
     modern: [oklch(0.72, 0.01, 250), oklch(0.6, 0.015, 250), oklch(0.62, 0.12, h1)],
     soft: [oklch(0.74, 0.11, h1), oklch(0.78, 0.09, h2), oklch(0.8, 0.08, 20)],
-    retro: [oklch(0.4, 0.03, 50), oklch(0.5, 0.12, 30), oklch(0.62, 0.17, h1)],
+    retro: [oklch(0.4, 0.03, 50), oklch(0.47, 0.09, 32), oklch(0.36, 0.02, 260), oklch(0.56, 0.12, h1)].map(dusk),
     tech: [oklch(0.26, 0.02, 260), oklch(0.36, 0.03, 250), oklch(0.62, 0.15, h1)],
   };
 

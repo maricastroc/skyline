@@ -48,7 +48,9 @@ export function programFor(b: Brief, g: CityGrammar, p: GamePalette, kit: Kit, i
   const pick = <T>(list: T[], k: number) => list[Math.floor(r(k) * list.length) % list.length];
   const wall = pick(p.walls[style], 2);
   const accent = p.accents[(i + Math.floor(r(3) * 4)) % p.accents.length];
-  const roofColor = style === "classic" ? pick(p.roofs.classic, 4) : style === "retro" ? mix(pick(p.roofs.retro, 4), [0.9, 0.9, 0.9], 0.25) : pick(p.roofs[style], 4);
+  const roof0 = style === "classic" ? pick(p.roofs.classic, 4) : style === "retro" ? mix(pick(p.roofs.retro, 4), [0.9, 0.9, 0.9], 0.25) : pick(p.roofs[style], 4);
+  const weather = r(15);
+  const roofColor = mix(roof0, weather < 0.5 ? [0.1, 0.1, 0.12] : [0.82, 0.8, 0.76], Math.abs(weather - 0.5) * 0.16);
   const vert = 0.6 + g.verticality * 0.9;
   const floorsBase = b.role === "landmark" ? 12 : b.role === "major" ? 4 + Math.round(b.weight * 10) : b.role === "support" ? 1 : 2 + Math.round(Math.log2(1 + b.weight * 40));
   const floors = Math.max(1, Math.round(floorsBase * vert + (r(5) - 0.5) * 2));
