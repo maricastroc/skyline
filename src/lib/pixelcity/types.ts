@@ -33,6 +33,7 @@ export const Surf = {
 export interface Part {
   mesh: PartMesh;
   node: number;
+  unit?: number;
   x: number;
   y: number;
   z: number;

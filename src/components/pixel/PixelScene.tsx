@@ -51,8 +51,10 @@ export interface PixelSceneProps {
   focus?: [number, number] | null;
   highlight?: [number, number] | null;
   soft?: [number, number] | null;
+  focusUnit?: number | null;
+  focusArea?: number | null;
   spotlight?: boolean;
-  onHover?: (node: number | null, point: [number, number] | null) => void;
+  onHover?: (node: number | null, point: [number, number] | null, unit?: number | null) => void;
   onPick?: (node: number | null) => void;
   onCanvas?: (canvas: HTMLCanvasElement) => void;
   lift?: number;
@@ -119,6 +121,7 @@ interface Batch {
   meta: Float32Array;
   rect: Float32Array;
   nodeOf: Int32Array;
+  unitOf: Int32Array;
 }
 
 const tmpQ = new THREE.Quaternion();
@@ -146,6 +149,7 @@ function buildBatches(parts: Part[]): Batch[] {
       meta: new Float32Array(n * 4),
       rect: new Float32Array(n * 4),
       nodeOf: new Int32Array(n),
+      unitOf: new Int32Array(n),
     };
     list.forEach((p, k) => {
       if (p.rotX || p.rotZ) {
@@ -162,6 +166,7 @@ function buildBatches(parts: Part[]): Batch[] {
       b.meta.set([p.surf, p.lit, p.slot ?? -1, p.variant ?? 0], k * 4);
       if (p.rect) b.rect.set(p.rect, k * 4);
       b.nodeOf[k] = p.node;
+      b.unitOf[k] = p.unit ?? -1;
     });
     out.push(b);
   }
@@ -318,7 +323,7 @@ const idOf = (c: PixelCity) => {
 
 type StageProps = Omit<PixelSceneProps, "onCanvas"> & { scales: PixelScales };
 
-function Stage({ city, view, interactive = true, mode = "city", focus = null, highlight = null, soft = null, spotlight = false, lift = 0, plan = null, onBuildTime, onHover, onPick, scales, exploreZoom, skip = false, cameraRef }: StageProps) {
+function Stage({ city, view, interactive = true, mode = "city", focus = null, highlight = null, soft = null, focusUnit = null, focusArea = null, spotlight = false, lift = 0, plan = null, onBuildTime, onHover, onPick, scales, exploreZoom, skip = false, cameraRef }: StageProps) {
   const { camera } = useThree();
   useEffect(() => {
     if (cameraRef) cameraRef.current = camera;
@@ -362,6 +367,8 @@ function Stage({ city, view, interactive = true, mode = "city", focus = null, hi
           dither={scales.artPx / scales.renderPx}
           highlight={c === active ? highlight : null}
           soft={c === active ? soft : null}
+          focusUnit={c === active ? focusUnit : null}
+          focusArea={c === active ? focusArea : null}
           spotlight={c === active && spotlight}
           skip={c === city && skip}
           onMeshes={c === active ? onMeshes : undefined}
@@ -422,6 +429,8 @@ function Layer({
   dither,
   highlight,
   soft,
+  focusUnit,
+  focusArea,
   spotlight,
   skip,
   onMeshes,
@@ -434,6 +443,8 @@ function Layer({
   dither: number;
   highlight: [number, number] | null;
   soft: [number, number] | null;
+  focusUnit: number | null;
+  focusArea: number | null;
   spotlight: boolean;
   skip: boolean;
   onMeshes?: (m: THREE.InstancedMesh[]) => void;
@@ -512,6 +523,8 @@ function Layer({
   const hl1 = highlight?.[1] ?? -1;
   const sf0 = soft?.[0] ?? -1;
   const sf1 = soft?.[1] ?? -1;
+  const fu = focusUnit ?? -1;
+  const fa = focusArea ?? -1;
   useEffect(() => {
     for (const m of meshes) {
       const b = m.userData.batch as Batch;
@@ -519,7 +532,7 @@ function Layer({
       let changed = false;
       for (let k = 0; k < b.count; k++) {
         const node = b.nodeOf[k];
-        const v = hl0 >= 0 && node >= hl0 && node < hl1 ? 1 : sf0 >= 0 && node >= sf0 && node < sf1 ? 0.45 : 0;
+        const v = fu >= 0 && b.unitOf[k] === fu ? 3 : fa >= 0 && node === fa ? 2.35 : hl0 >= 0 && node >= hl0 && node < hl1 ? 1 : sf0 >= 0 && node >= sf0 && node < sf1 ? 0.45 : 0;
         if (b.anim[k * 4 + 3] !== v) {
           b.anim[k * 4 + 3] = v;
           changed = true;
@@ -530,9 +543,9 @@ function Layer({
         attr.needsUpdate = true;
       }
     }
-  }, [meshes, hl0, hl1, sf0, sf1]);
+  }, [meshes, hl0, hl1, sf0, sf1, fu, fa]);
 
-  const spot = spotlight && hl0 >= 0 ? 1 : 0;
+  const spot = !spotlight ? 0 : hl0 >= 0 || fa >= 0 ? 1 : fu >= 0 ? 0.7 : 0;
   useFrame((_, dt) => {
     const u = uniforms;
     u.uTime.value += Math.min(dt, 0.05);
@@ -710,6 +723,7 @@ function Rig({
     mouse: new THREE.Vector2(),
     inside: false,
     hover: -2,
+    hoverU: -2,
     offset: new THREE.Vector2(),
     hx: NaN,
     hz: NaN,
@@ -926,7 +940,7 @@ function Rig({
 
     if (interactive && s.inside && !s.drag?.moved) {
       ray.setFromCamera(s.mouse, cam);
-      let best: { node: number; d: number } | null = null;
+      let best: { node: number; unit: number; d: number } | null = null;
       let first: THREE.Intersection | null = null;
       const hits: THREE.Intersection[] = [];
       for (const m of meshes.current ?? []) {
@@ -935,23 +949,27 @@ function Rig({
         for (const h of hits) {
           if (h.instanceId === undefined) continue;
           if (!first || h.distance < first.distance) first = h;
-          const node = (m.userData.batch as Batch).nodeOf[h.instanceId];
+          const batch = m.userData.batch as Batch;
+          const node = batch.nodeOf[h.instanceId];
           if (node < 0) continue;
-          if (!best || h.distance < best.d) best = { node, d: h.distance };
+          if (!best || h.distance < best.d) best = { node, unit: batch.unitOf[h.instanceId], d: h.distance };
         }
       }
       const node = best?.node ?? -1;
+      const unit = best?.unit ?? -1;
       const gp = first ? first.point : ray.ray.intersectPlane(ground, new THREE.Vector3());
       const px = gp ? Math.round(gp.x * 2) / 2 : NaN;
       const pz = gp ? Math.round(gp.z * 2) / 2 : NaN;
-      if (node !== s.hover || px !== s.hx || pz !== s.hz) {
+      if (node !== s.hover || unit !== s.hoverU || px !== s.hx || pz !== s.hz) {
         s.hover = node;
+        s.hoverU = unit;
         s.hx = px;
         s.hz = pz;
-        onHover?.(node >= 0 ? node : null, gp ? [px, pz] : null);
+        onHover?.(node >= 0 ? node : null, gp ? [px, pz] : null, node >= 0 && unit >= 0 ? unit : null);
       }
     } else if (!s.inside && s.hover !== -1) {
       s.hover = -1;
+      s.hoverU = -1;
       s.hx = NaN;
       onHover?.(null, null);
     }

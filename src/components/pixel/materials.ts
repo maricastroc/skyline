@@ -458,7 +458,9 @@ vec3 pxLampC = vec3(0.0);
   }
   if (pxEmit <= 0.0 && uNight > 0.01) pxLampC = pxLamp(vWorld, step(0.5, vWN.y)) * uNight * uLights;
   if (vHighlight < 0.01) diffuseColor.rgb *= 1.0 - 0.55 * uFocus;
-  if (vHighlight > 0.01) diffuseColor.rgb = mix(diffuseColor.rgb, uHighlight, 0.4 * vHighlight * (0.82 + 0.18 * sin(uTime * 5.0)));
+  else if (vHighlight < 1.5) diffuseColor.rgb = mix(diffuseColor.rgb, uHighlight, 0.4 * vHighlight * (0.82 + 0.18 * sin(uTime * 5.0)));
+  else if (vHighlight < 2.9) diffuseColor.rgb *= 1.0 - 0.2 * uFocus;
+  else diffuseColor.rgb = diffuseColor.rgb * 1.08 + 0.02;
   diffuseColor.rgb = mix(diffuseColor.rgb, uHighlight * 1.15 + 0.1, 0.75 * pxRevealEdge());
 }
 `;
@@ -499,7 +501,9 @@ export function createGlowMaterial(uniforms: PixelUniforms): THREE.MeshBasicMate
       float k = mix(0.75, 1.0 + vMeta.y * 1.4, uNight) * mix(0.25, 1.0, blink);
       diffuseColor.rgb *= max(k, 0.55 + vMeta.y * 0.25) * mix(0.45, 1.0, uLights);
       if (vHighlight < 0.01) diffuseColor.rgb *= 1.0 - 0.55 * uFocus;
-  if (vHighlight > 0.01) diffuseColor.rgb = mix(diffuseColor.rgb, uHighlight, 0.5 * vHighlight * (0.82 + 0.18 * sin(uTime * 5.0)));`,
+  else if (vHighlight < 1.5) diffuseColor.rgb = mix(diffuseColor.rgb, uHighlight, 0.5 * vHighlight * (0.82 + 0.18 * sin(uTime * 5.0)));
+  else if (vHighlight < 2.9) diffuseColor.rgb *= 1.0 - 0.2 * uFocus;
+  else diffuseColor.rgb *= 1.1;`,
     );
   };
   m.customProgramCacheKey = () => "pixel-glow";
@@ -536,7 +540,9 @@ export function createAtlasMaterial(uniforms: PixelUniforms, atlas: THREE.Textur
         `pxRevealClip();
          diffuseColor.rgb *= mix(0.92, 1.25, uNight);
          if (vHighlight < 0.01) diffuseColor.rgb *= 1.0 - 0.55 * uFocus;
-  if (vHighlight > 0.01) diffuseColor.rgb = mix(diffuseColor.rgb, uHighlight, 0.35 * vHighlight * (0.82 + 0.18 * sin(uTime * 5.0)));`,
+  else if (vHighlight < 1.5) diffuseColor.rgb = mix(diffuseColor.rgb, uHighlight, 0.35 * vHighlight * (0.82 + 0.18 * sin(uTime * 5.0)));
+  else if (vHighlight < 2.9) diffuseColor.rgb *= 1.0 - 0.2 * uFocus;
+  else diffuseColor.rgb = diffuseColor.rgb * 1.08 + 0.02;`,
       );
   };
   m.customProgramCacheKey = () => `pixel-atlas-${mode}`;
@@ -567,7 +573,8 @@ export function createSpriteMaterial(uniforms: PixelUniforms, atlas: THREE.Textu
         "#include <color_fragment>",
         `pxRevealClip();
          diffuseColor.rgb *= mix(1.0, 0.6, uNight) + 0.8 * pxLamp(vWorld, 1.0) * uNight * uLights;
-         if (vHighlight < 0.01) diffuseColor.rgb *= 1.0 - 0.55 * uFocus;`,
+         if (vHighlight < 0.01) diffuseColor.rgb *= 1.0 - 0.55 * uFocus;
+         else if (vHighlight >= 1.5 && vHighlight < 2.9) diffuseColor.rgb *= 1.0 - 0.2 * uFocus;`,
       );
   };
   m.customProgramCacheKey = () => "pixel-sprite";

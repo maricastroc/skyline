@@ -67,9 +67,18 @@ export function buildKitCity(doc: NormalizedDocument): KitCity {
   const trace = newTrace();
   const raw = generateKitDistrict(fp, { profile: plan, trace });
   const owner = new Int32Array(raw.parts.length).fill(-1);
-  for (const pc of trace.pieces) for (let k = pc.parts[0]; k < pc.parts[1]; k++) owner[k] = pc.territory;
+  const unit = new Int32Array(raw.parts.length).fill(-1);
+  trace.pieces.forEach((pc, i) => {
+    for (let k = pc.parts[0]; k < pc.parts[1]; k++) {
+      owner[k] = pc.territory;
+      unit[k] = trace.buildings.length + i;
+    }
+  });
+  trace.buildings.forEach((b, i) => {
+    for (let k = b.parts[0]; k < b.parts[1]; k++) unit[k] = i;
+  });
   // node = territory index (-1: streets, scenery), so hover and highlight work per territory.
-  const parts: Part[] = raw.parts.map((q, k) => ({ ...q, node: owner[k] }));
+  const parts: Part[] = raw.parts.map((q, k) => ({ ...q, node: owner[k], unit: unit[k] }));
   const city: PixelCity = { ...raw, parts, siteName: sem.siteName, semantics: sem };
   const lots = trace.alloc!.lots;
   const geo = territoryGeometry(trace, parts);

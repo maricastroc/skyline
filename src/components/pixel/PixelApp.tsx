@@ -138,6 +138,7 @@ export function PixelApp({
   }, []);
 
   const [hoverT, setHoverT] = useState<number | null>(null);
+  const [hoverU, setHoverU] = useState<number | null>(null);
   const [mapT, setMapT] = useState<number | null>(null);
   const [pinned, setPinned] = useState<number | null>(null);
   const [cameraT, setCameraT] = useState<number | null>(null);
@@ -195,7 +196,10 @@ export function PixelApp({
     }
   }
 
-  const onHover = useCallback((node: number | null) => setHoverT((prev) => (prev === node ? prev : node)), []);
+  const onHover = useCallback((node: number | null, _at: [number, number] | null, unit?: number | null) => {
+    setHoverT((prev) => (prev === node ? prev : node));
+    setHoverU((prev) => (prev === (unit ?? null) ? prev : (unit ?? null)));
+  }, []);
   const onPick = useCallback((node: number | null) => {
     if (!live.current.built) return;
     setPinned((prev) => (node !== null && prev === node ? null : node));
@@ -264,8 +268,12 @@ export function PixelApp({
   const linked = building || phase !== "city" ? null : drawerOpen ? (mapT ?? hoverT) : (hoverT ?? pinned);
   let highlight: [number, number] | null = null;
   let soft: [number, number] | null = null;
+  const inCity = phase === "city" && !building && !drawerOpen && linked !== null;
+  const vast = inCity && lotsOf(linked!) / 256 >= 0.4;
+  const focusUnit = inCity && hoverT !== null ? hoverU : null;
+  const focusArea = inCity && !vast ? linked : null;
   if (building && group) highlight = [group.first, group.last + 1];
-  else if (linked !== null) highlight = [linked, linked + 1];
+  else if (linked !== null && !inCity) highlight = [linked, linked + 1];
   if (phase === "city" && pinned !== null && pinned !== linked) soft = [pinned, pinned + 1];
   const lead = group ? (() => {
     let best = group.first;
@@ -549,6 +557,8 @@ export function PixelApp({
         interactive={phase === "city"}
         highlight={highlight}
         soft={soft}
+        focusUnit={focusUnit}
+        focusArea={focusArea}
         spotlight={phase === "city" && linked !== null && (drawerOpen || !zoomedIn)}
         onHover={onHover}
         onPick={onPick}
