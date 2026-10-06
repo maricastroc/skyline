@@ -1067,7 +1067,14 @@
   position: absolute;
   inset: 0;
   pointer-events: none !important;
-  background: radial-gradient(56% 50% at 0% 100%, rgba(6, 6, 14, 0.72), rgba(6, 6, 14, 0.4) 48%, transparent 76%);
+  background:
+    radial-gradient(62% 58% at 24% 78%, rgba(6, 6, 14, 0.62), rgba(6, 6, 14, 0.48) 42%, rgba(6, 6, 14, 0.2) 72%, transparent 100%),
+    radial-gradient(56% 50% at 0% 100%, rgba(6, 6, 14, 0.42), transparent 72%);
+}
+@media (max-width: 640px) {
+  .sk-homescrim {
+    background: linear-gradient(to top, rgba(6, 6, 14, 0.78), rgba(6, 6, 14, 0.58) 30%, rgba(6, 6, 14, 0.32) 42%, transparent 54%);
+  }
 }
 .sk-ask:has(.sk-hero) {
   width: min(680px, calc(100vw - 40px));
@@ -1087,8 +1094,9 @@
 .sk-sub {
   margin: 16px 0 26px;
   font-size: clamp(17px, 1.45vw, 21px);
+  font-weight: 500;
   line-height: 1.3;
-  color: var(--sk-fg-2);
+  color: rgba(246, 244, 239, 0.88);
   letter-spacing: -0.01em;
 }
 .sk-try .arrow {
