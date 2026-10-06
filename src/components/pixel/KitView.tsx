@@ -25,22 +25,24 @@ export interface KitViewProps {
   provenance?: boolean;
   inspect?: boolean;
   streets?: boolean;
+  actors?: boolean;
+  scenes?: boolean;
   focus?: [number, number];
   zoom?: number;
 }
 
-export function KitView({ fp, time, people, view, profile, flat, seed, provenance, inspect, streets, focus, zoom }: KitViewProps) {
+export function KitView({ fp, time, people, view, profile, flat, seed, provenance, inspect, streets, actors, scenes, focus, zoom }: KitViewProps) {
   const [picked, setPicked] = useState<number | null>(null);
   const { city, trace } = useMemo(() => {
     const tr: KitTrace = newTrace();
-    const c = generateKitDistrict(fp, { time, people, profile, flat, seed, provenance, streetRoles: streets, trace: tr });
+    const c = generateKitDistrict(fp, { time, people, profile, flat, seed, provenance, streetRoles: streets, actors, scenes, trace: tr });
     if (!inspect || flat || provenance || streets) return { city: c, trace: tr };
     const parts = c.parts.map((q) => ({ ...q, node: -1 }));
     tr.buildings.forEach((b, i) => {
       for (let k = b.parts[0]; k < b.parts[1]; k++) parts[k].node = i;
     });
     return { city: { ...c, parts }, trace: tr };
-  }, [fp, time, people, profile, flat, seed, provenance, inspect, streets]);
+  }, [fp, time, people, profile, flat, seed, provenance, inspect, streets, actors, scenes]);
   const sel = inspect && picked !== null ? trace?.buildings[picked] : undefined;
   return (
     <div className="kit-stage" data-ready="1" style={{ position: "absolute", inset: 0 }}>

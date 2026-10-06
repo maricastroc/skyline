@@ -136,8 +136,8 @@ for (const r of runs)
   for (const time of ["day", "night"] as const) {
     const ta: KitTrace = newTrace();
     const tb: KitTrace = newTrace();
-    const a = generateKitDistrict(r.p.fp, { profile: r.p.plan, time, seed: 7, trace: ta });
-    const b = generateKitDistrict(r.p.fp, { profile: r.p.plan, time, seed: 7, trace: tb, actors: false });
+    const a = generateKitDistrict(r.p.fp, { profile: r.p.plan, time, seed: 7, trace: ta, scenes: false });
+    const b = generateKitDistrict(r.p.fp, { profile: r.p.plan, time, seed: 7, trace: tb, actors: false, scenes: false });
     const cut = (c: Part[], t: KitTrace) => [c.slice(0, t.range[0]), c.slice(...t.range), c.slice(t.range[1], t.scene!.furniture[0]), c.slice(...t.scene!.furniture), c.slice(t.scene!.furniture[1])];
     const A = cut(a.parts, ta);
     const B = cut(b.parts, tb);
@@ -153,6 +153,44 @@ check("actors on × off: everything but people identical outside the sidewalk fu
 check("actors on × off: the same sidewalk furniture, only regrouped", furnished === nA, `${furnished}/${nA}`);
 check("every person the actors seat sits on a bench, stool or fountain rim", seatedOn === nA, `${seatedOn}/${nA}`);
 check("actors seat people where the corpus has seats", seatedMore >= runs.length, `${seatedMore}/${nA} cities with more people seated`);
+
+const solidBox = (q: Part) => {
+  if (q.mesh === "glow" || q.mesh === "sign" || q.y + q.h <= 0.125 || q.y > 1.2) return null;
+  if (q.mesh === "sprite") return [q.x - 0.1, q.x + 0.1, q.z - 0.1, q.z + 0.1, q.y, q.y + q.h];
+  const c = Math.abs(Math.cos(q.rotY));
+  const s = Math.abs(Math.sin(q.rotY));
+  const hw = (c * q.w + s * q.d) / 2 - 0.01;
+  const hd = (s * q.w + c * q.d) / 2 - 0.01;
+  return [q.x - hw, q.x + hw, q.z - hd, q.z + hd, q.y, q.y + q.h];
+};
+let prefix = 0;
+let onStreet = 0;
+let clear = 0;
+let sparse = 0;
+let storyCount = 0;
+for (const r of runs)
+  for (const time of ["day", "night"] as const) {
+    const ta: KitTrace = newTrace();
+    const a = generateKitDistrict(r.p.fp, { profile: r.p.plan, time, seed: 7, trace: ta });
+    const b = generateKitDistrict(r.p.fp, { profile: r.p.plan, time, seed: 7, scenes: false });
+    const tail = a.parts.slice(b.parts.length);
+    if (JSON.stringify(a.parts.slice(0, b.parts.length)) === JSON.stringify(b.parts) && JSON.stringify({ ...a, parts: null }) === JSON.stringify({ ...b, parts: null }) && JSON.stringify(ta.scene!.stories) === JSON.stringify([b.parts.length, a.parts.length])) prefix++;
+    const blocks: Array<[number, number]> = [];
+    for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) blocks.push([(LINES[i] + LINES[i + 1]) / 2, (LINES[j] + LINES[j + 1]) / 2]);
+    if (tail.every((q) => !blocks.some(([bx, bz]) => Math.abs(q.x - bx) < 6.95 && Math.abs(q.z - bz) < 6.95))) onStreet++;
+    const before = b.parts.map(solidBox).filter((x): x is number[] => !!x);
+    if (tail.every((q) => {
+      const t = solidBox(q);
+      return !t || !before.some((o) => o[0] < t[1] && o[1] > t[0] && o[2] < t[3] && o[3] > t[2] && o[4] < t[5] && o[5] > t[4]);
+    })) clear++;
+    const n = (k: string) => ta.stories!.filter((x) => x.kind === k).length;
+    if (n("loading") <= 3 && n("bikes") <= 4 && n("works") <= (ta.life!.movement >= 0.25 ? 1 : 0)) sparse++;
+    if (time === "day") storyCount += ta.stories!.length;
+  }
+check("scenes on × off: the city without scenes is the exact start of the city with them (parts, signs, setting)", prefix === nA, `${prefix}/${nA}`);
+check("scene parts stand on sidewalks and lanes, never over a block", onStreet === nA, `${onStreet}/${nA}`);
+check("scene parts never overlap anything that was already there", clear === nA, `${clear}/${nA}`);
+check("scenes stay sparse: ≤ 3 loading, ≤ 4 bike racks, ≤ 1 road works and only in a busy city", sparse === nA, `${sparse}/${nA}, ${storyCount} scenes over ${runs.length} cities`);
 
 console.log(failed ? `\n${failed} check(s) failed` : "\nall street-life checks passed");
 process.exit(failed ? 1 : 0);

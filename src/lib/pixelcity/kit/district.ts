@@ -13,6 +13,7 @@ import { Kit, type PeopleMode } from "./core";
 import type { Comp, Plan, Territory } from "./plan";
 import { bench, bin, bollards, busShelter, CARRIAGEWAY, hydrant, laneOffset, mailbox, meter, newsBoxes, SIDEWALK_H, streetLamp, streetSurfaces, streetTree, trafficSignal, uniformStreetSurfaces, type Grid } from "./street";
 import { planStreets, RANK, type StreetPlan, type StreetRole, type StreetSegment } from "./street-roles";
+import { lifeScenes, type Story } from "./scenes";
 import { lifeCrossings, lifeSidewalks, lifeTraffic, planStreetLife, type Built, type StreetLife } from "./street-life";
 import { applyEnvironment, planEnvironment, type Environment } from "./atmosphere";
 import { allocate, BLOCKS, LOTS, N, type Allocation } from "./territory";
@@ -89,6 +90,7 @@ export interface KitOptions {
   atmosphere?: boolean;
   polishAssets?: boolean;
   actors?: boolean;
+  scenes?: boolean;
   trace?: KitTrace;
 }
 
@@ -121,7 +123,8 @@ export interface KitTrace {
   frontage: Array<{ territory: number } & Omit<FrontagePlan, "rows">>;
   range: [number, number];
   streets?: StreetSegment[];
-  scene?: { furniture: [number, number]; crossings: [number, number]; traffic: [number, number] };
+  scene?: { furniture: [number, number]; crossings: [number, number]; traffic: [number, number]; stories?: [number, number] };
+  stories?: Story[];
   life?: StreetLife;
   environment?: Environment;
   assets?: Array<{ asset: "hvac" | "screen"; range: [number, number] }>;
@@ -305,10 +308,13 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
   const f2 = kit.parts.length;
   if (life) lifeTraffic(kit, life, LINES, R, palette);
   else traffic(kit, LINES, R, P_, palette, roles);
+  const f3 = kit.parts.length;
+  const stories = life && o.scenes !== false ? lifeScenes(kit, life, LINES, B, S, palette) : [];
   const env = life && o.atmosphere !== false ? planEnvironment(fp, grammar, alloc) : null;
   const lit = env ? applyEnvironment(palette, env) : null;
   if (trace) {
-    trace.scene = { furniture: [f0, f1], crossings: [f1, f2], traffic: [f2, kit.parts.length] };
+    trace.scene = { furniture: [f0, f1], crossings: [f1, f2], traffic: [f2, f3], stories: [f3, kit.parts.length] };
+    trace.stories = stories;
     if (life) trace.life = life;
     if (env) trace.environment = env;
   }

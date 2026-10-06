@@ -26,6 +26,8 @@ export default async function KitPage({ searchParams }: PageProps<"/pixel/kit">)
     provenance: one(sp.debug) === "provenance",
     inspect: one(sp.debug) === "surface",
     streets: one(sp.debug) === "streets",
+    actors: one(sp.actors) !== "0",
+    scenes: one(sp.scenes) !== "0",
     focus: (() => {
       const f = one(sp.focus)?.split(",").map(Number);
       return f && f.length === 2 && f.every(Number.isFinite) ? ([f[0], f[1]] as [number, number]) : undefined;
