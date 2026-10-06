@@ -136,8 +136,8 @@ for (const r of runs)
   for (const time of ["day", "night"] as const) {
     const ta: KitTrace = newTrace();
     const tb: KitTrace = newTrace();
-    const a = generateKitDistrict(r.p.fp, { profile: r.p.plan, time, seed: 7, trace: ta, scenes: false });
-    const b = generateKitDistrict(r.p.fp, { profile: r.p.plan, time, seed: 7, trace: tb, actors: false, scenes: false });
+    const a = generateKitDistrict(r.p.fp, { profile: r.p.plan, time, seed: 7, trace: ta, scenes: false, foci: false });
+    const b = generateKitDistrict(r.p.fp, { profile: r.p.plan, time, seed: 7, trace: tb, actors: false, scenes: false, foci: false });
     const cut = (c: Part[], t: KitTrace) => [c.slice(0, t.range[0]), c.slice(...t.range), c.slice(t.range[1], t.scene!.furniture[0]), c.slice(...t.scene!.furniture), c.slice(t.scene!.furniture[1])];
     const A = cut(a.parts, ta);
     const B = cut(b.parts, tb);
@@ -171,8 +171,8 @@ let storyCount = 0;
 for (const r of runs)
   for (const time of ["day", "night"] as const) {
     const ta: KitTrace = newTrace();
-    const a = generateKitDistrict(r.p.fp, { profile: r.p.plan, time, seed: 7, trace: ta });
-    const b = generateKitDistrict(r.p.fp, { profile: r.p.plan, time, seed: 7, scenes: false });
+    const a = generateKitDistrict(r.p.fp, { profile: r.p.plan, time, seed: 7, trace: ta, foci: false });
+    const b = generateKitDistrict(r.p.fp, { profile: r.p.plan, time, seed: 7, scenes: false, foci: false });
     const tail = a.parts.slice(b.parts.length);
     if (JSON.stringify(a.parts.slice(0, b.parts.length)) === JSON.stringify(b.parts) && JSON.stringify({ ...a, parts: null }) === JSON.stringify({ ...b, parts: null }) && JSON.stringify(ta.scene!.stories) === JSON.stringify([b.parts.length, a.parts.length])) prefix++;
     const blocks: Array<[number, number]> = [];
@@ -191,6 +191,27 @@ check("scenes on × off: the city without scenes is the exact start of the city 
 check("scene parts stand on sidewalks and lanes, never over a block", onStreet === nA, `${onStreet}/${nA}`);
 check("scene parts never overlap anything that was already there", clear === nA, `${clear}/${nA}`);
 check("scenes stay sparse: ≤ 3 loading, ≤ 4 bike racks, ≤ 1 road works and only in a busy city", sparse === nA, `${sparse}/${nA}, ${storyCount} scenes over ${runs.length} cities`);
+
+let fociPrefix = 0;
+let fociClear = 0;
+let fociSparse = 0;
+for (const r of runs)
+  for (const time of ["day", "night"] as const) {
+    const t: KitTrace = newTrace();
+    const all = generateKitDistrict(r.p.fp, { profile: r.p.plan, time, seed: 7, trace: t });
+    const none = generateKitDistrict(r.p.fp, { profile: r.p.plan, time, seed: 7, foci: false });
+    if (JSON.stringify(all.parts.slice(0, none.parts.length)) === JSON.stringify(none.parts) && JSON.stringify({ ...all, parts: null }) === JSON.stringify({ ...none, parts: null })) fociPrefix++;
+    const before = none.parts.map(solidBox).filter((x): x is number[] => !!x);
+    const fp = all.parts.slice(...t.scene!.foci!);
+    if (fp.filter((q) => q.mesh === "sprite" || (q.mesh === "box" && q.y < 0.2)).every((q) => {
+      const b = solidBox(q);
+      return !b || !before.some((o) => o[0] < b[1] && o[1] > b[0] && o[2] < b[3] && o[3] > b[2] && o[4] < b[5] && o[5] > b[4]);
+    })) fociClear++;
+    if (fp.filter((q) => q.mesh === "glow" && q.w === 0.1).length <= 8 && fp.filter((q) => q.mesh === "sprite").length <= 3) fociSparse++;
+  }
+check("lit foci on × off: the city without them is the exact start of the city with them", fociPrefix === nA, `${fociPrefix}/${nA}`);
+check("waiting taxis and their riders never overlap anything already there", fociClear === nA, `${fociClear}/${nA}`);
+check("lit foci stay sparse: ≤ 8 lit doors, ≤ 3 taxis", fociSparse === nA, `${fociSparse}/${nA}`);
 
 console.log(failed ? `\n${failed} check(s) failed` : "\nall street-life checks passed");
 process.exit(failed ? 1 : 0);

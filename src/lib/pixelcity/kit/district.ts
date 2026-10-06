@@ -13,8 +13,9 @@ import { Kit, type PeopleMode } from "./core";
 import type { Comp, Plan, Territory } from "./plan";
 import { bench, bin, bollards, busShelter, CARRIAGEWAY, hydrant, laneOffset, mailbox, meter, newsBoxes, SIDEWALK_H, streetLamp, streetSurfaces, streetTree, trafficSignal, uniformStreetSurfaces, type Grid } from "./street";
 import { planStreets, RANK, type StreetPlan, type StreetRole, type StreetSegment } from "./street-roles";
+import { lifeFoci } from "./foci";
 import { lifeScenes, type Story } from "./scenes";
-import { lifeCrossings, lifeSidewalks, lifeTraffic, planStreetLife, type Built, type StreetLife } from "./street-life";
+import { lifeCrossings, lifeSidewalks, lifeTraffic, planStreetLife, type Built, type Focus, type StreetLife } from "./street-life";
 import { applyEnvironment, planEnvironment, type Environment } from "./atmosphere";
 import { allocate, BLOCKS, LOTS, N, type Allocation } from "./territory";
 import { vehicle, type VehicleType } from "./vehicles";
@@ -91,6 +92,7 @@ export interface KitOptions {
   polishAssets?: boolean;
   actors?: boolean;
   scenes?: boolean;
+  foci?: boolean;
   trace?: KitTrace;
 }
 
@@ -123,7 +125,7 @@ export interface KitTrace {
   frontage: Array<{ territory: number } & Omit<FrontagePlan, "rows">>;
   range: [number, number];
   streets?: StreetSegment[];
-  scene?: { furniture: [number, number]; crossings: [number, number]; traffic: [number, number]; stories?: [number, number] };
+  scene?: { furniture: [number, number]; crossings: [number, number]; traffic: [number, number]; stories?: [number, number]; foci?: [number, number] };
   stories?: Story[];
   life?: StreetLife;
   environment?: Environment;
@@ -300,7 +302,8 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
 
   const life = roles && o.streetLife !== false ? planStreetLife({ plan, alloc, roles, grammar, built, parts: kit.parts, lines: LINES, block: B }) : null;
   const f0 = kit.parts.length;
-  if (life) lifeSidewalks(kit, life, LINES, B, S, palette);
+  const foci: Focus[] = [];
+  if (life) lifeSidewalks(kit, life, LINES, B, S, palette, foci);
   else furniture(kit, LINES, B, S, palette);
   const f1 = kit.parts.length;
   intersections(kit, LINES, R, P_, roles, !life);
@@ -310,10 +313,12 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
   else traffic(kit, LINES, R, P_, palette, roles);
   const f3 = kit.parts.length;
   const stories = life && o.scenes !== false ? lifeScenes(kit, life, LINES, B, S, palette) : [];
+  const f4 = kit.parts.length;
+  if (life && o.foci !== false) lifeFoci(kit, life, foci, LINES, B, S);
   const env = life && o.atmosphere !== false ? planEnvironment(fp, grammar, alloc) : null;
   const lit = env ? applyEnvironment(palette, env) : null;
   if (trace) {
-    trace.scene = { furniture: [f0, f1], crossings: [f1, f2], traffic: [f2, f3], stories: [f3, kit.parts.length] };
+    trace.scene = { furniture: [f0, f1], crossings: [f1, f2], traffic: [f2, f3], stories: [f3, f4], foci: [f4, kit.parts.length] };
     trace.stories = stories;
     if (life) trace.life = life;
     if (env) trace.environment = env;

@@ -1,8 +1,9 @@
 import { mix } from "../../city/palette";
 import type { RGB } from "../../city/types";
-import { Surf, type Part, type PixelCity } from "../types";
+import { Surf, type PixelCity } from "../types";
 import type { Kit } from "./core";
-import { CARRIAGEWAY, laneOffset, SIDEWALK_H } from "./street";
+import { curbSpace, hits, obstacles, skyline, type Box } from "./curb";
+import { laneOffset, SIDEWALK_H } from "./street";
 import type { FrontKind, LifeSide, StreetLife } from "./street-life";
 import { vehicle } from "./vehicles";
 
@@ -16,59 +17,6 @@ export interface Story {
 const WORKERS = [5, 12, 16, 20, 25, 26, 32, 36, 39, 40, 41, 44];
 const CARD: RGB = [0.72, 0.56, 0.36];
 const STEEL: RGB = [0.25, 0.27, 0.3];
-const H = 1.3;
-
-interface Box {
-  x0: number;
-  x1: number;
-  z0: number;
-  z1: number;
-}
-
-function obstacles(parts: Part[]): Box[] {
-  const out: Box[] = [];
-  for (const q of parts) {
-    if (q.mesh === "glow" || q.mesh === "sign" || q.y + q.h <= SIDEWALK_H + 0.025 || q.y > 1.2) continue;
-    if (q.mesh === "sprite") {
-      out.push({ x0: q.x - 0.12, x1: q.x + 0.12, z0: q.z - 0.12, z1: q.z + 0.12 });
-      continue;
-    }
-    const c = Math.abs(Math.cos(q.rotY));
-    const s = Math.abs(Math.sin(q.rotY));
-    const hw = (c * q.w + s * q.d) / 2;
-    const hd = (s * q.w + c * q.d) / 2;
-    out.push({ x0: q.x - hw, x1: q.x + hw, z0: q.z - hd, z1: q.z + hd });
-  }
-  return out;
-}
-
-const VIEW = [Math.SQRT1_2 * Math.cos(Math.PI / 6), Math.sin(Math.PI / 6), Math.SQRT1_2 * Math.cos(Math.PI / 6)];
-
-function skyline(parts: Part[]) {
-  const G = 0.25;
-  const O = -48;
-  const N = 384;
-  const top = new Float32Array(N * N);
-  const cell = (v: number) => Math.max(0, Math.min(N - 1, Math.floor((v - O) / G)));
-  for (const q of parts) {
-    if (q.mesh === "glow" || q.mesh === "sign" || q.mesh === "sprite" || Math.min(q.w, q.d) < 0.3 || q.y + q.h < 0.6) continue;
-    const c = Math.abs(Math.cos(q.rotY));
-    const s = Math.abs(Math.sin(q.rotY));
-    const hw = (c * q.w + s * q.d) / 2;
-    const hd = (s * q.w + c * q.d) / 2;
-    for (let i = cell(q.x - hw); i <= cell(q.x + hw); i++) for (let j = cell(q.z - hd); j <= cell(q.z + hd); j++) top[i * N + j] = Math.max(top[i * N + j], q.y + q.h);
-  }
-  return (x: number, z: number) => {
-    for (let t = 0.2; t < 60; t += 0.2) {
-      const y = 0.35 + t * VIEW[1];
-      if (y > 30) return true;
-      if (top[cell(x + t * VIEW[0]) * N + cell(z + t * VIEW[2])] > y) return false;
-    }
-    return true;
-  };
-}
-
-const hits = (all: Box[], b: Box) => all.some((o) => o.x0 < b.x1 && o.x1 > b.x0 && o.z0 < b.z1 && o.z1 > b.z0);
 
 function crate(kit: Kit, x: number, y: number, z: number, s: number, tone: number) {
   if (y === 0) kit.foot(x, z, s + 0.05, s + 0.05);
@@ -113,25 +61,10 @@ const worker = (kit: Kit, salt: number, k: number) => WORKERS[Math.floor(kit.ran
 
 export function lifeScenes(kit: Kit, life: StreetLife, lines: number[], B: number, S: number, palette: PixelCity["palette"]): Story[] {
   const solid = obstacles(kit.parts);
-  const seen = skyline(kit.parts);
+  const { seen } = skyline(kit.parts);
   const stories: Story[] = [];
   const share = (s: LifeSide, kinds: FrontKind[]) => s.front.filter((f) => kinds.includes(f.kind)).length / s.front.length;
-  const segment = (s: LifeSide) => life.segments.find((g) => g.axis === s.axis && g.line === s.line && g.span === s.span);
-  const frameOf = (sd: LifeSide): [number, number, number] => {
-    const [i, j] = sd.block;
-    const bx = (lines[i] + lines[i + 1]) / 2;
-    const bz = (lines[j] + lines[j + 1]) / 2;
-    return ([[bx, bz + B / 2, 0], [bx + B / 2, bz, Math.PI / 2], [bx, bz - B / 2, Math.PI], [bx - B / 2, bz, -Math.PI / 2]] as Array<[number, number, number]>)[sd.side];
-  };
-  const curbOf = (sd: LifeSide) => (sd.role === "pedestrian" ? S + 0.75 : S + (H - CARRIAGEWAY[sd.role]) - 0.32);
-  const lotU = (k: number) => -B / 2 + 1.75 + 3.5 * k;
-  const footprint = (sd: LifeSide, u0: number, u1: number, z0: number, z1: number): Box => {
-    const [sx, sz, rot] = frameOf(sd);
-    return kit.frame(sx, sz, rot, () => {
-      const cs = [kit.toWorld(u0, 0, z0), kit.toWorld(u1, 0, z0), kit.toWorld(u0, 0, z1), kit.toWorld(u1, 0, z1)];
-      return { x0: Math.min(...cs.map((c) => c[0])), x1: Math.max(...cs.map((c) => c[0])), z0: Math.min(...cs.map((c) => c[2])), z1: Math.max(...cs.map((c) => c[2])) };
-    });
-  };
+  const { frameOf, curbOf, lotU, footprint, segment } = curbSpace(kit, life, lines, B, S);
   const used = new Set<LifeSide>();
   let strict = true;
   const place = (sd: LifeSide, kind: SceneKind, kinds: FrontKind[], half: number, z0: number, z1: number, build: (u: number, zt: number) => void) => {

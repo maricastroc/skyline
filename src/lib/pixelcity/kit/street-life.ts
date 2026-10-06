@@ -184,7 +184,14 @@ export function planStreetLife(o: {
 
 const spread = (n: number, a: number, b: number) => (n <= 0 ? [] : n === 1 ? [(a + b) / 2] : Array.from({ length: n }, (_, k) => a + ((b - a) * k) / (n - 1)));
 
-export function lifeSidewalks(kit: Kit, life: StreetLife, lines: number[], B: number, S: number, palette: PixelCity["palette"]) {
+export interface Focus {
+  side: LifeSide;
+  kind: FrontKind;
+  u: number;
+  people: number;
+}
+
+export function lifeSidewalks(kit: Kit, life: StreetLife, lines: number[], B: number, S: number, palette: PixelCity["palette"], foci?: Focus[]) {
   const H = 1.3;
   for (const sd of life.sides) {
     const [i, j] = sd.block;
@@ -310,7 +317,14 @@ export function lifeSidewalks(kit: Kit, life: StreetLife, lines: number[], B: nu
               if (kit.rand(seed, 1200 + si * 10 + bi) < sd.footfall) slots.push({ need: 1, place: ([v]) => sit(kit, b + 0.14, zt - 0.15, 0.05, v, b, zt - 1.2) });
             });
             const g = GROUP[sp.kind] ?? 0;
-            if (g) slots.push({ need: g, place: (vs) => huddle(kit, sp.u + 0.3, GROUP_Z[sp.kind] ?? 0.45, vs, 0, seed + si) });
+            if (g)
+              slots.push({
+                need: g,
+                place: (vs) => {
+                  huddle(kit, sp.u + 0.3, GROUP_Z[sp.kind] ?? 0.45, vs, 0, seed + si);
+                  foci?.push({ side: sd, kind: sp.kind, u: sp.u + 0.3, people: vs.length });
+                },
+              });
           });
           const flow = new Set([...order.slice(want), ...fill(slots, order.slice(0, want))]);
           crowd.filter((c) => c.zi !== 0 || flow.has(c)).forEach(walk);
