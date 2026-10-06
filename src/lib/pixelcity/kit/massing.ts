@@ -1,6 +1,7 @@
 import { mix } from "../../city/palette";
 import type { RGB } from "../../city/types";
 import { Surf } from "../types";
+import { plazaCrowd, type PlazaAnchor, type PlazaCell, type Walker } from "./actors";
 import type { Kit } from "./core";
 
 export type RoofFamily = "flat" | "terrace" | "gable" | "mansard" | "sawtooth" | "dome" | "spire" | "crown" | "none";
@@ -181,17 +182,20 @@ export function colonnade(kit: Kit, x0: number, x1: number, z: number, h: number
   if (pediment) kit.part({ mesh: "prism", node: kit.node, x: (x0 + x1) / 2, y: h + 0.14, z: z - 0.04, w: x1 - x0 + 0.3, h: 0.42, d: 0.34, color: trim });
 }
 
-export function plaza(kit: Kit, x0: number, x1: number, z0: number, z1: number, seed: number, fountain: boolean, keep?: [number, number, number, number]) {
+export function plaza(kit: Kit, x0: number, x1: number, z0: number, z1: number, seed: number, fountain: boolean, keep?: [number, number, number, number], anchors: PlazaAnchor[] = []) {
   const p = kit.palette;
   kit.span(x0, x1, 0, 0.02, z0, z1, mix(p.plaza, white, 0.08), Surf.SLABS);
   const clear = (x: number, z: number, m: number) => !keep || x < keep[0] - m || x > keep[1] + m || z < keep[2] - m || z > keep[3] + m;
   const step = 2.4;
   let k = 0;
+  const cells: PlazaCell[] = [];
+  const crowd: Walker[] = [];
   for (let x = x0 + 1.0; x < x1 - 0.6; x += step)
     for (let z = z0 + 1.0; z < z1 - 0.6; z += step, k++) {
       if (!clear(x, z, 0.8)) continue;
       if (fountain && Math.hypot(x - (x0 + x1) / 2, z - (z0 + z1) / 2) < 1.6) continue;
       const r = kit.rand(seed, k);
+      if (kit.actors) cells.push({ x, z, r });
       if (r < 0.5) {
         kit.box(x, 0.02, z, 0.46, 0.012, 0.46, mix(p.soilDark, ink, 0.3));
         kit.box(x, 0.02, z, 0.09, 0.5, 0.09, p.trunk);
@@ -207,7 +211,11 @@ export function plaza(kit: Kit, x0: number, x1: number, z0: number, z1: number, 
         kit.box(x, 0.02, z, 0.5, 0.2, 0.5, mix(p.stone, white, 0.3));
         kit.box(x, 0.22, z, 0.4, 0.16, 0.4, p.leaves[0]);
       }
-      if (kit.rand(seed, k + 500) < 0.35) kit.person(x + 0.6, z + 0.3, { variant: Math.floor(kit.rand(seed, k + 600) * 48), pose: kit.rand(seed, k + 700) < 0.6 ? "walkA" : "stand", flip: k % 2 === 0, y: 0.02 });
+      if (kit.rand(seed, k + 500) < 0.35) {
+        const v: Walker = { variant: Math.floor(kit.rand(seed, k + 600) * 48), pose: kit.rand(seed, k + 700) < 0.6 ? "walkA" : "stand", flip: k % 2 === 0 };
+        if (kit.actors) crowd.push(v);
+        else kit.person(x + 0.6, z + 0.3, { ...v, y: 0.02 });
+      }
     }
   if (fountain) {
     const cx = (x0 + x1) / 2;
@@ -217,5 +225,6 @@ export function plaza(kit: Kit, x0: number, x1: number, z0: number, z1: number, 
     kit.cyl(cx, 0.1, cz, 0.18, 0.42, 0.18, mix(p.stone, white, 0.35));
     kit.glow(cx, 0.52, cz, 0.12, 0.12, 0.12, mix(p.water, white, 0.6), kit.night ? 1.3 : 0.5);
   }
+  if (kit.actors && crowd.length) plazaCrowd(kit, crowd, cells, anchors, [x0, x1, z0, z1], fountain, seed, clear);
   return seed;
 }

@@ -1,7 +1,9 @@
 import type { RGB } from "../../city/types";
 import type { CityGrammar } from "../grammar";
 import type { Part, PixelCity } from "../types";
+import { fill, huddle, sit, type Slot } from "./actors";
 import type { Kit } from "./core";
+import type { Pose } from "./people";
 import type { Comp, Plan } from "./plan";
 import { bench, bin, bollards, busShelter, CARRIAGEWAY, hydrant, laneOffset, mailbox, meter, newsBoxes, SIDEWALK_H, streetLamp, streetTree } from "./street";
 import type { StreetPlan, StreetRole } from "./street-roles";
@@ -51,6 +53,8 @@ export const CAPACITY: Record<StreetRole, number> = { primary: 1, street: 0.65, 
 export const WALK: Record<StreetRole, number> = { primary: 0.85, street: 1, lane: 1.15, pedestrian: 1.3 };
 export const ROOM: Record<StreetRole, number> = { primary: 1, street: 0.6, lane: 0, pedestrian: 0.8 };
 const LAMP: Record<StreetRole, number> = { primary: 3.4, street: 4.4, lane: 5.6, pedestrian: 3.4 };
+const GROUP: Partial<Record<FrontKind, number>> = { lobby: 3, civic: 3, storefront: 2, arcade: 2, domestic: 2, square: 2 };
+const GROUP_Z: Partial<Record<FrontKind, number>> = { lobby: 0.45, civic: 0.4, storefront: 0.34, arcade: 0.34, domestic: 0.4, square: 0.55 };
 
 const PLANTABLE: Record<FrontKind, number> = { domestic: 1, civic: 0.8, lobby: 0.5, blank: 0.4, storefront: 0.3, arcade: 0.2, service: 0.1, loading: 0, square: 0.8, yard: 1 };
 const USE_ACTIVITY: Record<Use, number> = { commercial: 0.8, kiosk: 0.9, office: 0.6, residential: 0.25, civic: 0.3, institutional: 0.3, service: 0.1, industrial: 0.05 };
@@ -209,29 +213,30 @@ export function lifeSidewalks(kit: Kit, life: StreetLife, lines: number[], B: nu
         const taken = [...lamps];
         const free = (u: number, gap = 0.5) => taken.every((t) => Math.abs(t - u) >= gap);
         const nTrees = Math.round(13 * sd.canopy);
+        const trees: number[] = [];
         for (const [k, u0] of spread(nTrees, -lim + 0.3, lim - 0.3).entries()) {
           let u = sd.role === "primary" ? u0 : u0 + (kit.rand(seed, 900 + k) - 0.5) * 0.6;
           if (!free(u)) u += u > 0 ? -0.5 : 0.5;
           if (!free(u, 0.4)) continue;
           taken.push(u);
+          trees.push(u);
           streetTree(kit, u, zt - 0.05, seed * 5 + k);
         }
         const nFurn = Math.round(5 * sd.footfall);
-        for (let k = 0; k < nFurn; k++) {
-          let u = -lim + kit.rand(seed, 300 + k) * 2 * lim;
-          for (let t = 0; t < 6 && !free(u, 0.45); t++) u = -lim + kit.rand(seed, 310 + k * 7 + t) * 2 * lim;
-          if (!free(u, 0.45)) continue;
-          taken.push(u);
-          const kind = lotAt(u).kind;
+        const traffic = sd.role === "primary" || sd.role === "street";
+        const furnish = (k: number, u: number, kind = lotAt(u).kind) => {
           const r = kit.rand(seed, 330 + k);
-          const traffic = sd.role === "primary" || sd.role === "street";
+          const seat = () => {
+            bench(kit, u, zt - 0.15, Math.PI);
+            return true;
+          };
           if (kind === "storefront" || kind === "arcade") {
             if (r < 0.3) newsBoxes(kit, u, 0.3);
             else if (r < 0.55) bin(kit, u, zt);
-            else if (r < 0.8 || !traffic) bench(kit, u, zt - 0.15, Math.PI);
+            else if (r < 0.8 || !traffic) return seat();
             else meter(kit, u, zt);
           } else if (kind === "lobby") {
-            if (r < 0.4) bench(kit, u, zt - 0.15, Math.PI);
+            if (r < 0.4) return seat();
             else if (r < 0.7) bin(kit, u, zt);
             else bollards(kit, u, zt);
           } else if (kind === "domestic" || kind === "yard") {
@@ -240,22 +245,76 @@ export function lifeSidewalks(kit: Kit, life: StreetLife, lines: number[], B: nu
             else bin(kit, u, zt);
           } else if (kind === "civic") {
             if (r < 0.55) bollards(kit, u, zt);
-            else bench(kit, u, zt - 0.15, Math.PI);
+            else return seat();
           } else if (kind === "square") {
-            if (r < 0.65) bench(kit, u, zt - 0.15, Math.PI);
+            if (r < 0.65) return seat();
             else bin(kit, u, zt);
           } else hydrant(kit, u, zt);
+          return false;
+        };
+        const scattered: Array<[number, number]> = [];
+        const sim = [...taken];
+        const open = (u: number) => sim.every((t) => Math.abs(t - u) >= 0.45);
+        for (let k = 0; k < nFurn; k++) {
+          let u = -lim + kit.rand(seed, 300 + k) * 2 * lim;
+          for (let t = 0; t < 6 && !open(u); t++) u = -lim + kit.rand(seed, 310 + k * 7 + t) * 2 * lim;
+          if (!open(u)) continue;
+          sim.push(u);
+          scattered.push([k, u]);
+        }
+        const spots: Array<{ u: number; kind: FrontKind; benches: number[] }> = [];
+        if (!kit.actors)
+          for (const [k, u] of scattered) {
+            taken.push(u);
+            furnish(k, u);
+          }
+        else if (scattered.length) {
+          const lotU = (k: number) => -B / 2 + 1.75 + 3.5 * k;
+          const nearest = (list: number[], u: number, d: number) => list.filter((t) => Math.abs(t - u) < d).sort((a, b) => Math.abs(a - u) - Math.abs(b - u))[0];
+          const score = (k: number) => sd.front[k].activity + (kit.night && nearest(lamps, lotU(k), 1.6) !== undefined ? 0.5 : 0) + kit.rand(seed, 1100 + k) * 0.05;
+          const groups = new Map<FrontKind, Array<[number, number]>>();
+          for (const [k, u] of scattered) groups.set(lotAt(u).kind, [...(groups.get(lotAt(u).kind) ?? []), [k, u]]);
+          for (const [kind, items] of groups) {
+            const c = lotU([0, 1, 2, 3].filter((k) => sd.front[k].kind === kind).sort((a, b) => score(b) - score(a))[0]);
+            const ref = (kit.night ? nearest(lamps, c, 1.6) : undefined) ?? nearest(trees, c, 1.4);
+            const sp = { u: Math.max(-lim, Math.min(lim, ref === undefined ? c : ref + (ref < c ? 0.5 : -0.5))), kind, benches: [] as number[] };
+            spots.push(sp);
+            for (const [k, u0] of items) {
+              const tries = [...Array.from({ length: 40 }, (_, t) => sp.u + (t === 0 ? 0 : (t % 2 ? 1 : -1) * Math.ceil(t / 2) * 0.5)), u0];
+              const u = tries.find((x) => Math.abs(x) <= lim && free(x, 0.45));
+              if (u === undefined) continue;
+              taken.push(u);
+              if (furnish(k, u, kind)) sp.benches.push(u);
+            }
+          }
         }
         const zone: Array<[number, number, number]> = [[0.3, Math.max(0.45, zt - 0.2), Math.round(9 * sd.footfall)]];
         if (ped) zone.push([S + 0.2, S + H - 0.1, Math.round(6 * sd.footfall)]);
-        zone.forEach(([z0, z1, n], zi) => {
-          for (let k = 0; k < n; k++) {
-            const u = -B / 2 + 0.4 + kit.rand(seed, 500 + zi * 50 + k) * (B - 0.8);
-            const z = z0 + kit.rand(seed, 560 + zi * 50 + k) * (z1 - z0);
+        const crowd = zone.flatMap(([z0, z1, n], zi) =>
+          Array.from({ length: n }, (_, k) => {
             const pr = kit.rand(seed, 620 + zi * 50 + k);
-            kit.person(u, z, { variant: Math.floor(kit.rand(seed, 680 + zi * 50 + k) * 48), pose: pr < 0.4 ? "walkA" : pr < 0.75 ? "walkB" : "stand", flip: kit.rand(seed, 740 + zi * 50 + k) < 0.5 });
-          }
-        });
+            const pose: Pose = pr < 0.4 ? "walkA" : pr < 0.75 ? "walkB" : "stand";
+            return { zi, u: -B / 2 + 0.4 + kit.rand(seed, 500 + zi * 50 + k) * (B - 0.8), z: z0 + kit.rand(seed, 560 + zi * 50 + k) * (z1 - z0), variant: Math.floor(kit.rand(seed, 680 + zi * 50 + k) * 48), pose, flip: kit.rand(seed, 740 + zi * 50 + k) < 0.5 };
+          }),
+        );
+        const walk = (c: (typeof crowd)[number]) => kit.person(c.u, c.z, { variant: c.variant, pose: c.pose, flip: c.flip });
+        if (!kit.actors) crowd.forEach(walk);
+        else {
+          const side = crowd.filter((c) => c.zi === 0);
+          const order = [...side.filter((c) => c.pose === "stand"), ...side.filter((c) => c.pose !== "stand")];
+          const want = Math.round(side.length * 0.5);
+          const slots: Slot[] = [];
+          spots.forEach((sp, si) => {
+            sp.benches.forEach((b, bi) => {
+              slots.push({ need: 1, place: ([v]) => sit(kit, b - 0.14, zt - 0.15, 0.05, v, b, zt - 1.2) });
+              if (kit.rand(seed, 1200 + si * 10 + bi) < sd.footfall) slots.push({ need: 1, place: ([v]) => sit(kit, b + 0.14, zt - 0.15, 0.05, v, b, zt - 1.2) });
+            });
+            const g = GROUP[sp.kind] ?? 0;
+            if (g) slots.push({ need: g, place: (vs) => huddle(kit, sp.u + 0.3, GROUP_Z[sp.kind] ?? 0.45, vs, 0, seed + si) });
+          });
+          const flow = new Set([...order.slice(want), ...fill(slots, order.slice(0, want))]);
+          crowd.filter((c) => c.zi !== 0 || flow.has(c)).forEach(walk);
+        }
         if (sd.busStop) {
           busShelter(kit, 0, 0.62, palette.accents[1], "M5");
           for (let k = 0; k < 1 + Math.round(2 * sd.footfall); k++) kit.person(-0.45 + k * 0.32, 0.55 + (k % 2) * 0.12, { variant: 7 + k * 5, pose: k === 1 ? "sit" : "stand", flip: k === 2 });
@@ -281,8 +340,16 @@ export function lifeCrossings(kit: Kit, life: StreetLife, roles: StreetPlan, lin
           const f = (a ? a.footfall : 0) / 2 + (b ? b.footfall : 0) / 2;
           const seed = ((a ? a.salt : 7) * 31 + (b ? b.salt : 11) + (sx + 1) * 3 + (sz + 1)) % 1000003;
           const n = Math.round(3 * f);
-          for (let k = 0; k < n; k++)
-            kit.person(cx + sx * (H + 0.35 + kit.rand(seed, k) * 0.5), cz + sz * (H + 0.35 + kit.rand(seed, k + 10) * 0.5), { variant: Math.floor(kit.rand(seed, k + 20) * 48), pose: "stand", flip: kit.rand(seed, k + 30) < 0.5, y: SIDEWALK_H });
+          for (let k = 0; k < n; k++) {
+            const variant = Math.floor(kit.rand(seed, k + 20) * 48);
+            if (!kit.actors) {
+              kit.person(cx + sx * (H + 0.35 + kit.rand(seed, k) * 0.5), cz + sz * (H + 0.35 + kit.rand(seed, k + 10) * 0.5), { variant, pose: "stand", flip: kit.rand(seed, k + 30) < 0.5, y: SIDEWALK_H });
+              continue;
+            }
+            const along = H + 0.5 + 0.26 * Math.floor(k / 2);
+            const [x, z] = k % 2 === 0 ? [cx + sx * (H + 0.38), cz + sz * along] : [cx + sx * along, cz + sz * (H + 0.38)];
+            kit.person(x, z, { variant, pose: "stand", flip: k % 2 === 0 ? kit.faces(x, z, cx, z) : kit.faces(x, z, x, cz), y: SIDEWALK_H });
+          }
           const r = roles.role("x", cj, sx > 0 ? ci : ci - 1);
           if (f >= 0.5 && (r === "street" || r === "primary"))
             kit.person(cx + sx * (H + 0.4), cz + sz * 0.35, { variant: Math.floor(kit.rand(seed, 40) * 48), pose: kit.rand(seed, 41) < 0.5 ? "walkA" : "walkB", flip: sz < 0, y: 0.05 });

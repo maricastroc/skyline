@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { generateKitDistrict, LINES, newTrace, type KitTrace } from "../../src/lib/pixelcity/kit/district";
+import { PEOPLE_ATLAS } from "../../src/lib/pixelcity/kit/people";
 import { PERTURBATIONS, realPage } from "../../src/lib/pixelcity/kit/real-page";
 import type { Part } from "../../src/lib/pixelcity/types";
 import type { DomSnapshot } from "../../src/lib/snapshot/types";
@@ -114,6 +115,44 @@ for (const r of runs)
     });
   }
 check("small page edits (text ±10%, links −10%, drop a section) move sidewalk intensities by < 0.05 on average", change / n < 0.05, `mean |Δ| ${(change / n).toFixed(3)}`);
+
+const isShadow = (q: Part) => q.mesh === "box" && q.w === 0.17 && q.h === 0.006 && q.d === 0.1;
+const isPerson = (q: Part) => q.mesh === "sprite" || isShadow(q);
+const seatedOf = (q: Part) => {
+  const [x, y, w] = q.rect!;
+  return ((y / PEOPLE_ATLAS.ch) * (PEOPLE_ATLAS.w / PEOPLE_ATLAS.cw) + (w < 0 ? x - PEOPLE_ATLAS.cw : x) / PEOPLE_ATLAS.cw) % 4 === 3;
+};
+const shapes = (ps: Part[]) => ps.map((q) => JSON.stringify([q.mesh, q.w, q.h, q.d, q.color, q.surf, q.lit, q.rotY])).sort().join("|");
+const loose = (c: { parts: Part[] }) => {
+  const seats = c.parts.filter((q) => (q.mesh === "box" && q.h === 0.03 && q.w === 0.62) || (q.mesh === "box" && q.w === 0.12 && q.h === 0.12) || (q.mesh === "cyl" && q.w === 1.3 && q.h === 0.16));
+  return c.parts.filter((q) => q.mesh === "sprite" && seatedOf(q) && !seats.some((s) => (s.mesh === "cyl" ? Math.abs(Math.hypot(q.x - s.x, q.z - s.z) - 0.65) < 0.2 : Math.hypot(q.x - s.x, q.z - s.z) < 0.35))).length;
+};
+let layout = 0;
+let kept = 0;
+let furnished = 0;
+let seatedOn = 0;
+let seatedMore = 0;
+for (const r of runs)
+  for (const time of ["day", "night"] as const) {
+    const ta: KitTrace = newTrace();
+    const tb: KitTrace = newTrace();
+    const a = generateKitDistrict(r.p.fp, { profile: r.p.plan, time, seed: 7, trace: ta });
+    const b = generateKitDistrict(r.p.fp, { profile: r.p.plan, time, seed: 7, trace: tb, actors: false });
+    const cut = (c: Part[], t: KitTrace) => [c.slice(0, t.range[0]), c.slice(...t.range), c.slice(t.range[1], t.scene!.furniture[0]), c.slice(...t.scene!.furniture), c.slice(t.scene!.furniture[1])];
+    const A = cut(a.parts, ta);
+    const B = cut(b.parts, tb);
+    if (a.parts.length === b.parts.length && JSON.stringify([ta.range, ta.scene]) === JSON.stringify([tb.range, tb.scene]) && A.every((x, k) => x.filter((q) => q.mesh === "sprite").length === B[k].filter((q) => q.mesh === "sprite").length)) layout++;
+    if ([0, 1, 2, 4].every((k) => JSON.stringify(A[k].filter((q) => !isPerson(q))) === JSON.stringify(B[k].filter((q) => !isPerson(q)))) && JSON.stringify({ ...a, parts: null }) === JSON.stringify({ ...b, parts: null })) kept++;
+    if (shapes(A[3].filter((q) => !isPerson(q))) === shapes(B[3].filter((q) => !isPerson(q)))) furnished++;
+    if (loose(a) <= loose(b)) seatedOn++;
+    if (a.parts.filter((q) => q.mesh === "sprite" && seatedOf(q)).length > b.parts.filter((q) => q.mesh === "sprite" && seatedOf(q)).length) seatedMore++;
+  }
+const nA = runs.length * 2;
+check("actors on × off: same parts, same ranges, same people in blocks, sidewalks and corners (day, night)", layout === nA, `${layout}/${nA}`);
+check("actors on × off: everything but people identical outside the sidewalk furniture — plazas keep their trees, benches, planters and fountains", kept === nA, `${kept}/${nA}`);
+check("actors on × off: the same sidewalk furniture, only regrouped", furnished === nA, `${furnished}/${nA}`);
+check("every person the actors seat sits on a bench, stool or fountain rim", seatedOn === nA, `${seatedOn}/${nA}`);
+check("actors seat people where the corpus has seats", seatedMore >= runs.length, `${seatedMore}/${nA} cities with more people seated`);
 
 console.log(failed ? `\n${failed} check(s) failed` : "\nall street-life checks passed");
 process.exit(failed ? 1 : 0);

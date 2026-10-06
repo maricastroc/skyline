@@ -88,6 +88,7 @@ export interface KitOptions {
   streetLife?: boolean;
   atmosphere?: boolean;
   polishAssets?: boolean;
+  actors?: boolean;
   trace?: KitTrace;
 }
 
@@ -188,6 +189,7 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
   kit.surface = { regularity: fp.regularity, headings: fp.headings, interactivity: fp.interactivity, linkDensity: fp.linkDensity };
   const trace = o.trace ?? (o.provenance ? newTrace() : undefined);
   kit.polishAssets = o.polishAssets !== false;
+  kit.actors = o.actors !== false;
   if (trace) kit.assets = trace.assets = [];
 
   const grid: Grid = { lines: LINES, road: R, side: S, block: B, ext: 14 };

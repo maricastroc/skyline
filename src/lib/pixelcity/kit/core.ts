@@ -22,6 +22,7 @@ export class Kit {
   zones?: Array<string | null>;
   zone: string | null = null;
   polishAssets = true;
+  actors = true;
   assets?: Array<{ asset: "hvac" | "screen"; range: [number, number] }>;
   private shelf = { x: 1, y: 1, h: 0 };
   private f = { x: 0, y: 0, z: 0, r: 0 };
@@ -58,6 +59,17 @@ export class Kit {
   toWorld(x: number, y: number, z: number): [number, number, number] {
     const { x: fx, y: fy, z: fz, r } = this.f;
     return [fx + x * Math.cos(r) + z * Math.sin(r), fy + y, fz - x * Math.sin(r) + z * Math.cos(r)];
+  }
+  faces(x: number, z: number, tx: number, tz: number) {
+    const [ax, , az] = this.toWorld(x, 0, z);
+    const [bx, , bz] = this.toWorld(tx, 0, tz);
+    return bx - bz < ax - az;
+  }
+  towardCamera(x: number, z: number, d: number): [number, number] {
+    const c = Math.cos(this.f.r);
+    const s = Math.sin(this.f.r);
+    const w = d * Math.SQRT1_2;
+    return [x + w * (c - s), z + w * (s + c)];
   }
   smokeAt(x: number, y: number, z: number) {
     this.smoke.push(this.toWorld(x, y, z));

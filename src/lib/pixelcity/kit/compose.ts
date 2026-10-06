@@ -1,6 +1,7 @@
 import type { ArchStyle, CityGrammar } from "../grammar";
 import type { GamePalette } from "../palette";
 import { Surf } from "../types";
+import type { PlazaAnchor } from "./actors";
 import { programFor, type Brief } from "./brief";
 import { building, type Family, type Program } from "./buildings";
 import type { Kit } from "./core";
@@ -269,15 +270,11 @@ export function composePiece(ctx: ComposeCtx, pc: Piece, t: Territory, comp: Com
       }
       case "interactive": {
         const P: Program = { ...prog(ctx, t, comp, salt), family: "kiosk", label: shortLabel(t.label) };
-        plaza(kit, -W / 2, W / 2, -D / 2, D / 2, salt, pc.type === "full", undefined);
-        if (pc.type === "full") {
-          for (const [x, z] of [
-            [-3.5, 2.5],
-            [3.5, -2.5],
-          ])
-            place(ctx, x, z, 0, 1.6, 1.1, P);
-          for (let k = 0; k < 4; k++) bench(kit, -2 + k * 1.3, -0.2 + (k % 2) * 0.4, k % 2 ? Math.PI : 0);
-        } else place(ctx, 0, pc.type === "lot" ? 0 : D / 2 - 1.2, 0, 1.6, 1.1, P);
+        const kiosks: Array<[number, number]> = pc.type === "full" ? [[-3.5, 2.5], [3.5, -2.5]] : [[0, pc.type === "lot" ? 0 : D / 2 - 1.2]];
+        const benches = pc.type === "full" ? [0, 1, 2, 3].map((k): PlazaAnchor => ({ kind: "bench", x: -2 + k * 1.3, z: -0.2 + (k % 2) * 0.4, rot: k % 2 ? Math.PI : 0 })) : [];
+        plaza(kit, -W / 2, W / 2, -D / 2, D / 2, salt, pc.type === "full", undefined, [...kiosks.map(([x, z]): PlazaAnchor => ({ kind: "kiosk", x, z, rot: 0 })), ...benches]);
+        for (const [x, z] of kiosks) place(ctx, x, z, 0, 1.6, 1.1, P);
+        for (const b of benches) bench(kit, b.x, b.z, b.rot);
         return;
       }
       case "navigation": {
