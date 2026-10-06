@@ -222,6 +222,7 @@ export function tree(kit: Kit, x: number, z: number, seed: number, s: number, y 
 
 export function hydrant(kit: Kit, x: number, z: number) {
   const red: RGB = [0.82, 0.18, 0.16];
+  kit.foot(x, z, 0.17, 0.15);
   kit.cyl(x, 0, z, 0.1, 0.16, 0.1, red);
   kit.cyl(x, 0.16, z, 0.07, 0.04, 0.07, mix(red, white, 0.3));
   kit.box(x, 0.08, z, 0.16, 0.035, 0.035, red);
@@ -229,6 +230,7 @@ export function hydrant(kit: Kit, x: number, z: number) {
 
 export function bin(kit: Kit, x: number, z: number) {
   const c: RGB = [0.18, 0.36, 0.28];
+  kit.foot(x, z, 0.22, 0.2);
   kit.cyl(x, 0, z, 0.15, 0.22, 0.15, c);
   kit.cyl(x, 0.22, z, 0.17, 0.025, 0.17, mix(c, white, 0.2));
 }
@@ -236,6 +238,7 @@ export function bin(kit: Kit, x: number, z: number) {
 export function bench(kit: Kit, x: number, z: number, rot = 0) {
   const wood: RGB = [0.58, 0.4, 0.26];
   kit.frame(x, z, rot, () => {
+    kit.foot(0, -0.02, 0.68, 0.28);
     kit.box(0, 0, 0, 0.6, 0.11, 0.18, metal);
     kit.box(0, 0.11, 0, 0.62, 0.03, 0.2, wood);
     kit.box(0, 0.14, -0.08, 0.62, 0.14, 0.03, wood);
@@ -248,18 +251,23 @@ export function meter(kit: Kit, x: number, z: number) {
 }
 
 export function mailbox(kit: Kit, x: number, z: number) {
-  const blue: RGB = [0.2, 0.32, 0.62];
+  const blue: RGB = [0.22, 0.32, 0.55];
+  kit.foot(x, z, 0.27, 0.25);
   kit.box(x, 0, z, 0.2, 0.28, 0.18, blue);
   kit.cyl(x, 0.24, z, 0.2, 0.08, 0.18, blue);
 }
 
 export function newsBoxes(kit: Kit, x: number, z: number) {
   const cs: RGB[] = [
-    [0.86, 0.25, 0.2],
-    [0.95, 0.8, 0.25],
-    [0.25, 0.45, 0.8],
+    [0.6, 0.25, 0.21],
+    [0.7, 0.6, 0.32],
+    [0.27, 0.37, 0.54],
   ];
-  cs.forEach((c, i) => kit.box(x + (i - 1) * 0.17, 0, z, 0.15, 0.24, 0.14, c));
+  kit.foot(x, z, 0.56, 0.21);
+  cs.forEach((c, i) => {
+    kit.box(x + (i - 1) * 0.17, 0, z, 0.15, 0.22, 0.14, c);
+    kit.box(x + (i - 1) * 0.17, 0.22, z, 0.15, 0.02, 0.14, mix(c, metal, 0.5));
+  });
 }
 
 export function bollards(kit: Kit, x: number, z: number, n = 3) {

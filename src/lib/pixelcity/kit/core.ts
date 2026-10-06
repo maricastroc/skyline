@@ -129,6 +129,10 @@ export class Kit {
     return w * texel;
   }
 
+  foot(x: number, z: number, w: number, d: number) {
+    this.box(x, 0.002, z, w, 0.006, d, this.palette.road.map((v) => v * 0.55) as RGB);
+  }
+
   person(x: number, z: number, o: { variant: number; pose?: Pose; flip?: boolean; y?: number }) {
     const y = o.y ?? 0;
     const pose = o.pose ?? "stand";

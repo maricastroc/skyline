@@ -99,7 +99,10 @@ export function storefront(kit: Kit, u0: number, u1: number, g: number, P: Progr
   else if (door ? door === "right" : kit.rand(P.seed + k, 9) < 0.6) {
     const u = du < (u0 + u1) / 2 ? u1 - pil - 0.35 : u0 + pil + 0.35;
     const r = kit.rand(P.seed + k, 10);
-    if (r < 0.4) for (let i = 0; i < 3; i++) kit.box(u + (i - 1) * 0.18, 0, 0.2, 0.16, 0.14, 0.18, kit.pick([P.accent, [0.85, 0.7, 0.35], [0.4, 0.6, 0.3]] as RGB[], P.seed + k, i));
+    if (r < 0.4) {
+      kit.foot(u, 0.2, 0.6, 0.24);
+      for (let i = 0; i < 3; i++) kit.box(u + (i - 1) * 0.18, 0, 0.2, 0.16, 0.14, 0.18, kit.pick([P.accent, [0.85, 0.7, 0.35], [0.4, 0.6, 0.3]] as RGB[], P.seed + k, i));
+    }
     else if (r < 0.7) kit.part({ mesh: "prism", node: kit.node, x: u, y: 0, z: 0.35, w: 0.18, h: 0.3, d: 0.2, color: darkOf(P.accent, 0.2), rotY: Math.PI / 2 });
     else {
       kit.box(u, 0, 0.22, 0.42, 0.03, 0.03, [0.2, 0.2, 0.22]);
