@@ -41,6 +41,10 @@ for (const id of PAGES) {
     square: `view=close&focus=${f(at(square, -4))}`,
     lobby: `view=close&focus=${f(at(lobby, 1))}`,
   };
+  for (const kind of ["loading", "bikes", "works"] as const) {
+    const st = t.stories?.find((x) => x.kind === kind);
+    if (st) out[id][kind] = `view=close&focus=${f([st.x, st.z])}`;
+  }
   console.log(id, t.grammar?.time, JSON.stringify(out[id]));
 }
 writeFileSync("scripts/street-scenes/cameras.json", JSON.stringify(out, null, 1) + "\n");

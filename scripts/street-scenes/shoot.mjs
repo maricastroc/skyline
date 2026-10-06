@@ -19,7 +19,7 @@ for (const [id, cams] of Object.entries(CAMS))
     const page = await browser.newPage();
     await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 2 });
     page.on("pageerror", (e) => console.log("[pageerror]", id, name, e.message));
-    await page.goto(`${BASE}/pixel/kit?page=${id}&${q}`, { waitUntil: "domcontentloaded" });
+    await page.goto(`${BASE}/pixel/kit?page=${id}&${q}${process.env.EXTRA ?? ""}`, { waitUntil: "domcontentloaded" });
     await page.waitForFunction(`!!document.querySelector('.kit-stage canvas')`, { timeout: 120000 });
     await new Promise((r) => setTimeout(r, 7000));
     await page.screenshot({ path: out });

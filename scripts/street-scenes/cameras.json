@@ -5,7 +5,10 @@
   "corner": "view=close&focus=18.8,-18.8",
   "shop": "view=close&focus=-28.2,-17.8",
   "square": "view=close&focus=-4.0,-9.4",
-  "lobby": "view=close&focus=1.0,9.4"
+  "lobby": "view=close&focus=1.0,9.4",
+  "loading": "view=close&focus=-31.0,35.7",
+  "bikes": "view=close&focus=-26.5,-17.3",
+  "works": "view=close&focus=17.1,31.0"
  },
  "hn": {
   "city": "view=city",
@@ -13,7 +16,10 @@
   "corner": "view=close&focus=-18.8,-18.8",
   "shop": "view=close&focus=-28.2,-17.8",
   "square": "view=close&focus=-28.2,-22.8",
-  "lobby": "view=close&focus=-28.2,-17.8"
+  "lobby": "view=close&focus=-28.2,-17.8",
+  "loading": "view=close&focus=-24.0,20.7",
+  "bikes": "view=close&focus=-33.5,35.6",
+  "works": "view=close&focus=-20.5,23.5"
  },
  "news": {
   "city": "view=city",
@@ -21,7 +27,10 @@
   "corner": "view=close&focus=18.8,0.0",
   "shop": "view=close&focus=-9.4,19.8",
   "square": "view=close&focus=14.8,-9.4",
-  "lobby": "view=close&focus=-17.8,-28.2"
+  "lobby": "view=close&focus=-17.8,-28.2",
+  "loading": "view=close&focus=-32.5,35.7",
+  "bikes": "view=close&focus=1.5,-7.7",
+  "works": "view=close&focus=-12.2,1.7"
  },
  "saas": {
   "city": "view=city",
@@ -29,6 +38,8 @@
   "corner": "view=close&focus=-18.8,0.0",
   "shop": "view=close&focus=28.2,19.8",
   "square": "view=close&focus=-22.8,9.4",
-  "lobby": "view=close&focus=19.8,-28.2"
+  "lobby": "view=close&focus=19.8,-28.2",
+  "loading": "view=close&focus=-33.5,35.7",
+  "bikes": "view=close&focus=29.0,-17.3"
  }
 }
