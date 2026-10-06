@@ -1,0 +1,34 @@
+{
+ "apple": {
+  "city": "view=city",
+  "street": "view=street&focus=18.8,-18.8",
+  "corner": "view=close&focus=18.8,-18.8",
+  "shop": "view=close&focus=-28.2,-17.8",
+  "square": "view=close&focus=-4.0,-9.4",
+  "lobby": "view=close&focus=1.0,9.4"
+ },
+ "hn": {
+  "city": "view=city",
+  "street": "view=street&focus=-18.8,-18.8",
+  "corner": "view=close&focus=-18.8,-18.8",
+  "shop": "view=close&focus=-28.2,-17.8",
+  "square": "view=close&focus=-28.2,-22.8",
+  "lobby": "view=close&focus=-28.2,-17.8"
+ },
+ "news": {
+  "city": "view=city",
+  "street": "view=street&focus=18.8,0.0",
+  "corner": "view=close&focus=18.8,0.0",
+  "shop": "view=close&focus=-9.4,19.8",
+  "square": "view=close&focus=14.8,-9.4",
+  "lobby": "view=close&focus=-17.8,-28.2"
+ },
+ "saas": {
+  "city": "view=city",
+  "street": "view=street&focus=-18.8,0.0",
+  "corner": "view=close&focus=-18.8,0.0",
+  "shop": "view=close&focus=28.2,19.8",
+  "square": "view=close&focus=-22.8,9.4",
+  "lobby": "view=close&focus=19.8,-28.2"
+ }
+}
