@@ -32,6 +32,7 @@ export interface ViewState {
   azimuth: number;
   zoom: number;
   pan: [number, number];
+  elevation?: number;
 }
 
 export const RENDER_LINES = 900;
@@ -675,7 +676,7 @@ export interface Fog {
   sinEl: number;
 }
 
-type Tween = { t: number; dur: number; z0: number; z1: number; p0: THREE.Vector2; p1: THREE.Vector2 | null; a0: number; a1: number };
+type Tween = { t: number; dur: number; z0: number; z1: number; p0: THREE.Vector2; p1: THREE.Vector2 | null; a0: number; a1: number; l0: number; l1: number };
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 const clamp01 = (t: number) => Math.min(1, Math.max(0, t));
 
@@ -713,6 +714,8 @@ function Rig({
   const state = useRef({
     az: world ? az0 - 18 : az0,
     azTarget: az0,
+    el: view?.elevation ?? 30,
+    elTarget: view?.elevation ?? 30,
     zoom: world ? 0.62 : (view?.zoom ?? 1),
     zoomTarget: view?.zoom ?? 1,
     pan: new THREE.Vector2(...(view?.pan ?? [0, 0])),
@@ -740,11 +743,14 @@ function Rig({
     s.zoomTarget = s.zoom;
     s.panTarget.copy(s.pan);
     s.azTarget = s.az;
+    s.elTarget = s.el;
     s.tween = null;
   };
 
   useEffect(() => {
-    if (view) state.current.azTarget = view.azimuth;
+    if (!view) return;
+    state.current.azTarget = view.azimuth;
+    state.current.elTarget = view.elevation ?? 30;
   }, [view]);
 
   const cityRef = useRef(city);
@@ -762,7 +768,7 @@ function Rig({
       if (p1) s.pan.copy(p1);
     }
     s.offset.set(0, 0);
-    s.tween = { t: 0, dur: first && world ? 2.8 : newWorld ? 4.6 : mode === "explore" ? 1.9 : 1.6, z0: s.zoom, z1, p0: s.pan.clone(), p1, a0: s.az, a1: s.azTarget };
+    s.tween = { t: 0, dur: first && world ? 2.8 : newWorld ? 4.6 : mode === "explore" ? 1.9 : 1.6, z0: s.zoom, z1, p0: s.pan.clone(), p1, a0: s.az, a1: s.azTarget, l0: s.el, l1: s.elTarget };
   }, [mode, focus, view, world, Z, city, exploreZoom]);
 
   useEffect(() => {
@@ -855,7 +861,6 @@ function Rig({
   useFrame((_, dt) => {
     const s = state.current;
     const k = 1 - Math.exp(-dt * 5);
-    const el = (30 * Math.PI) / 180;
     const tw = s.tween;
     let e = 0;
     if (tw) {
@@ -863,11 +868,14 @@ function Rig({
       const p = clamp01(tw.t / tw.dur);
       e = easeInOut(p);
       s.az = tw.a0 + (tw.a1 - tw.a0) * e;
+      s.el = tw.l0 + (tw.l1 - tw.l0) * e;
       s.zoom = Math.exp(Math.log(tw.z0) + (Math.log(tw.z1) - Math.log(tw.z0)) * easeInOut(clamp01((p - 0.1) / 0.9)));
     } else {
       s.az += (s.azTarget - s.az) * (1 - Math.exp(-dt * 8));
+      s.el += (s.elTarget - s.el) * (1 - Math.exp(-dt * 8));
       s.zoom += (s.zoomTarget - s.zoom) * k;
     }
+    const el = (s.el * Math.PI) / 180;
     const az = (s.az * Math.PI) / 180;
     const dir = new THREE.Vector3(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el));
     const right2 = new THREE.Vector3(Math.cos(az), 0, -Math.sin(az));
@@ -894,6 +902,7 @@ function Rig({
         s.zoomTarget = tw.z1;
         s.panTarget.copy(p1);
         s.azTarget = tw.a1;
+        s.elTarget = tw.l1;
         s.tween = null;
       }
     } else {

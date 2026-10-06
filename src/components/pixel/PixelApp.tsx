@@ -8,7 +8,7 @@ import type { SiteFingerprint } from "@/lib/fingerprint/fingerprint";
 import { blockName, compWords, type KitCity } from "@/lib/pixelcity/kit-city";
 import { SIDEWALK_H } from "@/lib/pixelcity/kit/street";
 import type { PMBlock } from "@/lib/pixelcity/page-map";
-import { generateVacantWorld, SITE_CENTRE } from "@/lib/pixelcity/vacant";
+import { generateVacantWorld } from "@/lib/pixelcity/vacant";
 import { Logo } from "./Logo";
 import { PageMap, type BlockState } from "./PageMap";
 import type { ViewState } from "./PixelScene";
@@ -44,7 +44,7 @@ function checkAddress(v: string): { title: string; detail: string; hint: string 
 const CITY_VIEW: ViewState = { azimuth: 45, zoom: 0.9, pan: [0, 0] };
 const HOME_VIEW: Record<HomeKind, ViewState> = {
   refined: { azimuth: 45, zoom: 1.1, pan: [0, 0] },
-  vacant: { azimuth: 45, zoom: 1.22, pan: [SITE_CENTRE[0] - 1.6, SITE_CENTRE[1] + 4.8] },
+  vacant: { azimuth: 45, zoom: 1.1, pan: [-2.83, 4.24], elevation: 22 },
   blueprint: { azimuth: 45, zoom: 0.8, pan: [-4, -4] },
 };
 const BUILD_ZOOM = 0.62;
@@ -101,7 +101,7 @@ export function PixelApp({
   const city = kit?.city ?? null;
   const doc = kit ? fetchedDoc : null;
 
-  const vacant = useMemo(() => generateVacantWorld(vacantFp, home === "blueprint" ? "blueprint" : "lot"), [vacantFp, home]);
+  const vacant = useMemo(() => generateVacantWorld(vacantFp, home === "blueprint" ? "blueprint" : "city"), [vacantFp, home]);
   const plan = kit?.build.plan ?? null;
   const [elapsed, setElapsed] = useState(0);
   const [skipped, setSkipped] = useState(false);

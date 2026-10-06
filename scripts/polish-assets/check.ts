@@ -64,8 +64,8 @@ let decisions = 0, settings = 0, rest = 0, assets = 0, plantsIn = 0, panels = 0,
 let nPlants = 0, nScreens = 0;
 const notes: string[] = [];
 const drawn = new Map<string, SignSpec>();
-const toDraw = (signs: SignSpec[]) => signs.forEach((q) => drawn.set(`${q.text}|${q.w}|${q.h}|${q.font ?? ""}`, q));
-toDraw(generateVacantWorld(vacantFingerprint(), "lot").signs);
+const toDraw = (signs: SignSpec[]) => signs.forEach((q) => drawn.set(`${q.text}|${q.w}|${q.h}`, q));
+toDraw(generateVacantWorld(vacantFingerprint(), "city").signs);
 for (const e of DATASET) {
   const s = snap(e.id);
   const p = realPage(s);
@@ -188,7 +188,7 @@ window.paintSigns = __m["sign-paint"].paintSigns;`;
   const signsOut = await paintedSignsFit([...drawn.values()]);
   if ("skipped" in signsOut) check("every sign, painted in a browser canvas, stays inside its board", false, signsOut.skipped);
   else {
-    check("every sign, painted in a browser canvas, stays inside its board (city signs and the home's board)", signsOut.bad.length === 0, `${drawn.size - signsOut.bad.length}/${drawn.size} distinct signs`);
+    check("every sign, painted in a browser canvas, stays inside its board (city signs and the home city's)", signsOut.bad.length === 0, `${drawn.size - signsOut.bad.length}/${drawn.size} distinct signs`);
     if (signsOut.bad.length) console.log(signsOut.bad.slice(0, 8).join("\n"));
   }
   console.log(failed ? `\n${failed} check(s) failed` : "\nall polish checks passed");

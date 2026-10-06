@@ -70,8 +70,6 @@ export interface SignSpec {
   y: number;
   w: number;
   h: number;
-  font?: "sans";
-  accent?: RGB;
 }
 
 export type BuildingKind =

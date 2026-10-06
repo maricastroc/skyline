@@ -1,16 +1,15 @@
-import { mix, oklch } from "../city/palette";
+import { oklch } from "../city/palette";
 import type { RGB } from "../city/types";
 import type { SiteFingerprint } from "../fingerprint/fingerprint";
 import type { Semantics } from "../semantics/analyze";
 import { deriveGrammar } from "./grammar";
 import { buildGamePalette, type GamePalette } from "./palette";
 import { textWidth } from "./pixel-font";
-import { blockCentre, generateKitDistrict, newTrace, planFromProfile, type Profile } from "./kit/district";
-import { SIDEWALK_H } from "./kit/street";
+import { generateKitDistrict, planFromProfile, type Profile } from "./kit/district";
 import { addWorld, type PushFn } from "./scenery";
 import { Surf, type Part, type PixelCity, type RoadSeg, type SignSpec } from "./types";
 
-export type VacantStyle = "lot" | "blueprint";
+export type VacantStyle = "city" | "blueprint";
 
 const SIGN_ATLAS = { w: 512, h: 512 };
 const TEXEL = 0.11;
@@ -64,79 +63,22 @@ const HOME_PROFILE: Profile = {
     { role: "minor", content: "text", weight: 0.04, repeat: 3 },
   ],
 };
-const LOT_BLOCK: [number, number] = [2, 2];
-export const SITE_CENTRE = blockCentre(LOT_BLOCK[0], LOT_BLOCK[1]);
-
-function siteInCity(fp: SiteFingerprint): PixelCity {
-  const plan = planFromProfile(HOME_PROFILE, fp);
-  const trace = newTrace();
-  const c = generateKitDistrict(fp, { profile: plan, time: "night", trace });
-  const palette = c.palette;
-  const [bx, bz] = SITE_CENTRE;
-  const drop = new Uint8Array(c.parts.length);
-  for (const pc of trace.pieces) if (pc.block[0] === LOT_BLOCK[0] && pc.block[1] === LOT_BLOCK[1]) for (let k = pc.parts[0]; k < pc.parts[1]; k++) drop[k] = 1;
-  const parts: Part[] = c.parts.filter((_, k) => !drop[k]).map((q) => ({ ...q, node: -1 }));
-  const push = (p: Omit<Part, "rotY" | "surf" | "lit" | "delay"> & Partial<Part>) => parts.push({ rotY: 0, surf: Surf.PLAIN, lit: 0, delay: 0, ...p });
-
-  const S = 12.6;
-  const y0 = SIDEWALK_H;
-  const earth = mix(palette.soil, [0.86, 0.74, 0.55], 0.6);
-  push({ mesh: "box", node: -1, x: bx, y: y0, z: bz, w: S, h: 0.03, d: S, color: earth, surf: Surf.SOIL });
-  const tape: RGB = oklch(0.8, 0.16, 80);
-  const post = palette.walls.tech[1];
-  for (let i = 0; i <= 5; i++)
-    for (const [x, z] of [
-      [bx - S / 2 + (i * S) / 5, bz + S / 2],
-      [bx - S / 2 + (i * S) / 5, bz - S / 2],
-      [bx + S / 2, bz - S / 2 + (i * S) / 5],
-      [bx - S / 2, bz - S / 2 + (i * S) / 5],
-    ] as const)
-      push({ mesh: "box", node: -1, x, y: y0, z, w: 0.08, h: 0.55, d: 0.08, color: palette.trunk });
-  for (const z of [bz + S / 2, bz - S / 2]) push({ mesh: "box", node: -1, x: bx, y: y0 + 0.42, z, w: S, h: 0.05, d: 0.03, color: tape, surf: Surf.STRIPES });
-  for (const x of [bx - S / 2, bx + S / 2]) push({ mesh: "box", node: -1, x, y: y0 + 0.42, z: bz, w: 0.03, h: 0.05, d: S, color: tape, surf: Surf.STRIPES });
-  for (const [x, z, k] of [
-    [bx - S * 0.22, bz - S * 0.24, 1.1],
-    [bx - S * 0.3, bz + S * 0.12, 0.8],
-  ] as const)
-    push({ mesh: "pyramid", node: -1, x, y: y0 + 0.03, z, w: k * 1.6, h: k * 0.7, d: k * 1.6, color: mix(palette.soil, earth, 0.4), rotY: 0.4 });
-  for (const [x, z] of [
-    [bx - S / 2, bz - S / 2],
-    [bx + S / 2, bz - S / 2],
-    [bx - S / 2, bz + S / 2],
-    [bx + S / 2, bz + S / 2],
-  ] as const)
-    push({ mesh: "glow", node: -1, x, y: y0 + 0.55, z, w: 0.12, h: 0.12, d: 0.12, color: oklch(0.78, 0.17, 65), lit: 1.6 });
-
-  const ry = Math.PI / 4;
-  const [bw, bh, lift] = [6, 2.5, 1.25];
-  const ax: [number, number] = [Math.cos(ry), -Math.sin(ry)];
-  const nz: [number, number] = [Math.sin(ry), Math.cos(ry)];
-  const [sx, sz] = [bx + 2.6, bz + 2.6];
-  const bg: RGB = oklch(0.27, 0.035, 262);
-  for (const k of [-1, 1]) push({ mesh: "box", node: -1, x: sx + ax[0] * k * (bw / 2 - 0.5) - nz[0] * 0.12, y: y0, z: sz + ax[1] * k * (bw / 2 - 0.5) - nz[1] * 0.12, w: 0.14, h: lift + bh - 0.2, d: 0.14, color: post, rotY: ry });
-  push({ mesh: "box", node: -1, x: sx - nz[0] * 0.06, y: y0 + lift - 0.05, z: sz - nz[1] * 0.06, w: bw + 0.12, h: bh + 0.1, d: 0.08, color: bg.map((v) => v * 0.7) as RGB, rotY: ry });
-  for (const k of [-1, 0, 1]) {
-    const u = k * (bw / 2 - 1);
-    push({ mesh: "glow", node: -1, x: sx + ax[0] * u + nz[0] * 0.28, y: y0 + lift - 0.08, z: sz + ax[1] * u + nz[1] * 0.28, w: 0.3, h: 0.09, d: 0.07, color: palette.lamp, lit: 2, rotY: ry });
-    push({ mesh: "box", node: -1, x: sx + ax[0] * u + nz[0] * 0.14, y: y0 + lift - 0.06, z: sz + ax[1] * u + nz[1] * 0.14, w: 0.05, h: 0.04, d: 0.28, color: post, rotY: ry });
-  }
-  const top = c.signs.reduce((m, q) => Math.max(m, q.y + q.h), 0) + 2;
-  const spec: SignSpec = { text: "SITE 001\nREADY TO BUILD", bg, fg: oklch(0.97, 0.01, 90), accent: tape, font: "sans", x: 1, y: top, w: 240, h: 100 };
-  push({ mesh: "sign", node: -1, x: sx, y: y0 + lift, z: sz, w: bw, h: bh, d: 1, rotY: ry, color: bg, rect: [spec.x, spec.y, spec.w, spec.h], lit: 1 });
-
-  const inLot = ([x, , z]: [number, number, number]) => Math.abs(x - bx) < 7.5 && Math.abs(z - bz) < 7.5;
+function morning(p: GamePalette): GamePalette {
   return {
-    ...c,
-    parts,
-    signs: [...c.signs, spec],
-    signAtlas: { w: Math.max(c.signAtlas.w, 242), h: Math.max(c.signAtlas.h, top + 102) },
-    smokestacks: c.smokestacks.filter((p) => !inLot(p)),
-    entrance: [0, 0],
+    ...p,
+    sky: { top: oklch(0.6, 0.11, 248), bottom: oklch(0.9, 0.045, 78), stars: false },
+    sun: { color: oklch(0.97, 0.055, 78), intensity: 2.7, dir: [-0.62, 0.62, 0.78] },
+    ambient: { sky: oklch(0.8, 0.065, 238), ground: oklch(0.66, 0.05, 75), intensity: 0.92 },
   };
 }
 
+function homeCity(fp: SiteFingerprint): PixelCity {
+  const c = generateKitDistrict(fp, { profile: planFromProfile(HOME_PROFILE, fp), time: "day" });
+  return { ...c, parts: c.parts.map((q) => ({ ...q, node: -1 })), palette: morning(c.palette), entrance: [0, 0], atmosphere: { haze: [0.58, 1] } };
+}
+
 export function generateVacantWorld(fp: SiteFingerprint, style: VacantStyle): PixelCity {
-  if (style === "lot") return siteInCity(fp);
+  if (style === "city") return homeCity(fp);
   const grammar = deriveGrammar(fp);
   const base = buildGamePalette(fp, grammar);
   const palette = blueprintPalette(base);
