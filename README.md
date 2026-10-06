@@ -39,7 +39,7 @@
 ## 🌆 Every page becomes a city
 
 <p align="center">
-  <img src="docs/screenshots/readme/home.jpg" alt="Skyline's home: an empty plot at night inside a lit pixel-art city, waiting for an address" width="800" />
+  <img src="docs/screenshots/readme/home.jpg" alt="Skyline's home: a whole pixel-art city in morning light, waiting for an address" width="800" />
 </p>
 
 - **A list becomes a row of shopfronts, an index becomes low stacks, a media showcase becomes a tower of screens, and the hero becomes the landmark.** The reading order of the page is the order the land is laid out, from the centre outwards.
@@ -119,7 +119,7 @@ Each part of the page — hero, navigation, feed, index, references, footer — 
 
 **Additional features:**
 
-- **The home is a city too:** the landing screen is the one empty plot of a kit city at night — _"Give this plot an address."_ — with Apple, Hacker News, Linear and The Guardian as one-click examples.
+- **The home is a city too:** the landing screen is a whole kit city in morning light, seen from a little lower than the City View, with Apple, Hacker News, Linear and The Guardian as one-click examples.
 - **Page map:** the page redrawn from what the pipeline already knows — reading order, headings, links, real images, colours and type — without inventing content. It is the page you watch light up during construction, and the source of the cropped excerpt on every building card.
 - **Real images through a signed proxy:** images from the page are served through an HMAC-signed asset route, so the proxy can't be used as an open relay.
 - **Short-lived cache and rate limiting:** a page captured in the last 5 minutes is answered from cache, and captures are rate-limited per client.
