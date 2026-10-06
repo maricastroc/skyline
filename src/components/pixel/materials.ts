@@ -10,6 +10,9 @@ export interface PixelUniforms {
   uFocus: { value: number };
   uReveal: { value: THREE.Vector2 };
   uLights: { value: number };
+  uLightMap: { value: THREE.Texture | null };
+  uLightRect: { value: THREE.Vector4 };
+  uDither: { value: number };
   [k: string]: THREE.IUniform;
 }
 
@@ -90,6 +93,9 @@ uniform vec3 uHighlight;
 uniform float uFocus;
 uniform vec2 uReveal;
 uniform float uLights;
+uniform sampler2D uLightMap;
+uniform vec4 uLightRect;
+uniform float uDither;
 varying vec4 vMeta;
 varying vec3 vLocal;
 varying vec3 vScale;
@@ -101,6 +107,31 @@ varying vec3 vWN;
 varying vec3 vWT;
 float pxHash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float pxSnap(float w, float p) { return sign(w) * floor(abs(w) / p + 0.5) * p; }
+float pxBayer(vec2 p) {
+  ivec2 i = ivec2(mod(p, 4.0));
+  int m[16] = int[16](0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5);
+  return (float(m[i.x + i.y * 4]) + 0.5) / 16.0;
+}
+const float PX_SHARE = 0.85;
+vec3 pxWin(vec2 id, out float k) {
+  float a = pxHash(id + 41.7);
+  float b = pxHash(id * 1.37 + 9.1);
+  k = b < 0.34 ? 0.55 : b < 0.72 ? 0.78 : 1.0;
+  if (a < 0.52) return uLit;
+  if (a < 0.76) return mix(uLit, vec3(0.83, 0.86, 0.9), 0.6);
+  if (a < 0.86) { k *= 0.8; return vec3(0.36, 0.52, 0.92); }
+  return uLit * vec3(1.0, 0.6, 0.3);
+}
+vec3 pxLamp(vec3 w, float up) {
+  vec2 uv = (w.xz - uLightRect.xy) * uLightRect.zw;
+  if (uv.x <= 0.0 || uv.y <= 0.0 || uv.x >= 1.0 || uv.y >= 1.0) return vec3(0.0);
+  vec3 l = texture2D(uLightMap, uv).rgb * 1.5;
+  float m = max(max(l.r, l.g), l.b);
+  if (m < 0.01) return vec3(0.0);
+  float fade = up > 0.5 ? 1.0 - smoothstep(0.3, 1.6, w.y) : 1.0 - smoothstep(0.12, 0.75, w.y);
+  float q = floor(m * fade * 3.0 + 0.5 + 0.4 * (pxBayer(floor(gl_FragCoord.xy / uDither)) - 0.5)) / 3.0;
+  return l * (q / m);
+}
 float pxRecess(vec2 p, vec3 r, float d, vec3 v, vec3 l, vec2 px, out vec2 g, out float shade) {
   g = p;
   shade = 1.0;
@@ -137,6 +168,7 @@ const FRAG_SURFACE = `
 pxRevealClip();
 float pxEmit = 0.0;
 vec3 pxEmitColor = uLit;
+vec3 pxLampC = vec3(0.0);
 {
   vec3 n = normalize(vObjNormal);
   bool side = abs(n.y) < 0.5;
@@ -178,7 +210,7 @@ vec3 pxEmitColor = uLit;
     if (win > 0.5) {
       float h = pxHash(cell + seed);
       diffuseColor.rgb = mix(uGlass, uGlass * 1.35, step(0.82, f.y));
-      if (h < vMeta.y * uLights) { pxEmit = 1.0; diffuseColor.rgb = uLit; }
+      if (h < vMeta.y * uLights * PX_SHARE) { diffuseColor.rgb = pxWin(cell + seed, pxEmit); pxEmitColor = diffuseColor.rgb; }
     }
   }
   if (side && surf == 3) {
@@ -188,7 +220,9 @@ vec3 pxEmitColor = uLit;
     if (slab < 0.5 && mull < 0.5) {
       float refl = step(0.7, fract((fc.x + fc.y * 0.6) / 1.7));
       diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * 1.35, refl * 0.6);
-      if (pxHash(cell + seed) < vMeta.y * uLights) { pxEmit = 1.0; diffuseColor.rgb = uLit; }
+      float run = 2.0 + floor(pxHash(vec2(cell.y, seed + 5.0)) * 4.0);
+      vec2 room = vec2(floor(cell.x / run), cell.y);
+      if (pxHash(room + seed) < vMeta.y * uLights * PX_SHARE) { diffuseColor.rgb = pxWin(room + seed * 1.3, pxEmit); pxEmitColor = diffuseColor.rgb; }
     } else diffuseColor.rgb *= 0.78;
   }
   if (top && surf == 4) {
@@ -198,6 +232,11 @@ vec3 pxEmitColor = uLit;
     float mark = vMeta.y > 0.5
       ? step(abs(abs(across) - 0.09), 0.05)
       : step(abs(across), 0.06) * step(fract(along / 0.8), 0.5);
+    float asp = pxHash(floor(vWorld.xz / vec2(1.3, 1.1) + vec2(0.31, 0.77)) + 3.1);
+    diffuseColor.rgb *= 1.0 + 0.045 * step(0.8, asp) - 0.055 * step(asp, 0.14);
+    vec2 mc = floor(vWorld.xz / 3.0);
+    float md = length(vWorld.xz - mc * 3.0 - 0.6 - 1.8 * vec2(pxHash(mc + 7.0), pxHash(mc + 11.0)));
+    if (pxHash(mc + 5.0) < 0.3 && md < 0.12) diffuseColor.rgb *= md > 0.085 ? 0.6 : 0.82;
     diffuseColor.rgb = mix(diffuseColor.rgb, uMark, mark);
     diffuseColor.rgb *= 1.0 - 0.06 * step(pxHash(floor(vWorld.xz * 6.0)), 0.18);
   }
@@ -208,16 +247,29 @@ vec3 pxEmitColor = uLit;
   if (top && surf == 6) {
     vec2 j = fract(vWorld.xz);
     float joint = step(j.x, 0.07) + step(j.y, 0.07);
-    diffuseColor.rgb *= 1.0 - 0.08 * min(joint, 1.0);
+    diffuseColor.rgb *= (1.0 - 0.08 * min(joint, 1.0)) * (0.97 + 0.05 * pxHash(floor(vWorld.xz) + 1.7)) * (0.98 + 0.03 * pxHash(floor(vWorld.xz / 3.0) + 4.1));
   }
   if (top && surf == 9) {
     float rim = step(min(min(fc.x, fs.x - fc.x), min(fc.y, fs.y - fc.y)), 0.1);
     diffuseColor.rgb *= (1.0 - 0.14 * rim) * (0.96 + 0.06 * step(0.7, pxHash(floor(vWorld.xz * 6.0))));
+    float dy = max(length(vec2(dFdx(vWorld.y), dFdy(vWorld.y))), 1e-4);
+    float tk = vWN.y < 0.97 ? smoothstep(2.2, 3.5, 0.12 / dy) : 0.0;
+    if (tk > 0.0) {
+      float row = floor(vWorld.y / 0.12);
+      vec2 td = normalize(vec2(-vWN.z, vWN.x) + 1e-5);
+      float along = dot(vWorld.xz, td) / 0.17 + 0.5 * mod(row, 2.0);
+      float tile = pxHash(vec2(floor(along), row) + 13.0);
+      float course = step(fract(vWorld.y / 0.12) * 0.12, dy);
+      diffuseColor.rgb *= 1.0 - tk * (1.0 - (1.0 - 0.16 * course) * (0.95 + 0.08 * tile) * (1.0 - 0.1 * step(0.95, tile)));
+    }
   }
   if (top && surf == 8) {
     vec2 c2 = floor(vWorld.xz * 4.0);
     float w = step(0.86, fract(pxHash(c2) + uTime * 0.25 + c2.x * 0.05));
     diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * 1.45 + 0.08, w);
+  }
+  if (top && surf == 10) {
+    diffuseColor.rgb *= (0.95 + 0.08 * step(0.78, pxHash(floor(vWorld.xz * 5.0)))) * (0.97 + 0.05 * pxHash(floor(vWorld.xz / 1.7) + 2.2));
   }
   if (side && surf == 10) {
     float band = floor(vWorld.y / 0.45);
@@ -289,7 +341,9 @@ vec3 pxEmitColor = uLit;
         vec3 trim = mix(wall, vec3(0.97, 0.95, 0.9), 0.6);
         vec3 sashC = fDark > 0.5 ? vec3(0.17, 0.18, 0.2) : mix(trim, vec3(1.0), 0.35);
         vec2 lc = groups > 0.5 ? vec2(floor(bi / 2.0), floor(fc.y / 0.5)) : vec2(bi, floor(fc.y / 0.5));
-        bool on = pxHash(lc + seed) < vMeta.y * uLights;
+        bool on = pxHash(lc + seed) < vMeta.y * uLights * PX_SHARE;
+        float wk = 0.0;
+        vec3 wc = on ? pxWin(lc + seed, wk) : uLit;
         vec2 g; float shade;
         float part = pxRecess(vec2(wx, fy), vec3(hw, y0, y1), min(fD, 0.55 * hw), fV, fL, fPx, g, shade);
         float fw = max(fPx.x, pxSnap(0.035, fPx.x));
@@ -297,13 +351,13 @@ vec3 pxEmitColor = uLit;
         vec3 rv = dot(wall, vec3(0.299, 0.587, 0.114)) < 0.28 ? mix(wall, trim, 0.5) : wall;
         if (part > 2.5 && part < 4.5) {
           vec3 c = rv * (part < 3.5 ? (fSunLit ? 1.1 : 1.45) : (fSunLit ? 0.64 : 0.8));
-          if (on) { c = mix(c, uLit, 0.3); pxEmit = 0.25; }
+          if (on) { c = mix(c, wc, 0.3); pxEmit = 0.25 * wk; pxEmitColor = wc; }
           diffuseColor.rgb = c;
         } else if (part > 0.5) {
           bool bar = part > 4.5 || (pat < 0.5 && bay > 0.6 && abs(g.x) < max(fPx.x, 0.02));
           vec3 c = bar ? sashC : shade > 0.99 ? mix(uGlass, uGlass * 1.45 + 0.05, 0.35) : shade > 0.7 ? uGlass * 0.88 : uGlass * 0.58;
           if (bar) c *= shade > 0.99 ? 1.0 : 0.8;
-          if (on && !bar) { pxEmit = 1.0; c = uLit; }
+          if (on && !bar) { pxEmit = wk; pxEmitColor = wc; c = wc; }
           diffuseColor.rgb = c;
         } else {
           float head = fFrame < 0.5 && y1 + fh * 1.7 < 0.49 ? fh * 1.7 : fh;
@@ -330,7 +384,7 @@ vec3 pxEmitColor = uLit;
         vec3 g = mix(uGlass, uGlass * 1.4, step(y1 - 0.04, fy));
         if (pat < 0.5 && bay > 0.6 && abs(wx) < 0.02) g = trim;
         vec2 lc = groups > 0.5 ? vec2(floor(bi / 2.0), floor(fc.y / 0.5)) : vec2(bi, floor(fc.y / 0.5));
-        if (pxHash(lc + seed) < vMeta.y * uLights) { pxEmit = 1.0; g = uLit; }
+        if (pxHash(lc + seed) < vMeta.y * uLights * PX_SHARE) { g = pxWin(lc + seed, pxEmit); pxEmitColor = g; }
         diffuseColor.rgb = g;
       } else if (frame > 0.5) diffuseColor.rgb = trim;
       }
@@ -342,16 +396,19 @@ vec3 pxEmitColor = uLit;
     vec2 g; float shade;
     float part = fc.y < fs.y - 0.1 ? pxRecess(vec2(fc.x - fs.x * 0.5, fy), vec3(fs.x * 0.5 - 0.06, 0.15, 0.42), fD, fV, fL, fPx, g, shade) : 0.0;
     float run = mod(floor(floor(vMeta.w + 0.5) / 512.0), 2.0) > 0.5 ? 2.8 : 0.7;
-    bool on = pxHash(vec2(floor(fc.x / run), floor(fc.y / 0.5)) + seed) < vMeta.y * uLights;
+    vec2 rid = vec2(floor(fc.x / run), floor(fc.y / 0.5)) + seed;
+    bool on = pxHash(rid) < vMeta.y * uLights * PX_SHARE;
+    float wk = 0.0;
+    vec3 wc = on ? pxWin(rid, wk) : uLit;
     if (part > 2.5 && part < 4.5) {
       vec3 c = wall * (part < 3.5 ? (fSunLit ? 1.1 : 1.45) : (fSunLit ? 0.64 : 0.8));
-      if (on) { c = mix(c, uLit, 0.3); pxEmit = 0.25; }
+      if (on) { c = mix(c, wc, 0.3); pxEmit = 0.25 * wk; pxEmitColor = wc; }
       diffuseColor.rgb = c;
     } else if (part > 0.5) {
       bool bar = part > 4.5 || step(fract((g.x + fs.x * 0.5) / 0.35), fPx.x / 0.35 * 1.5) > 0.5;
       vec3 c = bar ? wall * 0.66 : shade > 0.99 ? mix(uGlass, uGlass * 1.45 + 0.05, 0.35) : shade > 0.7 ? uGlass * 0.88 : uGlass * 0.58;
       if (bar) c *= shade > 0.99 ? 1.0 : 0.8;
-      if (on && !bar) { pxEmit = 1.0; c = uLit; }
+      if (on && !bar) { pxEmit = wk; pxEmitColor = wc; c = wc; }
       diffuseColor.rgb = c;
     } else diffuseColor.rgb *= 1.0 - 0.06 * step(fy, 0.03);
   } else if (side && surf == 15) {
@@ -359,7 +416,8 @@ vec3 pxEmitColor = uLit;
     if (step(0.3, fy) * step(fy, 0.84) > 0.5 && fc.y < fs.y - 0.1 && fc.x > 0.06 && fc.x < fs.x - 0.06) {
       vec3 g = mix(uGlass, uGlass * 1.35, step(0.76, fy));
       float run = mod(floor(floor(vMeta.w + 0.5) / 512.0), 2.0) > 0.5 ? 2.8 : 0.7;
-      if (pxHash(vec2(floor(fc.x / run), floor(fc.y / 0.5)) + seed) < vMeta.y * uLights) { pxEmit = 1.0; g = uLit; }
+      vec2 rid = vec2(floor(fc.x / run), floor(fc.y / 0.5)) + seed;
+      if (pxHash(rid) < vMeta.y * uLights * PX_SHARE) { g = pxWin(rid, pxEmit); pxEmitColor = g; }
       diffuseColor.rgb = mix(g, diffuseColor.rgb * 0.7, step(fract(fc.x / 0.35), 0.1));
     } else diffuseColor.rgb *= 1.0 - 0.06 * step(fy, 0.06);
   }
@@ -392,12 +450,13 @@ vec3 pxEmitColor = uLit;
   if (top && surf == 20) {
     vec2 j = fract(vWorld.xz / 0.5);
     float joint = min(step(j.x, 0.06) + step(j.y, 0.06), 1.0);
-    diffuseColor.rgb *= (1.0 - 0.08 * joint) * (0.96 + 0.06 * pxHash(floor(vWorld.xz / 0.5)));
+    diffuseColor.rgb *= (1.0 - 0.08 * joint) * (0.96 + 0.06 * pxHash(floor(vWorld.xz / 0.5))) * (1.0 - 0.07 * step(0.94, pxHash(floor(vWorld.xz / 0.5) + 2.3))) * (0.975 + 0.04 * pxHash(floor(vWorld.xz / 2.0) + 0.5));
   }
   if (surf == 11) {
     float s = side && fs.y > 1.5 ? step(0.5, fract(fc.y / 0.5)) : step(0.5, fract((fc.x) / 0.25));
     diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.95), s * 0.85);
   }
+  if (pxEmit <= 0.0 && uNight > 0.01) pxLampC = pxLamp(vWorld, step(0.5, vWN.y)) * uNight * uLights;
   if (vHighlight < 0.01) diffuseColor.rgb *= 1.0 - 0.55 * uFocus;
   if (vHighlight > 0.01) diffuseColor.rgb = mix(diffuseColor.rgb, uHighlight, 0.4 * vHighlight * (0.82 + 0.18 * sin(uTime * 5.0)));
   diffuseColor.rgb = mix(diffuseColor.rgb, uHighlight * 1.15 + 0.1, 0.75 * pxRevealEdge());
@@ -406,7 +465,7 @@ vec3 pxEmitColor = uLit;
 
 const FRAG_EMIT = `
 #include <emissivemap_fragment>
-totalEmissiveRadiance += pxEmitColor * pxEmit * (0.35 + 1.25 * uNight);
+totalEmissiveRadiance += pxEmitColor * pxEmit * (0.35 + 1.25 * uNight) + diffuseColor.rgb * pxLampC;
 `;
 
 export function createToonMaterial(uniforms: PixelUniforms, ramp: THREE.Texture, key: string): THREE.MeshToonMaterial {
@@ -507,7 +566,7 @@ export function createSpriteMaterial(uniforms: PixelUniforms, atlas: THREE.Textu
       .replace(
         "#include <color_fragment>",
         `pxRevealClip();
-         diffuseColor.rgb *= mix(1.0, 0.6, uNight);
+         diffuseColor.rgb *= mix(1.0, 0.6, uNight) + 0.8 * pxLamp(vWorld, 1.0) * uNight * uLights;
          if (vHighlight < 0.01) diffuseColor.rgb *= 1.0 - 0.55 * uFocus;`,
       );
   };

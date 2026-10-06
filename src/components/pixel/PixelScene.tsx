@@ -5,11 +5,11 @@ import { BloomEffect, CopyMaterial, EffectComposer, EffectPass, Pass, ToneMappin
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import type { RGB } from "@/lib/city/types";
-import { srgbToLinear } from "@/lib/city/palette";
+import { mix, srgbToLinear } from "@/lib/city/palette";
 import { drawPeopleAtlas, PEOPLE_ATLAS } from "@/lib/pixelcity/kit/people";
 import type { BuildPlan } from "@/lib/pixelcity/construction";
 import type { GamePalette } from "@/lib/pixelcity/palette";
-import type { Part, PartMesh, PixelCity } from "@/lib/pixelcity/types";
+import { Surf, type Part, type PartMesh, type PixelCity } from "@/lib/pixelcity/types";
 import { useAtlas } from "@/components/scene/atlas";
 import {
   createAtlasMaterial,
@@ -168,6 +168,109 @@ function buildBatches(parts: Part[]): Batch[] {
   return out;
 }
 
+const LIGHT_TEXELS = 8;
+const LIGHT_MAX = 1.5;
+
+type LightSource = { ax: number; az: number; bx: number; bz: number; r: number; c: RGB; key: string };
+
+function joinRows(points: LightSource[]): LightSource[] {
+  const out: LightSource[] = [];
+  const used = new Uint8Array(points.length);
+  for (let i = 0; i < points.length; i++) {
+    if (used[i]) continue;
+    used[i] = 1;
+    const row = [points[i]];
+    for (let grew = true; grew; ) {
+      grew = false;
+      for (let j = 0; j < points.length; j++) {
+        if (used[j] || points[j].key !== points[i].key) continue;
+        if (!row.some((q) => Math.hypot(q.ax - points[j].ax, q.az - points[j].az) < 2.2)) continue;
+        used[j] = 1;
+        row.push(points[j]);
+        grew = true;
+      }
+    }
+    let a = row[0];
+    let b = row[0];
+    for (const p of row) for (const q of row) if (Math.hypot(p.ax - q.ax, p.az - q.az) > Math.hypot(a.ax - b.ax, a.az - b.az)) [a, b] = [p, q];
+    const len = Math.hypot(b.ax - a.ax, b.az - a.az);
+    const straight = len > 0 && row.every((p) => Math.abs((p.ax - a.ax) * (b.az - a.az) - (p.az - a.az) * (b.ax - a.ax)) / len < 0.1);
+    if (row.length > 1 && straight) out.push({ ...a, bx: b.ax, bz: b.az, r: a.r * 0.85 });
+    else out.push(...row);
+  }
+  return out;
+}
+
+function lightMap(parts: Part[], lit: RGB): { tex: THREE.DataTexture; rect: THREE.Vector4 } {
+  const points: LightSource[] = [];
+  const src: LightSource[] = [];
+  const shop = srgbToLinear(lit);
+  for (const p of parts) {
+    if (p.mesh === "glow" && p.lit >= 1 && p.y >= 0.12 && p.y <= 1.5 && p.color[0] >= 0.85 && p.color[1] >= 0.6) {
+      const k = Math.min(1, p.lit / 2.2) * Math.min(1, 0.35 + 0.65 * p.y);
+      points.push({ ax: p.x, az: p.z, bx: p.x, bz: p.z, r: 0.4 + 0.7 * p.y, c: srgbToLinear(mix(p.color, [1, 1, 1], 0.25)).map((v) => v * k) as RGB, key: `${p.y.toFixed(2)}|${p.lit}|${p.color.join(",")}` });
+    } else if (p.mesh === "box" && p.surf === Surf.STORE && p.lit > 0 && p.y <= 0.35 && p.h >= 0.25 && p.w >= 0.3) {
+      const hx = (Math.cos(p.rotY) * p.w) / 2;
+      const hz = (-Math.sin(p.rotY) * p.w) / 2;
+      src.push({ ax: p.x - hx, az: p.z - hz, bx: p.x + hx, bz: p.z + hz, r: 0.75, c: shop.map((v) => v * 0.5 * p.lit) as RGB, key: "" });
+    }
+  }
+  src.push(...joinRows(points));
+  if (!src.length) {
+    const tex = new THREE.DataTexture(new Uint8Array(4), 1, 1, THREE.RGBAFormat);
+    tex.needsUpdate = true;
+    return { tex, rect: new THREE.Vector4(0, 0, 0, 0) };
+  }
+  let x0 = Infinity;
+  let z0 = Infinity;
+  let x1 = -Infinity;
+  let z1 = -Infinity;
+  for (const l of src) {
+    x0 = Math.min(x0, l.ax - l.r, l.bx - l.r);
+    z0 = Math.min(z0, l.az - l.r, l.bz - l.r);
+    x1 = Math.max(x1, l.ax + l.r, l.bx + l.r);
+    z1 = Math.max(z1, l.az + l.r, l.bz + l.r);
+  }
+  const k = Math.min(LIGHT_TEXELS, 1024 / Math.max(x1 - x0, z1 - z0));
+  const W = Math.max(1, Math.ceil((x1 - x0) * k));
+  const D = Math.max(1, Math.ceil((z1 - z0) * k));
+  const acc = new Float32Array(W * D * 3);
+  for (const l of src) {
+    const ex = l.bx - l.ax;
+    const ez = l.bz - l.az;
+    const len2 = ex * ex + ez * ez;
+    const i0 = Math.max(0, Math.floor((Math.min(l.ax, l.bx) - l.r - x0) * k));
+    const i1 = Math.min(W - 1, Math.ceil((Math.max(l.ax, l.bx) + l.r - x0) * k));
+    const j0 = Math.max(0, Math.floor((Math.min(l.az, l.bz) - l.r - z0) * k));
+    const j1 = Math.min(D - 1, Math.ceil((Math.max(l.az, l.bz) + l.r - z0) * k));
+    for (let j = j0; j <= j1; j++)
+      for (let i = i0; i <= i1; i++) {
+        const x = x0 + (i + 0.5) / k;
+        const z = z0 + (j + 0.5) / k;
+        const t = len2 > 0 ? Math.max(0, Math.min(1, ((x - l.ax) * ex + (z - l.az) * ez) / len2)) : 0;
+        const d = Math.hypot(x - l.ax - t * ex, z - l.az - t * ez) / l.r;
+        if (d >= 1) continue;
+        const e = Math.max(0, Math.min(1, (d - 0.3) / 0.7));
+        const f = 1 - e * e * (3 - 2 * e);
+        const o = (j * W + i) * 3;
+        acc[o] += l.c[0] * f;
+        acc[o + 1] += l.c[1] * f;
+        acc[o + 2] += l.c[2] * f;
+      }
+  }
+  const data = new Uint8Array(W * D * 4);
+  for (let n = 0; n < W * D; n++) {
+    for (let c = 0; c < 3; c++) data[n * 4 + c] = Math.round(255 * Math.min(1, acc[n * 3 + c] / LIGHT_MAX));
+    data[n * 4 + 3] = 255;
+  }
+  const tex = new THREE.DataTexture(data, W, D, THREE.RGBAFormat);
+  tex.minFilter = THREE.LinearFilter;
+  tex.magFilter = THREE.LinearFilter;
+  tex.generateMipmaps = false;
+  tex.needsUpdate = true;
+  return { tex, rect: new THREE.Vector4(x0, z0, 1 / (W / k), 1 / (D / k)) };
+}
+
 let peopleTexture: THREE.CanvasTexture | null = null;
 function peopleAtlas(): THREE.CanvasTexture {
   if (peopleTexture) return peopleTexture;
@@ -256,6 +359,7 @@ function Stage({ city, view, interactive = true, mode = "city", focus = null, hi
           role={c === active ? (outgoing ? "incoming" : "solo") : "outgoing"}
           reveal={reveal}
           plan={c === city ? plan : null}
+          dither={scales.artPx / scales.renderPx}
           highlight={c === active ? highlight : null}
           soft={c === active ? soft : null}
           spotlight={c === active && spotlight}
@@ -315,6 +419,7 @@ function Layer({
   role,
   reveal,
   plan: planProp,
+  dither,
   highlight,
   soft,
   spotlight,
@@ -326,6 +431,7 @@ function Layer({
   role: "solo" | "incoming" | "outgoing";
   reveal: Reveal;
   plan: BuildPlan | null;
+  dither: number;
   highlight: [number, number] | null;
   soft: [number, number] | null;
   spotlight: boolean;
@@ -336,6 +442,8 @@ function Layer({
   const [plan] = useState(planProp);
   const p = city.palette;
   const night = p.time === "night";
+  const lights = useMemo(() => lightMap(city.parts, p.lit), [city, p.lit]);
+  useEffect(() => () => lights.tex.dispose(), [lights]);
   const uniforms = useMemo<PixelUniforms>(
     () => ({
       uTime: { value: 0 },
@@ -347,8 +455,11 @@ function Layer({
       uFocus: { value: 0 },
       uReveal: { value: new THREE.Vector2(0, 0) },
       uLights: { value: plan ? 0 : 1 },
+      uLightMap: { value: lights.tex },
+      uLightRect: { value: lights.rect },
+      uDither: { value: 1 },
     }),
-    [p, night, plan],
+    [p, night, plan, lights],
   );
   const images = useAtlas(city.images, BILLBOARD_PAPER, BILLBOARD_ATLAS);
   const signs = useSignAtlas(city);
@@ -425,6 +536,7 @@ function Layer({
   useFrame((_, dt) => {
     const u = uniforms;
     u.uTime.value += Math.min(dt, 0.05);
+    u.uDither.value = dither;
     u.uFocus.value += (spot - u.uFocus.value) * (1 - Math.exp(-dt * 12));
     const mode = !reveal.on || role === "solo" ? 0 : role === "incoming" ? 1 : -1;
     u.uReveal.value.set(reveal.r, mode);
@@ -498,9 +610,11 @@ function Post({ to, from, reveal, fog, scales }: { to: PixelCity; from: PixelCit
     const tone = new ToneMappingEffect({ mode: ToneMappingMode.NEUTRAL });
     const composer = new EffectComposer(gl, { frameBufferType: THREE.HalfFloatType, multisampling: 0 });
     const render = new RenderScaledPass(scene, camera, renderPx);
-    const effects = new EffectPass(camera, post, bloom, tone);
+    const effects = new EffectPass(camera, post);
+    const glow = new EffectPass(camera, bloom, tone);
     composer.addPass(render);
     composer.addPass(effects);
+    composer.addPass(glow);
     if (render.target.depthTexture) effects.setDepthTexture(render.target.depthTexture);
     return { composer, post, bloom, applied: { w: -1, h: -1 } };
     // eslint-disable-next-line react-hooks/exhaustive-deps
