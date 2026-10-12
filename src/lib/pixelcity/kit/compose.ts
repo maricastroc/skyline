@@ -6,8 +6,10 @@ import { programFor, type Brief } from "./brief";
 import { building, type Family, type Program } from "./buildings";
 import type { Kit } from "./core";
 import type { Run } from "./frontage";
+import type { Layout, Room } from "./layout";
 import { plaza, type RoofFamily } from "./massing";
 import { softMix, type Comp, type Plan, type Territory } from "./plan";
+import type { Experiment } from "../../semantics/experiments";
 import type { Use } from "./surface";
 import { bench, tree } from "./street";
 import { LOTS, N, type Allocation } from "./territory";
@@ -86,7 +88,15 @@ export interface ComposeCtx {
   vf: number;
   record: (P: Program, w: number, d: number, fn: () => number) => number;
   frontage?: Map<Piece, Run[][]>;
+  lots?: number[];
+  layout?: Layout;
 }
+
+export const ROOM: Partial<Record<Comp, Record<PieceType, Room>>> = {
+  interactive: { full: { dominants: 4, units: 6 }, half: { dominants: 1, units: 3 }, quad: { dominants: 1, units: 1 }, lot: { dominants: 0, units: 1 } },
+};
+
+const has = (ctx: ComposeCtx, e: Experiment) => ctx.plan.exp?.has(e) ?? false;
 
 const COMP_CONTENT: Record<Comp, Brief["content"]> = {
   landmark: "media",
@@ -189,6 +199,67 @@ function yard(kit: Kit, x: number, z: number, w: number, d: number, seed: number
   for (let t = 0; t < trees; t++) tree(kit, x + (kit.rand(seed, t) - 0.5) * (w - 1.2), z + (kit.rand(seed, t + 7) - 0.5) * (d - 1.2), seed * 3 + t, 0.85, 0.03);
 }
 
+function stalls(ctx: ComposeCtx, P: Program, at: Array<[number, number, number]>): PlazaAnchor[] {
+  at.forEach(([x, z, rot], k) => place(ctx, x, z, rot, 1.6, 1.1, { ...P, family: "kiosk", seed: P.seed + 31 * (k + 1), accent: ctx.kit.pick(ctx.kit.palette.accents, P.seed, 90 + k), label: k === 0 ? P.label : undefined }));
+  return at.map(([x, z, rot]) => ({ kind: "kiosk", x, z, rot }));
+}
+
+function marketHall(ctx: ComposeCtx, pc: Piece, t: Territory, salt: number, W: number, D: number) {
+  const { kit } = ctx;
+  const base = prog(ctx, t, "grid", salt);
+  const hall: Program = { ...base, family: "shed", market: true, ground: "shop", signage: "shop", facade: "bands", label: shortLabel(t.label) };
+  const lots = Math.max(1, ctx.lots?.[ctx.plan.territories.indexOf(t)] ?? 1);
+  const n = Math.max(2, Math.min(6, Math.round(((t.census?.items ?? t.repeat) * 16) / lots)));
+  if (pc.type === "full") {
+    const at: Array<[number, number, number]> = Array.from({ length: n }, (_, k) => [-W / 2 + ((k + 0.5) * W) / n, D / 2 - 1.0, Math.PI]);
+    plaza(kit, -W / 2, W / 2, -D / 2, D / 2, salt, false, [-5.2, 5.2, -5.6, 3.4], at.map(([x, z, rot]) => ({ kind: "kiosk", x, z, rot })));
+    place(ctx, 0, -1.1, 0, 10, 8.6, hall);
+    stalls(ctx, base, at);
+  } else if (pc.type === "half") {
+    const m = Math.max(1, Math.ceil(n / 3));
+    const at: Array<[number, number, number]> = Array.from({ length: m }, (_, k) => [W / 2 - 1.4, -D / 2 + ((k + 0.5) * D) / m, -Math.PI / 2]);
+    plaza(kit, -W / 2, W / 2, -D / 2, D / 2, salt, false, [-W / 2 + 0.2, W / 2 - 3.2, -D / 2, D / 2], at.map(([x, z, rot]) => ({ kind: "kiosk", x, z, rot })));
+    place(ctx, -1.4, 0, 0, W - 3.6, D - 0.6, hall);
+    stalls(ctx, base, at);
+  } else if (pc.type === "quad") place(ctx, 0, 0, 0, W - 0.4, D - 0.6, hall);
+  else place(ctx, 0, 0, 0, W, D, { ...base, family: "walkup", floors: fl(ctx, 2, 1), ground: "shop", signage: "shop" });
+}
+
+const RING: Array<[number, number, number]> = [
+  [0, -5.4, 0],
+  [-5.4, 0, Math.PI / 2],
+  [5.4, 0, -Math.PI / 2],
+  [0, 5.4, Math.PI],
+];
+const SPOTS: Array<[number, number, number]> = [
+  [-2.5, -2.5, 0],
+  [2.5, 2.5, Math.PI],
+  [-2.5, 2.5, Math.PI],
+  [2.5, -2.5, 0],
+  [0, -3.0, 0],
+  [0, 3.0, Math.PI],
+];
+
+function forum(ctx: ComposeCtx, pc: Piece, t: Territory, salt: number, W: number, D: number) {
+  const { kit } = ctx;
+  const base: Program = { ...prog(ctx, t, "interactive", salt), label: shortLabel(t.label) };
+  const brief = ctx.layout?.briefs.get(pc);
+  const sides = brief?.dominants ?? 0;
+  const n = brief?.units ?? 0;
+  const arcade: Program = { ...base, family: "slab", floors: fl(ctx, 2, 1), ground: "arcade", signage: "plaque", roof: "flat" };
+  if (pc.type === "full") {
+    const at = SPOTS.slice(0, n);
+    plaza(kit, -4, 4, -4, 4, salt, true, undefined, at.map(([x, z, rot]) => ({ kind: "kiosk", x, z, rot })));
+    RING.slice(0, sides).forEach(([x, z, rot], k) => place(ctx, x, z, rot, 10.4, 2.6, { ...arcade, seed: arcade.seed + 7 * k, label: k === 0 ? arcade.label : undefined }));
+    stalls(ctx, base, at);
+    return;
+  }
+  const at: Array<[number, number, number]> = Array.from({ length: n }, (_, k) => [-W / 2 + ((k + 0.5) * W) / n, sides ? D / 2 - 1.5 : 0, Math.PI]);
+  plaza(kit, -W / 2 + 0.2, W / 2 - 0.2, -D / 2 + (sides ? 3.0 : 0.2), D / 2 - 0.2, salt, false, undefined, at.map(([x, z, rot]) => ({ kind: "kiosk", x, z, rot })));
+  if (sides) place(ctx, 0, -D / 2 + 1.5, 0, W - 0.4, 2.6, arcade);
+  stalls(ctx, base, at);
+}
+
 export function composePiece(ctx: ComposeCtx, pc: Piece, t: Territory, comp: Comp, salt: number) {
   const { kit } = ctx;
   const w = t.weight;
@@ -244,6 +315,7 @@ export function composePiece(ctx: ComposeCtx, pc: Piece, t: Territory, comp: Com
         return;
       }
       case "grid": {
+        if (has(ctx, "market")) return marketHall(ctx, pc, t, salt, W, D);
         const floors = fl(ctx, 3 + 0.5 * lw(w, 10), 2);
         const P: Program = { ...prog(ctx, t, comp, salt), family: "walkup", floors, ground: "shop", signage: "shop", topside: "hvac" };
         const cells: Array<[number, number, number]> = [];
@@ -269,6 +341,7 @@ export function composePiece(ctx: ComposeCtx, pc: Piece, t: Territory, comp: Com
         return;
       }
       case "interactive": {
+        if (has(ctx, "forum")) return forum(ctx, pc, t, salt, W, D);
         const P: Program = { ...prog(ctx, t, comp, salt), family: "kiosk", label: shortLabel(t.label) };
         const kiosks: Array<[number, number]> = pc.type === "full" ? [[-3.5, 2.5], [3.5, -2.5]] : [[0, pc.type === "lot" ? 0 : D / 2 - 1.2]];
         const benches = pc.type === "full" ? [0, 1, 2, 3].map((k): PlazaAnchor => ({ kind: "bench", x: -2 + k * 1.3, z: -0.2 + (k % 2) * 0.4, rot: k % 2 ? Math.PI : 0 })) : [];

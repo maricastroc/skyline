@@ -25,7 +25,9 @@ export function countSources(root: SnapshotNode): Map<string, number> {
   return m;
 }
 
-export function imageVerdict(s: SnapshotNode, sources: Map<string, number>): ImageVerdict {
+const UI_PATH = /(^|[^a-z])(avatars?|avatar[-_]?thumbnail|profile[-_]?(images?|pics?|photos?|pictures?)|userpics?|gravatar)([^a-z]|$)/i;
+
+export function imageVerdict(s: SnapshotNode, sources: Map<string, number>, wholePath = false): ImageVerdict {
   const w = Number(s.attrs?.width);
   const h = Number(s.attrs?.height);
   const dims = [w, h].filter((v) => Number.isFinite(v) && v > 0);
@@ -38,6 +40,7 @@ export function imageVerdict(s: SnapshotNode, sources: Map<string, number>): Ima
   if (!dims.length && !described && repeats >= 5) return "repeated";
   const file = (s.image ?? s.attrs?.src ?? "").split(/[/?#]/).filter(Boolean).slice(-1)[0] ?? "";
   if (!dims.length && UI_WORD.test(`${(s.classes ?? []).join(" ")} ${file}`)) return "named-ui";
+  if (wholePath && UI_PATH.test((s.image ?? s.attrs?.src ?? "").split(/[?#]/)[0])) return "named-ui";
   return "content";
 }
 

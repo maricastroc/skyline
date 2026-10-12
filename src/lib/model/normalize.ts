@@ -1,3 +1,4 @@
+import { NO_EXPERIMENTS, type Experiments } from "../semantics/experiments";
 import { countSources, emptyReport, imageVerdict, type MediaReport } from "../snapshot/media";
 import type { DomSnapshot, SnapshotNode } from "../snapshot/types";
 import { classify, STRUCTURAL } from "./classify";
@@ -49,6 +50,7 @@ interface W {
 }
 
 interface Counters {
+  reading: boolean;
   images: number;
   sources: Map<string, number>;
   media: MediaReport;
@@ -58,8 +60,8 @@ interface Counters {
   idMap: Map<string, W>;
 }
 
-export function normalize(snapshot: DomSnapshot): NormalizedDocument {
-  const counters: Counters = { images: 0, sources: countSources(snapshot.root), media: emptyReport(), headings: 0, forms: 0, buttons: 0, idMap: new Map() };
+export function normalize(snapshot: DomSnapshot, experiments: Experiments = NO_EXPERIMENTS): NormalizedDocument {
+  const counters: Counters = { images: 0, sources: countSources(snapshot.root), media: emptyReport(), headings: 0, forms: 0, buttons: 0, idMap: new Map(), reading: experiments.has("reading") };
   const big = snapshot.stats.elementCount > 4000;
   CLUSTER_MIN = big ? 12 : 32;
   CLUSTER_KEEP = big ? 8 : 20;
@@ -141,7 +143,7 @@ function build(s: SnapshotNode, depth: number, insideContent: boolean, c: Counte
   };
 
   if (s.image || role === "image") {
-    const v = imageVerdict(s, c.sources);
+    const v = imageVerdict(s, c.sources, c.reading);
     c.media.total++;
     c.media.byReason[v]++;
     if (v === "content") c.media.content++;
@@ -162,6 +164,7 @@ function build(s: SnapshotNode, depth: number, insideContent: boolean, c: Counte
 
   const childInside = insideContent || ["article", "section", "main", "aside", "header", "footer"].includes(role);
   for (const sc of s.children) {
+    if (c.reading && isConsent(sc)) continue;
     const cw = build(sc, depth + 1, childInside, c);
     w.children.push(cw);
     w.oChars += cw.oChars;
@@ -172,6 +175,11 @@ function build(s: SnapshotNode, depth: number, insideContent: boolean, c: Counte
     w.oDescendants += 1 + cw.oDescendants;
   }
   return w;
+}
+
+const CONSENT = /(^|[\s_-])(onetrust|didomi|usercentrics|truste|cookie-?consent|cookie-?banner|consent-?(banner|manager|modal|sdk|wrapper)|sp_message_container)/i;
+function isConsent(s: SnapshotNode): boolean {
+  return CONSENT.test(`${s.id ?? ""} ${(s.classes ?? []).join(" ")}`);
 }
 
 function simplify(w: W): void {

@@ -1,11 +1,12 @@
 import type { SiteFingerprint } from "../../fingerprint/fingerprint";
 import type { NormalizedDocument } from "../../model/types";
 import type { Region, RegionKind, Semantics } from "../../semantics/analyze";
+import { NO_EXPERIMENTS, type Experiments } from "../../semantics/experiments";
 import { chromeFactors, chromeOf, contentImages, contentWeight, observedBlocks } from "../../semantics/hygiene";
 import type { MediaReport } from "../../snapshot/media";
 import type { Content } from "./brief";
 import { itemsOf, type ItemForm } from "./items";
-import { structureOf, type Structure } from "./structure";
+import { scopeOf, structureOf, type Structure } from "./structure";
 
 export type Comp = "landmark" | "marker" | "continuous" | "parcelled" | "archive" | "grid" | "media" | "interactive" | "navigation" | "support" | "structured";
 export type Source = "region" | "remainder" | "page" | "observed";
@@ -37,6 +38,13 @@ export interface Territory {
   why: string[];
   structure?: Structure;
   items?: ItemForm;
+  census?: Census;
+}
+
+export interface Census {
+  items: number;
+  controls: number;
+  controlGroups: Array<{ key: string; count: number }>;
 }
 
 export interface Plan {
@@ -44,6 +52,7 @@ export interface Plan {
   territories: Territory[];
   hero: number;
   hygiene?: PlanHygiene;
+  exp?: Experiments;
 }
 
 export const MIN_SHARE = 0.15;
@@ -122,7 +131,7 @@ export interface PlanHygiene {
 
 export const COVERAGE_MIN = 0.5;
 
-export function planFromPage(doc: NormalizedDocument, sem: Semantics, fp: SiteFingerprint): Plan {
+export function planFromPage(doc: NormalizedDocument, sem: Semantics, fp: SiteFingerprint, exp: Experiments = NO_EXPERIMENTS): Plan {
   const nodes = doc.nodes;
   const rawTotal = nodes[0]?.weight || 1;
   const total = contentWeight(nodes[0]) || 1;
@@ -162,6 +171,10 @@ export function planFromPage(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
     return 2;
   };
 
+  const counting = exp.has("forum") || exp.has("market");
+  const count = (at: number, roots: number[], excluded: number[], listed: number[] = []) => {
+    if (counting) out[at].census = censusOf(doc, roots, excluded, listed, out[at].items);
+  };
   const merges: PlanHygiene["merges"] = [];
   const out: Territory[] = [];
   const push = (r: Region | null, source: Source, weight: number, rawWeight: number, m: Metrics, why: string[], keySuffix = "", node = r ? r.node : 0, label?: string) => {
@@ -226,12 +239,24 @@ export function planFromPage(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
       const at = push(r, "remainder", rest, restRaw, m, [`T1 own content of the ${r.kind} “${r.title ?? ""}” outside its ${children.length} child region(s)`], "#rest");
       out[at].structure = structureOf(doc, [r.node], children.map((c) => c.node));
       out[at].items = itemsOf(doc, [r.node], children.map((c) => c.node), out[at].structure);
+      count(at, [r.node], children.map((c) => c.node));
       produced.push(at);
       return produced;
+    }
+    if (exp.has("reading") && heroR && r !== heroR && children.includes(heroR)) {
+      const produced = emit(heroR);
+      const hw = contentWeight(nodes[heroR.node]);
+      const at = push(r, "region", Math.max(0, w - hw), Math.max(0, raw - nodes[heroR.node].weight / rawTotal), minus(metricsOf(r), [metricsOf(heroR)]), [`T1 ${r.kind} region, ${(((w - hw) / total) * 100).toFixed(1)}% of the page's content weight, beside the hero it holds`]);
+      out[at].metrics.items = r.items.length;
+      out[at].structure = structureOf(doc, [r.node], [heroR.node]);
+      out[at].items = itemsOf(doc, [r.node], [heroR.node], out[at].structure);
+      count(at, [r.node], [heroR.node], r.items);
+      return [...produced, at];
     }
     const at = push(r, "region", w, raw, metricsOf(r), [`T1 ${r.kind} region, ${((w / total) * 100).toFixed(1)}% of the page's content weight${children.length ? ` (typed: not opened, holds ${children.length} region(s))` : ""}`]);
     out[at].structure = structureOf(doc, [r.node], []);
     out[at].items = itemsOf(doc, [r.node], [], out[at].structure);
+    count(at, [r.node], [], r.items);
     return [at];
   };
   const roots = regions.filter((r) => r.parent < 0).sort((a, b) => a.node - b.node);
@@ -259,11 +284,13 @@ export function planFromPage(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
       const at = push(null, "observed", b.share * total, Math.max(0, raw), m, [`H3 named regions cover ${(coverage * 100).toFixed(0)}% of the content (< ${COVERAGE_MIN * 100}%): observed block — ${b.label}`], `~${blocks.indexOf(b)}`, b.nodes[0], b.label);
       out[at].structure = structureOf(doc, b.nodes, inner.map((r) => r.node));
       out[at].items = itemsOf(doc, b.nodes, inner.map((r) => r.node), out[at].structure);
+      count(at, b.nodes, inner.map((r) => r.node));
     }
   } else if (total - coveredW > 0) {
     const at = push(null, "page", total - coveredW, Math.max(0, 1 - coveredRaw), minus(metricsOf(rootRegion), roots.map(metricsOf)), ["T1 page content outside every detected region"]);
     out[at].structure = structureOf(doc, [0], roots.map((r) => r.node));
     out[at].items = itemsOf(doc, [0], roots.map((r) => r.node), out[at].structure);
+    count(at, [0], roots.map((r) => r.node));
   }
 
   const chrome = chromeOf(doc, sem);
@@ -282,6 +309,18 @@ export function planFromPage(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
     );
   }
 
+  if (exp.has("reading"))
+    for (const t of out) {
+      const r = t.kind === "feed" && t.source === "region" && t.region >= 0 ? regions[t.region] : null;
+      if (!r) continue;
+      const a = listAnatomy(doc, r.items);
+      if (a.count < 5) continue;
+      const says = listSays(doc, r.items);
+      t.mix = mixFor(says, a.pictured);
+      t.content = COMP_CONTENT[[...t.mix].sort((x, y) => y.share - x.share)[0].comp];
+      t.why.push(`T3 item anatomy (${a.count} items, the longest text of one outside its links ~${Math.round(says)} characters, ${Math.round(a.pictured * 100)}% with a picture) → ${t.mix.map((x) => `${x.comp} ${Math.round(x.share * 100)}%`).join(" + ")}`);
+    }
+
   const order = out.map((t, i) => i).sort((a, b) => out[a].tier - out[b].tier || out[a].order - out[b].order);
   const territories = order.map((i) => out[i]);
   for (const t of territories) t.why.unshift(`T2 tier ${t.tier} (${["hero", "main content", "chrome", "footer", "page remainder"][t.tier]})`);
@@ -292,5 +331,102 @@ export function planFromPage(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
     territories,
     hero: heroR ? territories.findIndex((t) => t.region === heroR.id && t.source === "region") : -1,
     hygiene: { media: doc.media, coverage, fallback, chrome: { before: f.before, after: f.after, regions: out.filter(isChrome).length }, merges },
+    ...(counting ? { exp } : {}),
+  };
+}
+
+export function censusOf(doc: NormalizedDocument, roots: number[], excluded: number[], listed: number[], form?: ItemForm): Census {
+  const nodes = doc.nodes;
+  const scope = scopeOf(nodes, roots, excluded);
+  const inScope = new Set(scope);
+  const countOf = (c: number) => nodes[c].cluster?.count ?? 1;
+  let items = listed;
+  if (items.length < 5 && form?.source === "series" && form.shape.includes(" > ")) {
+    const [parentTag, tag] = form.shape.split(" > ");
+    items = scope.filter((c) => (nodes[c].cluster?.tag ?? nodes[c].tag) === tag && nodes[c].parent >= 0 && nodes[nodes[c].parent].tag === parentTag && (nodes[c].links > 0 || nodes[c].chars >= 20));
+  }
+  if (items.reduce((s, c) => s + countOf(c), 0) < 5) {
+    let best: number[] = [];
+    let most = 0;
+    for (const p of scope) {
+      const runs = new Map<string, number[]>();
+      for (const c of nodes[p].children) {
+        if (!inScope.has(c)) continue;
+        const k = nodes[c].cluster?.tag ?? nodes[c].tag;
+        runs.set(k, [...(runs.get(k) ?? []), c]);
+      }
+      for (const run of runs.values()) {
+        const n = run.reduce((s, c) => s + countOf(c), 0);
+        if (n > most && run.some((c) => nodes[c].chars > 0 || nodes[c].links > 0)) {
+          best = run;
+          most = n;
+        }
+      }
+    }
+    items = most >= 5 ? best : [];
+  }
+  const byGroup = new Map<number, number>();
+  const groupOrder: number[] = [];
+  let controls = 0;
+  for (const i of scope) {
+    if (nodes[i].role !== "control" && nodes[i].role !== "button") continue;
+    controls++;
+    let key = -1;
+    for (let p = nodes[i].parent; p >= 0 && inScope.has(p); p = nodes[p].parent)
+      if (nodes[p].controls >= 3) {
+        key = p;
+        break;
+      }
+    if (!byGroup.has(key)) groupOrder.push(key);
+    byGroup.set(key, (byGroup.get(key) ?? 0) + 1);
+  }
+  return {
+    items: items.reduce((s, c) => s + countOf(c), 0),
+    controls,
+    controlGroups: groupOrder.map((g, k) => ({ key: g >= 0 ? `${nodes[g].selector}|${(nodes[g].label ?? "").slice(0, 24)}` : `loose~${k}`, count: byGroup.get(g)! })),
+  };
+}
+
+const SAYS_SOMETHING = 100;
+const SCREEN_SHARE = 0.3;
+function mixFor(says: number, pictured: number): Territory["mix"] {
+  const long = sig((lg(Math.max(says, 1)) - lg(SAYS_SOMETHING)) / 0.25);
+  const screens = SCREEN_SHARE * sig((pictured - 0.5) / 0.12);
+  const raw: Territory["mix"] = [
+    { comp: "parcelled", share: (1 - long) * (1 - screens) },
+    { comp: "continuous", share: long * (1 - screens) },
+    { comp: "media", share: screens },
+  ];
+  const kept = raw.filter((x) => x.share >= MIN_SHARE);
+  const t = kept.reduce((v, x) => v + x.share, 0) || 1;
+  return kept.map((x) => ({ comp: x.comp, share: x.share / t }));
+}
+
+export function listSays(doc: NormalizedDocument, items: number[]): number {
+  const nodes = doc.nodes;
+  const longest = items
+    .filter((c) => !nodes[c].cluster)
+    .map((c) => {
+      let best = 0;
+      for (let k = c; k < nodes[c].end; k++) {
+        let linked = false;
+        for (let j = k; j >= c; j = nodes[j].parent) if (nodes[j].tag === "a" || nodes[j].link) linked = true;
+        if (!linked) best = Math.max(best, nodes[k].ownChars);
+      }
+      return best;
+    })
+    .sort((a, b) => a - b);
+  return longest.length ? longest[Math.floor(longest.length / 2)] : 0;
+}
+
+export function listAnatomy(doc: NormalizedDocument, items: number[]): { count: number; chars: number; pictured: number; links: number } {
+  const its = items.map((c) => doc.nodes[c]);
+  const count = its.reduce((s, n) => s + (n.cluster?.count ?? 1), 0);
+  const seen = its.filter((n) => !n.cluster);
+  return {
+    count,
+    chars: its.reduce((s, n) => s + n.chars, 0) / Math.max(count, 1),
+    links: its.reduce((s, n) => s + n.links, 0) / Math.max(count, 1),
+    pictured: seen.filter((n) => contentImages(n) > 0).length / Math.max(seen.length, 1),
   };
 }
