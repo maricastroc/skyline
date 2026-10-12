@@ -9,6 +9,7 @@ import { blockName, compWords, type KitCity } from "@/lib/pixelcity/kit-city";
 import { SIDEWALK_H } from "@/lib/pixelcity/kit/street";
 import type { PMBlock } from "@/lib/pixelcity/page-map";
 import { generateVacantWorld } from "@/lib/pixelcity/vacant";
+import { captureCaveat } from "@/lib/snapshot/caveat";
 import { Logo } from "./Logo";
 import { PageMap, type BlockState } from "./PageMap";
 import type { ViewState } from "./PixelScene";
@@ -376,6 +377,7 @@ export function PixelApp({
   const name = [kit?.sem.siteName, doc?.document.title?.split(/\s[|–—-]\s/)[0]].find((n) => n && n.length <= 32) || host;
   const accent = rgbToCss((city ?? vacant).palette.accents[0]);
   const territories = kit ? kit.lots.filter((l) => l > 0).length : 0;
+  const caveat = doc ? captureCaveat(doc) : null;
 
   const savePostcard = async () => {
     if (!canvas.current || saving || !root.current) return;
@@ -507,6 +509,11 @@ export function PixelApp({
             <span>structures on 256 lots</span>
           </div>
         </div>
+        {caveat ? (
+          <p className="sk-caveat" data-kind={caveat.kind} role="note">
+            <b>{caveat.line}.</b> {caveat.detail}
+          </p>
+        ) : null}
         <div className="sk-legend" onMouseLeave={mode === "why" ? () => setMapT(null) : undefined}>
           <h4 className="sk-label">Page → City</h4>
           {legend.map((b) => {
@@ -675,6 +682,11 @@ export function PixelApp({
                   <div className="sk-meta">
                     <b>{kit.structures}</b> structures · <b>{territories}</b> territories · {city.palette.time === "golden" ? "golden hour" : city.palette.time}
                   </div>
+                  {caveat?.kind === "caveat" ? (
+                    <div className="sk-caveat-line" role="note" title={caveat.detail}>
+                      {caveat.line}
+                    </div>
+                  ) : null}
                 </div>
               )}
               {cv === "minimal" && (
