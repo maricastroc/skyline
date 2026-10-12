@@ -51,6 +51,7 @@ export interface Semantics {
 }
 
 const PRICE_RE = /(?:[$€£¥]|R\$|US\$)\s?\d|\d+(?:[.,]\d+)?\s?(?:[$€£]|\/\s?(?:mo|month|mês|user|seat|yr|year)|per (?:month|user|seat|year))|\bfree\b/i;
+const NEAR_TIE = 0.8;
 const CTA_RE = /^(get started|start( (building|now|free|for free|today|your))?|sign ?up|try( it)?( for)?( free)?|download|book( a)? (demo|call)|request( a)? demo|contact( sales| us)?|buy|join|subscribe|create( an)? account|get (the app|a demo|in touch|access)|learn more|see (pricing|plans)|open app|log ?in to|deploy)/i;
 
 const pct = (v: number) => `${Math.round(v * 100)}%`;
@@ -111,6 +112,11 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
     }
     let best: number[] = [];
     for (const g of groups.values()) if (g.length > best.length) best = g;
+    if (best.length >= 2) {
+      const weightOf = (g: number[]) => g.reduce((s2, c) => s2 + nodes[c].weight, 0);
+      const most = best.length;
+      for (const g of groups.values()) if (g.length >= NEAR_TIE * most && weightOf(g) > weightOf(best)) best = g;
+    }
     return best;
   };
   const countIn = (i: number, pred: (m: NNode) => boolean) => {

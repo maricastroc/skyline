@@ -5,6 +5,7 @@ import type { Plan } from "../../src/lib/pixelcity/kit/plan";
 import { PERTURBATIONS, realPage } from "../../src/lib/pixelcity/kit/real-page";
 import { allocate, lotPath, LOT_TOTAL, N } from "../../src/lib/pixelcity/kit/territory";
 import { vacantFingerprint } from "../../src/lib/pixelcity/vacant-fingerprint";
+import { dropItems } from "../morphology/perturb";
 import { DATASET } from "../real-pages/dataset";
 
 let failed = 0;
@@ -92,6 +93,12 @@ check("same snapshot → same city (hash)", det);
 for (const prof of ["mixed", "portal", "product", "reference"] as const) {
   const c = generateKitDistrict(vacantFingerprint(), { profile: prof });
   check(`synthetic profile “${prof}” still renders`, c.parts.length > 1000);
+}
+
+{
+  const whole = realPage(snap("hn")).plan.territories;
+  const fewer = realPage(dropItems(snap("hn"), 1)!).plan.territories;
+  check("one story fewer on Hacker News keeps the same territories", whole.length === fewer.length && whole.every((t, k) => t.kind === fewer[k].kind && t.key === fewer[k].key), `${whole.length} → ${fewer.length} territories`);
 }
 
 const hosts = DATASET.flatMap((e) => e.urls.map((u) => new URL(u).hostname.replace(/^www\./, "")));
