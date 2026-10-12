@@ -92,13 +92,13 @@ export function snapshotFromHtml(
   html: string,
   url: string,
   strategy: SnapshotSource["strategy"],
-  extra: { source?: Partial<SnapshotSource>; externalCss?: string[] } = {},
+  extra: { source?: Partial<SnapshotSource>; externalCss?: string[]; layout?: DomSnapshot["layout"] } = {},
 ): DomSnapshot {
   const source: SnapshotSource = { requestedUrl: url, finalUrl: url, strategy, status: 200, bytes: html.length, durationMs: 0, redirects: [], ...extra.source };
-  return buildSnapshot(parsePage(html, source.finalUrl), source, extra.externalCss);
+  return buildSnapshot(parsePage(html, source.finalUrl), source, extra.externalCss, extra.layout);
 }
 
-export function buildSnapshot(page: ParsedPage, source: SnapshotSource, externalCss: string[] = []): DomSnapshot {
+export function buildSnapshot(page: ParsedPage, source: SnapshotSource, externalCss: string[] = [], layout?: DomSnapshot["layout"]): DomSnapshot {
   const base = resolveUrl(page.baseHref, source.finalUrl) ?? source.finalUrl;
   const colors = new Map<string, number>();
   const positionRules: PositionRule[] = [];
@@ -153,6 +153,13 @@ export function buildSnapshot(page: ParsedPage, source: SnapshotSource, external
     if (tag === "input" && (attr(el, "type") ?? "").toLowerCase() === "hidden") return null;
 
     const node: SnapshotNode = { tag, text: 0, children: [] };
+    if (layout) {
+      const m = attr(el, "data-sk-box")?.split(" ").map(Number);
+      if (m && m.length === 5 && m.every(Number.isFinite) && m[2] > 0 && m[3] > 0) {
+        node.box = { x: m[0], y: m[1], w: m[2], h: m[3] };
+        if (m[4] > 0) node.fontSize = m[4];
+      }
+    }
     if (tag === "font" || tag === "center" || attr(el, "bgcolor") || attr(el, "valign") || (attr(el, "align") && tag !== "img"))
       markup.legacy++;
     const rawClass = attr(el, "class");
@@ -267,6 +274,7 @@ export function buildSnapshot(page: ParsedPage, source: SnapshotSource, external
         .map(([hex, weight]) => ({ hex, weight: Math.round(weight * 10) / 10 })),
     },
     stats: { elementCount, maxDepth, truncated },
+    ...(layout ? { layout } : {}),
     root,
     warnings,
   };

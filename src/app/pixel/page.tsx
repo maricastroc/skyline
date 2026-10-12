@@ -1,4 +1,5 @@
 import { PixelApp, type Variants } from "@/components/pixel/PixelApp";
+import { parseCaptureMode } from "@/lib/pixelcity/capture-mode";
 import { vacantFingerprint } from "@/lib/pixelcity/vacant-fingerprint";
 
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
@@ -13,5 +14,5 @@ export default async function PixelPage({ searchParams }: PageProps<"/pixel">) {
     home: pick(one(sp.home), ["refined", "vacant", "blueprint"] as const, "vacant"),
     cv: pick(one(sp.cv), ["meta", "minimal", "bare"] as const, "meta"),
   };
-  return <PixelApp initialUrl={url ?? null} initialAt={at ?? null} vacantFp={vacantFingerprint()} variants={variants} />;
+  return <PixelApp initialUrl={url ?? null} initialAt={at ?? null} initialMode={parseCaptureMode(one(sp.mode))} vacantFp={vacantFingerprint()} variants={variants} />;
 }

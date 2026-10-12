@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { CaptureError } from "../../src/lib/acquisition/errors";
 import { assertNotChallenge, checkHtmlResponse } from "../../src/lib/acquisition/static-fetch";
 import { normalize } from "../../src/lib/model/normalize";
+import { cityStep, idle, parseCaptureMode, type CityRequest } from "../../src/lib/pixelcity/capture-mode";
 import { captureCaveat } from "../../src/lib/snapshot/caveat";
 import { isMarkupWithoutWords, snapshotFromHtml } from "../../src/lib/snapshot/parse-html";
 import type { CaptureWarning, DomSnapshot, SnapshotNode } from "../../src/lib/snapshot/types";
@@ -46,6 +47,36 @@ const viaBrowser = captureCaveat({ warnings: [], source: { strategy: "rendered" 
 check("a page read in a browser says so, as a note and not as a caveat", viaBrowser?.kind === "note" && viaBrowser.code === "rendered");
 const stillBare = captureCaveat({ warnings: scaffold.warnings, source: { strategy: "rendered" } });
 check("a page still wordless after a browser read it keeps a caveat, and it no longer blames the rendering", stillBare?.kind === "caveat" && /even in a browser/.test(stillBare.line) && !/scaffolding/i.test(stillBare.line));
+
+console.log("\n# Exploring in more detail");
+const asked = captureCaveat({ warnings: [], source: { strategy: "rendered" } }, true);
+check("a city explored in more detail says so, without claiming the page needs JavaScript", asked?.kind === "note" && /in more detail/i.test(asked.line) && !/JavaScript/.test(asked.detail));
+check("it says the city can differ, and promises nothing about it being better", !!asked && /can differ/.test(asked.detail) && !/better|nicer|prettier|more beautiful|richer|improv/i.test(`${asked.line} ${asked.detail}`), asked?.detail ?? "");
+const askedBare = captureCaveat({ warnings: scaffold.warnings, source: { strategy: "rendered" } }, true);
+check("a page with nothing to read keeps its caveat even when explored in more detail", askedBare?.kind === "caveat" && /even in a browser/.test(askedBare.line));
+check("links without a mode, or with an unknown one, keep the standard capture", parseCaptureMode(undefined) === "auto" && parseCaptureMode("") === "auto" && parseCaptureMode("rendered") === "auto" && parseCaptureMode("detailed") === "detailed");
+
+type Req = CityRequest<string, string>;
+const U = "https://a.example/";
+let r: Req = idle<string, string>(true);
+r = cityStep(r, { type: "ask", url: U, mode: "auto" });
+check("a new address starts with nothing on screen", r.loading && !r.shown);
+r = cityStep(r, { type: "built", url: U, mode: "auto", city: "standard city" });
+const standard = r.shown;
+r = cityStep(r, { type: "ask", url: U, mode: "detailed" });
+check("asking for more detail keeps the standard city on screen while it loads", r.shown === standard && r.switching === "detailed" && !r.loading);
+const failedSwitch = cityStep(r, { type: "failed", url: U, mode: "detailed", error: "timeout" });
+check("when the detailed capture fails, the standard city stays and the failure is kept beside it", failedSwitch.shown === standard && failedSwitch.shown?.mode === "auto" && failedSwitch.switchError?.mode === "detailed" && failedSwitch.switchError.error === "timeout" && !failedSwitch.switching);
+check("that failure is not turned into an empty page either", !failedSwitch.error && !failedSwitch.loading);
+check("dismissing the notice leaves the city alone", cityStep(failedSwitch, { type: "dismiss" }).shown === standard && !cityStep(failedSwitch, { type: "dismiss" }).switchError);
+r = cityStep(r, { type: "built", url: U, mode: "detailed", city: "detailed city" });
+check("when it succeeds, the detailed city replaces the standard one", r.shown?.city === "detailed city" && r.shown.mode === "detailed" && !r.switching);
+const back = cityStep(r, { type: "ask", url: U, mode: "auto" });
+check("going back keeps the detailed city until the standard one arrives", back.shown?.city === "detailed city" && back.switching === "auto");
+check("and then shows the standard city again", cityStep(back, { type: "built", url: U, mode: "auto", city: "standard city" }).shown?.mode === "auto");
+const direct = cityStep(cityStep(idle<string, string>(), { type: "ask", url: U, mode: "detailed" }), { type: "failed", url: U, mode: "detailed", error: "renderer_unavailable" });
+check("a detailed link that fails shows the failure and no city: the standard capture is not used in its place", !direct.shown && direct.error === "renderer_unavailable" && direct.failedMode === "detailed");
+check("another address clears what was there", cityStep(failedSwitch, { type: "ask", url: "https://b.example/", mode: "auto" }).shown === null);
 
 const KB = 1024;
 const WORDLESS: Array<[string, number, number, number]> = [
@@ -101,7 +132,9 @@ check("an ordinary scaffold is not mistaken for a challenge", refusal(() => asse
 
 const app = readFileSync("src/components/pixel/PixelApp.tsx", "utf8");
 const css = readFileSync("src/app/pixel/skyline.css", "utf8");
-check("the city view draws the caveat next to its numbers", /captureCaveat\(doc\)/.test(app) && /className="sk-caveat-line"/.test(app) && /\.sk-caveat-line\s*\{/.test(css));
+check("the city view draws the caveat next to its numbers", /captureCaveat\(doc[,)]/.test(app) && /className="sk-caveat-line"/.test(app) && /\.sk-caveat-line\s*\{/.test(css));
+check("the detailed mode is offered only after the backend answers that a renderer is there, and only over a standard city", /fetch\("\/api\/capture"\)/.test(app) && /const offerDetail = canDetail && shownMode === "auto" && doc\?\.source\.strategy === "static"/.test(app));
+check("a failed detailed capture is said on screen, with the city it could not replace named", /className="sk-notice" role="alert"/.test(app) && /This is still the standard city/.test(app) && /The standard city was not built in its place/.test(app));
 check("the panel draws the caveat or the note with its detail", /className="sk-caveat"/.test(app) && /caveat\.detail/.test(app) && /\.sk-caveat\s*\{/.test(css));
 
 console.log(failed ? `\n${failed} check(s) failed` : "\nall capture-warning checks passed");

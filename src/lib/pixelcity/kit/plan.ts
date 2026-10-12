@@ -6,6 +6,7 @@ import { chromeFactors, chromeOf, contentImages, contentWeight, observedBlocks }
 import type { MediaReport } from "../../snapshot/media";
 import type { Content } from "./brief";
 import { itemsOf, type ItemForm } from "./items";
+import { unitsOf, type Series } from "./series";
 import { scopeOf, structureOf, type Structure } from "./structure";
 
 export type Comp = "landmark" | "marker" | "continuous" | "parcelled" | "archive" | "grid" | "media" | "interactive" | "navigation" | "support" | "structured";
@@ -39,6 +40,7 @@ export interface Territory {
   structure?: Structure;
   items?: ItemForm;
   census?: Census;
+  series?: Series;
 }
 
 export interface Census {
@@ -173,6 +175,13 @@ export function planFromPage(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
 
   const counting = exp.has("forum") || exp.has("market");
   const count = (at: number, roots: number[], excluded: number[], listed: number[] = []) => {
+    if (doc.layout) {
+      const s = unitsOf(doc, { roots, excluded });
+      if (s) {
+        out[at].series = s;
+        out[at].why.push(`T4 measured items (${s.units} ${s.kind === "key" ? "keys" : s.kind === "card" ? "cards" : "pictures"} of ${Math.round(s.width)}×${Math.round(s.height)} px, ${s.perRow} per row, ${s.rows > 1 ? `${s.rows} rows` : "one row"})`);
+      }
+    }
     if (counting) out[at].census = censusOf(doc, roots, excluded, listed, out[at].items);
   };
   const merges: PlanHygiene["merges"] = [];

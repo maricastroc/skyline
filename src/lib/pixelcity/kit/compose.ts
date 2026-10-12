@@ -3,7 +3,7 @@ import type { GamePalette } from "../palette";
 import { Surf } from "../types";
 import type { PlazaAnchor } from "./actors";
 import { programFor, type Brief } from "./brief";
-import { building, type Family, type Program } from "./buildings";
+import { building, FLOOR, type Family, type Program } from "./buildings";
 import type { Kit } from "./core";
 import type { Run } from "./frontage";
 import type { Layout, Room } from "./layout";
@@ -258,6 +258,47 @@ function forum(ctx: ComposeCtx, pc: Piece, t: Territory, salt: number, W: number
   plaza(kit, -W / 2 + 0.2, W / 2 - 0.2, -D / 2 + (sides ? 3.0 : 0.2), D / 2 - 0.2, salt, false, undefined, at.map(([x, z, rot]) => ({ kind: "kiosk", x, z, rot })));
   if (sides) place(ctx, 0, -D / 2 + 1.5, 0, W - 0.4, 2.6, arcade);
   stalls(ctx, base, at);
+}
+
+export const ROOM_FOR_SERIES = 8;
+
+const REACH = 8.5;
+const TERRACED = 2.9;
+
+export function composeEnsemble(ctx: ComposeCtx, pc: Piece, t: Territory, salt: number) {
+  const s = t.series!;
+  const { kit } = ctx;
+  kit.frame(pc.x, pc.z, pc.rot, () => {
+    const W = pc.w - 0.2;
+    const D = pc.d - 0.2;
+    const whole = fl(ctx, 6 + 10 * (1 - Math.exp(-t.weight / 0.08)), 4);
+    const P: Program = { ...prog(ctx, t, "media", salt), signage: "screen", facade: "curtain" };
+    if (pc.type === "lot") return place(ctx, 0, 0, 0, W, D, { ...P, family: "asymmetric", floors: Math.max(2, Math.round(whole / 4)) });
+    const cadence = Math.min(Math.max(s.perRow, 2), 8);
+    const n = cadence - 2;
+    const aspect = s.height / s.width;
+    const brand = shortLabel(t.label)?.toUpperCase();
+    const tower = (floors: number, branded: boolean): Program => ({ ...P, family: "podiumTower", floors, brand: branded ? brand : undefined });
+    const annex: Program = { ...P, family: "asymmetric", floors: Math.max(3, Math.round(whole / 3)), seed: P.seed + 3 };
+    if (pc.type === "quad") return place(ctx, 0, 0, 0, W, D, tower(Math.max(4, Math.round(whole * 0.75)), false));
+    if (pc.type === "half") {
+      place(ctx, -3.5, 0, 0, 6.6, D, tower(whole, true));
+      return place(ctx, 3.5, 0.8, 0, 6.4, D - 1.6, annex);
+    }
+    const split = pc.type === "full" && s.arrangement === "grid" ? [Math.ceil(n / 2), Math.floor(n / 2)] : [n, 0];
+    const side = Math.min(8, Math.max(5.6, 9 - cadence / 2));
+    plaza(kit, -W / 2, W / 2, -D / 2, D / 2, salt, false, [-W / 2, -W / 2 + side + 0.2, -D / 2, -D / 2 + side + 0.2]);
+    place(ctx, -W / 2 + 0.1 + side / 2, -D / 2 + 0.1 + side / 2, 0, side, side, tower(whole, true));
+    place(ctx, W / 2 - 2.6, D / 2 - 2.6, 0, 5, 5, annex);
+    split.forEach((units, arm) => {
+      if (!units) return;
+      const u = Math.min(3.6, REACH / units);
+      const low = Math.max(2, Math.min(annex.floors, Math.round((u * aspect) / FLOOR)));
+      const along = (at: number, length: number, Q: Program) => (arm ? place(ctx, W / 2 - 2.0, -D / 2 + at, Math.PI / 2, length, 4.0, Q) : place(ctx, -W / 2 + at, D / 2 - 2.0, 0, length, 4.0, Q));
+      if (u <= TERRACED) return along((units * u) / 2, units * u, { ...P, family: "rows", units, unitFrom: arm ? split[0] : 0, floors: low, roof: P.style === "modern" || P.style === "tech" ? P.roof : "gable", seed: P.seed + 7 + arm });
+      for (let k = 0; k < units; k++) along((k + 0.5) * u, u - 0.3, { ...prog(ctx, t, "media", salt + 17 * (k + 1) + 5 * arm), signage: "screen", facade: "curtain", family: "walkup", floors: low });
+    });
+  });
 }
 
 export function composePiece(ctx: ComposeCtx, pc: Piece, t: Territory, comp: Comp, salt: number) {

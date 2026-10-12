@@ -6,3 +6,4 @@ all-snapshots/
 geometry-*.jsonl
 archive/*.jsonl
 recapture/
+archive-local/

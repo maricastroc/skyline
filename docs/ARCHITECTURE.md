@@ -218,7 +218,34 @@ validada em páginas não vistas), `forum` e `market` (tipologias experimentais;
 `kit/layout.ts` para conservar contagens). O histórico e as decisões estão em
 `MORPHOLOGY_CLOSING.md`.
 
-As caixas reais (`box`, `position`) continuam sem ser preenchidas: o layout segue no treemap.
+**Itens medidos.** Antes de ler o HTML, a captura renderizada local mede a página
+(`MEASURE_BOXES` em `render-page.ts`): cada elemento visível e com área recebe sua caixa e o
+tamanho da fonte, que chegam ao snapshot (`box`, `fontSize`, `layout`) e ao documento
+normalizado. A medição tem orçamento de tempo e de tamanho: se estourar qualquer um, a página
+é capturada sem caixas, como antes. A captura estática nunca tem caixas, e um atributo de
+caixa escrito pela própria página é ignorado.
+
+Com caixas, `kit/series.ts` (`unitsOf`) lê a unidade repetida de cada território: itens irmãos
+de largura parecida, o nível certo do aninhamento, o conjunto que cobre mais área, o tipo
+(imagem, cartão ou tecla) e quantos cabem numa fileira. Nos territórios de mídia com oito
+lotes ou mais, `composeEnsemble` (`kit/compose.ts`) mantém a torre e o anexo de hoje e
+acrescenta frentes baixas: uma a seis, conforme os itens por fileira; sobrados geminados ou
+edifícios isolados, conforme a largura; numa face ou em duas, conforme haja uma fileira ou
+várias. Territórios de teclas e páginas sem caixas ficam com a receita de sempre. A decisão, o
+que foi descartado e os limites estão em `MORPHOLOGY_DECISION.md`; `npm run test:items` guarda
+os invariantes.
+
+O layout da cidade segue no treemap: as caixas servem só para ler os itens.
+
+**Explorar com mais detalhes.** O modo automático continua sendo o padrão de `/pixel`. Sobre uma
+cidade vinda da captura estática, a página oferece "Explore in more detail", que repete a captura
+com `strategy: "rendered"` (`?mode=detailed` na URL). A opção só aparece quando `GET /api/capture`
+responde que há um renderizador utilizável, o que é verificado tentando-o (`rendererReady()` em
+`rendered-capture.ts`), não pela configuração. A cidade na tela só é trocada quando a nova captura
+dá certo; se falha, ela fica e a falha é dita (`lib/pixelcity/capture-mode.ts` guarda essa regra, e
+`npm run test:warnings` a verifica). É uma integração intermediária: as medidas dependem de um
+navegador, e em produção a opção fica oculta até a rota de renderização de
+`RENDERED_CAPTURE_PLAN.md` existir.
 
 **Defesas (`safe-fetch.ts`):**
 

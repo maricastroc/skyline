@@ -7,7 +7,7 @@ import { Surf, type Part, type PixelCity } from "../types";
 import type { Brief } from "./brief";
 import type { Program } from "./buildings";
 import { programUse, type Anatomy, type Use } from "./surface";
-import { composeLandmark, composePiece, piecesOfBlock, ROOM, type LandmarkInfo, type Piece, type PieceType } from "./compose";
+import { composeEnsemble, composeLandmark, composePiece, piecesOfBlock, ROOM, ROOM_FOR_SERIES, type LandmarkInfo, type Piece, type PieceType } from "./compose";
 import { planFrontage, type FrontagePlan, type Run } from "./frontage";
 import { Kit, type PeopleMode } from "./core";
 import { layoutOf, type Layout, type PlacedPiece } from "./layout";
@@ -296,10 +296,12 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
               current = { territory: seg.territory, comp: seg.comp, piece: pc.type, block: [i, j] };
               const salt = 1000 + seg.territory * 131 + (i * 4 + j) * 17 + k;
               const isLm = lmPiece && lmPiece.i === i && lmPiece.j === j && lmPiece.k === k;
+              const fronted = !pc.interior && seg.comp === "media" && !!t.series && t.series.kind !== "key" && alloc.lots[seg.territory] >= ROOM_FOR_SERIES;
               if (isLm) {
                 const info = composeLandmark(ctx, pc, t, salt);
                 if (trace) trace.landmark = { ...info, x: bx + pc.x, z: bz + pc.z, block: [i, j] };
-              } else composePiece(ctx, pc, t, seg.comp, salt);
+              } else if (fronted) composeEnsemble(ctx, pc, t, salt);
+              else composePiece(ctx, pc, t, seg.comp, salt);
               current = null;
               trace?.pieces.push({ territory: seg.territory, comp: seg.comp, piece: pc, block: [i, j], parts: [from, kit.parts.length] });
             }),

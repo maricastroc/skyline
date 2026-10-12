@@ -2,11 +2,13 @@ import { execSync } from "node:child_process";
 import { CaptureError } from "../../src/lib/acquisition/errors";
 import { isLocalRendererEnabled, localChromePath } from "../../src/lib/acquisition/local-browser";
 import { renderPage, type RenderOptions } from "../../src/lib/acquisition/render-page";
-import { snapshotFromRendered } from "../../src/lib/acquisition/rendered-capture";
+import { captureWithLocalBrowser, rendererReady, snapshotFromRendered } from "../../src/lib/acquisition/rendered-capture";
 import { normalize } from "../../src/lib/model/normalize";
+import { unitsOf } from "../../src/lib/pixelcity/kit/series";
 import { analyzeSemantics } from "../../src/lib/semantics/analyze";
 import { captureCaveat } from "../../src/lib/snapshot/caveat";
 import { snapshotFromHtml } from "../../src/lib/snapshot/parse-html";
+import type { SnapshotNode } from "../../src/lib/snapshot/types";
 
 let failed = 0;
 const check = (name: string, ok: boolean, detail = "") => {
@@ -64,6 +66,13 @@ const FIXTURES: Record<string, ReturnType<NonNullable<RenderOptions["intercept"]
     ),
   },
   [`${ORIGIN}/restless`]: { contentType: "text/html", body: page(`<main id="m"></main><script>setInterval(() => document.getElementById("m").appendChild(document.createElement("p")), 100)</script>`) },
+  [`${ORIGIN}/shelf`]: {
+    contentType: "text/html",
+    body: page(
+      `<style>body{margin:0}.shelf{display:flex;flex-wrap:wrap;gap:20px;width:900px}.card{display:block;width:210px}.card img{display:block}</style><main><h1>Shelf</h1><div class="shelf">${Array.from({ length: 8 }, (_, k) => `<a class="card" href="/item/${k}"><img src="/cover-${k}.png" width="210" height="140" alt=""><h3>Item number ${k}</h3><p>A caption long enough to be a sentence about item ${k}.</p></a>`).join("")}</div><div hidden data-sk-box="0 0 777 777 16">hidden</div><i data-sk-box="5 5 777 777 16"></i></main>`,
+    ),
+  },
+  [`${ORIGIN}/heavy`]: { contentType: "text/html", body: page(`<main><p hidden>${"x".repeat(4 * 1024 * 1024 - 40_000)}</p>${"<i>x</i>".repeat(2500)}</main>`) },
 };
 const noSandbox = !!process.env.CI;
 const seen: string[] = [];
@@ -152,6 +161,61 @@ async function main() {
   const t0 = Date.now();
   const restless = await renderPage(new URL(`${ORIGIN}/restless`), opts);
   check("a page that never stops changing is cut at the cap and still read", restless.settled === "deadline" && Date.now() - t0 < 22_000 && restless.html.includes("<p>"), `${Date.now() - t0} ms`);
+
+  console.log("\n# Measuring the page");
+  const shelf = new URL(`${ORIGIN}/shelf`);
+  const walk = (n: SnapshotNode, f: (n: SnapshotNode) => void) => {
+    f(n);
+    n.children.forEach((c) => walk(c, f));
+  };
+  const boxesOf = (root: SnapshotNode) => {
+    const out: Array<NonNullable<SnapshotNode["box"]>> = [];
+    walk(root, (n) => n.box && out.push(n.box));
+    return out;
+  };
+  const bare = (root: SnapshotNode) => {
+    const c = structuredClone(root);
+    walk(c, (n) => {
+      delete n.box;
+      delete n.fontSize;
+    });
+    return JSON.stringify(c);
+  };
+  const measured = await renderPage(shelf, { ...opts, measure: true });
+  const plain = await renderPage(shelf, opts);
+  const mSnap = snapshotFromRendered(shelf, measured);
+  const pSnap = snapshotFromRendered(shelf, plain);
+  const cards = boxesOf(mSnap.root).filter((b) => b.w === 210 && b.h > 140);
+  check("the measuring pass gives the page its size and every laid-out element its box", !!mSnap.layout && mSnap.layout.width >= 900 && cards.length === 8, `${boxesOf(mSnap.root).length} boxes, ${cards.length} cards, page ${mSnap.layout?.width}×${mSnap.layout?.height}`);
+  check("without it there is no layout and no box", !pSnap.layout && boxesOf(pSnap.root).length === 0);
+  check("measuring changes nothing else that is read from the page", bare(mSnap.root) === bare(pSnap.root) && mSnap.stats.elementCount === pSnap.stats.elementCount, `${mSnap.stats.elementCount} elements`);
+  check("a box the page wrote itself is not believed", !boxesOf(mSnap.root).some((b) => b.w === 777));
+  const asStatic = snapshotFromHtml(measured.html, shelf.toString(), "static");
+  check("a static read of the same markup ignores the boxes", !asStatic.layout && boxesOf(asStatic.root).length === 0);
+  const read = unitsOf(normalize(mSnap), { roots: [0], excluded: [] });
+  check("the cards are read as the unit, four per row", read?.kind === "card" && read.perRow === 4 && read.units === 8, read ? `${read.units} ${read.kind} of ${read.width}×${read.height}, ${read.perRow} per row` : "no series");
+  const byDefault = await captureWithLocalBrowser(shelf, opts);
+  const optedOut = await captureWithLocalBrowser(shelf, { ...opts, measure: false });
+  check("the local rendered capture measures by default, and can be told not to", !!byDefault.layout && boxesOf(byDefault.root).length > 8 && !optedOut.layout);
+  const heavy = new URL(`${ORIGIN}/heavy`);
+  const heavyPlain = await renderPage(heavy, opts);
+  const heavyMeasured = await renderPage(heavy, { ...opts, measure: true });
+  check("a page that only exceeds the size limit because of the boxes is still captured, unmeasured", !heavyMeasured.layout && heavyMeasured.html.length === heavyPlain.html.length && !heavyMeasured.html.includes("data-sk-box"), `${heavyMeasured.html.length} characters`);
+
+  console.log("\n# Whether a renderer is really there");
+  const setup = { SKYLINE_LOCAL_RENDERER: process.env.SKYLINE_LOCAL_RENDERER, CHROME_PATH: process.env.CHROME_PATH, NODE_ENV: process.env.NODE_ENV };
+  const withEnv = async (set: Record<string, string | undefined>) => {
+    for (const [k, v] of Object.entries({ ...setup, ...set })) if (v === undefined) delete (process.env as Record<string, string | undefined>)[k];
+    else (process.env as Record<string, string | undefined>)[k] = v;
+    const ready = await rendererReady();
+    for (const [k, v] of Object.entries(setup)) if (v === undefined) delete (process.env as Record<string, string | undefined>)[k];
+    else (process.env as Record<string, string | undefined>)[k] = v;
+    return ready;
+  };
+  check("with the local renderer on and a browser that starts, the detailed mode is offered", (await withEnv({ SKYLINE_LOCAL_RENDERER: "1", NODE_ENV: "development" })) === true);
+  check("with it off, it is not", (await withEnv({ SKYLINE_LOCAL_RENDERER: undefined, NODE_ENV: "development" })) === false);
+  check("a browser that is configured but does not start is not offered", (await withEnv({ SKYLINE_LOCAL_RENDERER: "1", NODE_ENV: "development", CHROME_PATH: "/bin/echo" })) === false);
+  check("in a production build it is not offered", (await withEnv({ SKYLINE_LOCAL_RENDERER: "1", NODE_ENV: "production" })) === false);
 
   await new Promise((r) => setTimeout(r, 800));
   check("no browser is left running", browsers() <= before, `${browsers()} processes, ${before} before`);

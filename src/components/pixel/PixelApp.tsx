@@ -4,7 +4,10 @@ import dynamic from "next/dynamic";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { rgbToCss } from "@/lib/city/palette";
+import type { CaptureModes } from "@/app/api/capture/route";
+import type { CaptureErrorPayload } from "@/lib/acquisition/errors";
 import type { SiteFingerprint } from "@/lib/fingerprint/fingerprint";
+import type { CaptureMode } from "@/lib/pixelcity/capture-mode";
 import { blockName, compWords, type KitCity } from "@/lib/pixelcity/kit-city";
 import { SIDEWALK_H } from "@/lib/pixelcity/kit/street";
 import type { PMBlock } from "@/lib/pixelcity/page-map";
@@ -86,18 +89,48 @@ function findTerritory(kit: KitCity, at: string): number | null {
 export function PixelApp({
   initialUrl,
   initialAt = null,
+  initialMode = "auto",
   vacantFp,
   variants,
 }: {
   initialUrl: string | null;
   initialAt?: string | null;
+  initialMode?: CaptureMode;
   vacantFp: SiteFingerprint;
   variants: Variants;
 }) {
   const { ui, home, cv } = variants;
   const [url, setUrl] = useState<string | null>(initialUrl);
   const [draft, setDraft] = useState(initialUrl ?? "");
-  const { kit: fetched, doc: fetchedDoc, error, loading } = usePixelCity(url);
+  const [mode, setMode] = useState<CaptureMode>(initialMode);
+  const { kit: fetched, doc: fetchedDoc, error, loading, failedMode, mode: shownMode, switching, switchError, dismiss } = usePixelCity(url, mode);
+  const [seenError, setSeenError] = useState(switchError);
+  if (switchError !== seenError) {
+    setSeenError(switchError);
+    if (switchError) setMode(shownMode);
+  }
+  const [canDetail, setCanDetail] = useState(false);
+  useEffect(() => {
+    let alive = true;
+    fetch("/api/capture")
+      .then((r) => r.json() as Promise<CaptureModes>)
+      .then((m) => alive && setCanDetail(m.detailed === true))
+      .catch(() => undefined);
+    return () => {
+      alive = false;
+    };
+  }, []);
+  useEffect(() => {
+    try {
+      const sp = new URLSearchParams(window.location.search);
+      const had = sp.get("mode");
+      if (mode === "detailed" && url) sp.set("mode", "detailed");
+      else sp.delete("mode");
+      if (sp.get("mode") === had) return;
+      const q = sp.toString();
+      window.history.replaceState(null, "", q ? `/pixel?${q}` : "/pixel");
+    } catch {}
+  }, [mode, url]);
   const kit = url && fetched && !loading ? fetched : null;
   const city = kit?.city ?? null;
   const doc = kit ? fetchedDoc : null;
@@ -129,6 +162,7 @@ export function PixelApp({
 
   const go = useCallback((u: string) => {
     setUrl(u);
+    setMode("auto");
     setDraft(u);
     try {
       const sp = new URLSearchParams(window.location.search);
@@ -176,6 +210,7 @@ export function PixelApp({
     setWhyOpen(false);
     setCameraT(null);
     setUrl(null);
+    setMode("auto");
     setDraft("");
     focusInput.current = true;
     try {
@@ -377,7 +412,8 @@ export function PixelApp({
   const name = [kit?.sem.siteName, doc?.document.title?.split(/\s[|–—-]\s/)[0]].find((n) => n && n.length <= 32) || host;
   const accent = rgbToCss((city ?? vacant).palette.accents[0]);
   const territories = kit ? kit.lots.filter((l) => l > 0).length : 0;
-  const caveat = doc ? captureCaveat(doc) : null;
+  const caveat = doc ? captureCaveat(doc, shownMode === "detailed") : null;
+  const offerDetail = canDetail && shownMode === "auto" && doc?.source.strategy === "static";
 
   const savePostcard = async () => {
     if (!canvas.current || saving || !root.current) return;
@@ -405,7 +441,8 @@ export function PixelApp({
     }
   };
 
-  const shown = localError ?? error;
+  const detailFailed = !localError && !!error && failedMode === "detailed";
+  const shown = localError ?? (error && detailFailed ? { title: `Couldn't explore ${host} in more detail`, detail: `${whyNot(error)} The standard city was not built in its place.` } : error);
   const field = (
     <form
       className="sk-field"
@@ -462,6 +499,11 @@ export function PixelApp({
       <div>
         <b>{shown.title}</b>
         <span>{shown.hint ?? shown.detail}</span>
+        {detailFailed ? (
+          <button type="button" className="sk-instead" onClick={() => setMode("auto")}>
+            Build the standard city instead <span className="arrow">→</span>
+          </button>
+        ) : null}
       </div>
     </div>
   );
@@ -512,6 +554,14 @@ export function PixelApp({
         {caveat ? (
           <p className="sk-caveat" data-kind={caveat.kind} role="note">
             <b>{caveat.line}.</b> {caveat.detail}
+          </p>
+        ) : null}
+        {mode === "why" && offerDetail ? (
+          <p className="sk-caveat" data-kind="note" role="note">
+            <b>A closer look is available.</b> {DETAIL_WHAT} {DETAIL_COST}{" "}
+            <button type="button" className="sk-inline" onClick={() => setMode("detailed")} disabled={switching !== null}>
+              Explore in more detail <span className="arrow">→</span>
+            </button>
           </p>
         ) : null}
         <div className="sk-legend" onMouseLeave={mode === "why" ? () => setMapT(null) : undefined}>
@@ -639,8 +689,9 @@ export function PixelApp({
             <div className="sk-hostname sk-display">{host}</div>
             <div className="sk-step" aria-live="polite">
               <span className="dot" />
-              <span className="label">Surveying {host}…</span>
+              <span className="label">{mode === "detailed" ? `Exploring ${host} in more detail…` : `Surveying ${host}…`}</span>
             </div>
+            {mode === "detailed" ? <p className="sk-buildnote">{DETAIL_WAIT}</p> : null}
           </div>
         )}
       </div>
@@ -662,6 +713,18 @@ export function PixelApp({
                 <IconPage />
                 {cv === "meta" && "Why this city?"}
               </button>
+              {offerDetail || switching === "detailed" ? (
+                <button className={`sk-quiet${cv === "meta" ? "" : " sk-icon"}`} onClick={() => setMode("detailed")} disabled={switching !== null} title={`${DETAIL_WHAT} ${DETAIL_COST}`}>
+                  <IconDetail />
+                  {cv === "meta" && (switching === "detailed" ? "Exploring…" : "Explore in more detail")}
+                </button>
+              ) : null}
+              {shownMode === "detailed" ? (
+                <button className={`sk-quiet${cv === "meta" ? "" : " sk-icon"}`} onClick={() => setMode("auto")} disabled={switching !== null} title="Go back to the city built from the page as the site sends it">
+                  <IconBack />
+                  {cv === "meta" && (switching === "auto" ? "Returning…" : "Standard view")}
+                </button>
+              ) : null}
               {cv !== "bare" && (
                 <button className={`sk-quiet${cv === "meta" ? "" : " sk-icon"}`} onClick={savePostcard} disabled={saving} title="Save postcard">
                   <IconSave />
@@ -670,6 +733,24 @@ export function PixelApp({
               )}
             </div>
           </div>
+          {switching ? (
+            <div className="sk-working" role="status" aria-live="polite">
+              <span className="dot" />
+              <span>
+                <b>{switching === "detailed" ? `Exploring ${host} in more detail…` : "Returning to the standard view…"}</b>
+                {switching === "detailed" ? ` ${DETAIL_WAIT}` : null}
+              </span>
+            </div>
+          ) : switchError ? (
+            <div className="sk-notice" role="alert">
+              <span>
+                <b>{switchError.mode === "detailed" ? `Couldn't explore ${host} in more detail.` : "Couldn't return to the standard view."}</b> {whyNot(switchError.error)} {switchError.mode === "detailed" ? "This is still the standard city." : "This is still the detailed city."}
+              </span>
+              <button onClick={dismiss} aria-label="Dismiss">
+                ×
+              </button>
+            </div>
+          ) : null}
           {!drawerOpen ? <div className="sk-hint">drag to move · scroll to zoom into the streets · Q/E or shift-drag to turn · click a building to see its page</div> : null}
           {drawerOpen ? (
             panel("why")
@@ -684,6 +765,10 @@ export function PixelApp({
                   </div>
                   {caveat?.kind === "caveat" ? (
                     <div className="sk-caveat-line" role="note" title={caveat.detail}>
+                      {caveat.line}
+                    </div>
+                  ) : shownMode === "detailed" && caveat ? (
+                    <div className="sk-mode-line" role="note" title={caveat.detail}>
                       {caveat.line}
                     </div>
                   ) : null}
@@ -754,6 +839,22 @@ export function PixelApp({
   );
 }
 
+const DETAIL_WHAT = "Explore in more detail to build the city from the page the way a browser shows it, following how it is arranged on screen.";
+const DETAIL_COST = "It takes a few seconds and can build a different city.";
+const DETAIL_WAIT = "Looking at the page the way a browser shows it, to follow how it is arranged on screen. This can take a few seconds.";
+const whyNot = (e: CaptureErrorPayload) => (e.code === "renderer_unavailable" ? "There is no browser on this server to open the page with." : `${e.title}. ${e.detail}`);
+
+const IconDetail = () => (
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
+    <circle cx="7" cy="7" r="4.25" />
+    <path d="M10.2 10.2L13.5 13.5M7 5.2v3.6M5.2 7h3.6" strokeLinecap="round" />
+  </svg>
+);
+const IconBack = () => (
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
+    <path d="M6.2 4.2L2.8 7.6l3.4 3.4M3.2 7.6h6.3a3.2 3.2 0 0 1 0 6.4H8" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
 const IconPage = () => (
   <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
     <rect x="3" y="1.75" width="10" height="12.5" rx="1.5" />

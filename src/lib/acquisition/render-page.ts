@@ -9,6 +9,7 @@ export interface RenderOptions {
   signal?: AbortSignal;
   noSandbox?: boolean;
   images?: "abort" | "placeholder";
+  measure?: boolean;
   intercept?: (url: string) => { status?: number; contentType: string; body: string; headers?: Record<string, string> } | undefined;
 }
 
@@ -25,6 +26,7 @@ export interface RenderedPage {
   refused: string[];
   placeholders: number;
   settled: "quiet" | "deadline";
+  layout?: { width: number; height: number; viewport: number };
 }
 
 const NAVIGATION_MS = 12_000;
@@ -36,6 +38,7 @@ const MAX_REQUESTS = 400;
 const MAX_PLACEHOLDERS = 400;
 const MAX_HTML_CHARS = 4 * 1024 * 1024;
 const MAX_INJECTED_CSS_CHARS = 1024 * 1024;
+const MEASURE_MS = 1_500;
 const NOT_STRUCTURE = new Set(["image", "media", "font"]);
 const BLANK_IMAGE = Buffer.from("R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7", "base64");
 
@@ -105,7 +108,13 @@ async function capture(page: Page, url: URL, opts: RenderOptions, t0: number): P
 
   const finalUrl = page.url();
   if (!allowed(finalUrl) && !opts.intercept?.(finalUrl)) throw new CaptureError("forbidden_host", "the page navigated away");
-  const html = await page.content();
+  let layout = opts.measure ? ((await page.evaluate(`${MEASURE_BOXES}(${MEASURE_MS})`).catch(() => undefined)) as RenderedPage["layout"]) : undefined;
+  let html = await page.content();
+  if (opts.measure && (!layout || html.length > MAX_HTML_CHARS)) {
+    await page.evaluate(CLEAR_BOXES).catch(() => undefined);
+    layout = undefined;
+    html = await page.content();
+  }
   if (html.length > MAX_HTML_CHARS) throw new CaptureError("too_large");
   const css = (await page.evaluate(`${COLLECT_CSS}(${MAX_INJECTED_CSS_CHARS})`)) as { links: string[]; injected: string[] };
 
@@ -122,6 +131,7 @@ async function capture(page: Page, url: URL, opts: RenderOptions, t0: number): P
     refused,
     placeholders,
     settled,
+    layout,
   };
 }
 
@@ -181,6 +191,36 @@ const COLLECT_CSS = `((budget) => {
   return { links, injected };
 })`;
 const COUNT_ELEMENTS = `document.getElementsByTagName("*").length`;
+const CLEAR_BOXES = `for (const el of Array.from(document.querySelectorAll("[data-sk-box]"))) el.removeAttribute("data-sk-box")`;
+
+const MEASURE_BOXES = `((budget) => {
+  ${CLEAR_BOXES};
+  const root = document.documentElement;
+  const body = document.body;
+  if (!body) return undefined;
+  const until = performance.now() + budget;
+  const sx = window.scrollX;
+  const sy = window.scrollY;
+  const W = Math.max(root.scrollWidth, body.scrollWidth);
+  const H = Math.max(root.scrollHeight, body.scrollHeight);
+  for (const el of Array.from(body.querySelectorAll("*"))) {
+    if (performance.now() > until) return undefined;
+    if (el.localName === "area" || el.localName === "map") continue;
+    const r = el.getBoundingClientRect();
+    if (r.width < 2 || r.height < 2) continue;
+    if (r.right + sx <= 0 || r.bottom + sy <= 0 || r.left + sx >= W || r.top + sy >= H) continue;
+    if (el.checkVisibility && !el.checkVisibility({ visibilityProperty: true })) continue;
+    const x0 = Math.max(0, r.left + sx);
+    const y0 = Math.max(0, r.top + sy);
+    const x1 = Math.min(W, r.right + sx);
+    const y1 = Math.min(H, r.bottom + sy);
+    if (x1 - x0 < 1 || y1 - y0 < 1) continue;
+    const fs = parseFloat(getComputedStyle(el).fontSize) || 0;
+    el.setAttribute("data-sk-box", [x0, y0, x1 - x0, y1 - y0, fs].map((v) => Math.round(v)).join(" "));
+  }
+  body.setAttribute("data-sk-box", [0, 0, W, H, 0].join(" "));
+  return { width: W, height: H, viewport: window.innerWidth };
+})`;
 
 function mapBrowserError(err: unknown): CaptureError {
   const message = err instanceof Error ? err.message : String(err);

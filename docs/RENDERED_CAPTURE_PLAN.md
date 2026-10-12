@@ -3,6 +3,8 @@
 Escrito em 11/10/2026, a partir do código em `main` (`b1eb38d`).
 
 > **Estado:** as fases 0 e 1 foram feitas no mesmo dia. Os resultados, as correções a este plano e a recomendação de não avançar ainda para as fases 2 e 3 estão em [RENDERED_CAPTURE_REPORT.md](RENDERED_CAPTURE_REPORT.md). Duas coisas deste plano não se sustentaram: rodar o Chromium na própria Vercel (seção D1) e tratar o proxy local como suficiente (seção D3).
+>
+> **Dependência acrescentada em 12/10/2026.** A exploração detalhada de `/pixel` e as frentes baixas lidas de itens medidos só funcionam onde há renderizador. Em produção, as duas dependem das fases 2 e 3 deste plano. Ver `MORPHOLOGY_DECISION.md`, "Como C chega ao produto".
 
 ## Objetivo
 

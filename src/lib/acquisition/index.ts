@@ -45,3 +45,4 @@ export async function acquire(input: string, prefer: StrategyPreference = "auto"
 
 export { snapshotFromHtml };
 export { CaptureError } from "./errors";
+export { rendererReady } from "./rendered-capture";

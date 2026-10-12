@@ -1,0 +1,585 @@
+diff --git a/src/lib/acquisition/render-page.ts b/src/lib/acquisition/render-page.ts
+index 1dfdb1b..76c7690 100644
+--- a/src/lib/acquisition/render-page.ts
++++ b/src/lib/acquisition/render-page.ts
+@@ -9,6 +9,8 @@ export interface RenderOptions {
+   signal?: AbortSignal;
+   noSandbox?: boolean;
+   images?: "abort" | "placeholder";
++  measure?: boolean;
++  javascript?: boolean;
+   intercept?: (url: string) => { status?: number; contentType: string; body: string; headers?: Record<string, string> } | undefined;
+ }
+ 
+@@ -25,6 +27,7 @@ export interface RenderedPage {
+   refused: string[];
+   placeholders: number;
+   settled: "quiet" | "deadline";
++  layout?: { width: number; height: number; viewport: number };
+ }
+ 
+ const NAVIGATION_MS = 12_000;
+@@ -73,6 +76,7 @@ async function capture(page: Page, url: URL, opts: RenderOptions, t0: number): P
+ 
+   await page.setUserAgent(USER_AGENT);
+   await page.setViewport(opts.viewport ?? { width: 1440, height: 900 });
++  if (opts.javascript === false) await page.setJavaScriptEnabled(false);
+   page.on("dialog", (d) => void d.dismiss().catch(() => undefined));
+   const cdp = await page.createCDPSession();
+   await cdp.send("Network.setBypassServiceWorker", { bypass: true }).catch(() => undefined);
+@@ -105,6 +109,7 @@ async function capture(page: Page, url: URL, opts: RenderOptions, t0: number): P
+ 
+   const finalUrl = page.url();
+   if (!allowed(finalUrl) && !opts.intercept?.(finalUrl)) throw new CaptureError("forbidden_host", "the page navigated away");
++  const layout = opts.measure ? ((await page.evaluate(MEASURE_BOXES).catch(() => undefined)) as RenderedPage["layout"]) : undefined;
+   const html = await page.content();
+   if (html.length > MAX_HTML_CHARS) throw new CaptureError("too_large");
+   const css = (await page.evaluate(`${COLLECT_CSS}(${MAX_INJECTED_CSS_CHARS})`)) as { links: string[]; injected: string[] };
+@@ -122,6 +127,7 @@ async function capture(page: Page, url: URL, opts: RenderOptions, t0: number): P
+     refused,
+     placeholders,
+     settled,
++    layout,
+   };
+ }
+ 
+@@ -181,6 +187,43 @@ const COLLECT_CSS = `((budget) => {
+   return { links, injected };
+ })`;
+ const COUNT_ELEMENTS = `document.getElementsByTagName("*").length`;
++const MEASURE_BOXES = `(() => {
++  const root = document.documentElement;
++  const body = document.body;
++  if (!body) return undefined;
++  const sx = window.scrollX;
++  const sy = window.scrollY;
++  const W = Math.max(root.scrollWidth, body.scrollWidth);
++  const H = Math.max(root.scrollHeight, body.scrollHeight);
++  const range = document.createRange();
++  for (const el of Array.from(body.querySelectorAll("*"))) {
++    if (el.localName === "area" || el.localName === "map") continue;
++    const r = el.getBoundingClientRect();
++    const sized = r.width >= 2 || r.height >= 2;
++    const away = sized && (r.right + sx <= 0 || r.bottom + sy <= 0 || r.left + sx >= W || r.top + sy >= H);
++    if (away || (el.checkVisibility && !el.checkVisibility({ visibilityProperty: true }))) {
++      el.setAttribute("data-sk-off", "1");
++      continue;
++    }
++    if (r.width < 2 || r.height < 2) continue;
++    const faded = el.checkVisibility && !el.checkVisibility({ opacityProperty: true }) ? 1 : 0;
++    const x0 = Math.max(0, r.left + sx);
++    const y0 = Math.max(0, r.top + sy);
++    const x1 = Math.min(W, r.right + sx);
++    const y1 = Math.min(H, r.bottom + sy);
++    if (x1 - x0 < 1 || y1 - y0 < 1) continue;
++    let ink = 0;
++    for (const n of Array.from(el.childNodes)) {
++      if (n.nodeType !== 3 || !n.nodeValue || !n.nodeValue.trim()) continue;
++      range.selectNodeContents(n);
++      for (const q of Array.from(range.getClientRects())) ink += q.width * q.height;
++    }
++    const fs = parseFloat(getComputedStyle(el).fontSize) || 0;
++    el.setAttribute("data-sk-box", [x0, y0, x1 - x0, y1 - y0, fs, ink, faded].map((v) => Math.round(v)).join(" "));
++  }
++  body.setAttribute("data-sk-box", [0, 0, W, H, 0, 0, 0].join(" "));
++  return { width: W, height: H, viewport: window.innerWidth };
++})()`;
+ 
+ function mapBrowserError(err: unknown): CaptureError {
+   const message = err instanceof Error ? err.message : String(err);
+diff --git a/src/lib/acquisition/rendered-capture.ts b/src/lib/acquisition/rendered-capture.ts
+index 3847050..d3ec28f 100644
+--- a/src/lib/acquisition/rendered-capture.ts
++++ b/src/lib/acquisition/rendered-capture.ts
+@@ -32,7 +32,7 @@ async function captureFromRenderer(endpoint: string, url: URL, opts: RenderedCap
+   return (await res.json()) as DomSnapshot;
+ }
+ 
+-export async function captureWithLocalBrowser(url: URL, opts: RenderedCaptureOptions & Pick<RenderOptions, "intercept" | "noSandbox" | "images"> = {}): Promise<DomSnapshot> {
++export async function captureWithLocalBrowser(url: URL, opts: RenderedCaptureOptions & Pick<RenderOptions, "intercept" | "noSandbox" | "images" | "measure" | "javascript" | "viewport"> = {}): Promise<DomSnapshot> {
+   const rendered = await renderPage(url, { ...opts, images: opts.images ?? (process.env.SKYLINE_RENDER_IMAGES === "abort" ? "abort" : "placeholder") });
+   return snapshotFromRendered(url, rendered, await fetchStylesheets(rendered.stylesheets, opts.signal));
+ }
+@@ -51,6 +51,7 @@ export function snapshotFromRendered(requested: URL, rendered: RenderedPage, lin
+       redirects: rendered.redirects,
+     },
+     externalCss: [...linkedCss, ...rendered.injectedCss],
++    layout: rendered.layout,
+   });
+   if (snapshot.stats.elementCount === 0) throw new CaptureError("empty_page");
+   if (looksLikeLoginWall(snapshot)) throw new CaptureError("auth_required");
+diff --git a/src/lib/model/normalize.ts b/src/lib/model/normalize.ts
+index f3a09e8..ead81f0 100644
+--- a/src/lib/model/normalize.ts
++++ b/src/lib/model/normalize.ts
+@@ -1,4 +1,5 @@
+ import { NO_EXPERIMENTS, type Experiments } from "../semantics/experiments";
++import { pruneUnseen } from "../snapshot/layout";
+ import { countSources, emptyReport, imageVerdict, type MediaReport } from "../snapshot/media";
+ import type { DomSnapshot, SnapshotNode } from "../snapshot/types";
+ import { classify, STRUCTURAL } from "./classify";
+@@ -47,8 +48,17 @@ interface W {
+   cluster?: { tag: string; count: number };
+   mergedInto?: W;
+   nid?: number;
++  box?: Box;
++  fontSize?: number;
++  ink: number;
++  faded?: boolean;
+ }
+ 
++type Box = [number, number, number, number];
++const PAINTED = new Set(["image", "media", "control", "button"]);
++const union = (a?: Box, b?: Box): Box | undefined => (a && b ? [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[2], b[2]), Math.max(a[3], b[3])] : a ?? b);
++const inkOf = (w: W): number => w.ink + w.children.reduce((s, c) => s + inkOf(c), 0);
++
+ interface Counters {
+   reading: boolean;
+   images: number;
+@@ -60,7 +70,8 @@ interface Counters {
+   idMap: Map<string, W>;
+ }
+ 
+-export function normalize(snapshot: DomSnapshot, experiments: Experiments = NO_EXPERIMENTS): NormalizedDocument {
++export function normalize(captured: DomSnapshot, experiments: Experiments = NO_EXPERIMENTS): NormalizedDocument {
++  const snapshot = experiments.has("layout") ? pruneUnseen(captured) : captured;
+   const counters: Counters = { images: 0, sources: countSources(snapshot.root), media: emptyReport(), headings: 0, forms: 0, buttons: 0, idMap: new Map(), reading: experiments.has("reading") };
+   const big = snapshot.stats.elementCount > 4000;
+   CLUSTER_MIN = big ? 12 : 32;
+@@ -94,6 +105,7 @@ export function normalize(snapshot: DomSnapshot, experiments: Experiments = NO_E
+     },
+     warnings: snapshot.warnings,
+     media: counters.media,
++    ...(snapshot.layout ? { layout: snapshot.layout } : {}),
+   };
+ }
+ 
+@@ -138,6 +150,10 @@ function build(s: SnapshotNode, depth: number, insideContent: boolean, c: Counte
+     ownImages: 0,
+     ownControls: isControl ? 1 : 0,
+     absorbed: 0,
++    box: s.box ? [s.box.x, s.box.y, s.box.x + s.box.w, s.box.y + s.box.h] : undefined,
++    fontSize: s.fontSize,
++    faded: s.faded,
++    ink: s.box && PAINTED.has(role) ? Math.max(s.ink ?? 0, s.box.w * s.box.h) : (s.ink ?? 0),
+     wrappers: 0,
+     children: [],
+   };
+@@ -216,6 +232,8 @@ function absorbLeaf(p: W, c: W): void {
+   p.ownImages += c.ownImages + (c.image ? 1 : 0);
+   p.ownControls += c.ownControls;
+   p.absorbed += 1 + c.absorbed;
++  p.ink += c.ink;
++  p.box = union(p.box, c.box);
+   if (!p.label && c.label && (p.role === "heading" || p.role === "button" || p.role === "link" || c.role === "link" || c.role === "heading")) p.label = c.label;
+   c.mergedInto = p;
+ }
+@@ -239,6 +257,9 @@ function collapseWrappers(w: W): void {
+         absorbed: c.absorbed + 1 + self.absorbed,
+         position: c.position ?? self.position,
+         bg: c.bg ?? self.bg,
++        box: union(self.box, c.box),
++        ink: self.ink + c.ink,
++        fontSize: c.fontSize ?? self.fontSize,
+       });
+       c.mergedInto = w;
+       continue;
+@@ -249,6 +270,8 @@ function collapseWrappers(w: W): void {
+       w.absorbed += 1 + c.absorbed;
+       w.position ??= c.position;
+       w.bg ??= c.bg;
++      w.box = union(w.box, c.box);
++      w.ink += c.ink;
+       c.mergedInto = w;
+       continue;
+     }
+@@ -307,6 +330,8 @@ function clusterRepeats(w: W): void {
+         text: 0, ownLinks: 0, ownImages: 0, ownControls: 0, absorbed: -1, wrappers: 0,
+         children: [],
+         mergedInto: undefined,
++        box: undefined,
++        ink: 0,
+       };
+       clusters.set(sig, cl);
+       out.push(cl);
+@@ -324,6 +349,8 @@ function clusterRepeats(w: W): void {
+     cl.ownImages += c.oImages;
+     cl.ownControls += c.oControls;
+     cl.absorbed += represented(c);
++    cl.box = union(cl.box, c.box);
++    cl.ink += inkOf(c);
+     markMerged(c, cl);
+   }
+   w.children = out;
+@@ -504,6 +531,10 @@ function flatten(root: W, finalUrl: string, idMap: Map<string, W>): NNode[] {
+     if (w.image) n.image = { src: w.image, alt: w.label, priority: Math.round(w.imagePriority) };
+     if (w.bg) n.tint = w.bg;
+     if (w.cluster) n.cluster = { ...w.cluster };
++    if (w.box) n.box = [w.box[0], w.box[1], w.box[2] - w.box[0], w.box[3] - w.box[1]];
++    if (w.fontSize) n.fontSize = w.fontSize;
++    if (w.faded) n.faded = true;
++    if (w.ink > 0) n.ink = Math.round(w.ink);
+     nodes.push(n);
+ 
+     for (const c of w.children) n.children.push(visit(c, id, level + 1));
+diff --git a/src/lib/model/types.ts b/src/lib/model/types.ts
+index 45ad4b0..bc20efb 100644
+--- a/src/lib/model/types.ts
++++ b/src/lib/model/types.ts
+@@ -74,6 +74,10 @@ export interface NNode {
+   image?: { src: string; alt?: string; priority: number; proxy?: string };
+   link?: { kind: "anchor" | "internal" | "external"; target?: number; path?: string };
+   cluster?: { tag: string; count: number };
++  box?: [number, number, number, number];
++  fontSize?: number;
++  ink?: number;
++  faded?: boolean;
+ }
+ 
+ export interface NormalizedDocument {
+@@ -97,4 +101,5 @@ export interface NormalizedDocument {
+   };
+   warnings: CaptureWarning[];
+   media?: MediaReport;
++  layout?: DomSnapshot["layout"];
+ }
+diff --git a/src/lib/pixelcity/kit/compose.ts b/src/lib/pixelcity/kit/compose.ts
+index f1da260..d97e9f2 100644
+--- a/src/lib/pixelcity/kit/compose.ts
++++ b/src/lib/pixelcity/kit/compose.ts
+@@ -260,6 +260,10 @@ function forum(ctx: ComposeCtx, pc: Piece, t: Territory, salt: number, W: number
+   stalls(ctx, base, at);
+ }
+ 
++export function openGround(ctx: ComposeCtx, pc: Piece, salt: number) {
++  yard(ctx.kit, pc.x, pc.z, pc.w - 0.2, pc.d - 0.2, salt, pc.type === "full" ? 7 : pc.type === "half" ? 4 : pc.type === "quad" ? 2 : 1);
++}
++
+ export function composePiece(ctx: ComposeCtx, pc: Piece, t: Territory, comp: Comp, salt: number) {
+   const { kit } = ctx;
+   const w = t.weight;
+diff --git a/src/lib/pixelcity/kit/district.ts b/src/lib/pixelcity/kit/district.ts
+index 2349b2f..1bb300b 100644
+--- a/src/lib/pixelcity/kit/district.ts
++++ b/src/lib/pixelcity/kit/district.ts
+@@ -7,7 +7,7 @@ import { Surf, type Part, type PixelCity } from "../types";
+ import type { Brief } from "./brief";
+ import type { Program } from "./buildings";
+ import { programUse, type Anatomy, type Use } from "./surface";
+-import { composeLandmark, composePiece, piecesOfBlock, ROOM, type LandmarkInfo, type Piece, type PieceType } from "./compose";
++import { composeLandmark, composePiece, openGround, piecesOfBlock, ROOM, type LandmarkInfo, type Piece, type PieceType } from "./compose";
+ import { planFrontage, type FrontagePlan, type Run } from "./frontage";
+ import { Kit, type PeopleMode } from "./core";
+ import { layoutOf, type Layout, type PlacedPiece } from "./layout";
+@@ -18,6 +18,7 @@ import { lifeFoci } from "./foci";
+ import { lifeScenes, type Story } from "./scenes";
+ import { lifeCrossings, lifeSidewalks, lifeTraffic, planStreetLife, type Built, type Focus, type StreetLife } from "./street-life";
+ import { applyEnvironment, planEnvironment, type Environment } from "./atmosphere";
++import { allocateSpatial } from "./spatial";
+ import { allocate, BLOCKS, LOTS, N, type Allocation } from "./territory";
+ import { vehicle, type VehicleType } from "./vehicles";
+ 
+@@ -201,7 +202,7 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}):
+ 
+   const grid: Grid = { lines: LINES, road: R, side: S, block: B, ext: 14 };
+   const ground: Part[] = [{ mesh: "box", node: -1, x: 0, y: -0.3, z: 0, w: 3000, h: 0.3, d: 3000, rotY: 0, color: palette.sidewalk.map((v) => v * 0.9) as RGB, surf: Surf.PAVING, lit: 0, delay: 0 }];
+-  const alloc = allocate(plan);
++  const alloc = plan.exp?.has("layout") ? allocateSpatial(plan) : allocate(plan);
+   const roles = o.artDirection === false ? null : planStreets(plan, alloc);
+   if (roles) streetSurfaces(kit, grid, roles);
+   else uniformStreetSurfaces(kit, grid);
+@@ -296,7 +297,8 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}):
+               current = { territory: seg.territory, comp: seg.comp, piece: pc.type, block: [i, j] };
+               const salt = 1000 + seg.territory * 131 + (i * 4 + j) * 17 + k;
+               const isLm = lmPiece && lmPiece.i === i && lmPiece.j === j && lmPiece.k === k;
+-              if (isLm) {
++              if (alloc.open?.has(seg.territory)) openGround(ctx, pc, salt);
++              else if (isLm) {
+                 const info = composeLandmark(ctx, pc, t, salt);
+                 if (trace) trace.landmark = { ...info, x: bx + pc.x, z: bz + pc.z, block: [i, j] };
+               } else composePiece(ctx, pc, t, seg.comp, salt);
+diff --git a/src/lib/pixelcity/kit/plan.ts b/src/lib/pixelcity/kit/plan.ts
+index 2eea21f..a751dc4 100644
+--- a/src/lib/pixelcity/kit/plan.ts
++++ b/src/lib/pixelcity/kit/plan.ts
+@@ -6,6 +6,7 @@ import { chromeFactors, chromeOf, contentImages, contentWeight, observedBlocks }
+ import type { MediaReport } from "../../snapshot/media";
+ import type { Content } from "./brief";
+ import { itemsOf, type ItemForm } from "./items";
++import { frameOf, type Frame } from "./spatial";
+ import { scopeOf, structureOf, type Structure } from "./structure";
+ 
+ export type Comp = "landmark" | "marker" | "continuous" | "parcelled" | "archive" | "grid" | "media" | "interactive" | "navigation" | "support" | "structured";
+@@ -39,6 +40,8 @@ export interface Territory {
+   structure?: Structure;
+   items?: ItemForm;
+   census?: Census;
++  scope?: { roots: number[]; excluded: number[] };
++  frame?: Frame;
+ }
+ 
+ export interface Census {
+@@ -53,6 +56,7 @@ export interface Plan {
+   hero: number;
+   hygiene?: PlanHygiene;
+   exp?: Experiments;
++  shell?: boolean;
+ }
+ 
+ export const MIN_SHARE = 0.15;
+@@ -172,7 +176,9 @@ export function planFromPage(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
+   };
+ 
+   const counting = exp.has("forum") || exp.has("market");
++  const framed = exp.has("layout") && !!doc.layout;
+   const count = (at: number, roots: number[], excluded: number[], listed: number[] = []) => {
++    if (framed) out[at].scope = { roots, excluded };
+     if (counting) out[at].census = censusOf(doc, roots, excluded, listed, out[at].items);
+   };
+   const merges: PlanHygiene["merges"] = [];
+@@ -321,6 +327,8 @@ export function planFromPage(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
+       t.why.push(`T3 item anatomy (${a.count} items, the longest text of one outside its links ~${Math.round(says)} characters, ${Math.round(a.pictured * 100)}% with a picture) → ${t.mix.map((x) => `${x.comp} ${Math.round(x.share * 100)}%`).join(" + ")}`);
+     }
+ 
++  if (framed) for (const t of out) if (t.scope) t.frame = frameOf(doc, t.scope);
++
+   const order = out.map((t, i) => i).sort((a, b) => out[a].tier - out[b].tier || out[a].order - out[b].order);
+   const territories = order.map((i) => out[i]);
+   for (const t of territories) t.why.unshift(`T2 tier ${t.tier} (${["hero", "main content", "chrome", "footer", "page remainder"][t.tier]})`);
+@@ -331,7 +339,8 @@ export function planFromPage(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
+     territories,
+     hero: heroR ? territories.findIndex((t) => t.region === heroR.id && t.source === "region") : -1,
+     hygiene: { media: doc.media, coverage, fallback, chrome: { before: f.before, after: f.after, regions: out.filter(isChrome).length }, merges },
+-    ...(counting ? { exp } : {}),
++    ...(counting || framed ? { exp } : {}),
++    ...(framed && doc.warnings.some((w) => w.code === "spa_shell") ? { shell: true } : {}),
+   };
+ }
+ 
+diff --git a/src/lib/pixelcity/kit/territory.ts b/src/lib/pixelcity/kit/territory.ts
+index 5105ed9..28b47d3 100644
+--- a/src/lib/pixelcity/kit/territory.ts
++++ b/src/lib/pixelcity/kit/territory.ts
+@@ -17,6 +17,7 @@ export interface Allocation {
+   owner: Int32Array;
+   segments: Segment[];
+   lots: number[];
++  open?: Set<number>;
+ }
+ 
+ type Side = "-x" | "+x" | "-z" | "+z";
+diff --git a/src/lib/semantics/experiments.ts b/src/lib/semantics/experiments.ts
+index ba24e06..bac93d8 100644
+--- a/src/lib/semantics/experiments.ts
++++ b/src/lib/semantics/experiments.ts
+@@ -1,4 +1,4 @@
+-export const EXPERIMENTS = ["reading", "forum", "market"] as const;
++export const EXPERIMENTS = ["reading", "forum", "market", "layout"] as const;
+ export type Experiment = (typeof EXPERIMENTS)[number];
+ export type Experiments = ReadonlySet<Experiment>;
+ 
+diff --git a/src/lib/snapshot/parse-html.ts b/src/lib/snapshot/parse-html.ts
+index bfbdaed..f689e7a 100644
+--- a/src/lib/snapshot/parse-html.ts
++++ b/src/lib/snapshot/parse-html.ts
+@@ -92,13 +92,13 @@ export function snapshotFromHtml(
+   html: string,
+   url: string,
+   strategy: SnapshotSource["strategy"],
+-  extra: { source?: Partial<SnapshotSource>; externalCss?: string[] } = {},
++  extra: { source?: Partial<SnapshotSource>; externalCss?: string[]; layout?: DomSnapshot["layout"] } = {},
+ ): DomSnapshot {
+   const source: SnapshotSource = { requestedUrl: url, finalUrl: url, strategy, status: 200, bytes: html.length, durationMs: 0, redirects: [], ...extra.source };
+-  return buildSnapshot(parsePage(html, source.finalUrl), source, extra.externalCss);
++  return buildSnapshot(parsePage(html, source.finalUrl), source, extra.externalCss, extra.layout);
+ }
+ 
+-export function buildSnapshot(page: ParsedPage, source: SnapshotSource, externalCss: string[] = []): DomSnapshot {
++export function buildSnapshot(page: ParsedPage, source: SnapshotSource, externalCss: string[] = [], layout?: DomSnapshot["layout"]): DomSnapshot {
+   const base = resolveUrl(page.baseHref, source.finalUrl) ?? source.finalUrl;
+   const colors = new Map<string, number>();
+   const positionRules: PositionRule[] = [];
+@@ -153,6 +153,16 @@ export function buildSnapshot(page: ParsedPage, source: SnapshotSource, external
+     if (tag === "input" && (attr(el, "type") ?? "").toLowerCase() === "hidden") return null;
+ 
+     const node: SnapshotNode = { tag, text: 0, children: [] };
++    if (layout) {
++      const m = attr(el, "data-sk-box")?.split(" ").map(Number);
++      if (m && m.length === 7 && m.every(Number.isFinite)) {
++        node.box = { x: m[0], y: m[1], w: m[2], h: m[3] };
++        if (m[4] > 0) node.fontSize = m[4];
++        if (m[5] > 0) node.ink = m[5];
++        if (m[6] > 0) node.faded = true;
++      }
++      if (attr(el, "data-sk-off") !== undefined) node.unseen = true;
++    }
+     if (tag === "font" || tag === "center" || attr(el, "bgcolor") || attr(el, "valign") || (attr(el, "align") && tag !== "img"))
+       markup.legacy++;
+     const rawClass = attr(el, "class");
+@@ -267,6 +277,7 @@ export function buildSnapshot(page: ParsedPage, source: SnapshotSource, external
+         .map(([hex, weight]) => ({ hex, weight: Math.round(weight * 10) / 10 })),
+     },
+     stats: { elementCount, maxDepth, truncated },
++    ...(layout ? { layout } : {}),
+     root,
+     warnings,
+   };
+diff --git a/src/lib/snapshot/types.ts b/src/lib/snapshot/types.ts
+index 4afd283..0731ab4 100644
+--- a/src/lib/snapshot/types.ts
++++ b/src/lib/snapshot/types.ts
+@@ -28,6 +28,10 @@ export interface SnapshotNode {
+   bg?: string;
+   image?: string;
+   box?: { x: number; y: number; w: number; h: number };
++  fontSize?: number;
++  ink?: number;
++  faded?: boolean;
++  unseen?: boolean;
+   children: SnapshotNode[];
+ }
+ 
+@@ -65,6 +69,7 @@ export interface DomSnapshot {
+     maxDepth: number;
+     truncated: boolean;
+   };
++  layout?: { width: number; height: number; viewport: number };
+   root: SnapshotNode;
+   warnings: CaptureWarning[];
+ }
+diff --git a/src/lib/pixelcity/kit/spatial.ts b/src/lib/pixelcity/kit/spatial.ts
+new file mode 100644
+index 0000000..36e3bd9
+--- /dev/null
++++ b/src/lib/pixelcity/kit/spatial.ts
+@@ -0,0 +1,116 @@
++import type { NormalizedDocument } from "../../model/types";
++import type { Plan } from "./plan";
++import { scopeOf } from "./structure";
++import { allocate, LOT_TOTAL, N, type Allocation, type Segment } from "./territory";
++
++export type Rect = [number, number, number, number];
++
++export interface Frame {
++  rect: Rect | null;
++  coverage: number;
++}
++
++const MIN_LOTS = 6;
++const SPANNING = 0.7;
++const OVERLAP = 0.5;
++const BARE = 0.03;
++const FEW_CHARS = 3;
++
++export function frameOf(doc: NormalizedDocument, scope: { roots: number[]; excluded: number[] }): Frame {
++  const nodes = doc.nodes;
++  let outer: Rect | null = null;
++  let ink = 0;
++  const marks: Array<[number, number, number, number, number]> = [];
++  for (const k of scopeOf(nodes, scope.roots, scope.excluded)) {
++    const n = nodes[k];
++    if (!n.box) continue;
++    const r: Rect = [n.box[0], n.box[1], n.box[0] + n.box[2], n.box[1] + n.box[3]];
++    outer = outer ? [Math.min(outer[0], r[0]), Math.min(outer[1], r[1]), Math.max(outer[2], r[2]), Math.max(outer[3], r[3])] : r;
++    ink += n.ink ?? 0;
++    if ((n.ink ?? 0) > 0 || n.ownChars > 0) marks.push([...r, n.selfWeight]);
++  }
++  const total = marks.reduce((s, m) => s + m[4], 0);
++  const at = (col: 0 | 1 | 2 | 3, f: number) => {
++    const sorted = marks.map((m) => [m[col], m[4]] as const).sort((a, b) => a[0] - b[0]);
++    let acc = 0;
++    for (const [v, w] of sorted) if ((acc += w) >= f * total) return v;
++    return sorted[sorted.length - 1][0];
++  };
++  const core: Rect | null = marks.length >= 3 ? [at(0, 0.1), at(1, 0.1), at(2, 0.9), at(3, 0.9)] : null;
++  const rect = core && core[2] > core[0] && core[3] > core[1] ? core : outer;
++  const area = rect ? (rect[2] - rect[0]) * (rect[3] - rect[1]) : 0;
++  return { rect, coverage: area ? Math.min(1, ink / area) : 0 };
++}
++
++export function columnsOf(plan: Plan, lots: number[]): number[][] | null {
++  const big = plan.territories.map((t, i) => ({ i, rect: t.frame?.rect ?? null })).filter((t): t is { i: number; rect: Rect } => lots[t.i] >= MIN_LOTS && t.rect !== null);
++  if (big.length < 2) return null;
++  const span = Math.max(Math.max(...big.map((t) => t.rect[2])) - Math.min(...big.map((t) => t.rect[0])), 1);
++  const cols: Array<{ x0: number; x1: number; members: Array<{ i: number; rect: Rect }> }> = [];
++  for (const t of big.filter((b) => (b.rect[2] - b.rect[0]) / span < SPANNING).sort((a, b) => a.rect[0] - b.rect[0])) {
++    const c = cols.find((k) => Math.min(k.x1, t.rect[2]) - Math.max(k.x0, t.rect[0]) > OVERLAP * Math.min(k.x1 - k.x0, t.rect[2] - t.rect[0]));
++    if (c) {
++      c.x0 = Math.min(c.x0, t.rect[0]);
++      c.x1 = Math.max(c.x1, t.rect[2]);
++      c.members.push(t);
++    } else cols.push({ x0: t.rect[0], x1: t.rect[2], members: [t] });
++  }
++  const beside = (a: Rect, b: Rect) => Math.min(a[3], b[3]) - Math.max(a[1], b[1]) >= OVERLAP * Math.min(a[3] - a[1], b[3] - b[1]);
++  const real = cols.filter((c) => cols.some((o) => o !== c && c.members.some((m) => o.members.some((n) => beside(m.rect, n.rect)))));
++  if (real.length < 2) return null;
++  return real.sort((a, b) => a.x0 - b.x0).map((c) => c.members.map((m) => m.i));
++}
++
++export function bareOf(plan: Plan, lots: number[]): Set<number> {
++  const out = new Set<number>();
++  if (plan.shell) return out;
++  plan.territories.forEach((t, i) => {
++    const f = t.frame;
++    if (!f?.rect || lots[i] < MIN_LOTS) return;
++    if (f.coverage < BARE && t.metrics.chars / lots[i] < FEW_CHARS && t.metrics.images === 0) out.add(i);
++  });
++  return out;
++}
++
++export function allocateSpatial(plan: Plan): Allocation {
++  const base = allocate(plan);
++  const bare = bareOf(plan, base.lots);
++  const open = bare.size ? { open: bare } : {};
++  const cols = columnsOf(plan, base.lots);
++  if (!cols) return { ...base, ...open };
++
++  const colOf = new Map<number, number>();
++  cols.forEach((c, k) => c.forEach((i) => colOf.set(i, k)));
++  const size = cols.map((c) => c.reduce((s, i) => s + base.lots[i], 0));
++  const main = size.indexOf(Math.max(...size));
++  const band = (territory: number) => colOf.get(territory) ?? main;
++  const need = cols.map((_, k) => base.segments.reduce((s, g) => s + (band(g.territory) === k ? g.count : 0), 0));
++
++  const sweep: number[] = [];
++  for (let qx = 0; qx < N / 2; qx++)
++    for (let qz = 0; qz < N / 2; qz++)
++      for (const [dx, dz] of [[0, 0], [1, 0], [0, 1], [1, 1]]) sweep.push((qx * 2 + dx) * N + qz * 2 + dz);
++  const bandOf = new Int32Array(LOT_TOTAL).fill(main);
++  let at = 0;
++  cols.forEach((_, k) => {
++    for (let n = 0; n < need[k] && at < sweep.length; n++) bandOf[sweep[at++]] = k;
++  });
++
++  const spiral = base.path.map(([x, z]) => x * N + z);
++  const path: Array<[number, number]> = [];
++  const segments: Segment[] = [];
++  cols.forEach((_, k) => {
++    const order = (k === main ? spiral : sweep).filter((c) => bandOf[c] === k);
++    let j = 0;
++    for (const g of base.segments) {
++      if (band(g.territory) !== k) continue;
++      segments.push({ ...g, from: path.length });
++      for (let n = 0; n < g.count && j < order.length; n++, j++) path.push([Math.floor(order[j] / N), order[j] % N]);
++    }
++  });
++  const owner = new Int32Array(LOT_TOTAL).fill(-1);
++  segments.forEach((s, si) => {
++    for (let k = s.from; k < s.from + s.count && k < path.length; k++) owner[path[k][0] * N + path[k][1]] = si;
++  });
++  return { path, owner, segments, lots: base.lots, ...open };
++}
+diff --git a/src/lib/snapshot/layout.ts b/src/lib/snapshot/layout.ts
+new file mode 100644
+index 0000000..80162d5
+--- /dev/null
++++ b/src/lib/snapshot/layout.ts
+@@ -0,0 +1,8 @@
++import type { DomSnapshot, SnapshotNode } from "./types";
++
++export function pruneUnseen(snapshot: DomSnapshot): DomSnapshot {
++  if (!snapshot.layout) return snapshot;
++  const shown = (n: SnapshotNode): boolean => !!n.box || n.children.some(shown);
++  const keep = (n: SnapshotNode): SnapshotNode | null => (n.unseen && !shown(n) ? null : { ...n, children: n.children.map(keep).filter((c): c is SnapshotNode => c !== null) });
++  return { ...snapshot, root: keep(snapshot.root) ?? { ...snapshot.root, children: [] } };
++}
