@@ -1,0 +1,4 @@
+# Bulk evidence of the static-versus-rendered study: regenerate with scripts/rendered-capture/compare.ts and shoot.mjs.
+# compare.json and sheets/ are small and tell the story; delete this file to version everything.
+snapshots/
+shots/

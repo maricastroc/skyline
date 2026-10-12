@@ -22,7 +22,8 @@
     "test:streets": "tsx scripts/street-roles/check.ts",
     "test:life": "tsx scripts/street-life/check.ts",
     "test:atmosphere": "tsx scripts/atmosphere/check.ts",
-    "test:polish": "tsx scripts/polish-assets/check.ts"
+    "test:polish": "tsx scripts/polish-assets/check.ts",
+    "test:rendered": "tsx scripts/rendered-capture/check.ts"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",

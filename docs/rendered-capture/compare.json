@@ -1,0 +1,4701 @@
+{
+ "at": "2026-10-11T12:31:16.049Z",
+ "rows": [
+  {
+   "entry": {
+    "id": "bsky",
+    "url": "https://bsky.app",
+    "group": "shell",
+    "what": "social feed"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 4,
+     "depth": 2,
+     "text": 0,
+     "kb": 24,
+     "nodes": 1,
+     "links": 0,
+     "images": 0,
+     "headings": 0,
+     "controls": 0,
+     "regions": 0,
+     "kinds": {},
+     "territories": 0,
+     "compositions": [],
+     "largestShare": 0,
+     "structures": 0,
+     "parts": 5958,
+     "land": [],
+     "warnings": [
+      "spa_shell"
+     ],
+     "ms": 456,
+     "time": "day"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 2849,
+     "depth": 41,
+     "text": 8207,
+     "kb": 650,
+     "nodes": 577,
+     "links": 189,
+     "images": 72,
+     "headings": 0,
+     "controls": 251,
+     "regions": 6,
+     "kinds": {
+      "main": 1,
+      "showcase": 1,
+      "nav": 1,
+      "cta": 2,
+      "footer": 1
+     },
+     "territories": 3,
+     "compositions": [
+      "media",
+      "support",
+      "interactive"
+     ],
+     "largestShare": 0.96875,
+     "structures": 35,
+     "parts": 10197,
+     "land": [
+      {
+       "name": "Showcase",
+       "kind": "showcase",
+       "comp": "media",
+       "lots": 248
+      },
+      {
+       "name": "Footer",
+       "kind": "footer",
+       "comp": "support",
+       "lots": 4
+      },
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "interactive",
+       "lots": 4
+      }
+     ],
+     "warnings": [],
+     "ms": 6655,
+     "time": "night"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "mastodon",
+    "url": "https://mastodon.social/explore",
+    "group": "shell",
+    "what": "social feed"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 5,
+     "depth": 2,
+     "text": 0,
+     "kb": 50,
+     "nodes": 1,
+     "links": 0,
+     "images": 0,
+     "headings": 0,
+     "controls": 0,
+     "regions": 0,
+     "kinds": {},
+     "territories": 0,
+     "compositions": [],
+     "largestShare": 0,
+     "structures": 0,
+     "parts": 5958,
+     "land": [],
+     "warnings": [
+      "spa_shell"
+     ],
+     "ms": 336,
+     "time": "night"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 360,
+     "depth": 19,
+     "text": 14058,
+     "kb": 93,
+     "nodes": 162,
+     "links": 30,
+     "images": 9,
+     "headings": 9,
+     "controls": 19,
+     "regions": 18,
+     "kinds": {
+      "section": 13,
+      "form": 2,
+      "hero": 1,
+      "main": 1,
+      "nav": 1
+     },
+     "territories": 16,
+     "compositions": [
+      "continuous",
+      "interactive",
+      "landmark",
+      "parcelled",
+      "navigation"
+     ],
+     "largestShare": 0.23046875,
+     "structures": 79,
+     "parts": 14546,
+     "land": [
+      {
+       "name": "Recent searches",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 59
+      },
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "interactive",
+       "lots": 39
+      },
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "interactive",
+       "lots": 36
+      },
+      {
+       "name": "Trending",
+       "kind": "hero",
+       "comp": "landmark",
+       "lots": 18
+      },
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "parcelled",
+       "lots": 17
+      },
+      {
+       "name": "Navigation",
+       "kind": "nav",
+       "comp": "navigation",
+       "lots": 13
+      },
+      {
+       "name": "mastodon.social:",
+       "kind": "section",
+       "comp": "parcelled",
+       "lots": 9
+      },
+      {
+       "name": "Mastodon:",
+       "kind": "section",
+       "comp": "parcelled",
+       "lots": 9
+      }
+     ],
+     "warnings": [],
+     "ms": 3860,
+     "time": "night"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "hn-algolia",
+    "url": "https://hn.algolia.com",
+    "group": "shell",
+    "what": "search results list"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 2,
+     "depth": 1,
+     "text": 0,
+     "kb": 2,
+     "nodes": 1,
+     "links": 0,
+     "images": 0,
+     "headings": 0,
+     "controls": 0,
+     "regions": 0,
+     "kinds": {},
+     "territories": 0,
+     "compositions": [],
+     "largestShare": 0,
+     "structures": 0,
+     "parts": 6373,
+     "land": [],
+     "warnings": [
+      "spa_shell"
+     ],
+     "ms": 729,
+     "time": "day"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 717,
+     "depth": 13,
+     "text": 9331,
+     "kb": 41,
+     "nodes": 309,
+     "links": 194,
+     "images": 2,
+     "headings": 0,
+     "controls": 8,
+     "regions": 4,
+     "kinds": {
+      "main": 1,
+      "nav": 1,
+      "pricing": 1,
+      "footer": 1
+     },
+     "territories": 5,
+     "compositions": [
+      "grid",
+      "interactive",
+      "support",
+      "navigation",
+      "continuous"
+     ],
+     "largestShare": 0.859375,
+     "structures": 139,
+     "parts": 16539,
+     "land": [
+      {
+       "name": "Pricing",
+       "kind": "pricing",
+       "comp": "grid",
+       "lots": 220
+      },
+      {
+       "name": "Main content",
+       "kind": "remainder",
+       "comp": "interactive",
+       "lots": 22
+      },
+      {
+       "name": "Footer",
+       "kind": "footer",
+       "comp": "support",
+       "lots": 7
+      },
+      {
+       "name": "Navigation",
+       "kind": "nav",
+       "comp": "navigation",
+       "lots": 6
+      },
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 1
+      }
+     ],
+     "warnings": [],
+     "ms": 7078,
+     "time": "day"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "devdocs",
+    "url": "https://devdocs.io",
+    "group": "shell",
+    "what": "documentation app"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 38,
+     "depth": 5,
+     "text": 82,
+     "kb": 29,
+     "nodes": 18,
+     "links": 7,
+     "images": 0,
+     "headings": 1,
+     "controls": 6,
+     "regions": 4,
+     "kinds": {
+      "form": 2,
+      "hero": 1,
+      "brand": 1
+     },
+     "territories": 4,
+     "compositions": [
+      "landmark",
+      "continuous",
+      "interactive"
+     ],
+     "largestShare": 0.3515625,
+     "structures": 27,
+     "parts": 14252,
+     "land": [
+      {
+       "name": "DevDocs",
+       "kind": "hero",
+       "comp": "landmark",
+       "lots": 90
+      },
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 82
+      },
+      {
+       "name": "Form",
+       "kind": "form",
+       "comp": "interactive",
+       "lots": 45
+      },
+      {
+       "name": "Search",
+       "kind": "form",
+       "comp": "interactive",
+       "lots": 39
+      }
+     ],
+     "warnings": [
+      "spa_shell"
+     ],
+     "ms": 644,
+     "time": "day"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 3746,
+     "depth": 10,
+     "text": 19356,
+     "kb": 276,
+     "nodes": 233,
+     "links": 860,
+     "images": 0,
+     "headings": 4,
+     "controls": 7,
+     "regions": 4,
+     "kinds": {
+      "form": 2,
+      "hero": 1,
+      "brand": 1
+     },
+     "territories": 9,
+     "compositions": [
+      "parcelled",
+      "landmark",
+      "interactive"
+     ],
+     "largestShare": 0.62109375,
+     "structures": 118,
+     "parts": 13173,
+     "land": [
+      {
+       "name": "list of 79 div",
+       "kind": "observed",
+       "comp": "parcelled",
+       "lots": 159
+      },
+      {
+       "name": "list of 228 a",
+       "kind": "observed",
+       "comp": "parcelled",
+       "lots": 49
+      },
+      {
+       "name": "38 links (3 blocks)",
+       "kind": "observed",
+       "comp": "parcelled",
+       "lots": 11
+      },
+      {
+       "name": "36 links (7 blocks)",
+       "kind": "observed",
+       "comp": "parcelled",
+       "lots": 11
+      },
+      {
+       "name": "36 links (6 blocks) · “Angular”",
+       "kind": "observed",
+       "comp": "parcelled",
+       "lots": 10
+      },
+      {
+       "name": "26 links (21 blocks) · “Enable2.4.64Apac",
+       "kind": "observed",
+       "comp": "parcelled",
+       "lots": 9
+      },
+      {
+       "name": "19 links (3 blocks) · “EnableC++”",
+       "kind": "observed",
+       "comp": "parcelled",
+       "lots": 5
+      },
+      {
+       "name": "DevDocs",
+       "kind": "hero",
+       "comp": "landmark",
+       "lots": 1
+      }
+     ],
+     "warnings": [],
+     "ms": 2982,
+     "time": "day"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "duolingo",
+    "url": "https://www.duolingo.com",
+    "group": "shell",
+    "what": "product landing"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 3,
+     "depth": 1,
+     "text": 0,
+     "kb": 11,
+     "nodes": 1,
+     "links": 0,
+     "images": 0,
+     "headings": 0,
+     "controls": 0,
+     "regions": 0,
+     "kinds": {},
+     "territories": 0,
+     "compositions": [],
+     "largestShare": 0,
+     "structures": 0,
+     "parts": 6542,
+     "land": [],
+     "warnings": [
+      "spa_shell"
+     ],
+     "ms": 553,
+     "time": "day"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 459,
+     "depth": 12,
+     "text": 2195,
+     "kb": 971,
+     "nodes": 195,
+     "links": 116,
+     "images": 53,
+     "headings": 8,
+     "controls": 3,
+     "regions": 11,
+     "kinds": {
+      "brand": 1,
+      "hero": 1,
+      "cta": 1,
+      "showcase": 1,
+      "main": 1,
+      "section": 5,
+      "footer": 1
+     },
+     "territories": 10,
+     "compositions": [
+      "media",
+      "support",
+      "continuous",
+      "landmark"
+     ],
+     "largestShare": 0.49609375,
+     "structures": 74,
+     "parts": 11993,
+     "land": [
+      {
+       "name": "Showcase",
+       "kind": "showcase",
+       "comp": "media",
+       "lots": 127
+      },
+      {
+       "name": "Footer",
+       "kind": "footer",
+       "comp": "support",
+       "lots": 63
+      },
+      {
+       "name": "free. fun. effective.",
+       "kind": "section",
+       "comp": "media",
+       "lots": 15
+      },
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 12
+      },
+      {
+       "name": "learn anytime, anywhere",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 8
+      },
+      {
+       "name": "learn a language with duolingo",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 8
+      },
+      {
+       "name": "The most fun way to learn languages, che",
+       "kind": "hero",
+       "comp": "landmark",
+       "lots": 7
+      },
+      {
+       "name": "Main content",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 6
+      }
+     ],
+     "warnings": [],
+     "ms": 11225,
+     "time": "day"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "soundcloud",
+    "url": "https://soundcloud.com/discover",
+    "group": "shell",
+    "what": "media catalogue"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 25,
+     "depth": 7,
+     "text": 256,
+     "kb": 65,
+     "nodes": 11,
+     "links": 8,
+     "images": 0,
+     "headings": 0,
+     "controls": 0,
+     "regions": 0,
+     "kinds": {},
+     "territories": 8,
+     "compositions": [
+      "continuous",
+      "parcelled"
+     ],
+     "largestShare": 0.234375,
+     "structures": 51,
+     "parts": 19298,
+     "land": [
+      {
+       "name": "10 chars of text",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 60
+      },
+      {
+       "name": "4 links · “Chrome”",
+       "kind": "observed",
+       "comp": "parcelled",
+       "lots": 54
+      },
+      {
+       "name": "10 chars of text · “SoundCloud”",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 51
+      },
+      {
+       "name": "110 chars of text · “Need help?”",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 24
+      },
+      {
+       "name": "11 chars of text · “I need help”",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 20
+      },
+      {
+       "name": "16 chars of text · “Popular searches”",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 20
+      },
+      {
+       "name": "56 chars of text",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 18
+      },
+      {
+       "name": "27 chars of text",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 9
+      }
+     ],
+     "warnings": [
+      "spa_shell"
+     ],
+     "ms": 559,
+     "time": "golden"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 887,
+     "depth": 25,
+     "text": 4359,
+     "kb": 501,
+     "nodes": 325,
+     "links": 62,
+     "images": 3,
+     "headings": 13,
+     "controls": 95,
+     "regions": 20,
+     "kinds": {
+      "brand": 1,
+      "nav": 1,
+      "form": 2,
+      "hero": 1,
+      "main": 1,
+      "section": 12,
+      "footer": 1,
+      "features": 1
+     },
+     "territories": 16,
+     "compositions": [
+      "parcelled",
+      "interactive",
+      "support",
+      "continuous",
+      "landmark",
+      "navigation"
+     ],
+     "largestShare": 0.21875,
+     "structures": 111,
+     "parts": 13441,
+     "land": [
+      {
+       "name": "Curated by SoundCloud",
+       "kind": "section",
+       "comp": "parcelled",
+       "lots": 56
+      },
+      {
+       "name": "Artists to watch out for",
+       "kind": "section",
+       "comp": "parcelled",
+       "lots": 55
+      },
+      {
+       "name": "Trending by genre",
+       "kind": "section",
+       "comp": "parcelled",
+       "lots": 48
+      },
+      {
+       "name": "Manage Consent Preferences",
+       "kind": "features",
+       "comp": "interactive",
+       "lots": 22
+      },
+      {
+       "name": "Footer",
+       "kind": "footer",
+       "comp": "support",
+       "lots": 17
+      },
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "parcelled",
+       "lots": 11
+      },
+      {
+       "name": "Discover Tracks and Playlists",
+       "kind": "remainder",
+       "comp": "parcelled",
+       "lots": 8
+      },
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "interactive",
+       "lots": 7
+      }
+     ],
+     "warnings": [],
+     "ms": 10774,
+     "time": "golden"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "twitch",
+    "url": "https://www.twitch.tv",
+    "group": "shell",
+    "what": "media catalogue"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 21,
+     "depth": 5,
+     "text": 0,
+     "kb": 199,
+     "nodes": 1,
+     "links": 0,
+     "images": 0,
+     "headings": 0,
+     "controls": 0,
+     "regions": 0,
+     "kinds": {},
+     "territories": 0,
+     "compositions": [],
+     "largestShare": 0,
+     "structures": 0,
+     "parts": 6542,
+     "land": [],
+     "warnings": [
+      "spa_shell"
+     ],
+     "ms": 247,
+     "time": "day"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 598,
+     "depth": 39,
+     "text": 1083,
+     "kb": 254,
+     "nodes": 247,
+     "links": 17,
+     "images": 17,
+     "headings": 1,
+     "controls": 18,
+     "regions": 10,
+     "kinds": {
+      "brand": 1,
+      "form": 1,
+      "section": 5,
+      "feed": 1,
+      "main": 1,
+      "gallery": 1
+     },
+     "territories": 6,
+     "compositions": [
+      "parcelled",
+      "media",
+      "interactive",
+      "continuous",
+      "marker"
+     ],
+     "largestShare": 0.44921875,
+     "structures": 88,
+     "parts": 10174,
+     "land": [
+      {
+       "name": "Feed",
+       "kind": "feed",
+       "comp": "parcelled",
+       "lots": 115
+      },
+      {
+       "name": "Gallery",
+       "kind": "gallery",
+       "comp": "media",
+       "lots": 78
+      },
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "interactive",
+       "lots": 42
+      },
+      {
+       "name": "Form",
+       "kind": "form",
+       "comp": "interactive",
+       "lots": 11
+      },
+      {
+       "name": "Main Content",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 8
+      },
+      {
+       "name": "Twitch",
+       "kind": "brand",
+       "comp": "marker",
+       "lots": 2
+      }
+     ],
+     "warnings": [],
+     "ms": 10849,
+     "time": "night"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "pinterest",
+    "url": "https://www.pinterest.com",
+    "group": "shell",
+    "what": "image wall"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 5,
+     "depth": 1,
+     "text": 0,
+     "kb": 1213,
+     "nodes": 1,
+     "links": 0,
+     "images": 0,
+     "headings": 0,
+     "controls": 0,
+     "regions": 0,
+     "kinds": {},
+     "territories": 0,
+     "compositions": [],
+     "largestShare": 0,
+     "structures": 0,
+     "parts": 6826,
+     "land": [],
+     "warnings": [
+      "spa_shell"
+     ],
+     "ms": 646,
+     "time": "day"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 971,
+     "depth": 32,
+     "text": 2135,
+     "kb": 1346,
+     "nodes": 348,
+     "links": 32,
+     "images": 55,
+     "headings": 16,
+     "controls": 35,
+     "regions": 18,
+     "kinds": {
+      "nav": 1,
+      "brand": 1,
+      "main": 1,
+      "section": 11,
+      "pricing": 1,
+      "showcase": 1,
+      "form": 1,
+      "footer": 1
+     },
+     "territories": 13,
+     "compositions": [
+      "media",
+      "interactive",
+      "navigation",
+      "continuous",
+      "support",
+      "grid"
+     ],
+     "largestShare": 0.59375,
+     "structures": 62,
+     "parts": 12403,
+     "land": [
+      {
+       "name": "Trending halloween costumes",
+       "kind": "showcase",
+       "comp": "media",
+       "lots": 152
+      },
+      {
+       "name": "Form",
+       "kind": "form",
+       "comp": "interactive",
+       "lots": 19
+      },
+      {
+       "name": "Navigation",
+       "kind": "nav",
+       "comp": "navigation",
+       "lots": 13
+      },
+      {
+       "name": "Welcome to Pinterest",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 12
+      },
+      {
+       "name": "Footer",
+       "kind": "footer",
+       "comp": "support",
+       "lots": 11
+      },
+      {
+       "name": "Collaborate with group boards",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 10
+      },
+      {
+       "name": "Search by skin tone",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 9
+      },
+      {
+       "name": "Search visually with images",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 9
+      }
+     ],
+     "warnings": [],
+     "ms": 6169,
+     "time": "day"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "booking",
+    "url": "https://www.booking.com",
+    "group": "shell",
+    "what": "travel search"
+   },
+   "static": {
+    "ok": false,
+    "error": "blocked (HTTP 202, a challenge in progress)"
+   },
+   "rendered": {
+    "ok": false,
+    "error": "blocked (HTTP 202, a challenge in progress)"
+   }
+  },
+  {
+   "entry": {
+    "id": "uniswap",
+    "url": "https://app.uniswap.org",
+    "group": "shell",
+    "what": "web app"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 3,
+     "depth": 1,
+     "text": 0,
+     "kb": 85,
+     "nodes": 1,
+     "links": 0,
+     "images": 0,
+     "headings": 0,
+     "controls": 0,
+     "regions": 0,
+     "kinds": {},
+     "territories": 0,
+     "compositions": [],
+     "largestShare": 0,
+     "structures": 0,
+     "parts": 5958,
+     "land": [],
+     "warnings": [
+      "spa_shell"
+     ],
+     "ms": 229,
+     "time": "day"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 3,
+     "depth": 1,
+     "text": 0,
+     "kb": 87,
+     "nodes": 1,
+     "links": 0,
+     "images": 0,
+     "headings": 0,
+     "controls": 0,
+     "regions": 0,
+     "kinds": {},
+     "territories": 0,
+     "compositions": [],
+     "largestShare": 0,
+     "structures": 0,
+     "parts": 5958,
+     "land": [],
+     "warnings": [
+      "spa_shell"
+     ],
+     "ms": 3705,
+     "time": "day"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "excalidraw",
+    "url": "https://excalidraw.com",
+    "group": "shell",
+    "what": "canvas tool"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 4,
+     "depth": 2,
+     "text": 10,
+     "kb": 7,
+     "nodes": 3,
+     "links": 0,
+     "images": 0,
+     "headings": 1,
+     "controls": 0,
+     "regions": 1,
+     "kinds": {
+      "section": 1
+     },
+     "territories": 2,
+     "compositions": [
+      "continuous"
+     ],
+     "largestShare": 0.5078125,
+     "structures": 20,
+     "parts": 17844,
+     "land": [
+      {
+       "name": "Excalidraw",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 130
+      },
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 126
+      }
+     ],
+     "warnings": [
+      "spa_shell"
+     ],
+     "ms": 345,
+     "time": "night"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 167,
+     "depth": 15,
+     "text": 427,
+     "kb": 59,
+     "nodes": 104,
+     "links": 3,
+     "images": 28,
+     "headings": 3,
+     "controls": 26,
+     "regions": 5,
+     "kinds": {
+      "hero": 1,
+      "brand": 1,
+      "showcase": 1,
+      "sidebar": 1,
+      "footer": 1
+     },
+     "territories": 3,
+     "compositions": [
+      "media",
+      "continuous",
+      "landmark"
+     ],
+     "largestShare": 0.9375,
+     "structures": 38,
+     "parts": 10630,
+     "land": [
+      {
+       "name": "Shapes",
+       "kind": "showcase",
+       "comp": "media",
+       "lots": 240
+      },
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 14
+      },
+      {
+       "name": "Excalidraw",
+       "kind": "hero",
+       "comp": "landmark",
+       "lots": 2
+      }
+     ],
+     "warnings": [],
+     "ms": 3326,
+     "time": "night"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "tldraw",
+    "url": "https://tldraw.com",
+    "group": "shell",
+    "what": "canvas tool"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 4,
+     "depth": 2,
+     "text": 53,
+     "kb": 17,
+     "nodes": 3,
+     "links": 0,
+     "images": 0,
+     "headings": 1,
+     "controls": 0,
+     "regions": 1,
+     "kinds": {
+      "section": 1
+     },
+     "territories": 2,
+     "compositions": [
+      "continuous"
+     ],
+     "largestShare": 0.53515625,
+     "structures": 20,
+     "parts": 18737,
+     "land": [
+      {
+       "name": "tldraw - free and instant collaborative ",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 137
+      },
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 119
+      }
+     ],
+     "warnings": [
+      "spa_shell"
+     ],
+     "ms": 944,
+     "time": "day"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 222,
+     "depth": 19,
+     "text": 212,
+     "kb": 73,
+     "nodes": 170,
+     "links": 2,
+     "images": 65,
+     "headings": 1,
+     "controls": 47,
+     "regions": 6,
+     "kinds": {
+      "hero": 1,
+      "brand": 1,
+      "section": 4
+     },
+     "territories": 13,
+     "compositions": [
+      "interactive",
+      "continuous",
+      "landmark",
+      "marker"
+     ],
+     "largestShare": 0.16015625,
+     "structures": 70,
+     "parts": 12144,
+     "land": [
+      {
+       "name": "16 chars of text",
+       "kind": "observed",
+       "comp": "interactive",
+       "lots": 41
+      },
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "interactive",
+       "lots": 39
+      },
+      {
+       "name": "4 chars of text",
+       "kind": "observed",
+       "comp": "interactive",
+       "lots": 34
+      },
+      {
+       "name": "18 chars of text",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 34
+      },
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "interactive",
+       "lots": 29
+      },
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 18
+      },
+      {
+       "name": "0 chars of text · “Build infinite canvas",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 13
+      },
+      {
+       "name": "7 chars of text · “Opt out”",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 13
+      }
+     ],
+     "warnings": [],
+     "ms": 4550,
+     "time": "day"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "diagrams",
+    "url": "https://app.diagrams.net",
+    "group": "shell",
+    "what": "canvas tool"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 4,
+     "depth": 2,
+     "text": 0,
+     "kb": 4,
+     "nodes": 2,
+     "links": 0,
+     "images": 1,
+     "headings": 0,
+     "controls": 0,
+     "regions": 0,
+     "kinds": {},
+     "territories": 1,
+     "compositions": [
+      "continuous"
+     ],
+     "largestShare": 1,
+     "structures": 16,
+     "parts": 19778,
+     "land": [
+      {
+       "name": "0 chars of text · “draw.io”",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 256
+      }
+     ],
+     "warnings": [
+      "spa_shell"
+     ],
+     "ms": 324,
+     "time": "golden"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 1185,
+     "depth": 9,
+     "text": 306,
+     "kb": 378,
+     "nodes": 75,
+     "links": 1,
+     "images": 7,
+     "headings": 0,
+     "controls": 6,
+     "regions": 1,
+     "kinds": {
+      "showcase": 1
+     },
+     "territories": 10,
+     "compositions": [
+      "media",
+      "continuous",
+      "interactive"
+     ],
+     "largestShare": 0.296875,
+     "structures": 68,
+     "parts": 13613,
+     "land": [
+      {
+       "name": "Showcase",
+       "kind": "showcase",
+       "comp": "media",
+       "lots": 76
+      },
+      {
+       "name": "0 chars of text · “Zoom (Ctrl+Mousewheel",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 48
+      },
+      {
+       "name": "47 chars of text",
+       "kind": "observed",
+       "comp": "interactive",
+       "lots": 25
+      },
+      {
+       "name": "50 chars of text",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 23
+      },
+      {
+       "name": "4 chars of text",
+       "kind": "observed",
+       "comp": "interactive",
+       "lots": 21
+      },
+      {
+       "name": "27 chars of text",
+       "kind": "observed",
+       "comp": "interactive",
+       "lots": 21
+      },
+      {
+       "name": "6 chars of text",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 15
+      },
+      {
+       "name": "19 chars of text",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 10
+      }
+     ],
+     "warnings": [],
+     "ms": 7482,
+     "time": "golden"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "photopea",
+    "url": "https://www.photopea.com",
+    "group": "shell",
+    "what": "canvas tool"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 2,
+     "depth": 1,
+     "text": 0,
+     "kb": 16,
+     "nodes": 1,
+     "links": 0,
+     "images": 0,
+     "headings": 0,
+     "controls": 0,
+     "regions": 0,
+     "kinds": {},
+     "territories": 0,
+     "compositions": [],
+     "largestShare": 0,
+     "structures": 0,
+     "parts": 6373,
+     "land": [],
+     "warnings": [
+      "spa_shell"
+     ],
+     "ms": 291,
+     "time": "night"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 77,
+     "depth": 7,
+     "text": 2683,
+     "kb": 16,
+     "nodes": 59,
+     "links": 12,
+     "images": 4,
+     "headings": 19,
+     "controls": 5,
+     "regions": 4,
+     "kinds": {
+      "brand": 1,
+      "section": 1,
+      "pricing": 1,
+      "footer": 1
+     },
+     "territories": 3,
+     "compositions": [
+      "grid",
+      "marker",
+      "continuous"
+     ],
+     "largestShare": 0.89453125,
+     "structures": 137,
+     "parts": 15523,
+     "land": [
+      {
+       "name": "Fully Local",
+       "kind": "pricing",
+       "comp": "grid",
+       "lots": 229
+      },
+      {
+       "name": "Photopea",
+       "kind": "brand",
+       "comp": "marker",
+       "lots": 23
+      },
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 4
+      }
+     ],
+     "warnings": [],
+     "ms": 1726,
+     "time": "night"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "desmos",
+    "url": "https://www.desmos.com/calculator",
+    "group": "shell",
+    "what": "canvas tool"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 10,
+     "depth": 2,
+     "text": 10,
+     "kb": 11,
+     "nodes": 3,
+     "links": 0,
+     "images": 1,
+     "headings": 0,
+     "controls": 0,
+     "regions": 0,
+     "kinds": {},
+     "territories": 2,
+     "compositions": [
+      "continuous"
+     ],
+     "largestShare": 0.75390625,
+     "structures": 20,
+     "parts": 19127,
+     "land": [
+      {
+       "name": "10 chars of text",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 193
+      },
+      {
+       "name": "0 chars of text",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 63
+      }
+     ],
+     "warnings": [
+      "spa_shell"
+     ],
+     "ms": 548,
+     "time": "day"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 474,
+     "depth": 21,
+     "text": 353,
+     "kb": 52,
+     "nodes": 189,
+     "links": 1,
+     "images": 4,
+     "headings": 0,
+     "controls": 59,
+     "regions": 5,
+     "kinds": {
+      "brand": 1,
+      "section": 3,
+      "sidebar": 1
+     },
+     "territories": 6,
+     "compositions": [
+      "interactive",
+      "continuous",
+      "marker"
+     ],
+     "largestShare": 0.72265625,
+     "structures": 47,
+     "parts": 9818,
+     "land": [
+      {
+       "name": "keypad",
+       "kind": "section",
+       "comp": "interactive",
+       "lots": 185
+      },
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "interactive",
+       "lots": 41
+      },
+      {
+       "name": "Introduction",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 15
+      },
+      {
+       "name": "Graph Settings Controls",
+       "kind": "section",
+       "comp": "interactive",
+       "lots": 8
+      },
+      {
+       "name": "Sidebar",
+       "kind": "sidebar",
+       "comp": "interactive",
+       "lots": 5
+      },
+      {
+       "name": "Desmos",
+       "kind": "brand",
+       "comp": "marker",
+       "lots": 2
+      }
+     ],
+     "warnings": [],
+     "ms": 4353,
+     "time": "day"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "rayso",
+    "url": "https://ray.so",
+    "group": "shell",
+    "what": "single-purpose tool"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 27,
+     "depth": 6,
+     "text": 36,
+     "kb": 30,
+     "nodes": 11,
+     "links": 2,
+     "images": 0,
+     "headings": 0,
+     "controls": 4,
+     "regions": 2,
+     "kinds": {
+      "section": 1,
+      "main": 1
+     },
+     "territories": 3,
+     "compositions": [
+      "interactive",
+      "continuous"
+     ],
+     "largestShare": 0.48828125,
+     "structures": 42,
+     "parts": 12361,
+     "land": [
+      {
+       "name": "Main",
+       "kind": "main",
+       "comp": "interactive",
+       "lots": 125
+      },
+      {
+       "name": "Introduction",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 116
+      },
+      {
+       "name": "36 chars of text",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 15
+      }
+     ],
+     "warnings": [
+      "spa_shell"
+     ],
+     "ms": 444,
+     "time": "night"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 113,
+     "depth": 15,
+     "text": 233,
+     "kb": 58,
+     "nodes": 51,
+     "links": 2,
+     "images": 0,
+     "headings": 0,
+     "controls": 5,
+     "regions": 22,
+     "kinds": {
+      "brand": 1,
+      "main": 1,
+      "section": 20
+     },
+     "territories": 10,
+     "compositions": [
+      "continuous",
+      "interactive",
+      "marker"
+     ],
+     "largestShare": 0.328125,
+     "structures": 57,
+     "parts": 11589,
+     "land": [
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 84
+      },
+      {
+       "name": "Main content",
+       "kind": "remainder",
+       "comp": "interactive",
+       "lots": 34
+      },
+      {
+       "name": "Frame Padding",
+       "kind": "section",
+       "comp": "interactive",
+       "lots": 29
+      },
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 23
+      },
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 21
+      },
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 19
+      },
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 13
+      },
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 12
+      }
+     ],
+     "warnings": [
+      "spa_shell"
+     ],
+     "ms": 5092,
+     "time": "night"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "jsoncrack",
+    "url": "https://jsoncrack.com/editor",
+    "group": "shell",
+    "what": "editor"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 56,
+     "depth": 13,
+     "text": 67,
+     "kb": 30,
+     "nodes": 30,
+     "links": 4,
+     "images": 0,
+     "headings": 0,
+     "controls": 12,
+     "regions": 3,
+     "kinds": {
+      "brand": 1,
+      "section": 2
+     },
+     "territories": 12,
+     "compositions": [
+      "parcelled",
+      "interactive",
+      "continuous",
+      "marker"
+     ],
+     "largestShare": 0.390625,
+     "structures": 82,
+     "parts": 12308,
+     "land": [
+      {
+       "name": "4 links",
+       "kind": "observed",
+       "comp": "parcelled",
+       "lots": 100
+      },
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "interactive",
+       "lots": 64
+      },
+      {
+       "name": "0 chars of text",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 12
+      },
+      {
+       "name": "4 chars of text · “File”",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 11
+      },
+      {
+       "name": "4 chars of text · “View”",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 11
+      },
+      {
+       "name": "0 chars of text",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 11
+      },
+      {
+       "name": "5 chars of text · “Tools”",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 10
+      },
+      {
+       "name": "JSON Crack",
+       "kind": "brand",
+       "comp": "marker",
+       "lots": 9
+      }
+     ],
+     "warnings": [
+      "spa_shell"
+     ],
+     "ms": 453,
+     "time": "day"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 713,
+     "depth": 20,
+     "text": 588,
+     "kb": 236,
+     "nodes": 100,
+     "links": 5,
+     "images": 2,
+     "headings": 0,
+     "controls": 21,
+     "regions": 6,
+     "kinds": {
+      "nav": 1,
+      "brand": 1,
+      "section": 4
+     },
+     "territories": 4,
+     "compositions": [
+      "continuous",
+      "interactive",
+      "navigation"
+     ],
+     "largestShare": 0.8125,
+     "structures": 32,
+     "parts": 15800,
+     "land": [
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 208
+      },
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "interactive",
+       "lots": 22
+      },
+      {
+       "name": "Navigation",
+       "kind": "nav",
+       "comp": "navigation",
+       "lots": 15
+      },
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 11
+      }
+     ],
+     "warnings": [],
+     "ms": 12519,
+     "time": "day"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "squoosh",
+    "url": "https://squoosh.app",
+    "group": "shell",
+    "what": "single-purpose tool"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 77,
+     "depth": 10,
+     "text": 392,
+     "kb": 73,
+     "nodes": 38,
+     "links": 2,
+     "images": 9,
+     "headings": 4,
+     "controls": 4,
+     "regions": 9,
+     "kinds": {
+      "hero": 1,
+      "brand": 1,
+      "section": 6,
+      "footer": 1
+     },
+     "territories": 14,
+     "compositions": [
+      "continuous",
+      "landmark",
+      "support"
+     ],
+     "largestShare": 0.1015625,
+     "structures": 61,
+     "parts": 14459,
+     "land": [
+      {
+       "name": "4 chars of text · “13KB”",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 26
+      },
+      {
+       "name": "5 chars of text · “2.8MB”",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 25
+      },
+      {
+       "name": "5 chars of text · “2.9MB”",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 25
+      },
+      {
+       "name": "5 chars of text · “1.6MB”",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 25
+      },
+      {
+       "name": "Secure",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 22
+      },
+      {
+       "name": "Small",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 21
+      },
+      {
+       "name": "Simple",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 21
+      },
+      {
+       "name": "Hero",
+       "kind": "hero",
+       "comp": "landmark",
+       "lots": 18
+      }
+     ],
+     "warnings": [
+      "spa_shell"
+     ],
+     "ms": 1735,
+     "time": "day"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 88,
+     "depth": 12,
+     "text": 431,
+     "kb": 103,
+     "nodes": 48,
+     "links": 2,
+     "images": 9,
+     "headings": 4,
+     "controls": 7,
+     "regions": 10,
+     "kinds": {
+      "section": 7,
+      "hero": 1,
+      "brand": 1,
+      "footer": 1
+     },
+     "territories": 10,
+     "compositions": [
+      "interactive",
+      "landmark",
+      "continuous",
+      "support"
+     ],
+     "largestShare": 0.421875,
+     "structures": 58,
+     "parts": 12073,
+     "land": [
+      {
+       "name": "Introduction",
+       "kind": "remainder",
+       "comp": "interactive",
+       "lots": 108
+      },
+      {
+       "name": "Hero",
+       "kind": "hero",
+       "comp": "landmark",
+       "lots": 41
+      },
+      {
+       "name": "Small",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 16
+      },
+      {
+       "name": "Simple",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 16
+      },
+      {
+       "name": "Secure",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 16
+      },
+      {
+       "name": "28 chars of text",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 16
+      },
+      {
+       "name": "Footer",
+       "kind": "footer",
+       "comp": "support",
+       "lots": 13
+      },
+      {
+       "name": "Small",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 10
+      }
+     ],
+     "warnings": [
+      "spa_shell"
+     ],
+     "ms": 3424,
+     "time": "day"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "carbon",
+    "url": "https://carbon.now.sh",
+    "group": "shell",
+    "what": "single-purpose tool"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 84,
+     "depth": 11,
+     "text": 290,
+     "kb": 76,
+     "nodes": 36,
+     "links": 7,
+     "images": 3,
+     "headings": 1,
+     "controls": 10,
+     "regions": 3,
+     "kinds": {
+      "main": 1,
+      "section": 1,
+      "nav": 1
+     },
+     "territories": 4,
+     "compositions": [
+      "interactive",
+      "navigation",
+      "continuous"
+     ],
+     "largestShare": 0.875,
+     "structures": 43,
+     "parts": 10096,
+     "land": [
+      {
+       "name": "Main content",
+       "kind": "remainder",
+       "comp": "interactive",
+       "lots": 224
+      },
+      {
+       "name": "Navigation",
+       "kind": "nav",
+       "comp": "navigation",
+       "lots": 17
+      },
+      {
+       "name": "Create and share beautiful images of you",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 13
+      },
+      {
+       "name": "3 images",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 2
+      }
+     ],
+     "warnings": [
+      "spa_shell"
+     ],
+     "ms": 322,
+     "time": "night"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 212,
+     "depth": 20,
+     "text": 653,
+     "kb": 83,
+     "nodes": 62,
+     "links": 10,
+     "images": 4,
+     "headings": 1,
+     "controls": 10,
+     "regions": 4,
+     "kinds": {
+      "main": 1,
+      "section": 2,
+      "footer": 1
+     },
+     "territories": 5,
+     "compositions": [
+      "continuous",
+      "interactive",
+      "support"
+     ],
+     "largestShare": 0.515625,
+     "structures": 44,
+     "parts": 11525,
+     "land": [
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 132
+      },
+      {
+       "name": "Main content",
+       "kind": "remainder",
+       "comp": "interactive",
+       "lots": 101
+      },
+      {
+       "name": "Footer",
+       "kind": "footer",
+       "comp": "support",
+       "lots": 13
+      },
+      {
+       "name": "Create and share beautiful images of you",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 6
+      },
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 4
+      }
+     ],
+     "warnings": [],
+     "ms": 3397,
+     "time": "night"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "ytmusic",
+    "url": "https://music.youtube.com",
+    "group": "shell",
+    "what": "media catalogue"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 6,
+     "depth": 3,
+     "text": 105,
+     "kb": 2,
+     "nodes": 5,
+     "links": 1,
+     "images": 1,
+     "headings": 0,
+     "controls": 0,
+     "regions": 1,
+     "kinds": {
+      "main": 1
+     },
+     "territories": 2,
+     "compositions": [
+      "continuous"
+     ],
+     "largestShare": 0.85546875,
+     "structures": 20,
+     "parts": 21446,
+     "land": [
+      {
+       "name": "Main",
+       "kind": "main",
+       "comp": "continuous",
+       "lots": 219
+      },
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 37
+      }
+     ],
+     "warnings": [
+      "spa_shell"
+     ],
+     "ms": 495,
+     "time": "night"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 6,
+     "depth": 3,
+     "text": 105,
+     "kb": 2,
+     "nodes": 5,
+     "links": 1,
+     "images": 1,
+     "headings": 0,
+     "controls": 0,
+     "regions": 1,
+     "kinds": {
+      "main": 1
+     },
+     "territories": 2,
+     "compositions": [
+      "continuous"
+     ],
+     "largestShare": 0.85546875,
+     "structures": 20,
+     "parts": 21446,
+     "land": [
+      {
+       "name": "Main",
+       "kind": "main",
+       "comp": "continuous",
+       "lots": 219
+      },
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 37
+      }
+     ],
+     "warnings": [
+      "spa_shell"
+     ],
+     "ms": 2540,
+     "time": "night"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "youtube",
+    "url": "https://www.youtube.com",
+    "group": "suspect",
+    "what": "media catalogue"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 311,
+     "depth": 8,
+     "text": 0,
+     "kb": 929,
+     "nodes": 1,
+     "links": 0,
+     "images": 0,
+     "headings": 0,
+     "controls": 0,
+     "regions": 0,
+     "kinds": {},
+     "territories": 0,
+     "compositions": [],
+     "largestShare": 0,
+     "structures": 0,
+     "parts": 5958,
+     "land": [],
+     "warnings": [],
+     "ms": 513,
+     "time": "day"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 558,
+     "depth": 20,
+     "text": 344,
+     "kb": 1177,
+     "nodes": 107,
+     "links": 14,
+     "images": 0,
+     "headings": 5,
+     "controls": 11,
+     "regions": 27,
+     "kinds": {
+      "main": 1,
+      "form": 2,
+      "hero": 1,
+      "section": 23
+     },
+     "territories": 19,
+     "compositions": [
+      "parcelled",
+      "continuous",
+      "interactive",
+      "landmark"
+     ],
+     "largestShare": 0.390625,
+     "structures": 85,
+     "parts": 13950,
+     "land": [
+      {
+       "name": "Explore",
+       "kind": "remainder",
+       "comp": "parcelled",
+       "lots": 100
+      },
+      {
+       "name": "Try searching to get started",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 20
+      },
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 10
+      },
+      {
+       "name": "Search",
+       "kind": "form",
+       "comp": "interactive",
+       "lots": 9
+      },
+      {
+       "name": "Main content",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 9
+      },
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 9
+      },
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 9
+      },
+      {
+       "name": "Hero",
+       "kind": "hero",
+       "comp": "landmark",
+       "lots": 8
+      }
+     ],
+     "warnings": [],
+     "ms": 7641,
+     "time": "day"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "airbnb",
+    "url": "https://www.airbnb.com",
+    "group": "suspect",
+    "what": "listings"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 497,
+     "depth": 30,
+     "text": 732,
+     "kb": 912,
+     "nodes": 74,
+     "links": 15,
+     "images": 5,
+     "headings": 5,
+     "controls": 10,
+     "regions": 9,
+     "kinds": {
+      "section": 5,
+      "brand": 1,
+      "showcase": 1,
+      "nav": 1,
+      "main": 1
+     },
+     "territories": 8,
+     "compositions": [
+      "media",
+      "continuous",
+      "parcelled",
+      "interactive",
+      "marker"
+     ],
+     "largestShare": 0.203125,
+     "structures": 57,
+     "parts": 15465,
+     "land": [
+      {
+       "name": "Showcase",
+       "kind": "showcase",
+       "comp": "media",
+       "lots": 52
+      },
+      {
+       "name": "Homes on Airbnb",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 47
+      },
+      {
+       "name": "Homes on Airbnb",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 46
+      },
+      {
+       "name": "Homes on Airbnb",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 46
+      },
+      {
+       "name": "Airbnb homepage",
+       "kind": "remainder",
+       "comp": "parcelled",
+       "lots": 40
+      },
+      {
+       "name": "Help us improve your experience",
+       "kind": "section",
+       "comp": "interactive",
+       "lots": 12
+      },
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 10
+      },
+      {
+       "name": "Airbnb",
+       "kind": "brand",
+       "comp": "marker",
+       "lots": 3
+      }
+     ],
+     "warnings": [],
+     "ms": 1075,
+     "time": "day"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 2580,
+     "depth": 30,
+     "text": 7813,
+     "kb": 1184,
+     "nodes": 684,
+     "links": 190,
+     "images": 40,
+     "headings": 11,
+     "controls": 65,
+     "regions": 13,
+     "kinds": {
+      "brand": 1,
+      "showcase": 5,
+      "nav": 1,
+      "section": 4,
+      "main": 1,
+      "footer": 1
+     },
+     "territories": 8,
+     "compositions": [
+      "parcelled",
+      "media",
+      "support",
+      "interactive"
+     ],
+     "largestShare": 0.171875,
+     "structures": 70,
+     "parts": 10771,
+     "land": [
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "parcelled",
+       "lots": 44
+      },
+      {
+       "name": "Popular homes in Fortaleza",
+       "kind": "showcase",
+       "comp": "media",
+       "lots": 43
+      },
+      {
+       "name": "Available in Guaramiranga next weekend",
+       "kind": "showcase",
+       "comp": "media",
+       "lots": 43
+      },
+      {
+       "name": "Stay in Canoa Quebrada",
+       "kind": "showcase",
+       "comp": "media",
+       "lots": 42
+      },
+      {
+       "name": "Places to stay in Salvador",
+       "kind": "showcase",
+       "comp": "media",
+       "lots": 42
+      },
+      {
+       "name": "Footer",
+       "kind": "footer",
+       "comp": "support",
+       "lots": 25
+      },
+      {
+       "name": "Showcase",
+       "kind": "showcase",
+       "comp": "media",
+       "lots": 10
+      },
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "interactive",
+       "lots": 7
+      }
+     ],
+     "warnings": [],
+     "ms": 8219,
+     "time": "day"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "spotify",
+    "url": "https://open.spotify.com",
+    "group": "suspect",
+    "what": "media catalogue"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 726,
+     "depth": 15,
+     "text": 1754,
+     "kb": 304,
+     "nodes": 448,
+     "links": 92,
+     "images": 88,
+     "headings": 5,
+     "controls": 1,
+     "regions": 6,
+     "kinds": {
+      "main": 1,
+      "showcase": 4,
+      "footer": 1
+     },
+     "territories": 6,
+     "compositions": [
+      "media",
+      "support",
+      "parcelled"
+     ],
+     "largestShare": 0.234375,
+     "structures": 46,
+     "parts": 10923,
+     "land": [
+      {
+       "name": "Trending songs",
+       "kind": "showcase",
+       "comp": "media",
+       "lots": 60
+      },
+      {
+       "name": "Popular artists",
+       "kind": "showcase",
+       "comp": "media",
+       "lots": 60
+      },
+      {
+       "name": "Popular albums and singles",
+       "kind": "showcase",
+       "comp": "media",
+       "lots": 60
+      },
+      {
+       "name": "Popular radio",
+       "kind": "showcase",
+       "comp": "media",
+       "lots": 59
+      },
+      {
+       "name": "Footer",
+       "kind": "footer",
+       "comp": "support",
+       "lots": 13
+      },
+      {
+       "name": "Main content",
+       "kind": "remainder",
+       "comp": "parcelled",
+       "lots": 4
+      }
+     ],
+     "warnings": [],
+     "ms": 377,
+     "time": "night"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 1082,
+     "depth": 17,
+     "text": 7996,
+     "kb": 501,
+     "nodes": 650,
+     "links": 127,
+     "images": 109,
+     "headings": 23,
+     "controls": 27,
+     "regions": 11,
+     "kinds": {
+      "main": 1,
+      "showcase": 1,
+      "cta": 2,
+      "footer": 1,
+      "section": 5,
+      "features": 1
+     },
+     "territories": 7,
+     "compositions": [
+      "media",
+      "interactive",
+      "continuous"
+     ],
+     "largestShare": 0.76953125,
+     "structures": 51,
+     "parts": 10605,
+     "land": [
+      {
+       "name": "Trending songs",
+       "kind": "showcase",
+       "comp": "media",
+       "lots": 197
+      },
+      {
+       "name": "Manage Consent Preferences",
+       "kind": "features",
+       "comp": "media",
+       "lots": 36
+      },
+      {
+       "name": "Cookie List",
+       "kind": "section",
+       "comp": "interactive",
+       "lots": 8
+      },
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "interactive",
+       "lots": 5
+      },
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 4
+      },
+      {
+       "name": "Privacy Preference Center",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 3
+      },
+      {
+       "name": "Privacy Preference Center",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 3
+      }
+     ],
+     "warnings": [],
+     "ms": 5193,
+     "time": "night"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "bundlephobia",
+    "url": "https://bundlephobia.com",
+    "group": "suspect",
+    "what": "single-purpose tool"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 82,
+     "depth": 12,
+     "text": 616,
+     "kb": 20,
+     "nodes": 42,
+     "links": 13,
+     "images": 0,
+     "headings": 3,
+     "controls": 7,
+     "regions": 8,
+     "kinds": {
+      "section": 4,
+      "hero": 1,
+      "nav": 1,
+      "form": 1,
+      "footer": 1
+     },
+     "territories": 7,
+     "compositions": [
+      "support",
+      "interactive",
+      "continuous",
+      "landmark",
+      "navigation"
+     ],
+     "largestShare": 0.1875,
+     "structures": 63,
+     "parts": 11545,
+     "land": [
+      {
+       "name": "Footer",
+       "kind": "footer",
+       "comp": "support",
+       "lots": 48
+      },
+      {
+       "name": "Main content",
+       "kind": "remainder",
+       "comp": "interactive",
+       "lots": 44
+      },
+      {
+       "name": "find the cost of adding a npm package to",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 44
+      },
+      {
+       "name": "Search",
+       "kind": "form",
+       "comp": "interactive",
+       "lots": 44
+      },
+      {
+       "name": "find the cost of adding a npm package to",
+       "kind": "hero",
+       "comp": "landmark",
+       "lots": 34
+      },
+      {
+       "name": "Navigation",
+       "kind": "nav",
+       "comp": "navigation",
+       "lots": 33
+      },
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 9
+      }
+     ],
+     "warnings": [],
+     "ms": 103,
+     "time": "day"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 102,
+     "depth": 12,
+     "text": 801,
+     "kb": 27,
+     "nodes": 55,
+     "links": 21,
+     "images": 1,
+     "headings": 3,
+     "controls": 7,
+     "regions": 8,
+     "kinds": {
+      "section": 3,
+      "hero": 1,
+      "nav": 1,
+      "form": 1,
+      "sidebar": 1,
+      "footer": 1
+     },
+     "territories": 8,
+     "compositions": [
+      "parcelled",
+      "support",
+      "interactive",
+      "continuous",
+      "navigation",
+      "landmark"
+     ],
+     "largestShare": 0.19140625,
+     "structures": 86,
+     "parts": 11813,
+     "land": [
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "parcelled",
+       "lots": 49
+      },
+      {
+       "name": "Footer",
+       "kind": "footer",
+       "comp": "support",
+       "lots": 34
+      },
+      {
+       "name": "Main content",
+       "kind": "remainder",
+       "comp": "interactive",
+       "lots": 31
+      },
+      {
+       "name": "Search",
+       "kind": "form",
+       "comp": "interactive",
+       "lots": 31
+      },
+      {
+       "name": "Sidebar",
+       "kind": "sidebar",
+       "comp": "parcelled",
+       "lots": 30
+      },
+      {
+       "name": "find the cost of adding a npm package to",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 29
+      },
+      {
+       "name": "Navigation",
+       "kind": "nav",
+       "comp": "navigation",
+       "lots": 28
+      },
+      {
+       "name": "find the cost of adding a npm package to",
+       "kind": "hero",
+       "comp": "landmark",
+       "lots": 24
+      }
+     ],
+     "warnings": [],
+     "ms": 4638,
+     "time": "day"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "caniuse",
+    "url": "https://caniuse.com",
+    "group": "suspect",
+    "what": "reference tables"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 187,
+     "depth": 9,
+     "text": 2568,
+     "kb": 19,
+     "nodes": 111,
+     "links": 46,
+     "images": 2,
+     "headings": 12,
+     "controls": 2,
+     "regions": 19,
+     "kinds": {
+      "main": 1,
+      "hero": 1,
+      "nav": 1,
+      "section": 14,
+      "form": 1,
+      "footer": 1
+     },
+     "territories": 13,
+     "compositions": [
+      "landmark",
+      "continuous",
+      "parcelled",
+      "support"
+     ],
+     "largestShare": 0.14453125,
+     "structures": 66,
+     "parts": 14937,
+     "land": [
+      {
+       "name": "Hero",
+       "kind": "hero",
+       "comp": "landmark",
+       "lots": 37
+      },
+      {
+       "name": "Did you know?",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 31
+      },
+      {
+       "name": "Test a feature",
+       "kind": "section",
+       "comp": "parcelled",
+       "lots": 23
+      },
+      {
+       "name": "Third party tools",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 23
+      },
+      {
+       "name": "Can I use...",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 23
+      },
+      {
+       "name": "Latest features",
+       "kind": "section",
+       "comp": "parcelled",
+       "lots": 20
+      },
+      {
+       "name": "Most searched features",
+       "kind": "section",
+       "comp": "parcelled",
+       "lots": 19
+      },
+      {
+       "name": "Legend",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 19
+      }
+     ],
+     "warnings": [],
+     "ms": 1064,
+     "time": "night"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 223,
+     "depth": 9,
+     "text": 2807,
+     "kb": 142,
+     "nodes": 126,
+     "links": 48,
+     "images": 2,
+     "headings": 12,
+     "controls": 6,
+     "regions": 20,
+     "kinds": {
+      "main": 1,
+      "hero": 1,
+      "nav": 1,
+      "section": 14,
+      "form": 1,
+      "sidebar": 1,
+      "footer": 1
+     },
+     "territories": 15,
+     "compositions": [
+      "landmark",
+      "continuous",
+      "interactive",
+      "parcelled",
+      "support"
+     ],
+     "largestShare": 0.12109375,
+     "structures": 68,
+     "parts": 15380,
+     "land": [
+      {
+       "name": "Hero",
+       "kind": "hero",
+       "comp": "landmark",
+       "lots": 31
+      },
+      {
+       "name": "Did you know?",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 25
+      },
+      {
+       "name": "Sidebar",
+       "kind": "sidebar",
+       "comp": "continuous",
+       "lots": 25
+      },
+      {
+       "name": "Browser scores",
+       "kind": "section",
+       "comp": "interactive",
+       "lots": 22
+      },
+      {
+       "name": "Legend",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 21
+      },
+      {
+       "name": "Test a feature",
+       "kind": "section",
+       "comp": "parcelled",
+       "lots": 18
+      },
+      {
+       "name": "Third party tools",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 18
+      },
+      {
+       "name": "Can I use...",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 18
+      }
+     ],
+     "warnings": [],
+     "ms": 6271,
+     "time": "night"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "regex101",
+    "url": "https://regex101.com",
+    "group": "suspect",
+    "what": "editor"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 415,
+     "depth": 17,
+     "text": 1618,
+     "kb": 64,
+     "nodes": 116,
+     "links": 7,
+     "images": 0,
+     "headings": 8,
+     "controls": 53,
+     "regions": 15,
+     "kinds": {
+      "section": 13,
+      "hero": 1,
+      "nav": 1
+     },
+     "territories": 11,
+     "compositions": [
+      "interactive",
+      "navigation",
+      "continuous",
+      "landmark"
+     ],
+     "largestShare": 0.35546875,
+     "structures": 64,
+     "parts": 9966,
+     "land": [
+      {
+       "name": "Quick Reference",
+       "kind": "remainder",
+       "comp": "interactive",
+       "lots": 91
+      },
+      {
+       "name": "Navigation",
+       "kind": "nav",
+       "comp": "navigation",
+       "lots": 54
+      },
+      {
+       "name": "19 chars of text · “Loading regex101”",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 31
+      },
+      {
+       "name": "Regular Expression",
+       "kind": "remainder",
+       "comp": "interactive",
+       "lots": 19
+      },
+      {
+       "name": "Regular Expressions 101",
+       "kind": "hero",
+       "comp": "landmark",
+       "lots": 17
+      },
+      {
+       "name": "ExplanationPro",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 11
+      },
+      {
+       "name": "Regular Expression",
+       "kind": "section",
+       "comp": "interactive",
+       "lots": 11
+      },
+      {
+       "name": "ExplanationPro",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 7
+      }
+     ],
+     "warnings": [],
+     "ms": 632,
+     "time": "night"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 409,
+     "depth": 25,
+     "text": 1928,
+     "kb": 76,
+     "nodes": 138,
+     "links": 9,
+     "images": 3,
+     "headings": 9,
+     "controls": 56,
+     "regions": 21,
+     "kinds": {
+      "section": 17,
+      "hero": 1,
+      "nav": 1,
+      "pricing": 1,
+      "main": 1
+     },
+     "territories": 15,
+     "compositions": [
+      "interactive",
+      "navigation",
+      "landmark",
+      "continuous",
+      "grid"
+     ],
+     "largestShare": 0.328125,
+     "structures": 71,
+     "parts": 10615,
+     "land": [
+      {
+       "name": "Quick Reference",
+       "kind": "remainder",
+       "comp": "interactive",
+       "lots": 84
+      },
+      {
+       "name": "Main content",
+       "kind": "remainder",
+       "comp": "interactive",
+       "lots": 29
+      },
+      {
+       "name": "Tools",
+       "kind": "section",
+       "comp": "interactive",
+       "lots": 25
+      },
+      {
+       "name": "Navigation",
+       "kind": "nav",
+       "comp": "navigation",
+       "lots": 19
+      },
+      {
+       "name": "Regular Expressions 101",
+       "kind": "hero",
+       "comp": "landmark",
+       "lots": 16
+      },
+      {
+       "name": "Regular Expression",
+       "kind": "section",
+       "comp": "interactive",
+       "lots": 15
+      },
+      {
+       "name": "Manage Workspace",
+       "kind": "remainder",
+       "comp": "interactive",
+       "lots": 12
+      },
+      {
+       "name": "ExplanationPro",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 11
+      }
+     ],
+     "warnings": [],
+     "ms": 4646,
+     "time": "night"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "stackblitz",
+    "url": "https://stackblitz.com",
+    "group": "suspect",
+    "what": "product landing"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 226,
+     "depth": 10,
+     "text": 1704,
+     "kb": 35,
+     "nodes": 99,
+     "links": 25,
+     "images": 13,
+     "headings": 6,
+     "controls": 1,
+     "regions": 13,
+     "kinds": {
+      "nav": 1,
+      "brand": 1,
+      "hero": 1,
+      "cta": 1,
+      "logos": 1,
+      "testimonials": 1,
+      "section": 6,
+      "footer": 1
+     },
+     "territories": 11,
+     "compositions": [
+      "structured",
+      "support",
+      "landmark",
+      "media",
+      "navigation",
+      "continuous"
+     ],
+     "largestShare": 0.20703125,
+     "structures": 70,
+     "parts": 12648,
+     "land": [
+      {
+       "name": "What about online IDEs?",
+       "kind": "remainder",
+       "comp": "structured",
+       "lots": 53
+      },
+      {
+       "name": "Footer",
+       "kind": "footer",
+       "comp": "support",
+       "lots": 52
+      },
+      {
+       "name": "How product& engineering teams work toge",
+       "kind": "hero",
+       "comp": "landmark",
+       "lots": 37
+      },
+      {
+       "name": "Loved by frontend and product teams at t",
+       "kind": "logos",
+       "comp": "media",
+       "lots": 25
+      },
+      {
+       "name": "Navigation",
+       "kind": "nav",
+       "comp": "navigation",
+       "lots": 18
+      },
+      {
+       "name": "Testimonials",
+       "kind": "testimonials",
+       "comp": "continuous",
+       "lots": 18
+      },
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 17
+      },
+      {
+       "name": "What about online IDEs?",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 13
+      }
+     ],
+     "warnings": [],
+     "ms": 858,
+     "time": "night"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 228,
+     "depth": 10,
+     "text": 1711,
+     "kb": 37,
+     "nodes": 100,
+     "links": 26,
+     "images": 13,
+     "headings": 6,
+     "controls": 1,
+     "regions": 13,
+     "kinds": {
+      "nav": 1,
+      "brand": 1,
+      "hero": 1,
+      "cta": 1,
+      "logos": 1,
+      "testimonials": 1,
+      "section": 6,
+      "footer": 1
+     },
+     "territories": 11,
+     "compositions": [
+      "structured",
+      "support",
+      "landmark",
+      "media",
+      "navigation",
+      "continuous"
+     ],
+     "largestShare": 0.20703125,
+     "structures": 71,
+     "parts": 12595,
+     "land": [
+      {
+       "name": "What about online IDEs?",
+       "kind": "remainder",
+       "comp": "structured",
+       "lots": 53
+      },
+      {
+       "name": "Footer",
+       "kind": "footer",
+       "comp": "support",
+       "lots": 51
+      },
+      {
+       "name": "How product& engineering teams work toge",
+       "kind": "hero",
+       "comp": "landmark",
+       "lots": 37
+      },
+      {
+       "name": "Loved by frontend and product teams at t",
+       "kind": "logos",
+       "comp": "media",
+       "lots": 25
+      },
+      {
+       "name": "Navigation",
+       "kind": "nav",
+       "comp": "navigation",
+       "lots": 19
+      },
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 18
+      },
+      {
+       "name": "Testimonials",
+       "kind": "testimonials",
+       "comp": "continuous",
+       "lots": 17
+      },
+      {
+       "name": "What about online IDEs?",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 13
+      }
+     ],
+     "warnings": [],
+     "ms": 6507,
+     "time": "night"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "notion-help",
+    "url": "https://www.notion.com/help",
+    "group": "suspect",
+    "what": "help centre"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 676,
+     "depth": 18,
+     "text": 2981,
+     "kb": 168,
+     "nodes": 355,
+     "links": 121,
+     "images": 12,
+     "headings": 9,
+     "controls": 22,
+     "regions": 13,
+     "kinds": {
+      "section": 7,
+      "nav": 1,
+      "brand": 1,
+      "main": 1,
+      "sidebar": 1,
+      "showcase": 1,
+      "footer": 1
+     },
+     "territories": 5,
+     "compositions": [
+      "parcelled",
+      "media",
+      "support",
+      "navigation",
+      "continuous"
+     ],
+     "largestShare": 0.41015625,
+     "structures": 90,
+     "parts": 12766,
+     "land": [
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "parcelled",
+       "lots": 105
+      },
+      {
+       "name": "Hi, how can we help you?",
+       "kind": "showcase",
+       "comp": "media",
+       "lots": 70
+      },
+      {
+       "name": "Footer",
+       "kind": "footer",
+       "comp": "support",
+       "lots": 45
+      },
+      {
+       "name": "Navigation",
+       "kind": "nav",
+       "comp": "navigation",
+       "lots": 34
+      },
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 2
+      }
+     ],
+     "warnings": [],
+     "ms": 211,
+     "time": "day"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 682,
+     "depth": 18,
+     "text": 2973,
+     "kb": 179,
+     "nodes": 352,
+     "links": 121,
+     "images": 12,
+     "headings": 9,
+     "controls": 21,
+     "regions": 13,
+     "kinds": {
+      "section": 7,
+      "nav": 1,
+      "brand": 1,
+      "main": 1,
+      "sidebar": 1,
+      "showcase": 1,
+      "footer": 1
+     },
+     "territories": 5,
+     "compositions": [
+      "parcelled",
+      "media",
+      "support",
+      "navigation",
+      "continuous"
+     ],
+     "largestShare": 0.39453125,
+     "structures": 91,
+     "parts": 12959,
+     "land": [
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "parcelled",
+       "lots": 101
+      },
+      {
+       "name": "Hi, how can we help you?",
+       "kind": "showcase",
+       "comp": "media",
+       "lots": 73
+      },
+      {
+       "name": "Footer",
+       "kind": "footer",
+       "comp": "support",
+       "lots": 45
+      },
+      {
+       "name": "Navigation",
+       "kind": "nav",
+       "comp": "navigation",
+       "lots": 34
+      },
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 3
+      }
+     ],
+     "warnings": [],
+     "ms": 10712,
+     "time": "day"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "wikipedia",
+    "url": "https://en.wikipedia.org/wiki/City",
+    "group": "control",
+    "what": "reference article"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 10966,
+     "depth": 35,
+     "text": 171520,
+     "kb": 1315,
+     "nodes": 812,
+     "links": 3774,
+     "images": 73,
+     "headings": 50,
+     "controls": 32,
+     "regions": 14,
+     "kinds": {
+      "nav": 1,
+      "brand": 1,
+      "toc": 1,
+      "main": 1,
+      "hero": 1,
+      "showcase": 1,
+      "features": 2,
+      "section": 4,
+      "sidebar": 1,
+      "footer": 1
+     },
+     "territories": 14,
+     "compositions": [
+      "continuous",
+      "landmark",
+      "parcelled",
+      "archive",
+      "media",
+      "navigation",
+      "support"
+     ],
+     "largestShare": 0.671875,
+     "structures": 57,
+     "parts": 21075,
+     "land": [
+      {
+       "name": "Meaning",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 172
+      },
+      {
+       "name": "City",
+       "kind": "hero",
+       "comp": "landmark",
+       "lots": 15
+      },
+      {
+       "name": "History",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 11
+      },
+      {
+       "name": "Society",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 11
+      },
+      {
+       "name": "Sidebar",
+       "kind": "sidebar",
+       "comp": "parcelled",
+       "lots": 9
+      },
+      {
+       "name": "Contents",
+       "kind": "toc",
+       "comp": "archive",
+       "lots": 7
+      },
+      {
+       "name": "Ancient times",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 7
+      },
+      {
+       "name": "Government",
+       "kind": "features",
+       "comp": "continuous",
+       "lots": 7
+      }
+     ],
+     "warnings": [],
+     "ms": 436,
+     "time": "day"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 9440,
+     "depth": 22,
+     "text": 162600,
+     "kb": 1603,
+     "nodes": 754,
+     "links": 3129,
+     "images": 70,
+     "headings": 50,
+     "controls": 45,
+     "regions": 15,
+     "kinds": {
+      "nav": 1,
+      "brand": 1,
+      "toc": 1,
+      "main": 1,
+      "hero": 1,
+      "form": 2,
+      "showcase": 1,
+      "features": 2,
+      "section": 4,
+      "footer": 1
+     },
+     "territories": 14,
+     "compositions": [
+      "continuous",
+      "landmark",
+      "archive",
+      "parcelled",
+      "navigation",
+      "media",
+      "interactive",
+      "support"
+     ],
+     "largestShare": 0.64453125,
+     "structures": 55,
+     "parts": 20421,
+     "land": [
+      {
+       "name": "Meaning",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 165
+      },
+      {
+       "name": "City",
+       "kind": "hero",
+       "comp": "landmark",
+       "lots": 18
+      },
+      {
+       "name": "History",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 13
+      },
+      {
+       "name": "Society",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 13
+      },
+      {
+       "name": "Government",
+       "kind": "features",
+       "comp": "continuous",
+       "lots": 9
+      },
+      {
+       "name": "Contents",
+       "kind": "toc",
+       "comp": "archive",
+       "lots": 8
+      },
+      {
+       "name": "Geography",
+       "kind": "features",
+       "comp": "continuous",
+       "lots": 7
+      },
+      {
+       "name": "Ancient times",
+       "kind": "section",
+       "comp": "continuous",
+       "lots": 7
+      }
+     ],
+     "warnings": [],
+     "ms": 3471,
+     "time": "night"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "hn",
+    "url": "https://news.ycombinator.com",
+    "group": "control",
+    "what": "link list"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 801,
+     "depth": 13,
+     "text": 3478,
+     "kb": 33,
+     "nodes": 195,
+     "links": 227,
+     "images": 3,
+     "headings": 0,
+     "controls": 1,
+     "regions": 5,
+     "kinds": {
+      "nav": 1,
+      "brand": 1,
+      "feed": 1,
+      "footer": 1,
+      "form": 1
+     },
+     "territories": 4,
+     "compositions": [
+      "parcelled",
+      "support",
+      "navigation",
+      "structured"
+     ],
+     "largestShare": 0.9453125,
+     "structures": 129,
+     "parts": 17846,
+     "land": [
+      {
+       "name": "Feed",
+       "kind": "feed",
+       "comp": "parcelled",
+       "lots": 242
+      },
+      {
+       "name": "Footer",
+       "kind": "footer",
+       "comp": "support",
+       "lots": 7
+      },
+      {
+       "name": "Navigation",
+       "kind": "nav",
+       "comp": "navigation",
+       "lots": 6
+      },
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "structured",
+       "lots": 1
+      }
+     ],
+     "warnings": [],
+     "ms": 506,
+     "time": "golden"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 801,
+     "depth": 13,
+     "text": 3478,
+     "kb": 33,
+     "nodes": 195,
+     "links": 227,
+     "images": 3,
+     "headings": 0,
+     "controls": 1,
+     "regions": 5,
+     "kinds": {
+      "nav": 1,
+      "brand": 1,
+      "feed": 1,
+      "footer": 1,
+      "form": 1
+     },
+     "territories": 4,
+     "compositions": [
+      "parcelled",
+      "support",
+      "navigation",
+      "structured"
+     ],
+     "largestShare": 0.9453125,
+     "structures": 129,
+     "parts": 17846,
+     "land": [
+      {
+       "name": "Feed",
+       "kind": "feed",
+       "comp": "parcelled",
+       "lots": 242
+      },
+      {
+       "name": "Footer",
+       "kind": "footer",
+       "comp": "support",
+       "lots": 7
+      },
+      {
+       "name": "Navigation",
+       "kind": "nav",
+       "comp": "navigation",
+       "lots": 6
+      },
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "structured",
+       "lots": 1
+      }
+     ],
+     "warnings": [],
+     "ms": 2347,
+     "time": "golden"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "mdn",
+    "url": "https://developer.mozilla.org/en-US/docs/Web/HTML",
+    "group": "control",
+    "what": "documentation"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 1486,
+     "depth": 15,
+     "text": 11384,
+     "kb": 182,
+     "nodes": 511,
+     "links": 455,
+     "images": 32,
+     "headings": 10,
+     "controls": 9,
+     "regions": 7,
+     "kinds": {
+      "nav": 1,
+      "brand": 1,
+      "faq": 1,
+      "main": 1,
+      "hero": 1,
+      "toc": 1,
+      "footer": 1
+     },
+     "territories": 4,
+     "compositions": [
+      "parcelled",
+      "navigation",
+      "support"
+     ],
+     "largestShare": 0.76953125,
+     "structures": 117,
+     "parts": 9234,
+     "land": [
+      {
+       "name": "HTML: HyperText Markup Language",
+       "kind": "faq",
+       "comp": "parcelled",
+       "lots": 197
+      },
+      {
+       "name": "Navigation",
+       "kind": "nav",
+       "comp": "navigation",
+       "lots": 44
+      },
+      {
+       "name": "Footer",
+       "kind": "footer",
+       "comp": "support",
+       "lots": 11
+      },
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "parcelled",
+       "lots": 4
+      }
+     ],
+     "warnings": [],
+     "ms": 93,
+     "time": "night"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 1486,
+     "depth": 15,
+     "text": 11384,
+     "kb": 101,
+     "nodes": 511,
+     "links": 455,
+     "images": 32,
+     "headings": 10,
+     "controls": 9,
+     "regions": 7,
+     "kinds": {
+      "nav": 1,
+      "brand": 1,
+      "faq": 1,
+      "main": 1,
+      "hero": 1,
+      "toc": 1,
+      "footer": 1
+     },
+     "territories": 4,
+     "compositions": [
+      "parcelled",
+      "navigation",
+      "support"
+     ],
+     "largestShare": 0.76953125,
+     "structures": 117,
+     "parts": 9234,
+     "land": [
+      {
+       "name": "HTML: HyperText Markup Language",
+       "kind": "faq",
+       "comp": "parcelled",
+       "lots": 197
+      },
+      {
+       "name": "Navigation",
+       "kind": "nav",
+       "comp": "navigation",
+       "lots": 44
+      },
+      {
+       "name": "Footer",
+       "kind": "footer",
+       "comp": "support",
+       "lots": 11
+      },
+      {
+       "name": "Rest of the page",
+       "kind": "remainder",
+       "comp": "parcelled",
+       "lots": 4
+      }
+     ],
+     "warnings": [],
+     "ms": 3170,
+     "time": "night"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "github-repo",
+    "url": "https://github.com/vercel/next.js",
+    "group": "control",
+    "what": "repository page"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 2360,
+     "depth": 34,
+     "text": 6126,
+     "kb": 426,
+     "nodes": 461,
+     "links": 303,
+     "images": 16,
+     "headings": 37,
+     "controls": 20,
+     "regions": 30,
+     "kinds": {
+      "section": 21,
+      "brand": 1,
+      "main": 1,
+      "nav": 1,
+      "features": 2,
+      "directory": 1,
+      "toc": 1,
+      "showcase": 1,
+      "footer": 1
+     },
+     "territories": 21,
+     "compositions": [
+      "archive",
+      "parcelled",
+      "continuous",
+      "navigation",
+      "media",
+      "support",
+      "marker"
+     ],
+     "largestShare": 0.58984375,
+     "structures": 88,
+     "parts": 8657,
+     "land": [
+      {
+       "name": "Links",
+       "kind": "directory",
+       "comp": "archive",
+       "lots": 151
+      },
+      {
+       "name": "Main content",
+       "kind": "remainder",
+       "comp": "parcelled",
+       "lots": 11
+      },
+      {
+       "name": "About",
+       "kind": "remainder",
+       "comp": "parcelled",
+       "lots": 10
+      },
+      {
+       "name": "Main content",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 9
+      },
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "parcelled",
+       "lots": 9
+      },
+      {
+       "name": "About",
+       "kind": "remainder",
+       "comp": "parcelled",
+       "lots": 8
+      },
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "parcelled",
+       "lots": 7
+      },
+      {
+       "name": "Next.js",
+       "kind": "remainder",
+       "comp": "continuous",
+       "lots": 7
+      }
+     ],
+     "warnings": [],
+     "ms": 784,
+     "time": "day"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 2772,
+     "depth": 34,
+     "text": 10680,
+     "kb": 643,
+     "nodes": 629,
+     "links": 531,
+     "images": 36,
+     "headings": 37,
+     "controls": 22,
+     "regions": 27,
+     "kinds": {
+      "section": 18,
+      "brand": 1,
+      "main": 1,
+      "nav": 1,
+      "features": 1,
+      "directory": 1,
+      "toc": 1,
+      "showcase": 2,
+      "footer": 1
+     },
+     "territories": 20,
+     "compositions": [
+      "archive",
+      "media",
+      "parcelled",
+      "structured",
+      "continuous",
+      "navigation",
+      "support",
+      "marker"
+     ],
+     "largestShare": 0.58203125,
+     "structures": 80,
+     "parts": 8749,
+     "land": [
+      {
+       "name": "Links",
+       "kind": "directory",
+       "comp": "archive",
+       "lots": 149
+      },
+      {
+       "name": "About",
+       "kind": "showcase",
+       "comp": "media",
+       "lots": 24
+      },
+      {
+       "name": "Main content",
+       "kind": "remainder",
+       "comp": "parcelled",
+       "lots": 11
+      },
+      {
+       "name": "Main content",
+       "kind": "remainder",
+       "comp": "parcelled",
+       "lots": 9
+      },
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "parcelled",
+       "lots": 7
+      },
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "parcelled",
+       "lots": 6
+      },
+      {
+       "name": "Next.js",
+       "kind": "remainder",
+       "comp": "parcelled",
+       "lots": 6
+      },
+      {
+       "name": "About",
+       "kind": "remainder",
+       "comp": "parcelled",
+       "lots": 6
+      }
+     ],
+     "warnings": [],
+     "ms": 5688,
+     "time": "day"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "godbolt",
+    "url": "https://godbolt.org",
+    "group": "control",
+    "what": "editor"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 1578,
+     "depth": 14,
+     "text": 6574,
+     "kb": 116,
+     "nodes": 816,
+     "links": 32,
+     "images": 4,
+     "headings": 29,
+     "controls": 258,
+     "regions": 9,
+     "kinds": {
+      "brand": 1,
+      "nav": 1,
+      "section": 5,
+      "toc": 1,
+      "footer": 1
+     },
+     "territories": 28,
+     "compositions": [
+      "interactive",
+      "navigation",
+      "continuous",
+      "archive",
+      "support"
+     ],
+     "largestShare": 0.12890625,
+     "structures": 96,
+     "parts": 9749,
+     "land": [
+      {
+       "name": "660 chars of text",
+       "kind": "observed",
+       "comp": "interactive",
+       "lots": 33
+      },
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "interactive",
+       "lots": 27
+      },
+      {
+       "name": "191 chars of text",
+       "kind": "observed",
+       "comp": "interactive",
+       "lots": 17
+      },
+      {
+       "name": "15 links",
+       "kind": "observed",
+       "comp": "interactive",
+       "lots": 15
+      },
+      {
+       "name": "926 chars of text (2 blocks)",
+       "kind": "observed",
+       "comp": "interactive",
+       "lots": 13
+      },
+      {
+       "name": "211 chars of text",
+       "kind": "observed",
+       "comp": "interactive",
+       "lots": 12
+      },
+      {
+       "name": "63 chars of text (3 blocks)",
+       "kind": "observed",
+       "comp": "interactive",
+       "lots": 11
+      },
+      {
+       "name": "111 chars of text",
+       "kind": "observed",
+       "comp": "interactive",
+       "lots": 10
+      }
+     ],
+     "warnings": [],
+     "ms": 700,
+     "time": "day"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 2212,
+     "depth": 16,
+     "text": 15607,
+     "kb": 316,
+     "nodes": 1098,
+     "links": 49,
+     "images": 12,
+     "headings": 43,
+     "controls": 363,
+     "regions": 10,
+     "kinds": {
+      "brand": 1,
+      "nav": 1,
+      "section": 6,
+      "toc": 1,
+      "footer": 1
+     },
+     "territories": 28,
+     "compositions": [
+      "interactive",
+      "media",
+      "continuous",
+      "navigation",
+      "archive",
+      "support"
+     ],
+     "largestShare": 0.109375,
+     "structures": 111,
+     "parts": 10422,
+     "land": [
+      {
+       "name": "730 chars of text",
+       "kind": "observed",
+       "comp": "interactive",
+       "lots": 28
+      },
+      {
+       "name": "660 chars of text",
+       "kind": "observed",
+       "comp": "interactive",
+       "lots": 23
+      },
+      {
+       "name": "Section",
+       "kind": "section",
+       "comp": "interactive",
+       "lots": 19
+      },
+      {
+       "name": "3 images",
+       "kind": "observed",
+       "comp": "media",
+       "lots": 18
+      },
+      {
+       "name": "267 chars of text (3 blocks)",
+       "kind": "observed",
+       "comp": "interactive",
+       "lots": 13
+      },
+      {
+       "name": "191 chars of text",
+       "kind": "observed",
+       "comp": "interactive",
+       "lots": 13
+      },
+      {
+       "name": "103 chars of text",
+       "kind": "observed",
+       "comp": "continuous",
+       "lots": 11
+      },
+      {
+       "name": "203 chars of text (3 blocks)",
+       "kind": "observed",
+       "comp": "interactive",
+       "lots": 11
+      }
+     ],
+     "warnings": [],
+     "ms": 10668,
+     "time": "day"
+    }
+   }
+  },
+  {
+   "entry": {
+    "id": "guardian",
+    "url": "https://www.theguardian.com/international",
+    "group": "control",
+    "what": "news front"
+   },
+   "static": {
+    "ok": true,
+    "m": {
+     "elements": 3843,
+     "depth": 17,
+     "text": 18974,
+     "kb": 1415,
+     "nodes": 1391,
+     "links": 343,
+     "images": 108,
+     "headings": 196,
+     "controls": 41,
+     "regions": 40,
+     "kinds": {
+      "showcase": 17,
+      "nav": 1,
+      "hero": 1,
+      "form": 2,
+      "main": 1,
+      "section": 10,
+      "features": 5,
+      "pricing": 1,
+      "faq": 1,
+      "footer": 1
+     },
+     "territories": 33,
+     "compositions": [
+      "media",
+      "navigation",
+      "continuous",
+      "parcelled",
+      "grid",
+      "support"
+     ],
+     "largestShare": 0.140625,
+     "structures": 116,
+     "parts": 14343,
+     "land": [
+      {
+       "name": "The Sunday read",
+       "kind": "remainder",
+       "comp": "media",
+       "lots": 36
+      },
+      {
+       "name": "Navigation",
+       "kind": "nav",
+       "comp": "navigation",
+       "lots": 19
+      },
+      {
+       "name": "News",
+       "kind": "section",
+       "comp": "media",
+       "lots": 17
+      },
+      {
+       "name": "More features",
+       "kind": "showcase",
+       "comp": "media",
+       "lots": 12
+      },
+      {
+       "name": "More top stories",
+       "kind": "section",
+       "comp": "media",
+       "lots": 8
+      },
+      {
+       "name": "What to listen to",
+       "kind": "showcase",
+       "comp": "media",
+       "lots": 8
+      },
+      {
+       "name": "What to play",
+       "kind": "showcase",
+       "comp": "media",
+       "lots": 8
+      },
+      {
+       "name": "Climate crisis & environment",
+       "kind": "showcase",
+       "comp": "media",
+       "lots": 7
+      }
+     ],
+     "warnings": [],
+     "ms": 194,
+     "time": "day"
+    }
+   },
+   "rendered": {
+    "ok": true,
+    "m": {
+     "elements": 3852,
+     "depth": 17,
+     "text": 18963,
+     "kb": 1416,
+     "nodes": 1398,
+     "links": 343,
+     "images": 108,
+     "headings": 196,
+     "controls": 42,
+     "regions": 40,
+     "kinds": {
+      "showcase": 17,
+      "nav": 1,
+      "form": 2,
+      "main": 1,
+      "section": 10,
+      "features": 5,
+      "pricing": 1,
+      "hero": 1,
+      "faq": 1,
+      "footer": 1
+     },
+     "territories": 33,
+     "compositions": [
+      "media",
+      "navigation",
+      "continuous",
+      "support",
+      "parcelled",
+      "grid"
+     ],
+     "largestShare": 0.140625,
+     "structures": 119,
+     "parts": 14743,
+     "land": [
+      {
+       "name": "The Sunday read",
+       "kind": "remainder",
+       "comp": "media",
+       "lots": 36
+      },
+      {
+       "name": "Navigation",
+       "kind": "nav",
+       "comp": "navigation",
+       "lots": 18
+      },
+      {
+       "name": "News",
+       "kind": "section",
+       "comp": "media",
+       "lots": 17
+      },
+      {
+       "name": "More features",
+       "kind": "showcase",
+       "comp": "media",
+       "lots": 11
+      },
+      {
+       "name": "More top stories",
+       "kind": "section",
+       "comp": "media",
+       "lots": 8
+      },
+      {
+       "name": "What to watch",
+       "kind": "showcase",
+       "comp": "media",
+       "lots": 8
+      },
+      {
+       "name": "What to listen to",
+       "kind": "showcase",
+       "comp": "media",
+       "lots": 8
+      },
+      {
+       "name": "What to play",
+       "kind": "showcase",
+       "comp": "media",
+       "lots": 8
+      }
+     ],
+     "warnings": [],
+     "ms": 5848,
+     "time": "day"
+    }
+   }
+  }
+ ]
+}
