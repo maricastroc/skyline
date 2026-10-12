@@ -189,16 +189,36 @@ Picking é raycast contra os instanced meshes (instanceId → nodeId).
 ```ts
 acquire(url, { strategy: 'auto' | 'static' | 'rendered' })
   fetchStaticPage(url)        // implementado
-  captureRenderedPage(url)    // interface + detecção; implementação Playwright plugável
+  captureRenderedPage(url)    // navegador local (só desenvolvimento) ou renderer externo (SKYLINE_RENDERER_URL)
 ```
 
 `auto` = estático primeiro; se o resultado parece um *SPA shell* (`<div id="root"></div>`,
 pouquíssimo conteúdo, `noscript` pedindo JS), tenta a captura renderizada se houver
-renderer configurado; senão devolve a cidade estática com o aviso `spa_shell`, que a UI
-explica.
+renderer; senão devolve a cidade estática com o aviso `spa_shell`. O `PixelApp` mostra esse
+aviso junto dos números da cidade e no painel "Why this city?" (`snapshot/caveat.ts`), e
+`npm run test:warnings` falha se ele deixar de aparecer.
 
-A captura renderizada produz o **mesmo `DomSnapshot`**, com `box` e `position` computados.
-Nesse caso o layout pode usar as caixas reais da página em vez do treemap.
+A captura renderizada abre a página num Chromium, espera ela se montar e passa o HTML
+resultante pelo **mesmo `snapshotFromHtml()`** do estático, com as mesmas recusas (desafio
+anti-bot, login, 403). Hoje ela existe só na máquina de desenvolvimento
+(`SKYLINE_LOCAL_RENDERER=1`; nunca em build de produção nem na Vercel), porque o navegador
+faz conexões próprias que não passam pelo `safe-fetch`. O filtro de requisições aplica a
+política de URL a cada pedido da página, mas não fecha DNS rebinding nem WebSocket. O que
+falta para publicar está em `RENDERED_CAPTURE_PLAN.md`.
+
+Pedidos de imagem não saem da máquina: depois da política de URL, cada um é respondido da
+memória com um GIF de 1 pixel (`render-page.ts`), para que páginas que só escrevem o endereço
+da imagem depois do `onload` cheguem ao snapshot com suas imagens. Essas respostas têm teto
+próprio e não gastam o orçamento de 400 pedidos de rede. `SKYLINE_RENDER_IMAGES=abort` volta
+ao comportamento de recusar.
+
+O caminho do produto não liga nenhum experimento. `semantics/experiments.ts` registra três,
+acessíveis só pela visão de desenvolvimento (`/pixel/kit?exp=`): `reading` (leitura de listas
+validada em páginas não vistas), `forum` e `market` (tipologias experimentais; a primeira usa
+`kit/layout.ts` para conservar contagens). O histórico e as decisões estão em
+`MORPHOLOGY_CLOSING.md`.
+
+As caixas reais (`box`, `position`) continuam sem ser preenchidas: o layout segue no treemap.
 
 **Defesas (`safe-fetch.ts`):**
 
