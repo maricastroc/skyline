@@ -1,0 +1,92 @@
+
+today's rules
+page                   capture   images with an address · content images · lists pictured · land by fabric · by kind
+soundcloud      known  refused     rendered    1 ·    3 ·   0% · parcelled 70 + interactive 15  · section 67 + remainder 15
+                       from memory rendered   16 ·   18 ·   0% · media 63 + interactive 15      · showcase 63 + remainder 12
+twitch          known  refused     rendered   38 ·   19 ·  25% · media 89 + interactive 9       · showcase 89 + remainder 7
+                       from memory rendered   38 ·   19 ·  25% · media 90 + interactive 9       · showcase 90 + remainder 7
+spotify         known  refused     static     84 ·   84 · 100% · media 94 + support 5           · showcase 94 + footer 5
+                       from memory static     84 ·   84 · 100% · media 94 + support 5           · showcase 94 + footer 5
+pinterest       known  refused     rendered   25 ·   26 · 100% · media 60 + continuous 21       · showcase 60 + section 13
+                       from memory rendered   35 ·   37 · 100% · media 61 + continuous 21       · showcase 61 + section 13
+bsky            known  refused     rendered   60 ·   60 · 100% · media 96 + parcelled 2         · showcase 96 + remainder 3
+                       from memory rendered   69 ·   69 · 100% · media 96 + parcelled 2         · showcase 96 + remainder 4
+mastodon        known  refused     rendered    3 ·    4 ·   0% · parcelled 43 + continuous 36   · section 49 + remainder 33
+                       from memory rendered    6 ·    7 ·   0% · parcelled 43 + continuous 38   · section 49 + remainder 35
+youtube         known  refused     rendered    0 ·    0 ·   0% · continuous 55 + parcelled 30   · section 50 + remainder 43
+                       from memory rendered    0 ·    0 ·   0% · continuous 54 + parcelled 31   · section 50 + remainder 43
+airbnb          known  refused     rendered   40 ·   40 · 100% · media 71 + parcelled 17        · showcase 71 + section 17
+                       from memory rendered   32 ·   32 · 100% · media 65 + parcelled 20        · showcase 65 + section 20
+duolingo        known  refused     rendered    0 ·   53 ·   0% · media 56 + support 25          · showcase 50 + footer 25
+                       from memory rendered    0 ·   53 ·   0% · media 56 + support 25          · showcase 50 + footer 25
+bandcamp        known  refused     rendered   13 ·   42 ·   0% · media 86 + landmark 5          · showcase 86 + hero 5
+                       from memory rendered  153 ·  152 · 100% · media 88 + support 5           · showcase 88 + footer 5
+flickr          known  refused     rendered   47 ·   47 · 100% · media 80 + parcelled 9         · showcase 80 + remainder 9
+                       from memory rendered   47 ·   47 · 100% · media 80 + parcelled 9         · showcase 80 + remainder 9
+hn-algolia      known  refused     rendered    1 ·    2 ·   0% · grid 86 + interactive 8        · pricing 86 + remainder 9
+                       from memory rendered    1 ·    2 ·   0% · grid 86 + interactive 8        · pricing 86 + remainder 9
+audiomack       new    refused     static      0 ·    2 ·   0% · parcelled 52 + support 31      · remainder 52 + footer 31
+                       from memory static      0 ·    2 ·   0% · parcelled 52 + support 31      · remainder 52 + footer 31
+apple-music     new    refused     static    150 ·  180 · 100% · media 98 + navigation 1        · showcase 50 + remainder 48
+                       from memory static    150 ·  180 · 100% · media 98 + navigation 1        · showcase 50 + remainder 48
+apple-podcasts  new    refused     static    124 ·  152 · 100% · media 84 + interactive 8       · remainder 46 + showcase 33
+                       from memory static    124 ·  152 · 100% · media 84 + interactive 8       · remainder 46 + showcase 33
+vimeo           new    refused     rendered   22 ·   28 · 100% · media 70 + support 9           · gallery 70 + footer 9
+                       from memory rendered   34 ·   40 · 100% · media 71 + support 9           · gallery 71 + footer 9
+500px           new    refused     rendered    0 ·    3 ·   0% · interactive 56 + continuous 31 · section 56 + remainder 35
+                       from memory rendered   60 ·   53 ·  70% · structured 54 + media 36       · showcase 90 + nav 8
+giphy           new    refused     rendered   15 ·   24 · 100% · media 49 + landmark 26         · gallery 49 + hero 26
+                       from memory rendered   15 ·   25 · 100% · media 49 + landmark 26         · gallery 49 + hero 26
+imgur           new    refused     rendered   22 ·   22 · 100% · media 97 + navigation 3        · showcase 86 + remainder 10
+                       from memory rendered   23 ·   23 · 100% · media 96 + navigation 4        · showcase 84 + remainder 11
+deezer          new    refused     rendered   95 ·   95 · 100% · media 81 + interactive 11      · showcase 81 + remainder 14
+                       from memory rendered   95 ·   95 · 100% · media 81 + interactive 11      · showcase 81 + remainder 14
+letterboxd      new    refused     static      0 ·    0 ·   0% · parcelled 36 + archive 23      · section 41 + toc 23
+                       from memory static      0 ·    0 ·   0% · parcelled 36 + archive 23      · section 41 + toc 23
+
+round-1 reading
+page                   capture   images with an address · content images · lists pictured · land by fabric · by kind
+soundcloud      known  refused     rendered    1 ·    1 ·   0% · parcelled 77 + interactive 16  · section 77 + remainder 16
+                       from memory rendered   16 ·   16 ·   0% · media 78 + interactive 15      · showcase 78 + remainder 16
+twitch          known  refused     rendered   38 ·   19 ·  25% · media 89 + interactive 9       · showcase 89 + remainder 7
+                       from memory rendered   38 ·   19 ·  25% · media 90 + interactive 9       · showcase 90 + remainder 7
+spotify         known  refused     static     84 ·   84 · 100% · media 92 + support 5           · gallery 92 + footer 5
+                       from memory static     84 ·   84 · 100% · media 92 + support 5           · gallery 92 + footer 5
+pinterest       known  refused     rendered   25 ·   26 · 100% · media 57 + continuous 22       · gallery 57 + section 16
+                       from memory rendered   35 ·   37 · 100% · media 58 + continuous 22       · gallery 58 + section 15
+bsky            known  refused     rendered   60 ·   31 ·  75% · parcelled 57 + media 26        · feed 96 + remainder 4
+                       from memory rendered   69 ·   38 · 100% · continuous 42 + parcelled 29   · feed 96 + remainder 4
+mastodon        known  refused     rendered    3 ·    4 ·  10% · continuous 67 + parcelled 14   · feed 65 + section 10
+                       from memory rendered    6 ·    4 ·  10% · continuous 67 + parcelled 14   · feed 65 + section 10
+youtube         known  refused     rendered    0 ·    0 ·   0% · continuous 55 + parcelled 30   · section 50 + remainder 43
+                       from memory rendered    0 ·    0 ·   0% · continuous 54 + parcelled 31   · section 50 + remainder 43
+airbnb          known  refused     rendered   40 ·   40 · 100% · grid 63 + parcelled 17         · pricing 63 + section 17
+                       from memory rendered   32 ·   32 · 100% · grid 57 + parcelled 22         · pricing 57 + section 20
+duolingo        known  refused     rendered    0 ·   53 · 100% · media 55 + support 25          · gallery 49 + footer 25
+                       from memory rendered    0 ·   53 · 100% · media 55 + support 25          · gallery 49 + footer 25
+bandcamp        known  refused     rendered   13 ·   42 ·  25% · parcelled 84 + landmark 5      · feed 84 + remainder 5
+                       from memory rendered  153 ·  152 · 100% · media 86 + support 5           · gallery 86 + footer 5
+flickr          known  refused     rendered   47 ·   47 · 100% · media 78 + parcelled 10        · gallery 78 + remainder 10
+                       from memory rendered   47 ·   47 · 100% · media 78 + parcelled 10        · gallery 78 + remainder 10
+hn-algolia      known  refused     rendered    1 ·    2 ·   0% · parcelled 86 + interactive 8   · feed 86 + remainder 9
+                       from memory rendered    1 ·    2 ·   0% · parcelled 86 + interactive 8   · feed 86 + remainder 9
+audiomack       new    refused     static      0 ·    2 ·   0% · parcelled 52 + support 31      · remainder 52 + footer 31
+                       from memory static      0 ·    2 ·   0% · parcelled 52 + support 31      · remainder 52 + footer 31
+apple-music     new    refused     static    150 ·  180 · 100% · media 98 + navigation 1        · remainder 49 + gallery 26
+                       from memory static    150 ·  180 · 100% · media 98 + navigation 1        · remainder 49 + gallery 26
+apple-podcasts  new    refused     static    124 ·  152 · 100% · media 88 + parcelled 8         · remainder 47 + showcase 24
+                       from memory static    124 ·  152 · 100% · media 88 + parcelled 8         · remainder 47 + showcase 24
+vimeo           new    refused     rendered   22 ·   28 · 100% · media 70 + support 9           · gallery 70 + footer 9
+                       from memory rendered   34 ·   40 · 100% · media 71 + support 9           · gallery 71 + footer 9
+500px           new    refused     rendered    0 ·    3 ·  26% · parcelled 57 + continuous 34   · feed 57 + remainder 34
+                       from memory rendered   60 ·   53 · 100% · media 52 + parcelled 37        · feed 53 + showcase 36
+giphy           new    refused     rendered   15 ·   24 · 100% · media 52 + landmark 28         · gallery 52 + hero 28
+                       from memory rendered   15 ·   25 · 100% · media 53 + landmark 28         · gallery 53 + hero 28
+imgur           new    refused     rendered   22 ·   22 · 100% · media 97 + navigation 3        · showcase 86 + remainder 10
+                       from memory rendered   23 ·   23 · 100% · media 96 + navigation 4        · showcase 84 + remainder 11
+deezer          new    refused     rendered   95 ·   95 · 100% · media 81 + interactive 9       · gallery 81 + remainder 16
+                       from memory rendered   95 ·   95 · 100% · media 81 + interactive 9       · gallery 81 + remainder 16
+letterboxd      new    refused     static      0 ·    0 ·   0% · parcelled 36 + archive 23      · section 41 + toc 23
+                       from memory static      0 ·    0 ·   0% · parcelled 36 + archive 23      · section 41 + toc 23
+
+pages read in a browser: 16 · of which gain content images (more than half as many again): 3 · under the round-1 reading, pages whose two main fabrics change: 11

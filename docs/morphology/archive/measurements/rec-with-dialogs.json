@@ -1,0 +1,2919 @@
+{
+ "arm": "rec",
+ "experiments": [
+  "coverage",
+  "avatars",
+  "lists",
+  "transient",
+  "item-form"
+ ],
+ "rows": [
+  {
+   "id": "hn",
+   "family": "feed",
+   "what": "Hacker News front page",
+   "elements": 805,
+   "regions": 5,
+   "sections": 0,
+   "depth": 1,
+   "typed": [
+    {
+     "kind": "feed",
+     "share": 0.9349721838154442,
+     "title": "Feed",
+     "evidence": "30 repeated items with the same structure (“tr.athing”); each with ~66 characters and 3.0 links"
+    },
+    {
+     "kind": "footer",
+     "share": 0.030951629233666837,
+     "title": "",
+     "evidence": "9 short links at the very end of the page; sits at the end of the page (last 3%)"
+    }
+   ],
+   "territories": 4,
+   "dominant": 0.9453125,
+   "land": [
+    {
+     "label": "Feed",
+     "kind": "feed",
+     "comp": "parcelled",
+     "lots": 242
+    },
+    {
+     "label": "footer",
+     "kind": "footer",
+     "comp": "support",
+     "lots": 7
+    },
+    {
+     "label": "nav",
+     "kind": "nav",
+     "comp": "navigation",
+     "lots": 6
+    },
+    {
+     "label": "page",
+     "kind": "remainder",
+     "comp": "structured",
+     "lots": 1
+    }
+   ],
+   "comp": {
+    "parcelled": 0.9453125,
+    "navigation": 0.0234375,
+    "support": 0.02734375,
+    "structured": 0.00390625
+   },
+   "family_": {
+    "rows": 0.46511627906976744,
+    "corner": 0.4728682170542636,
+    "walkup": 0.05426356589147287,
+    "slab": 0.007751937984496124
+   },
+   "floors": {
+    "b3": 0.9457364341085271,
+    "b0": 0.05426356589147287
+   },
+   "open": 0.0078125,
+   "buildings": 129,
+   "q50": 5.718640428883955,
+   "q90": 6.09,
+   "max": 6.47,
+   "hero": 0,
+   "landmark": "none"
+  },
+  {
+   "id": "forum",
+   "family": "feed",
+   "what": "lobste.rs front page",
+   "elements": 787,
+   "regions": 6,
+   "sections": 0,
+   "depth": 1,
+   "typed": [
+    {
+     "kind": "feed",
+     "share": 0.9636912030224282,
+     "title": "I got targeted: Trying to get ",
+     "evidence": "25 repeated items with the same structure (“div.story_liner”); each with ~137 characters and 9.7 links"
+    }
+   ],
+   "territories": 4,
+   "dominant": 0.96484375,
+   "land": [
+    {
+     "label": "I got targeted: Trying to ge",
+     "kind": "feed",
+     "comp": "parcelled",
+     "lots": 247
+    },
+    {
+     "label": "Lobsters",
+     "kind": "hero",
+     "comp": "landmark",
+     "lots": 6
+    },
+    {
+     "label": "footer",
+     "kind": "footer",
+     "comp": "support",
+     "lots": 2
+    },
+    {
+     "label": "page",
+     "kind": "remainder",
+     "comp": "continuous",
+     "lots": 1
+    }
+   ],
+   "comp": {
+    "landmark": 0.0234375,
+    "parcelled": 0.96484375,
+    "support": 0.0078125,
+    "continuous": 0.00390625
+   },
+   "family_": {
+    "rows": 0.49166666666666664,
+    "corner": 0.4666666666666667,
+    "walkup": 0.03333333333333333,
+    "clocktower": 0.008333333333333333
+   },
+   "floors": {
+    "b3": 0.8416666666666667,
+    "b2": 0.14166666666666666,
+    "b0": 0.016666666666666666
+   },
+   "open": 0.015625,
+   "buildings": 120,
+   "q50": 5.3142598599676045,
+   "q90": 5.7158454354694115,
+   "max": 5.97,
+   "hero": 0.0234375,
+   "landmark": "clocktower/8"
+  },
+  {
+   "id": "bsky-rendered",
+   "family": "feed",
+   "what": "Bluesky Discover feed",
+   "elements": 2849,
+   "regions": 5,
+   "sections": 0,
+   "depth": 2,
+   "typed": [
+    {
+     "kind": "feed",
+     "share": 0.9696670864395158,
+     "title": "Feed",
+     "evidence": "21 repeated items with the same structure (“div.css-g5y9jx”); each with ~373 characters and 8.6 links"
+    },
+    {
+     "kind": "nav",
+     "share": 0.036069505642348065,
+     "title": "",
+     "evidence": "near the top of the page (first 1%); 4 short links (avg 10 chars)"
+    }
+   ],
+   "territories": 3,
+   "dominant": 0.9765625,
+   "land": [
+    {
+     "label": "Feed",
+     "kind": "feed",
+     "comp": "parcelled",
+     "lots": 250
+    },
+    {
+     "label": "footer",
+     "kind": "footer",
+     "comp": "support",
+     "lots": 4
+    },
+    {
+     "label": "page",
+     "kind": "remainder",
+     "comp": "continuous",
+     "lots": 2
+    }
+   ],
+   "comp": {
+    "parcelled": 0.390625,
+    "continuous": 0.30078125,
+    "media": 0.29296875,
+    "interactive": 0,
+    "support": 0.015625
+   },
+   "family_": {
+    "lshape": 0.02666666666666667,
+    "corner": 0.3466666666666667,
+    "rows": 0.3333333333333333,
+    "podiumTower": 0.06666666666666667,
+    "asymmetric": 0.09333333333333334,
+    "walkup": 0.09333333333333334,
+    "courtyard": 0.04
+   },
+   "floors": {
+    "b3": 0.4266666666666667,
+    "b4": 0.3466666666666667,
+    "b5": 0.06666666666666667,
+    "b2": 0.09333333333333334,
+    "b0": 0.05333333333333334,
+    "b1": 0.013333333333333334
+   },
+   "open": 0.01171875,
+   "buildings": 75,
+   "q50": 6.47,
+   "q90": 7.049999999999999,
+   "max": 12.72,
+   "hero": 0,
+   "landmark": "none"
+  },
+  {
+   "id": "mastodon-rendered",
+   "family": "feed",
+   "what": "Mastodon explore",
+   "elements": 360,
+   "regions": 11,
+   "sections": 5,
+   "depth": 2,
+   "typed": [
+    {
+     "kind": "feed",
+     "share": 0.6477459690687726,
+     "title": "Feed",
+     "evidence": "20 repeated items with the same structure (“article”); each with ~658 characters and 0.3 links"
+    },
+    {
+     "kind": "hero",
+     "share": 0.06410414610069103,
+     "title": "Trending",
+     "evidence": "class/id “server-banner”; starts in the first 8% of the page"
+    },
+    {
+     "kind": "nav",
+     "share": 0.05581605791378743,
+     "title": "",
+     "evidence": "a <nav> element; 5 short links (avg 8 chars)"
+    }
+   ],
+   "territories": 9,
+   "dominant": 0.67578125,
+   "land": [
+    {
+     "label": "Feed",
+     "kind": "feed",
+     "comp": "continuous",
+     "lots": 173
+    },
+    {
+     "label": "Trending",
+     "kind": "hero",
+     "comp": "landmark",
+     "lots": 18
+    },
+    {
+     "label": "page",
+     "kind": "remainder",
+     "comp": "parcelled",
+     "lots": 17
+    },
+    {
+     "label": "nav",
+     "kind": "nav",
+     "comp": "navigation",
+     "lots": 14
+    },
+    {
+     "label": "mastodon.social:",
+     "kind": "section",
+     "comp": "parcelled",
+     "lots": 10
+    },
+    {
+     "label": "Mastodon:",
+     "kind": "section",
+     "comp": "parcelled",
+     "lots": 9
+    }
+   ],
+   "comp": {
+    "landmark": 0.0703125,
+    "interactive": 0.03125,
+    "parcelled": 0.140625,
+    "continuous": 0.703125,
+    "navigation": 0.0546875
+   },
+   "family_": {
+    "courtyard": 0.25,
+    "rows": 0.15,
+    "corner": 0.225,
+    "civic": 0.025,
+    "lshape": 0.025,
+    "kiosk": 0.125,
+    "slab": 0.025,
+    "walkup": 0.175
+   },
+   "floors": {
+    "b3": 0.325,
+    "b2": 0.2,
+    "b1": 0.35,
+    "b0": 0.125
+   },
+   "open": 0.0234375,
+   "buildings": 40,
+   "q50": 3.97,
+   "q90": 6.57,
+   "max": 6.6899999999999995,
+   "hero": 0.0703125,
+   "landmark": "civic/4"
+  },
+  {
+   "id": "hn-algolia-rendered",
+   "family": "feed",
+   "what": "HN search results",
+   "elements": 717,
+   "regions": 4,
+   "sections": 0,
+   "depth": 1,
+   "typed": [
+    {
+     "kind": "feed",
+     "share": 0.8555811934570045,
+     "title": "Feed",
+     "evidence": "30 repeated items with the same structure (“article.Story”); each with ~305 characters and 6.1 links"
+    }
+   ],
+   "territories": 5,
+   "dominant": 0.859375,
+   "land": [
+    {
+     "label": "Feed",
+     "kind": "feed",
+     "comp": "parcelled",
+     "lots": 220
+    },
+    {
+     "label": "remainder",
+     "kind": "remainder",
+     "comp": "interactive",
+     "lots": 22
+    },
+    {
+     "label": "footer",
+     "kind": "footer",
+     "comp": "support",
+     "lots": 7
+    },
+    {
+     "label": "nav",
+     "kind": "nav",
+     "comp": "navigation",
+     "lots": 6
+    },
+    {
+     "label": "page",
+     "kind": "remainder",
+     "comp": "continuous",
+     "lots": 1
+    }
+   ],
+   "comp": {
+    "interactive": 0.0859375,
+    "navigation": 0.0234375,
+    "parcelled": 0.7109375,
+    "continuous": 0.15234375,
+    "support": 0.02734375
+   },
+   "family_": {
+    "rows": 0.4166666666666667,
+    "corner": 0.42592592592592593,
+    "lshape": 0.018518518518518517,
+    "walkup": 0.07407407407407407,
+    "kiosk": 0.046296296296296294,
+    "courtyard": 0.009259259259259259,
+    "slab": 0.009259259259259259
+   },
+   "floors": {
+    "b3": 0.8888888888888888,
+    "b0": 0.06481481481481481,
+    "b2": 0.027777777777777776,
+    "b1": 0.018518518518518517
+   },
+   "open": 0.01171875,
+   "buildings": 108,
+   "q50": 5.39,
+   "q90": 6.09,
+   "max": 6.549999999999999,
+   "hero": 0,
+   "landmark": "none"
+  },
+  {
+   "id": "twitch-rendered",
+   "family": "feed",
+   "what": "Twitch home",
+   "elements": 598,
+   "regions": 7,
+   "sections": 2,
+   "depth": 2,
+   "typed": [
+    {
+     "kind": "feed",
+     "share": 0.43959180143561366,
+     "title": "Feed",
+     "evidence": "10 repeated items with the same structure (“div.glFavL”); each with ~90 characters and 1.0 links"
+    },
+    {
+     "kind": "gallery",
+     "share": 0.2780564444060077,
+     "title": "Gallery",
+     "evidence": "5 images, 11 characters of text per image; class “bonmcm”"
+    },
+    {
+     "kind": "form",
+     "share": 0.04035861512294964,
+     "title": "Form",
+     "evidence": "a <form>; 3 inputs"
+    }
+   ],
+   "territories": 7,
+   "dominant": 0.41015625,
+   "land": [
+    {
+     "label": "Feed",
+     "kind": "feed",
+     "comp": "parcelled",
+     "lots": 105
+    },
+    {
+     "label": "Gallery",
+     "kind": "gallery",
+     "comp": "media",
+     "lots": 77
+    },
+    {
+     "label": "page",
+     "kind": "remainder",
+     "comp": "interactive",
+     "lots": 42
+    },
+    {
+     "label": "Live Channels",
+     "kind": "remainder",
+     "comp": "continuous",
+     "lots": 11
+    },
+    {
+     "label": "Form",
+     "kind": "form",
+     "comp": "interactive",
+     "lots": 11
+    },
+    {
+     "label": "Main Content",
+     "kind": "section",
+     "comp": "continuous",
+     "lots": 8
+    }
+   ],
+   "comp": {
+    "continuous": 0.07421875,
+    "parcelled": 0.41015625,
+    "media": 0.30078125,
+    "marker": 0.0078125,
+    "interactive": 0.20703125
+   },
+   "family_": {
+    "rows": 0.3132530120481928,
+    "corner": 0.3132530120481928,
+    "kiosk": 0.1686746987951807,
+    "podiumTower": 0.07228915662650602,
+    "asymmetric": 0.07228915662650602,
+    "lshape": 0.012048192771084338,
+    "walkup": 0.04819277108433735
+   },
+   "floors": {
+    "b3": 0.6506024096385542,
+    "b5": 0.060240963855421686,
+    "b2": 0.12048192771084337,
+    "b4": 0.012048192771084338,
+    "b1": 0.1566265060240964
+   },
+   "open": 0.01171875,
+   "buildings": 83,
+   "q50": 5.47,
+   "q90": 6.659999999999999,
+   "max": 12.22,
+   "hero": 0,
+   "landmark": "none"
+  },
+  {
+   "id": "docs",
+   "family": "docs",
+   "what": "Python docs",
+   "elements": 4954,
+   "regions": 11,
+   "sections": 4,
+   "depth": 3,
+   "typed": [
+    {
+     "kind": "feed",
+     "share": 0.07134459180835659,
+     "title": "Feed",
+     "evidence": "9 repeated items with the same structure (“tr.row-even”); each with ~86 characters and 1.0 links"
+    }
+   ],
+   "territories": 9,
+   "dominant": 0.50390625,
+   "land": [
+    {
+     "label": "Itertool Functions¶",
+     "kind": "section",
+     "comp": "continuous",
+     "lots": 129
+    },
+    {
+     "label": "Itertools Recipes¶",
+     "kind": "section",
+     "comp": "continuous",
+     "lots": 89
+    },
+    {
+     "label": "Feed",
+     "kind": "feed",
+     "comp": "parcelled",
+     "lots": 19
+    },
+    {
+     "label": "itertools — Functions creati",
+     "kind": "remainder",
+     "comp": "structured",
+     "lots": 9
+    },
+    {
+     "label": "page",
+     "kind": "remainder",
+     "comp": "parcelled",
+     "lots": 3
+    },
+    {
+     "label": "Table of Contents",
+     "kind": "features",
+     "comp": "parcelled",
+     "lots": 2
+    }
+   ],
+   "comp": {
+    "structured": 0.03515625,
+    "parcelled": 0.09765625,
+    "continuous": 0.85546875,
+    "marker": 0,
+    "navigation": 0.0078125,
+    "support": 0.00390625
+   },
+   "family_": {
+    "courtyard": 0.34285714285714286,
+    "walkup": 0.3142857142857143,
+    "corner": 0.2,
+    "slab": 0.02857142857142857,
+    "rows": 0.08571428571428572,
+    "lshape": 0.02857142857142857
+   },
+   "floors": {
+    "b3": 0.6,
+    "b0": 0.14285714285714285,
+    "b2": 0.14285714285714285,
+    "b1": 0.11428571428571428
+   },
+   "open": 0.01953125,
+   "buildings": 35,
+   "q50": 5.049999999999999,
+   "q90": 7.039999999999999,
+   "max": 7.16,
+   "hero": 0,
+   "landmark": "none"
+  },
+  {
+   "id": "reference",
+   "family": "docs",
+   "what": "Wikipedia article",
+   "elements": 2548,
+   "regions": 25,
+   "sections": 6,
+   "depth": 3,
+   "typed": [
+    {
+     "kind": "references",
+     "share": 0.1173133735508056,
+     "title": "References",
+     "evidence": "heading “References”; 319 elements, 94 links"
+    },
+    {
+     "kind": "features",
+     "share": 0.10176013505126487,
+     "title": "History",
+     "evidence": "3 sibling cards, each with its own heading; introduced by “History”"
+    },
+    {
+     "kind": "feed",
+     "share": 0.07744966609567787,
+     "title": "Feed",
+     "evidence": "12 repeated items with the same structure (“tr”); each with ~42 characters and 1.8 links"
+    },
+    {
+     "kind": "hero",
+     "share": 0.07490814527941213,
+     "title": "Suspension bridge",
+     "evidence": "contains the page's <h1> “Suspension bridge”; class/id “mw-body-header”; starts in the first 15% of the page"
+    },
+    {
+     "kind": "feed",
+     "share": 0.06659777562622576,
+     "title": "Afrikaans",
+     "evidence": "21 repeated items with the same structure (“a.interlanguage-link-ta…”); each with ~24 characters and 3.0 links"
+    },
+    {
+     "kind": "toc",
+     "share": 0.06352871080658375,
+     "title": "Contents",
+     "evidence": "26 of its 26 links jump within the page (#anchors); named “mw-panel-toc”"
+    }
+   ],
+   "territories": 22,
+   "dominant": 0.1171875,
+   "land": [
+    {
+     "label": "remainder",
+     "kind": "remainder",
+     "comp": "continuous",
+     "lots": 30
+    },
+    {
+     "label": "References",
+     "kind": "references",
+     "comp": "archive",
+     "lots": 30
+    },
+    {
+     "label": "External links",
+     "kind": "section",
+     "comp": "structured",
+     "lots": 30
+    },
+    {
+     "label": "History",
+     "kind": "features",
+     "comp": "continuous",
+     "lots": 26
+    },
+    {
+     "label": "Suspension bridge",
+     "kind": "hero",
+     "comp": "landmark",
+     "lots": 20
+    },
+    {
+     "label": "Feed",
+     "kind": "feed",
+     "comp": "parcelled",
+     "lots": 17
+    }
+   ],
+   "comp": {
+    "landmark": 0.078125,
+    "archive": 0.20703125,
+    "continuous": 0.38671875,
+    "structured": 0.13671875,
+    "media": 0.03515625,
+    "parcelled": 0.109375,
+    "navigation": 0.0234375,
+    "marker": 0,
+    "interactive": 0.0078125,
+    "support": 0.015625
+   },
+   "family_": {
+    "lshape": 0.05747126436781609,
+    "corner": 0.1724137931034483,
+    "walkup": 0.5172413793103449,
+    "asymmetric": 0.09195402298850575,
+    "slab": 0.05747126436781609,
+    "rows": 0.05747126436781609,
+    "kiosk": 0.022988505747126436,
+    "clocktower": 0.011494252873563218,
+    "courtyard": 0.011494252873563218
+   },
+   "floors": {
+    "b2": 0.28735632183908044,
+    "b1": 0.47126436781609193,
+    "b0": 0.1724137931034483,
+    "b4": 0.022988505747126436,
+    "b3": 0.04597701149425287
+   },
+   "open": 0.078125,
+   "buildings": 87,
+   "q50": 3.951477620890085,
+   "q90": 5.43,
+   "max": 10.98,
+   "hero": 0.078125,
+   "landmark": "clocktower/13"
+  },
+  {
+   "id": "mdn-static",
+   "family": "docs",
+   "what": "MDN HTML reference",
+   "elements": 1486,
+   "regions": 13,
+   "sections": 4,
+   "depth": 3,
+   "typed": [
+    {
+     "kind": "feed",
+     "share": 0.28394123747358846,
+     "title": "<a>",
+     "evidence": "21 repeated items with the same structure (“a”); each with ~41 characters and 6.1 links"
+    },
+    {
+     "kind": "nav",
+     "share": 0.2027573356107787,
+     "title": "",
+     "evidence": "a <nav> element; near the top of the page (first 1%); 87 short links (avg 10 chars)"
+    },
+    {
+     "kind": "footer",
+     "share": 0.05170836129304177,
+     "title": "",
+     "evidence": "role=contentinfo; contains a © / copyright line; 29 short links at the very end of the page; sits at the end o"
+    },
+    {
+     "kind": "hero",
+     "share": 0.04756570300412047,
+     "title": "HTML: HyperText Markup Languag",
+     "evidence": "contains the page's <h1> “HTML: HyperText Markup Language”; starts in the first 38% of the page"
+    },
+    {
+     "kind": "directory",
+     "share": 0.043445227624376796,
+     "title": "<input type=\"button\">",
+     "evidence": "22 repeated items with the same structure (“a”); each one a name and a link"
+    },
+    {
+     "kind": "directory",
+     "share": 0.03380675358669913,
+     "title": "HTML cheatsheet for syntax and",
+     "evidence": "10 repeated items with the same structure (“a”); each one a name and a link"
+    }
+   ],
+   "territories": 11,
+   "dominant": 0.27734375,
+   "land": [
+    {
+     "label": "<a>",
+     "kind": "feed",
+     "comp": "parcelled",
+     "lots": 71
+    },
+    {
+     "label": "HTML: HyperText Markup Langu",
+     "kind": "remainder",
+     "comp": "parcelled",
+     "lots": 59
+    },
+    {
+     "label": "nav",
+     "kind": "nav",
+     "comp": "navigation",
+     "lots": 44
+    },
+    {
+     "label": "Beginner's tutorials",
+     "kind": "remainder",
+     "comp": "continuous",
+     "lots": 19
+    },
+    {
+     "label": "HTML: HyperText Markup Langu",
+     "kind": "hero",
+     "comp": "landmark",
+     "lots": 14
+    },
+    {
+     "label": "<input type=\"button\">",
+     "kind": "directory",
+     "comp": "archive",
+     "lots": 13
+    }
+   ],
+   "comp": {
+    "landmark": 0.0546875,
+    "parcelled": 0.5234375,
+    "archive": 0.1015625,
+    "continuous": 0.10546875,
+    "navigation": 0.171875,
+    "support": 0.04296875
+   },
+   "family_": {
+    "walkup": 0.2708333333333333,
+    "corner": 0.3125,
+    "lshape": 0.010416666666666666,
+    "rows": 0.3020833333333333,
+    "civic": 0.010416666666666666,
+    "slab": 0.09375
+   },
+   "floors": {
+    "b0": 0.2916666666666667,
+    "b1": 0.07291666666666667,
+    "b2": 0.4375,
+    "b3": 0.19791666666666666
+   },
+   "open": 0.046875,
+   "buildings": 96,
+   "q50": 4.39,
+   "q90": 6.16,
+   "max": 7.16,
+   "hero": 0.0546875,
+   "landmark": "civic/3"
+  },
+  {
+   "id": "devdocs-rendered",
+   "family": "docs",
+   "what": "DevDocs app",
+   "elements": 3746,
+   "regions": 8,
+   "sections": 0,
+   "depth": 1,
+   "typed": [
+    {
+     "kind": "directory",
+     "share": 0.030295821389064004,
+     "title": "Enable4.4CMake",
+     "evidence": "28 repeated items with the same structure (“a._list-item”); each one a name and a link"
+    }
+   ],
+   "territories": 11,
+   "dominant": 0.62109375,
+   "land": [
+    {
+     "label": "list of 79 div",
+     "kind": "observed",
+     "comp": "parcelled",
+     "lots": 159
+    },
+    {
+     "label": "list of 228 a",
+     "kind": "observed",
+     "comp": "parcelled",
+     "lots": 49
+    },
+    {
+     "label": "28 links (8 blocks)",
+     "kind": "observed",
+     "comp": "parcelled",
+     "lots": 9
+    },
+    {
+     "label": "27 links (13 blocks) · “Angu",
+     "kind": "observed",
+     "comp": "parcelled",
+     "lots": 8
+    },
+    {
+     "label": "Enable4.4CMake",
+     "kind": "directory",
+     "comp": "archive",
+     "lots": 8
+    },
+    {
+     "label": "Enable22.0.0Angular",
+     "kind": "directory",
+     "comp": "archive",
+     "lots": 6
+    }
+   ],
+   "comp": {
+    "landmark": 0.00390625,
+    "parcelled": 0.8984375,
+    "archive": 0.09375,
+    "interactive": 0.00390625
+   },
+   "family_": {
+    "rows": 0.40476190476190477,
+    "corner": 0.3888888888888889,
+    "walkup": 0.19047619047619047,
+    "kiosk": 0.007936507936507936,
+    "clocktower": 0.007936507936507936
+   },
+   "floors": {
+    "b3": 0.6190476190476191,
+    "b0": 0.1349206349206349,
+    "b1": 0.07142857142857142,
+    "b2": 0.1746031746031746
+   },
+   "open": 0.02734375,
+   "buildings": 126,
+   "q50": 4.89,
+   "q90": 5.805696189221368,
+   "max": 5.989999999999999,
+   "hero": 0.00390625,
+   "landmark": "clocktower/7"
+  },
+  {
+   "id": "shop",
+   "family": "market",
+   "what": "IKEA",
+   "elements": 1668,
+   "regions": 7,
+   "sections": 0,
+   "depth": 2,
+   "typed": [
+    {
+     "kind": "pricing",
+     "share": 0.747478556854554,
+     "title": "Living on a student budget",
+     "evidence": "6 prices: “$ 2”, “$ 5”, “$ 8”; 12 sibling plans"
+    },
+    {
+     "kind": "footer",
+     "share": 0.10590061210872907,
+     "title": "",
+     "evidence": "a <footer> element; contains a © / copyright line; 45 short links at the very end of the page; sits at the end"
+    },
+    {
+     "kind": "hero",
+     "share": 0.07308558885246534,
+     "title": "Tables & chairs",
+     "evidence": "contains the page's <h1> “Tables & chairs”; starts in the first 6% of the page; role=navigation / nav class; n"
+    },
+    {
+     "kind": "showcase",
+     "share": 0.06385560809569396,
+     "title": "Showcase",
+     "evidence": "13 images, 15 characters of text per image; class “hnf-pageheader__in-page-nav”"
+    }
+   ],
+   "territories": 6,
+   "dominant": 0.7578125,
+   "land": [
+    {
+     "label": "Living on a student budget",
+     "kind": "pricing",
+     "comp": "grid",
+     "lots": 194
+    },
+    {
+     "label": "footer",
+     "kind": "footer",
+     "comp": "support",
+     "lots": 25
+    },
+    {
+     "label": "Tables & chairs",
+     "kind": "hero",
+     "comp": "landmark",
+     "lots": 19
+    },
+    {
+     "label": "page",
+     "kind": "remainder",
+     "comp": "parcelled",
+     "lots": 14
+    },
+    {
+     "label": "Search",
+     "kind": "form",
+     "comp": "interactive",
+     "lots": 3
+    },
+    {
+     "label": "remainder",
+     "kind": "remainder",
+     "comp": "continuous",
+     "lots": 1
+    }
+   ],
+   "comp": {
+    "landmark": 0.07421875,
+    "continuous": 0.00390625,
+    "grid": 0.7578125,
+    "marker": 0,
+    "interactive": 0.01171875,
+    "support": 0.09765625,
+    "parcelled": 0.0546875
+   },
+   "family_": {
+    "walkup": 0.9565217391304348,
+    "rows": 0.014492753623188406,
+    "podiumTower": 0.007246376811594203,
+    "kiosk": 0.021739130434782608
+   },
+   "floors": {
+    "b2": 0.855072463768116,
+    "b0": 0.10869565217391304,
+    "b5": 0.007246376811594203,
+    "b1": 0.028985507246376812
+   },
+   "open": 0.015625,
+   "buildings": 138,
+   "q50": 3.89,
+   "q90": 3.89,
+   "max": 12.72,
+   "hero": 0.07421875,
+   "landmark": "podiumTower/19"
+  },
+  {
+   "id": "directory",
+   "family": "market",
+   "what": "craigslist",
+   "elements": 1781,
+   "regions": 8,
+   "sections": 0,
+   "depth": 0,
+   "typed": [
+    {
+     "kind": "features",
+     "share": 0.15056794080218694,
+     "title": "Austria",
+     "evidence": "4 sibling cards, each with its own heading; introduced by “Austria”"
+    },
+    {
+     "kind": "nav",
+     "share": 0.13846443889334026,
+     "title": "",
+     "evidence": "near the top of the page (first 1%); 108 short links (avg 13 chars)"
+    },
+    {
+     "kind": "features",
+     "share": 0.09753028232078052,
+     "title": "Bangladesh",
+     "evidence": "4 sibling cards, each with its own heading; introduced by “Bangladesh”"
+    },
+    {
+     "kind": "features",
+     "share": 0.07787151812226045,
+     "title": "Alberta",
+     "evidence": "4 sibling cards, each with its own heading; introduced by “Alberta”"
+    },
+    {
+     "kind": "features",
+     "share": 0.06932648348022813,
+     "title": "Argentina",
+     "evidence": "4 sibling cards, each with its own heading; introduced by “Argentina”"
+    }
+   ],
+   "territories": 8,
+   "dominant": 0.44921875,
+   "land": [
+    {
+     "label": "page",
+     "kind": "remainder",
+     "comp": "parcelled",
+     "lots": 115
+    },
+    {
+     "label": "Austria",
+     "kind": "features",
+     "comp": "parcelled",
+     "lots": 40
+    },
+    {
+     "label": "nav",
+     "kind": "nav",
+     "comp": "navigation",
+     "lots": 31
+    },
+    {
+     "label": "Bangladesh",
+     "kind": "features",
+     "comp": "parcelled",
+     "lots": 25
+    },
+    {
+     "label": "Alberta",
+     "kind": "features",
+     "comp": "parcelled",
+     "lots": 20
+    },
+    {
+     "label": "Argentina",
+     "kind": "features",
+     "comp": "parcelled",
+     "lots": 18
+    }
+   ],
+   "comp": {
+    "parcelled": 0.875,
+    "marker": 0,
+    "navigation": 0.12109375,
+    "support": 0.00390625
+   },
+   "family_": {
+    "rows": 0.5572519083969466,
+    "walkup": 0.06870229007633588,
+    "corner": 0.3282442748091603,
+    "slab": 0.04580152671755725
+   },
+   "floors": {
+    "b0": 0.08396946564885496,
+    "b2": 0.5038167938931297,
+    "b1": 0.16030534351145037,
+    "b3": 0.25190839694656486
+   },
+   "open": 0.015625,
+   "buildings": 131,
+   "q50": 4.76,
+   "q90": 5.718841480267467,
+   "max": 5.97,
+   "hero": 0,
+   "landmark": "none"
+  },
+  {
+   "id": "airbnb-rendered",
+   "family": "market",
+   "what": "Airbnb home",
+   "elements": 2580,
+   "regions": 11,
+   "sections": 1,
+   "depth": 2,
+   "typed": [
+    {
+     "kind": "pricing",
+     "share": 0.1559792970090771,
+     "title": "Catalogue",
+     "evidence": "8 repeated items with the same structure (“div.dir”); 8 of them priced"
+    },
+    {
+     "kind": "feed",
+     "share": 0.15549672565138636,
+     "title": "Pirenopolis House rentals",
+     "evidence": "21 repeated items with the same structure (“a.atm_bx_nm7nsd”); each with ~128 characters and 4.7 links"
+    },
+    {
+     "kind": "pricing",
+     "share": 0.15454857488521936,
+     "title": "Catalogue",
+     "evidence": "8 repeated items with the same structure (“div.dir”); 8 of them priced"
+    },
+    {
+     "kind": "pricing",
+     "share": 0.15307367369340405,
+     "title": "Catalogue",
+     "evidence": "8 repeated items with the same structure (“div.dir”); 8 of them priced"
+    },
+    {
+     "kind": "pricing",
+     "share": 0.15306687691371829,
+     "title": "Catalogue",
+     "evidence": "8 repeated items with the same structure (“div.dir”); 8 of them priced"
+    },
+    {
+     "kind": "footer",
+     "share": 0.10624726004818916,
+     "title": "",
+     "evidence": "a <footer> element; contains a © / copyright line; 44 short links at the very end of the page; sits at the end"
+    }
+   ],
+   "territories": 10,
+   "dominant": 0.16015625,
+   "land": [
+    {
+     "label": "Pirenopolis House rentals",
+     "kind": "feed",
+     "comp": "parcelled",
+     "lots": 41
+    },
+    {
+     "label": "Catalogue",
+     "kind": "pricing",
+     "comp": "grid",
+     "lots": 40
+    },
+    {
+     "label": "Catalogue",
+     "kind": "pricing",
+     "comp": "grid",
+     "lots": 40
+    },
+    {
+     "label": "Catalogue",
+     "kind": "pricing",
+     "comp": "grid",
+     "lots": 40
+    },
+    {
+     "label": "Catalogue",
+     "kind": "pricing",
+     "comp": "grid",
+     "lots": 39
+    },
+    {
+     "label": "footer",
+     "kind": "footer",
+     "comp": "support",
+     "lots": 25
+    }
+   ],
+   "comp": {
+    "media": 0.0390625,
+    "interactive": 0.0625,
+    "parcelled": 0.1796875,
+    "grid": 0.62109375,
+    "marker": 0,
+    "support": 0.09765625
+   },
+   "family_": {
+    "walkup": 0.7880794701986755,
+    "kiosk": 0.06622516556291391,
+    "podiumTower": 0.006622516556291391,
+    "asymmetric": 0.013245033112582781,
+    "corner": 0.06622516556291391,
+    "rows": 0.059602649006622516
+   },
+   "floors": {
+    "b1": 0.8013245033112583,
+    "b0": 0.0728476821192053,
+    "b4": 0.006622516556291391,
+    "b2": 0.10596026490066225,
+    "b3": 0.013245033112582781
+   },
+   "open": 0.02734375,
+   "buildings": 151,
+   "q50": 3.39,
+   "q90": 4.47,
+   "max": 8.719999999999999,
+   "hero": 0,
+   "landmark": "none"
+  },
+  {
+   "id": "spotify-static",
+   "family": "market",
+   "what": "Spotify web",
+   "elements": 726,
+   "regions": 6,
+   "sections": 0,
+   "depth": 1,
+   "typed": [
+    {
+     "kind": "showcase",
+     "share": 0.22933125517510106,
+     "title": "Popular radio",
+     "evidence": "20 images, 18 characters of text per image; heading “Popular radio”"
+    },
+    {
+     "kind": "showcase",
+     "share": 0.22889289367298232,
+     "title": "Popular artists",
+     "evidence": "20 images, 14 characters of text per image; heading “Popular artists”"
+    },
+    {
+     "kind": "gallery",
+     "share": 0.22573669085772735,
+     "title": "Gallery",
+     "evidence": "20 repeated items with the same structure (“div.e-10860-legacy-box”); 20 of them a picture"
+    },
+    {
+     "kind": "gallery",
+     "share": 0.2256100530904486,
+     "title": "Gallery",
+     "evidence": "20 repeated items with the same structure (“div.e-10860-legacy-box”); 20 of them a picture"
+    },
+    {
+     "kind": "footer",
+     "share": 0.050109590375529686,
+     "title": "",
+     "evidence": "5 short links at the very end of the page; sits at the end of the page (last 7%)"
+    }
+   ],
+   "territories": 6,
+   "dominant": 0.234375,
+   "land": [
+    {
+     "label": "Popular artists",
+     "kind": "showcase",
+     "comp": "media",
+     "lots": 60
+    },
+    {
+     "label": "Gallery",
+     "kind": "gallery",
+     "comp": "media",
+     "lots": 59
+    },
+    {
+     "label": "Gallery",
+     "kind": "gallery",
+     "comp": "media",
+     "lots": 59
+    },
+    {
+     "label": "Popular radio",
+     "kind": "showcase",
+     "comp": "media",
+     "lots": 59
+    },
+    {
+     "label": "footer",
+     "kind": "footer",
+     "comp": "support",
+     "lots": 13
+    },
+    {
+     "label": "remainder",
+     "kind": "remainder",
+     "comp": "parcelled",
+     "lots": 6
+    }
+   ],
+   "comp": {
+    "parcelled": 0.0234375,
+    "media": 0.92578125,
+    "support": 0.05078125,
+    "continuous": 0
+   },
+   "family_": {
+    "podiumTower": 0.34615384615384615,
+    "asymmetric": 0.4807692307692308,
+    "walkup": 0.1346153846153846,
+    "corner": 0.019230769230769232,
+    "rows": 0.019230769230769232
+   },
+   "floors": {
+    "b5": 0.3076923076923077,
+    "b2": 0.3076923076923077,
+    "b4": 0.038461538461538464,
+    "b1": 0.21153846153846154,
+    "b0": 0.1346153846153846
+   },
+   "open": 0.015625,
+   "buildings": 52,
+   "q50": 6.159999999999999,
+   "q90": 10.72,
+   "max": 10.72,
+   "hero": 0,
+   "landmark": "none"
+  },
+  {
+   "id": "pinterest-rendered",
+   "family": "market",
+   "what": "Pinterest home",
+   "elements": 971,
+   "regions": 17,
+   "sections": 11,
+   "depth": 4,
+   "typed": [
+    {
+     "kind": "gallery",
+     "share": 0.5375317455468961,
+     "title": "Trending halloween costumes",
+     "evidence": "10 repeated items with the same structure (“div.tapTransition_1f”); 10 of them a picture"
+    },
+    {
+     "kind": "form",
+     "share": 0.08109405409179372,
+     "title": "Form",
+     "evidence": "a <form>; 8 inputs"
+    },
+    {
+     "kind": "nav",
+     "share": 0.05312306363073056,
+     "title": "",
+     "evidence": "a <nav> element; near the top of the page (first 1%)"
+    },
+    {
+     "kind": "footer",
+     "share": 0.04475358473770106,
+     "title": "",
+     "evidence": "contains a © / copyright line; 9 short links at the very end of the page; sits at the end of the page (last 6%"
+    }
+   ],
+   "territories": 13,
+   "dominant": 0.5625,
+   "land": [
+    {
+     "label": "Trending halloween costumes",
+     "kind": "gallery",
+     "comp": "media",
+     "lots": 144
+    },
+    {
+     "label": "Form",
+     "kind": "form",
+     "comp": "interactive",
+     "lots": 19
+    },
+    {
+     "label": "nav",
+     "kind": "nav",
+     "comp": "navigation",
+     "lots": 13
+    },
+    {
+     "label": "Welcome to Pinterest",
+     "kind": "remainder",
+     "comp": "continuous",
+     "lots": 12
+    },
+    {
+     "label": "footer",
+     "kind": "footer",
+     "comp": "support",
+     "lots": 11
+    },
+    {
+     "label": "section",
+     "kind": "section",
+     "comp": "continuous",
+     "lots": 10
+    }
+   ],
+   "comp": {
+    "interactive": 0.1171875,
+    "continuous": 0.2265625,
+    "media": 0.5625,
+    "navigation": 0.05078125,
+    "support": 0.04296875
+   },
+   "family_": {
+    "podiumTower": 0.16071428571428573,
+    "asymmetric": 0.16071428571428573,
+    "walkup": 0.2857142857142857,
+    "corner": 0.14285714285714285,
+    "kiosk": 0.16071428571428573,
+    "slab": 0.03571428571428571,
+    "lshape": 0.05357142857142857
+   },
+   "floors": {
+    "b5": 0.16071428571428573,
+    "b2": 0.19642857142857142,
+    "b0": 0.14285714285714285,
+    "b1": 0.5
+   },
+   "open": 0.01953125,
+   "buildings": 56,
+   "q50": 3.43,
+   "q90": 11.72,
+   "max": 11.72,
+   "hero": 0,
+   "landmark": "none"
+  },
+  {
+   "id": "soundcloud-rendered",
+   "family": "market",
+   "what": "SoundCloud discover",
+   "elements": 887,
+   "regions": 12,
+   "sections": 5,
+   "depth": 3,
+   "typed": [],
+   "territories": 9,
+   "dominant": 0.26953125,
+   "land": [
+    {
+     "label": "Artists to watch out for",
+     "kind": "section",
+     "comp": "parcelled",
+     "lots": 69
+    },
+    {
+     "label": "Curated by SoundCloud",
+     "kind": "section",
+     "comp": "parcelled",
+     "lots": 69
+    },
+    {
+     "label": "Trending by genre",
+     "kind": "section",
+     "comp": "parcelled",
+     "lots": 60
+    },
+    {
+     "label": "page",
+     "kind": "remainder",
+     "comp": "interactive",
+     "lots": 37
+    },
+    {
+     "label": "footer",
+     "kind": "footer",
+     "comp": "support",
+     "lots": 6
+    },
+    {
+     "label": "Discover Tracks and Playlist",
+     "kind": "hero",
+     "comp": "landmark",
+     "lots": 5
+    }
+   ],
+   "comp": {
+    "landmark": 0.01953125,
+    "parcelled": 0.7734375,
+    "continuous": 0.015625,
+    "marker": 0,
+    "navigation": 0.01171875,
+    "interactive": 0.15625,
+    "support": 0.0234375
+   },
+   "family_": {
+    "rows": 0.3944954128440367,
+    "corner": 0.3669724770642202,
+    "walkup": 0.14678899082568808,
+    "kiosk": 0.08256880733944955,
+    "civic": 0.009174311926605505
+   },
+   "floors": {
+    "b3": 0.3577981651376147,
+    "b2": 0.5229357798165137,
+    "b1": 0.05504587155963303,
+    "b0": 0.06422018348623854
+   },
+   "open": 0.03125,
+   "buildings": 109,
+   "q50": 4.39,
+   "q90": 5.839999999999999,
+   "max": 6.448134053037129,
+   "hero": 0.01953125,
+   "landmark": "civic/3"
+  },
+  {
+   "id": "news",
+   "family": "editorial",
+   "what": "The Guardian front",
+   "elements": 3855,
+   "regions": 33,
+   "sections": 5,
+   "depth": 3,
+   "typed": [
+    {
+     "kind": "nav",
+     "share": 0.07897746920969329,
+     "title": "",
+     "evidence": "a <nav> element; near the top of the page (first 3%); 100 short links (avg 12 chars)"
+    },
+    {
+     "kind": "showcase",
+     "share": 0.04061704749997783,
+     "title": "More features",
+     "evidence": "6 images, 103 characters of text per image; heading “More features”"
+    },
+    {
+     "kind": "showcase",
+     "share": 0.03162601193484602,
+     "title": "More top stories",
+     "evidence": "5 images, 132 characters of text per image; heading “More top stories”"
+    },
+    {
+     "kind": "showcase",
+     "share": 0.030047703916509284,
+     "title": "More opinion",
+     "evidence": "4 images, 124 characters of text per image; heading “More opinion”"
+    }
+   ],
+   "territories": 30,
+   "dominant": 0.16796875,
+   "land": [
+    {
+     "label": "remainder",
+     "kind": "remainder",
+     "comp": "media",
+     "lots": 43
+    },
+    {
+     "label": "News",
+     "kind": "section",
+     "comp": "media",
+     "lots": 19
+    },
+    {
+     "label": "nav",
+     "kind": "nav",
+     "comp": "navigation",
+     "lots": 19
+    },
+    {
+     "label": "Sport",
+     "kind": "remainder",
+     "comp": "media",
+     "lots": 13
+    },
+    {
+     "label": "More features",
+     "kind": "showcase",
+     "comp": "media",
+     "lots": 11
+    },
+    {
+     "label": "More opinion",
+     "kind": "showcase",
+     "comp": "media",
+     "lots": 8
+    }
+   ],
+   "comp": {
+    "media": 0.8125,
+    "continuous": 0.0703125,
+    "navigation": 0.07421875,
+    "support": 0.01953125,
+    "parcelled": 0.0234375
+   },
+   "family_": {
+    "asymmetric": 0.5523809523809524,
+    "podiumTower": 0.24761904761904763,
+    "walkup": 0.12380952380952381,
+    "corner": 0.0380952380952381,
+    "rows": 0.009523809523809525,
+    "slab": 0.02857142857142857
+   },
+   "floors": {
+    "b1": 0.5238095238095238,
+    "b3": 0.18095238095238095,
+    "b4": 0.0380952380952381,
+    "b2": 0.0380952380952381,
+    "b0": 0.19047619047619047,
+    "b5": 0.02857142857142857
+   },
+   "open": 0.08984375,
+   "buildings": 105,
+   "q50": 4.657156840414927,
+   "q90": 7.219999999999999,
+   "max": 11.820000000000002,
+   "hero": 0,
+   "landmark": "none"
+  },
+  {
+   "id": "media",
+   "family": "editorial",
+   "what": "NASA",
+   "elements": 592,
+   "regions": 21,
+   "sections": 11,
+   "depth": 4,
+   "typed": [
+    {
+     "kind": "footer",
+     "share": 0.22547507493525012,
+     "title": "",
+     "evidence": "a <footer> element; sits at the end of the page (last 27%)"
+    },
+    {
+     "kind": "gallery",
+     "share": 0.2047114629106888,
+     "title": "NASA Image Resources",
+     "evidence": "7 images, 23 characters of text per image; heading “NASA Image Resources”"
+    },
+    {
+     "kind": "gallery",
+     "share": 0.13984518231819107,
+     "title": "Artemis II Lunar Flyby",
+     "evidence": "10 images, 6 characters of text per image; heading “Artemis II Lunar Flyby”"
+    },
+    {
+     "kind": "showcase",
+     "share": 0.08286529115618543,
+     "title": "Discover More",
+     "evidence": "4 images, 16 characters of text per image; heading “Discover More”"
+    },
+    {
+     "kind": "nav",
+     "share": 0.04781305473910893,
+     "title": "",
+     "evidence": "role=navigation / nav class; 6 short links (avg 12 chars)"
+    },
+    {
+     "kind": "hero",
+     "share": 0.03727846811978,
+     "title": "NASA Images",
+     "evidence": "contains the page's <h1> “NASA Images”; class/id “hds-topic-hero”; starts in the first 26% of the page"
+    }
+   ],
+   "territories": 15,
+   "dominant": 0.2265625,
+   "land": [
+    {
+     "label": "NASA Image Resources",
+     "kind": "gallery",
+     "comp": "media",
+     "lots": 58
+    },
+    {
+     "label": "footer",
+     "kind": "footer",
+     "comp": "support",
+     "lots": 44
+    },
+    {
+     "label": "Artemis II Lunar Flyby",
+     "kind": "gallery",
+     "comp": "media",
+     "lots": 39
+    },
+    {
+     "label": "Discover More",
+     "kind": "showcase",
+     "comp": "media",
+     "lots": 23
+    },
+    {
+     "label": "page",
+     "kind": "remainder",
+     "comp": "interactive",
+     "lots": 21
+    },
+    {
+     "label": "Suggested Searches",
+     "kind": "section",
+     "comp": "parcelled",
+     "lots": 17
+    }
+   ],
+   "comp": {
+    "landmark": 0.04296875,
+    "interactive": 0.09765625,
+    "parcelled": 0.10546875,
+    "navigation": 0.0390625,
+    "continuous": 0.06640625,
+    "media": 0.46875,
+    "marker": 0.0078125,
+    "support": 0.171875
+   },
+   "family_": {
+    "podiumTower": 0.1348314606741573,
+    "asymmetric": 0.14606741573033707,
+    "walkup": 0.4157303370786517,
+    "corner": 0.12359550561797752,
+    "kiosk": 0.11235955056179775,
+    "civic": 0.011235955056179775,
+    "rows": 0.0449438202247191,
+    "slab": 0.011235955056179775
+   },
+   "floors": {
+    "b5": 0.0449438202247191,
+    "b2": 0.06741573033707865,
+    "b4": 0.07865168539325842,
+    "b1": 0.43820224719101125,
+    "b0": 0.3595505617977528,
+    "b3": 0.011235955056179775
+   },
+   "open": 0.05078125,
+   "buildings": 89,
+   "q50": 2.89,
+   "q90": 8.719999999999999,
+   "max": 10.72,
+   "hero": 0.04296875,
+   "landmark": "civic/3"
+  },
+  {
+   "id": "oldweb",
+   "family": "editorial",
+   "what": "Paul Graham essays",
+   "elements": 2165,
+   "regions": 1,
+   "sections": 0,
+   "depth": 0,
+   "typed": [],
+   "territories": 3,
+   "dominant": 0.96484375,
+   "land": [
+    {
+     "label": "list of 215 td",
+     "kind": "observed",
+     "comp": "parcelled",
+     "lots": 247
+    },
+    {
+     "label": "20 links (20 blocks)",
+     "kind": "observed",
+     "comp": "parcelled",
+     "lots": 8
+    },
+    {
+     "label": "Essays",
+     "kind": "brand",
+     "comp": "marker",
+     "lots": 1
+    }
+   ],
+   "comp": {
+    "parcelled": 0.99609375,
+    "marker": 0.00390625
+   },
+   "family_": {
+    "rows": 0.5042016806722689,
+    "corner": 0.4789915966386555,
+    "walkup": 0.01680672268907563
+   },
+   "floors": {
+    "b3": 0.9831932773109243,
+    "b1": 0.008403361344537815,
+    "b2": 0.008403361344537815
+   },
+   "open": 0.00390625,
+   "buildings": 119,
+   "q50": 5.47,
+   "q90": 6.284906327333674,
+   "max": 6.47,
+   "hero": 0,
+   "landmark": "none"
+  },
+  {
+   "id": "app",
+   "family": "app",
+   "what": "GitHub repository",
+   "elements": 1447,
+   "regions": 25,
+   "sections": 18,
+   "depth": 6,
+   "typed": [
+    {
+     "kind": "feed",
+     "share": 0.39824551467210384,
+     "title": "Feed",
+     "evidence": "29 repeated items with the same structure (“tr.react-directory-row”); each with ~28 characters and 2.0 links"
+    },
+    {
+     "kind": "features",
+     "share": 0.07113594744095604,
+     "title": "About",
+     "evidence": "6 sibling cards, each with its own heading; introduced by “About”"
+    },
+    {
+     "kind": "nav",
+     "share": 0.03214458771482691,
+     "title": "",
+     "evidence": "a <nav> element; 9 short links (avg 10 chars)"
+    }
+   ],
+   "territories": 18,
+   "dominant": 0.41015625,
+   "land": [
+    {
+     "label": "Feed",
+     "kind": "feed",
+     "comp": "parcelled",
+     "lots": 105
+    },
+    {
+     "label": "remainder",
+     "kind": "remainder",
+     "comp": "parcelled",
+     "lots": 19
+    },
+    {
+     "label": "About",
+     "kind": "features",
+     "comp": "parcelled",
+     "lots": 19
+    },
+    {
+     "label": "remainder",
+     "kind": "remainder",
+     "comp": "structured",
+     "lots": 17
+    },
+    {
+     "label": "section",
+     "kind": "section",
+     "comp": "parcelled",
+     "lots": 14
+    },
+    {
+     "label": "section",
+     "kind": "section",
+     "comp": "parcelled",
+     "lots": 13
+    }
+   ],
+   "comp": {
+    "parcelled": 0.71875,
+    "continuous": 0.0703125,
+    "marker": 0.00390625,
+    "structured": 0.06640625,
+    "navigation": 0.03125,
+    "interactive": 0.0234375,
+    "archive": 0.02734375,
+    "media": 0.03515625,
+    "support": 0.0234375
+   },
+   "family_": {
+    "rows": 0.3211009174311927,
+    "kiosk": 0.03669724770642202,
+    "walkup": 0.23853211009174313,
+    "corner": 0.3119266055045872,
+    "slab": 0.03669724770642202,
+    "asymmetric": 0.045871559633027525,
+    "podiumTower": 0.009174311926605505
+   },
+   "floors": {
+    "b3": 0.5045871559633027,
+    "b2": 0.21100917431192662,
+    "b1": 0.1926605504587156,
+    "b0": 0.09174311926605505
+   },
+   "open": 0.046875,
+   "buildings": 109,
+   "q50": 5.09,
+   "q90": 6.232107131825574,
+   "max": 7.719999999999999,
+   "hero": 0,
+   "landmark": "none"
+  },
+  {
+   "id": "rayso-rendered",
+   "family": "app",
+   "what": "ray.so",
+   "elements": 113,
+   "regions": 22,
+   "sections": 20,
+   "depth": 6,
+   "typed": [
+    {
+     "kind": "brand",
+     "share": 0.03630670841382986,
+     "title": "Ray",
+     "evidence": "no <h1> on the page: the site name is its monument; its text matches the site name “Ray”; in the first 10% of "
+    }
+   ],
+   "territories": 10,
+   "dominant": 0.328125,
+   "land": [
+    {
+     "label": "section",
+     "kind": "section",
+     "comp": "continuous",
+     "lots": 84
+    },
+    {
+     "label": "remainder",
+     "kind": "remainder",
+     "comp": "interactive",
+     "lots": 34
+    },
+    {
+     "label": "Frame Padding",
+     "kind": "section",
+     "comp": "interactive",
+     "lots": 29
+    },
+    {
+     "label": "page",
+     "kind": "remainder",
+     "comp": "continuous",
+     "lots": 23
+    },
+    {
+     "label": "section",
+     "kind": "section",
+     "comp": "continuous",
+     "lots": 21
+    },
+    {
+     "label": "section",
+     "kind": "section",
+     "comp": "continuous",
+     "lots": 19
+    }
+   ],
+   "comp": {
+    "interactive": 0.359375,
+    "continuous": 0.60546875,
+    "marker": 0.03515625
+   },
+   "family_": {
+    "courtyard": 0.07017543859649122,
+    "corner": 0.17543859649122806,
+    "walkup": 0.15789473684210525,
+    "kiosk": 0.49122807017543857,
+    "lshape": 0.10526315789473684
+   },
+   "floors": {
+    "b2": 0.3333333333333333,
+    "b1": 0.6491228070175439,
+    "b3": 0.017543859649122806
+   },
+   "open": 0.015625,
+   "buildings": 57,
+   "q50": 3.27,
+   "q90": 5.16,
+   "max": 6.16,
+   "hero": 0,
+   "landmark": "none"
+  },
+  {
+   "id": "youtube-rendered",
+   "family": "app",
+   "what": "YouTube signed out",
+   "elements": 558,
+   "regions": 27,
+   "sections": 23,
+   "depth": 4,
+   "typed": [
+    {
+     "kind": "form",
+     "share": 0.036923076923076927,
+     "title": "Search",
+     "evidence": "a <form>; 3 inputs"
+    },
+    {
+     "kind": "hero",
+     "share": 0.03306666666666667,
+     "title": "",
+     "evidence": "class/id “ytd-masthead”; starts in the first 19% of the page"
+    }
+   ],
+   "territories": 19,
+   "dominant": 0.390625,
+   "land": [
+    {
+     "label": "remainder",
+     "kind": "remainder",
+     "comp": "parcelled",
+     "lots": 100
+    },
+    {
+     "label": "Try searching to get started",
+     "kind": "section",
+     "comp": "continuous",
+     "lots": 20
+    },
+    {
+     "label": "section",
+     "kind": "section",
+     "comp": "continuous",
+     "lots": 10
+    },
+    {
+     "label": "Search",
+     "kind": "form",
+     "comp": "interactive",
+     "lots": 9
+    },
+    {
+     "label": "remainder",
+     "kind": "remainder",
+     "comp": "continuous",
+     "lots": 9
+    },
+    {
+     "label": "section",
+     "kind": "section",
+     "comp": "continuous",
+     "lots": 9
+    }
+   ],
+   "comp": {
+    "landmark": 0.03125,
+    "parcelled": 0.30859375,
+    "interactive": 0.1171875,
+    "continuous": 0.54296875
+   },
+   "family_": {
+    "kiosk": 0.08235294117647059,
+    "walkup": 0.17647058823529413,
+    "corner": 0.4235294117647059,
+    "rows": 0.21176470588235294,
+    "lshape": 0.09411764705882353,
+    "civic": 0.011764705882352941
+   },
+   "floors": {
+    "b3": 0.32941176470588235,
+    "b2": 0.15294117647058825,
+    "b1": 0.5058823529411764,
+    "b0": 0.011764705882352941
+   },
+   "open": 0.02734375,
+   "buildings": 85,
+   "q50": 4.27,
+   "q90": 5.47,
+   "max": 5.97,
+   "hero": 0.03125,
+   "landmark": "civic/3"
+  },
+  {
+   "id": "excalidraw-rendered",
+   "family": "app",
+   "what": "Excalidraw",
+   "elements": 167,
+   "regions": 5,
+   "sections": 0,
+   "depth": 1,
+   "typed": [
+    {
+     "kind": "showcase",
+     "share": 0.936486547185914,
+     "title": "Shapes",
+     "evidence": "28 images, 14 characters of text per image; heading “Shapes”"
+    },
+    {
+     "kind": "footer",
+     "share": 0.25450298701882046,
+     "title": "",
+     "evidence": "a <footer> element; sits at the end of the page (last 23%)"
+    }
+   ],
+   "territories": 3,
+   "dominant": 0.9375,
+   "land": [
+    {
+     "label": "Shapes",
+     "kind": "showcase",
+     "comp": "media",
+     "lots": 240
+    },
+    {
+     "label": "page",
+     "kind": "remainder",
+     "comp": "continuous",
+     "lots": 14
+    },
+    {
+     "label": "Excalidraw",
+     "kind": "hero",
+     "comp": "landmark",
+     "lots": 2
+    }
+   ],
+   "comp": {
+    "landmark": 0.0078125,
+    "media": 0.9375,
+    "continuous": 0.0546875
+   },
+   "family_": {
+    "podiumTower": 0.42105263157894735,
+    "asymmetric": 0.47368421052631576,
+    "lshape": 0.02631578947368421,
+    "corner": 0.02631578947368421,
+    "walkup": 0.02631578947368421,
+    "civic": 0.02631578947368421
+   },
+   "floors": {
+    "b5": 0.39473684210526316,
+    "b2": 0.39473684210526316,
+    "b1": 0.18421052631578946,
+    "b4": 0.02631578947368421
+   },
+   "open": 0.01171875,
+   "buildings": 38,
+   "q50": 6.159999999999999,
+   "q90": 11.22,
+   "max": 11.22,
+   "hero": 0.0078125,
+   "landmark": "civic/3"
+  },
+  {
+   "id": "photopea-rendered",
+   "family": "app",
+   "what": "Photopea",
+   "elements": 77,
+   "regions": 12,
+   "sections": 6,
+   "depth": 3,
+   "typed": [
+    {
+     "kind": "features",
+     "share": 0.15001684636118598,
+     "title": "State-of-the-art AI",
+     "evidence": "4 sibling cards, each with its own heading; introduced by “State-of-the-art AI”"
+    },
+    {
+     "kind": "features",
+     "share": 0.14277291105121293,
+     "title": "Professional Editor",
+     "evidence": "4 sibling cards, each with its own heading; introduced by “Professional Editor”"
+    },
+    {
+     "kind": "features",
+     "share": 0.13308625336927224,
+     "title": "Social Media Enthusiasts",
+     "evidence": "4 sibling cards, each with its own heading; introduced by “Social Media Enthusiasts”"
+    },
+    {
+     "kind": "features",
+     "share": 0.121883423180593,
+     "title": "Fully Local",
+     "evidence": "4 sibling cards, each with its own heading; introduced by “Fully Local”"
+    },
+    {
+     "kind": "brand",
+     "share": 0.09930929919137466,
+     "title": "Photopea",
+     "evidence": "no <h1> on the page: the site name is its monument; its text matches the site name “Photopea”; in the first 2%"
+    },
+    {
+     "kind": "footer",
+     "share": 0.07016509433962265,
+     "title": "",
+     "evidence": "5 short links at the very end of the page; sits at the end of the page (last 0%)"
+    }
+   ],
+   "territories": 11,
+   "dominant": 0.19921875,
+   "land": [
+    {
+     "label": "State-of-the-art AI",
+     "kind": "features",
+     "comp": "continuous",
+     "lots": 51
+    },
+    {
+     "label": "Professional Editor",
+     "kind": "features",
+     "comp": "continuous",
+     "lots": 41
+    },
+    {
+     "label": "Social Media Enthusiasts",
+     "kind": "features",
+     "comp": "continuous",
+     "lots": 38
+    },
+    {
+     "label": "Fully Local",
+     "kind": "features",
+     "comp": "continuous",
+     "lots": 35
+    },
+    {
+     "label": "Photopea",
+     "kind": "brand",
+     "comp": "marker",
+     "lots": 22
+    },
+    {
+     "label": "footer",
+     "kind": "footer",
+     "comp": "support",
+     "lots": 17
+    }
+   ],
+   "comp": {
+    "continuous": 0.84765625,
+    "marker": 0.0859375,
+    "support": 0.06640625
+   },
+   "family_": {
+    "lshape": 0.1111111111111111,
+    "corner": 0.25925925925925924,
+    "walkup": 0.3888888888888889,
+    "courtyard": 0.12962962962962962,
+    "kiosk": 0.1111111111111111
+   },
+   "floors": {
+    "b2": 0.48148148148148145,
+    "b1": 0.37037037037037035,
+    "b0": 0.14814814814814814
+   },
+   "open": 0.03125,
+   "buildings": 54,
+   "q50": 3.77,
+   "q90": 4.93,
+   "max": 5.1899999999999995,
+   "hero": 0,
+   "landmark": "none"
+  },
+  {
+   "id": "portfolio",
+   "family": "landing",
+   "what": "a portfolio",
+   "elements": 396,
+   "regions": 27,
+   "sections": 20,
+   "depth": 6,
+   "typed": [
+    {
+     "kind": "features",
+     "share": 0.18554590704389234,
+     "title": "Build a Spotify Connected App",
+     "evidence": "4 sibling cards, each with its own heading; introduced by “Build a Spotify Connected App”"
+    },
+    {
+     "kind": "showcase",
+     "share": 0.14583378224051372,
+     "title": "Writing",
+     "evidence": "4 images, 49 characters of text per image; heading “Writing”"
+    },
+    {
+     "kind": "hero",
+     "share": 0.09789049537805168,
+     "title": "Brittany Chiang",
+     "evidence": "contains the page's <h1> “Brittany Chiang”; starts in the first 2% of the page; together with the block around"
+    },
+    {
+     "kind": "nav",
+     "share": 0.0330323859596199,
+     "title": "",
+     "evidence": "a <nav> element; near the top of the page (first 5%)"
+    }
+   ],
+   "territories": 13,
+   "dominant": 0.2109375,
+   "land": [
+    {
+     "label": "Build a Spotify Connected Ap",
+     "kind": "features",
+     "comp": "media",
+     "lots": 54
+    },
+    {
+     "label": "Writing",
+     "kind": "showcase",
+     "comp": "media",
+     "lots": 38
+    },
+    {
+     "label": "Brittany Chiang",
+     "kind": "hero",
+     "comp": "landmark",
+     "lots": 25
+    },
+    {
+     "label": "UI Engineer Co-op · Apple",
+     "kind": "section",
+     "comp": "continuous",
+     "lots": 23
+    },
+    {
+     "label": "Software Engineer Co-op · St",
+     "kind": "section",
+     "comp": "continuous",
+     "lots": 19
+    },
+    {
+     "label": "Lead Engineer · Upstatement ",
+     "kind": "remainder",
+     "comp": "continuous",
+     "lots": 17
+    }
+   ],
+   "comp": {
+    "landmark": 0.09765625,
+    "continuous": 0.51953125,
+    "media": 0.359375,
+    "support": 0.0234375
+   },
+   "family_": {
+    "lshape": 0.11475409836065574,
+    "walkup": 0.29508196721311475,
+    "corner": 0.2459016393442623,
+    "courtyard": 0.01639344262295082,
+    "asymmetric": 0.19672131147540983,
+    "clocktower": 0.01639344262295082,
+    "podiumTower": 0.11475409836065574
+   },
+   "floors": {
+    "b1": 0.5081967213114754,
+    "b2": 0.2786885245901639,
+    "b0": 0.08196721311475409,
+    "b4": 0.03278688524590164,
+    "b5": 0.09836065573770492
+   },
+   "open": 0.0703125,
+   "buildings": 61,
+   "q50": 4.050000000000001,
+   "q90": 8.719999999999999,
+   "max": 11.22,
+   "hero": 0.09765625,
+   "landmark": "clocktower/13"
+  },
+  {
+   "id": "saas",
+   "family": "landing",
+   "what": "Linear",
+   "elements": 2160,
+   "regions": 21,
+   "sections": 14,
+   "depth": 4,
+   "typed": [
+    {
+     "kind": "hero",
+     "share": 0.1438015342658012,
+     "title": "The product development system",
+     "evidence": "contains the page's <h1> “The product development system for teams …”; starts in the first 3% of the page; tog"
+    },
+    {
+     "kind": "footer",
+     "share": 0.05050557407377873,
+     "title": "",
+     "evidence": "a <footer> element; 42 short links at the very end of the page; sits at the end of the page (last 8%)"
+    },
+    {
+     "kind": "showcase",
+     "share": 0.04287012966300378,
+     "title": "Showcase",
+     "evidence": "4 images, 113 characters of text per image; class “mwjdiw_fixedglowbgright”"
+    }
+   ],
+   "territories": 17,
+   "dominant": 0.17578125,
+   "land": [
+    {
+     "label": "section",
+     "kind": "section",
+     "comp": "continuous",
+     "lots": 45
+    },
+    {
+     "label": "The product development syst",
+     "kind": "hero",
+     "comp": "landmark",
+     "lots": 28
+    },
+    {
+     "label": "remainder",
+     "kind": "remainder",
+     "comp": "media",
+     "lots": 28
+    },
+    {
+     "label": "section",
+     "kind": "section",
+     "comp": "continuous",
+     "lots": 24
+    },
+    {
+     "label": "section",
+     "kind": "section",
+     "comp": "interactive",
+     "lots": 23
+    },
+    {
+     "label": "footer",
+     "kind": "footer",
+     "comp": "support",
+     "lots": 16
+    }
+   ],
+   "comp": {
+    "landmark": 0.109375,
+    "media": 0.171875,
+    "continuous": 0.37890625,
+    "interactive": 0.25390625,
+    "navigation": 0.0234375,
+    "support": 0.0625
+   },
+   "family_": {
+    "kiosk": 0.30666666666666664,
+    "podiumTower": 0.09333333333333334,
+    "asymmetric": 0.16,
+    "walkup": 0.25333333333333335,
+    "lshape": 0.05333333333333334,
+    "corner": 0.09333333333333334,
+    "slab": 0.013333333333333334,
+    "courtyard": 0.02666666666666667
+   },
+   "floors": {
+    "b1": 0.4666666666666667,
+    "b3": 0.02666666666666667,
+    "b4": 0.05333333333333334,
+    "b2": 0.25333333333333335,
+    "b0": 0.18666666666666668,
+    "b5": 0.013333333333333334
+   },
+   "open": 0.08984375,
+   "buildings": 75,
+   "q50": 3.43,
+   "q90": 6.159999999999999,
+   "max": 14.22,
+   "hero": 0.109375,
+   "landmark": "podiumTower/22"
+  },
+  {
+   "id": "saas-2",
+   "family": "landing",
+   "what": "Vercel",
+   "elements": 823,
+   "regions": 11,
+   "sections": 3,
+   "depth": 2,
+   "typed": [
+    {
+     "kind": "footer",
+     "share": 0.3024989875407962,
+     "title": "",
+     "evidence": "a <footer> element; sits at the end of the page (last 35%)"
+    },
+    {
+     "kind": "nav",
+     "share": 0.22994735212139983,
+     "title": "",
+     "evidence": "a <nav> element; near the top of the page (first 3%); 35 short links (avg 9 chars)"
+    },
+    {
+     "kind": "showcase",
+     "share": 0.13007122948281202,
+     "title": "Build agents on infrastructure",
+     "evidence": "12 images, 48 characters of text per image; heading “Build agents on infrastructure that think…”"
+    },
+    {
+     "kind": "hero",
+     "share": 0.12296019248636159,
+     "title": "Agentic Infrastructure",
+     "evidence": "contains the page's <h1> “Agentic Infrastructure”; 1 call-to-action: “Deploy now”; starts in the first 25% of "
+    },
+    {
+     "kind": "showcase",
+     "share": 0.05955642375586631,
+     "title": "Showcase",
+     "evidence": "21 images, 0 characters of text per image; class “w-full”"
+    }
+   ],
+   "territories": 9,
+   "dominant": 0.1953125,
+   "land": [
+    {
+     "label": "footer",
+     "kind": "footer",
+     "comp": "support",
+     "lots": 50
+    },
+    {
+     "label": "Build agents on infrastructu",
+     "kind": "showcase",
+     "comp": "media",
+     "lots": 47
+    },
+    {
+     "label": "Agentic Infrastructure",
+     "kind": "hero",
+     "comp": "landmark",
+     "lots": 45
+    },
+    {
+     "label": "nav",
+     "kind": "nav",
+     "comp": "navigation",
+     "lots": 39
+    },
+    {
+     "label": "section",
+     "kind": "section",
+     "comp": "continuous",
+     "lots": 28
+    },
+    {
+     "label": "page",
+     "kind": "remainder",
+     "comp": "parcelled",
+     "lots": 26
+    }
+   ],
+   "comp": {
+    "landmark": 0.17578125,
+    "continuous": 0.1875,
+    "media": 0.18359375,
+    "marker": 0.00390625,
+    "navigation": 0.15234375,
+    "support": 0.1953125,
+    "parcelled": 0.1015625
+   },
+   "family_": {
+    "lshape": 0.04285714285714286,
+    "corner": 0.14285714285714285,
+    "walkup": 0.45714285714285713,
+    "asymmetric": 0.07142857142857142,
+    "podiumTower": 0.07142857142857142,
+    "rows": 0.07142857142857142,
+    "kiosk": 0.014285714285714285,
+    "slab": 0.12857142857142856
+   },
+   "floors": {
+    "b2": 0.22857142857142856,
+    "b1": 0.18571428571428572,
+    "b5": 0.05714285714285714,
+    "b4": 0.014285714285714285,
+    "b0": 0.5142857142857142
+   },
+   "open": 0.1328125,
+   "buildings": 70,
+   "q50": 3.39,
+   "q90": 7.16,
+   "max": 17.720000000000002,
+   "hero": 0.17578125,
+   "landmark": "podiumTower/27"
+  },
+  {
+   "id": "apple",
+   "family": "landing",
+   "what": "Apple",
+   "elements": 779,
+   "regions": 13,
+   "sections": 1,
+   "depth": 2,
+   "typed": [
+    {
+     "kind": "gallery",
+     "share": 0.35577698695136417,
+     "title": "Endless entertainment.",
+     "evidence": "27 images, 34 characters of text per image; heading “Endless entertainment.”"
+    },
+    {
+     "kind": "footer",
+     "share": 0.31177224199288256,
+     "title": "",
+     "evidence": "a <footer> element; contains a © / copyright line; sits at the end of the page (last 32%)"
+    },
+    {
+     "kind": "nav",
+     "share": 0.16233451957295375,
+     "title": "",
+     "evidence": "a <nav> element; near the top of the page (first 0%); 14 short links (avg 7 chars)"
+    },
+    {
+     "kind": "gallery",
+     "share": 0.11226571767497034,
+     "title": "Apple Watch Ultra 4",
+     "evidence": "12 images, 28 characters of text per image; heading “Apple Watch Ultra 4”"
+    },
+    {
+     "kind": "hero",
+     "share": 0.05497508896797153,
+     "title": "Apple",
+     "evidence": "class/id “section-hero”; 3 call-to-actions: “Learn more”, “Buy”, “Learn more”; starts in the first 9% of the p"
+    },
+    {
+     "kind": "toc",
+     "share": 0.030244365361803086,
+     "title": "Contents",
+     "evidence": "9 of its 9 links jump within the page (#anchors)"
+    }
+   ],
+   "territories": 6,
+   "dominant": 0.4375,
+   "land": [
+    {
+     "label": "Endless entertainment.",
+     "kind": "gallery",
+     "comp": "media",
+     "lots": 112
+    },
+    {
+     "label": "footer",
+     "kind": "footer",
+     "comp": "support",
+     "lots": 55
+    },
+    {
+     "label": "Apple Watch Ultra 4",
+     "kind": "gallery",
+     "comp": "media",
+     "lots": 40
+    },
+    {
+     "label": "nav",
+     "kind": "nav",
+     "comp": "navigation",
+     "lots": 29
+    },
+    {
+     "label": "Apple",
+     "kind": "hero",
+     "comp": "landmark",
+     "lots": 19
+    },
+    {
+     "label": "page",
+     "kind": "remainder",
+     "comp": "continuous",
+     "lots": 1
+    }
+   ],
+   "comp": {
+    "landmark": 0.07421875,
+    "media": 0.59375,
+    "navigation": 0.11328125,
+    "support": 0.21484375,
+    "continuous": 0.00390625
+   },
+   "family_": {
+    "podiumTower": 0.20634920634920634,
+    "asymmetric": 0.25396825396825395,
+    "walkup": 0.4444444444444444,
+    "slab": 0.09523809523809523
+   },
+   "floors": {
+    "b5": 0.1746031746031746,
+    "b2": 0.15873015873015872,
+    "b0": 0.5396825396825397,
+    "b1": 0.09523809523809523,
+    "b4": 0.031746031746031744
+   },
+   "open": 0.0234375,
+   "buildings": 63,
+   "q50": 2.7600000000000002,
+   "q90": 11.22,
+   "max": 11.72,
+   "hero": 0.07421875,
+   "landmark": "podiumTower/17"
+  },
+  {
+   "id": "institution",
+   "family": "landing",
+   "what": "GOV.UK",
+   "elements": 374,
+   "regions": 15,
+   "sections": 5,
+   "depth": 4,
+   "typed": [
+    {
+     "kind": "footer",
+     "share": 0.23835008179481187,
+     "title": "",
+     "evidence": "a <footer> element; contains a © / copyright line; sits at the end of the page (last 22%)"
+    },
+    {
+     "kind": "directory",
+     "share": 0.22241177845290958,
+     "title": "Benefits",
+     "evidence": "16 repeated items with the same structure (“div.gem-c-cards__list-i…”); each one a name and a link"
+    },
+    {
+     "kind": "gallery",
+     "share": 0.11762093947183921,
+     "title": "Featured",
+     "evidence": "4 images, 78 characters of text per image; heading “Featured”"
+    },
+    {
+     "kind": "features",
+     "share": 0.08508997429305912,
+     "title": "Departments",
+     "evidence": "6 sibling cards, each with its own heading; introduced by “Departments”"
+    },
+    {
+     "kind": "directory",
+     "share": 0.0614162187426969,
+     "title": "HMRC services: sign in",
+     "evidence": "10 repeated items with the same structure (“a.govuk-link”); each one a name and a link"
+    },
+    {
+     "kind": "hero",
+     "share": 0.050058424865622814,
+     "title": "The best place to find governm",
+     "evidence": "contains the page's <h1> “The best place to find government service…”; starts in the first 8% of the page"
+    }
+   ],
+   "territories": 11,
+   "dominant": 0.25,
+   "land": [
+    {
+     "label": "Benefits",
+     "kind": "directory",
+     "comp": "archive",
+     "lots": 64
+    },
+    {
+     "label": "footer",
+     "kind": "footer",
+     "comp": "support",
+     "lots": 48
+    },
+    {
+     "label": "Featured",
+     "kind": "gallery",
+     "comp": "media",
+     "lots": 35
+    },
+    {
+     "label": "Departments",
+     "kind": "features",
+     "comp": "continuous",
+     "lots": 28
+    },
+    {
+     "label": "Popular on GOV.UK",
+     "kind": "section",
+     "comp": "parcelled",
+     "lots": 23
+    },
+    {
+     "label": "HMRC services: sign in",
+     "kind": "directory",
+     "comp": "archive",
+     "lots": 19
+    }
+   ],
+   "comp": {
+    "landmark": 0.0546875,
+    "parcelled": 0.05078125,
+    "continuous": 0.21484375,
+    "archive": 0.32421875,
+    "media": 0.13671875,
+    "navigation": 0.03125,
+    "support": 0.1875
+   },
+   "family_": {
+    "podiumTower": 0.036585365853658534,
+    "asymmetric": 0.06097560975609756,
+    "walkup": 0.7317073170731707,
+    "civic": 0.012195121951219513,
+    "corner": 0.10975609756097561,
+    "rows": 0.012195121951219513,
+    "courtyard": 0.012195121951219513,
+    "lshape": 0.012195121951219513,
+    "slab": 0.012195121951219513
+   },
+   "floors": {
+    "b4": 0.036585365853658534,
+    "b2": 0.14634146341463414,
+    "b1": 0.36585365853658536,
+    "b0": 0.45121951219512196
+   },
+   "open": 0.0546875,
+   "buildings": 82,
+   "q50": 2.89,
+   "q90": 5.1899999999999995,
+   "max": 10.22,
+   "hero": 0.0546875,
+   "landmark": "civic/3"
+  },
+  {
+   "id": "duolingo-rendered",
+   "family": "landing",
+   "what": "Duolingo",
+   "elements": 459,
+   "regions": 11,
+   "sections": 5,
+   "depth": 2,
+   "typed": [
+    {
+     "kind": "showcase",
+     "share": 0.442408690445642,
+     "title": "Showcase",
+     "evidence": "42 images, 8 characters of text per image; class “zu2rq”"
+    },
+    {
+     "kind": "footer",
+     "share": 0.3314344367462151,
+     "title": "",
+     "evidence": "a <footer> element; sits at the end of the page (last 47%)"
+    }
+   ],
+   "territories": 11,
+   "dominant": 0.49609375,
+   "land": [
+    {
+     "label": "Showcase",
+     "kind": "showcase",
+     "comp": "media",
+     "lots": 127
+    },
+    {
+     "label": "footer",
+     "kind": "footer",
+     "comp": "support",
+     "lots": 63
+    },
+    {
+     "label": "free. fun. effective.",
+     "kind": "section",
+     "comp": "media",
+     "lots": 15
+    },
+    {
+     "label": "page",
+     "kind": "remainder",
+     "comp": "continuous",
+     "lots": 11
+    },
+    {
+     "label": "The most fun way to learn la",
+     "kind": "hero",
+     "comp": "landmark",
+     "lots": 7
+    },
+    {
+     "label": "remainder",
+     "kind": "remainder",
+     "comp": "continuous",
+     "lots": 7
+    }
+   ],
+   "comp": {
+    "landmark": 0.02734375,
+    "media": 0.5546875,
+    "continuous": 0.1640625,
+    "parcelled": 0.00390625,
+    "marker": 0.00390625,
+    "support": 0.24609375
+   },
+   "family_": {
+    "podiumTower": 0.14473684210526316,
+    "asymmetric": 0.17105263157894737,
+    "lshape": 0.013157894736842105,
+    "walkup": 0.5394736842105263,
+    "corner": 0.10526315789473684,
+    "civic": 0.013157894736842105,
+    "kiosk": 0.013157894736842105
+   },
+   "floors": {
+    "b5": 0.10526315789473684,
+    "b2": 0.10526315789473684,
+    "b1": 0.32894736842105265,
+    "b0": 0.42105263157894735,
+    "b4": 0.02631578947368421,
+    "b3": 0.013157894736842105
+   },
+   "open": 0.04296875,
+   "buildings": 76,
+   "q50": 3.0500000000000003,
+   "q90": 10.72,
+   "max": 10.72,
+   "hero": 0.02734375,
+   "landmark": "civic/3"
+  }
+ ]
+}

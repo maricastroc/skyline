@@ -1,0 +1,6091 @@
+[
+ {
+  "id": "tilde-news",
+  "url": "https://tilde.news/",
+  "expect": "headline",
+  "why": "link aggregator on the same engine as lobste.rs",
+  "elements": 768,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 0.9999999999999999
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 29,
+    "largest": {
+     "kind": "section",
+     "weight": 0.04401726118931051
+    },
+    "fabric": {
+     "parcelled": 0.9720492099909956,
+     "marker": 0.0014843244733298694,
+     "navigation": 0.009711722982644005,
+     "support": 0.0071671667426499415,
+     "continuous": 0.009587575810380451
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "other": 0.9999999999999999
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 29,
+    "largest": {
+     "kind": "section",
+     "weight": 0.04401726118931051
+    },
+    "fabric": {
+     "parcelled": 0.9720492099909956,
+     "marker": 0.0014843244733298694,
+     "navigation": 0.009711722982644005,
+     "support": 0.0071671667426499415,
+     "continuous": 0.009587575810380451
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "feed": 0.9701982657474238,
+     "other": 0.029801734252576137
+    },
+    "reading": "feed",
+    "share": 0.9701982657474238,
+    "listLand": 0.9701982657474238,
+    "territories": 5,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.9701982657474238
+    },
+    "fabric": {
+     "parcelled": 0.9722191014187878,
+     "marker": 0.0015230801031342813,
+     "navigation": 0.009965295531935727,
+     "support": 0.007354301069419815,
+     "continuous": 0.008938221876722436
+    },
+    "feed": {
+     "weight": 0.9701982657474238,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 25,
+      "chars": 151,
+      "media": 0,
+      "shape": "ol > div"
+     },
+     "own": {
+      "count": 25,
+      "chars": 147.12,
+      "links": 10.8,
+      "pictured": 0
+     },
+     "says": 42
+    }
+   },
+   "final": {
+    "land": {
+     "feed": 0.9701982657474238,
+     "other": 0.029801734252576137
+    },
+    "reading": "feed",
+    "share": 0.9701982657474238,
+    "listLand": 0.9701982657474238,
+    "territories": 5,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.9701982657474238
+    },
+    "fabric": {
+     "parcelled": 0.9722191014187878,
+     "marker": 0.0015230801031342813,
+     "navigation": 0.009965295531935727,
+     "support": 0.007354301069419815,
+     "continuous": 0.008938221876722436
+    },
+    "feed": {
+     "weight": 0.9701982657474238,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 25,
+      "chars": 151,
+      "media": 0,
+      "shape": "ol > div"
+     },
+     "own": {
+      "count": 25,
+      "chars": 147.12,
+      "links": 10.8,
+      "pictured": 0
+     },
+     "says": 42
+    }
+   }
+  },
+  "ok": {
+   "baseline": false,
+   "first version": false,
+   "with directories": true,
+   "final": true
+  },
+  "built": {
+   "baseline": true,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  }
+ },
+ {
+  "id": "lesswrong",
+  "url": "https://www.lesswrong.com/",
+  "expect": "headline",
+  "why": "post titles with author and score",
+  "elements": 5952,
+  "out": {
+   "baseline": {
+    "land": {
+     "catalogue": 0.960447545851176,
+     "other": 0.03955245414882402
+    },
+    "reading": "catalogue",
+    "share": 0.960447545851176,
+    "listLand": 0.960447545851176,
+    "territories": 4,
+    "largest": {
+     "kind": "pricing",
+     "weight": 0.960447545851176
+    },
+    "fabric": {
+     "grid": 0.960447545851176,
+     "marker": 0.0006219383512344427,
+     "parcelled": 0.027637822237440685,
+     "interactive": 0.011292693560148895
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "catalogue": 0.960447545851176,
+     "other": 0.03955245414882402
+    },
+    "reading": "catalogue",
+    "share": 0.960447545851176,
+    "listLand": 0.960447545851176,
+    "territories": 4,
+    "largest": {
+     "kind": "pricing",
+     "weight": 0.960447545851176
+    },
+    "fabric": {
+     "grid": 0.960447545851176,
+     "marker": 0.0006219383512344427,
+     "parcelled": 0.027637822237440685,
+     "interactive": 0.011292693560148895
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "other": 0.6582512551533404,
+     "feed": 0.34174874484665985
+    },
+    "reading": "feed",
+    "share": 0.34174874484665985,
+    "listLand": 0.34174874484665985,
+    "territories": 7,
+    "largest": {
+     "kind": "testimonials",
+     "weight": 0.4824589266657002
+    },
+    "fabric": {
+     "interactive": 0.48542560052375716,
+     "continuous": 0.2564544519114835,
+     "media": 0.12832302472789403,
+     "marker": 0.000567765707971941,
+     "parcelled": 0.04212624225802507,
+     "navigation": 0.08710291487086841
+    },
+    "feed": {
+     "weight": 0.34174874484665985,
+     "mix": [
+      {
+       "comp": "continuous",
+       "share": 0.7466334227025513
+      },
+      {
+       "comp": "media",
+       "share": 0.25336657729744866
+      }
+     ],
+     "form": {
+      "count": 66,
+      "chars": 259,
+      "media": 0,
+      "shape": "div > div"
+     },
+     "own": {
+      "count": 10,
+      "chars": 787.8,
+      "links": 7.2,
+      "pictured": 0.7
+     },
+     "says": 368
+    }
+   },
+   "final": {
+    "land": {
+     "other": 0.6582512551533404,
+     "feed": 0.34174874484665985
+    },
+    "reading": "feed",
+    "share": 0.34174874484665985,
+    "listLand": 0.34174874484665985,
+    "territories": 7,
+    "largest": {
+     "kind": "testimonials",
+     "weight": 0.4824589266657002
+    },
+    "fabric": {
+     "interactive": 0.48542560052375716,
+     "continuous": 0.2564544519114835,
+     "media": 0.12832302472789403,
+     "marker": 0.000567765707971941,
+     "parcelled": 0.04212624225802507,
+     "navigation": 0.08710291487086841
+    },
+    "feed": {
+     "weight": 0.34174874484665985,
+     "mix": [
+      {
+       "comp": "continuous",
+       "share": 0.7466334227025513
+      },
+      {
+       "comp": "media",
+       "share": 0.25336657729744866
+      }
+     ],
+     "form": {
+      "count": 66,
+      "chars": 259,
+      "media": 0,
+      "shape": "div > div"
+     },
+     "own": {
+      "count": 10,
+      "chars": 787.8,
+      "links": 7.2,
+      "pictured": 0.7
+     },
+     "says": 368
+    }
+   }
+  },
+  "ok": {
+   "baseline": false,
+   "first version": false,
+   "with directories": true,
+   "final": true
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  }
+ },
+ {
+  "id": "pkg-go",
+  "url": "https://pkg.go.dev/search?q=http",
+  "expect": "headline",
+  "why": "packages: a name, a synopsis, metadata",
+  "elements": 782,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 0.15181670688207485,
+     "images": 0.1740768225780295,
+     "feed": 0.6741064705398957
+    },
+    "reading": "feed",
+    "share": 0.6741064705398957,
+    "listLand": 0.8481832931179252,
+    "territories": 7,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.6741064705398957
+    },
+    "fabric": {
+     "navigation": 0.11852764872580937,
+     "media": 0.1740768225780295,
+     "parcelled": 0.6865739401133764,
+     "continuous": 0.015952987755543064,
+     "interactive": 0.004868600827241771
+    },
+    "feed": {
+     "weight": 0.6741064705398957,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 25,
+      "chars": 187,
+      "media": 0,
+      "shape": "div > div"
+     },
+     "own": {
+      "count": 25,
+      "chars": 201.2,
+      "links": 3.36,
+      "pictured": 0
+     },
+     "says": 81
+    }
+   },
+   "first version": {
+    "land": {
+     "other": 0.16081144691040403,
+     "images": 0.17407682257802953,
+     "feed": 0.6651117305115665
+    },
+    "reading": "feed",
+    "share": 0.6651117305115665,
+    "listLand": 0.839188553089596,
+    "territories": 7,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.6651117305115665
+    },
+    "fabric": {
+     "navigation": 0.11852764872580937,
+     "media": 0.17407682257802953,
+     "parcelled": 0.46215520915197406,
+     "interactive": 0.0048686008272417714,
+     "continuous": 0.24037171871694532
+    },
+    "feed": {
+     "weight": 0.6651117305115665,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 0.6570275253468902
+      },
+      {
+       "comp": "continuous",
+       "share": 0.3429724746531098
+      }
+     ],
+     "form": {
+      "count": 25,
+      "chars": 187,
+      "media": 0,
+      "shape": "div > div"
+     },
+     "own": {
+      "count": 25,
+      "chars": 201.2,
+      "links": 3.36,
+      "pictured": 0
+     },
+     "says": 81
+    }
+   },
+   "with directories": {
+    "land": {
+     "other": 0.16081144691040403,
+     "images": 0.17407682257802953,
+     "feed": 0.6651117305115665
+    },
+    "reading": "feed",
+    "share": 0.6651117305115665,
+    "listLand": 0.839188553089596,
+    "territories": 7,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.6651117305115665
+    },
+    "fabric": {
+     "navigation": 0.11852764872580937,
+     "media": 0.17407682257802953,
+     "parcelled": 0.4901196807858559,
+     "interactive": 0.0048686008272417714,
+     "continuous": 0.2124072470830634
+    },
+    "feed": {
+     "weight": 0.6651117305115665,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 0.6990722982038855
+      },
+      {
+       "comp": "continuous",
+       "share": 0.3009277017961145
+      }
+     ],
+     "form": {
+      "count": 25,
+      "chars": 187,
+      "media": 0,
+      "shape": "div > div"
+     },
+     "own": {
+      "count": 25,
+      "chars": 201.2,
+      "links": 3.36,
+      "pictured": 0
+     },
+     "says": 81
+    }
+   },
+   "final": {
+    "land": {
+     "other": 0.16081144691040403,
+     "images": 0.17407682257802953,
+     "feed": 0.6651117305115665
+    },
+    "reading": "feed",
+    "share": 0.6651117305115665,
+    "listLand": 0.839188553089596,
+    "territories": 7,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.6651117305115665
+    },
+    "fabric": {
+     "navigation": 0.11852764872580937,
+     "media": 0.17407682257802953,
+     "parcelled": 0.4901196807858559,
+     "interactive": 0.0048686008272417714,
+     "continuous": 0.2124072470830634
+    },
+    "feed": {
+     "weight": 0.6651117305115665,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 0.6990722982038855
+      },
+      {
+       "comp": "continuous",
+       "share": 0.3009277017961145
+      }
+     ],
+     "form": {
+      "count": 25,
+      "chars": 187,
+      "media": 0,
+      "shape": "div > div"
+     },
+     "own": {
+      "count": 25,
+      "chars": 201.2,
+      "links": 3.36,
+      "pictured": 0
+     },
+     "says": 81
+    }
+   }
+  },
+  "ok": {
+   "baseline": true,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  },
+  "built": {
+   "baseline": true,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  }
+ },
+ {
+  "id": "rubygems",
+  "url": "https://rubygems.org/search?query=http",
+  "expect": "headline",
+  "why": "gems: a name and a line of description",
+  "elements": 398,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 1.0000000000000002
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 35,
+    "largest": {
+     "kind": "footer",
+     "weight": 0.09807509195123319
+    },
+    "fabric": {
+     "parcelled": 0.16602586701316702,
+     "continuous": 0.6769942409011738,
+     "navigation": 0.03636974664401338,
+     "interactive": 0.022535053490412807,
+     "support": 0.09807509195123319
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "index": 0.76604820800816,
+     "other": 0.23395179199184005
+    },
+    "reading": "index",
+    "share": 0.76604820800816,
+    "listLand": 0.76604820800816,
+    "territories": 5,
+    "largest": {
+     "kind": "directory",
+     "weight": 0.76604820800816
+    },
+    "fabric": {
+     "archive": 0.76604820800816,
+     "navigation": 0.03636974664401337,
+     "interactive": 0.022535053490412803,
+     "support": 0.09807509195123318,
+     "parcelled": 0.0769718999061807
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "index": 0.76604820800816,
+     "other": 0.23395179199184005
+    },
+    "reading": "index",
+    "share": 0.76604820800816,
+    "listLand": 0.76604820800816,
+    "territories": 5,
+    "largest": {
+     "kind": "directory",
+     "weight": 0.76604820800816
+    },
+    "fabric": {
+     "archive": 0.76604820800816,
+     "navigation": 0.03636974664401337,
+     "interactive": 0.022535053490412803,
+     "support": 0.09807509195123318,
+     "parcelled": 0.0769718999061807
+    },
+    "feed": null
+   },
+   "final": {
+    "land": {
+     "other": 1.0000000000000002
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 35,
+    "largest": {
+     "kind": "footer",
+     "weight": 0.09807509195123319
+    },
+    "fabric": {
+     "parcelled": 0.16602586701316702,
+     "continuous": 0.6769942409011738,
+     "navigation": 0.03636974664401338,
+     "interactive": 0.022535053490412807,
+     "support": 0.09807509195123319
+    },
+    "feed": null
+   }
+  },
+  "ok": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  }
+ },
+ {
+  "id": "packagist",
+  "url": "https://packagist.org/explore/popular",
+  "expect": "headline",
+  "why": "packages: a name and a line of description",
+  "elements": 351,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 0.4189948024676817,
+     "feed": 0.5810051975323184
+    },
+    "reading": "feed",
+    "share": 0.5810051975323184,
+    "listLand": 0.5810051975323184,
+    "territories": 7,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.5810051975323184
+    },
+    "fabric": {
+     "landmark": 0.1467452547409418,
+     "continuous": 0.043193775148004834,
+     "interactive": 0.0154225175765572,
+     "parcelled": 0.6794133076392667,
+     "support": 0.1152251448952296
+    },
+    "feed": {
+     "weight": 0.5810051975323184,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 15,
+      "chars": 96,
+      "media": 0,
+      "shape": "ul > div"
+     },
+     "own": {
+      "count": 15,
+      "chars": 97,
+      "links": 1,
+      "pictured": 0
+     },
+     "says": 58
+    }
+   },
+   "first version": {
+    "land": {
+     "other": 0.41949662825067646,
+     "feed": 0.5805033717493236
+    },
+    "reading": "feed",
+    "share": 0.5805033717493236,
+    "listLand": 0.5805033717493236,
+    "territories": 7,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.5805033717493236
+    },
+    "fabric": {
+     "landmark": 0.14717531527297667,
+     "continuous": 0.04330533928322005,
+     "interactive": 0.015467715740722717,
+     "parcelled": 0.678826484807851,
+     "support": 0.1152251448952296
+    },
+    "feed": {
+     "weight": 0.5805033717493236,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 15,
+      "chars": 96,
+      "media": 0,
+      "shape": "ul > div"
+     },
+     "own": {
+      "count": 15,
+      "chars": 97,
+      "links": 1,
+      "pictured": 0
+     },
+     "says": 58
+    }
+   },
+   "with directories": {
+    "land": {
+     "other": 0.4228793179059955,
+     "feed": 0.5771206820940044
+    },
+    "reading": "feed",
+    "share": 0.5771206820940044,
+    "listLand": 0.5771206820940044,
+    "territories": 7,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.5771206820940044
+    },
+    "fabric": {
+     "landmark": 0.1463177002431242,
+     "continuous": 0.048208722045422425,
+     "interactive": 0.015377582789608428,
+     "parcelled": 0.6748708500266152,
+     "support": 0.11522514489522959
+    },
+    "feed": {
+     "weight": 0.5771206820940044,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 15,
+      "chars": 96,
+      "media": 0,
+      "shape": "ul > div"
+     },
+     "own": {
+      "count": 15,
+      "chars": 97,
+      "links": 1,
+      "pictured": 0
+     },
+     "says": 58
+    }
+   },
+   "final": {
+    "land": {
+     "other": 0.4228793179059955,
+     "feed": 0.5771206820940044
+    },
+    "reading": "feed",
+    "share": 0.5771206820940044,
+    "listLand": 0.5771206820940044,
+    "territories": 7,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.5771206820940044
+    },
+    "fabric": {
+     "landmark": 0.1463177002431242,
+     "continuous": 0.048208722045422425,
+     "interactive": 0.015377582789608428,
+     "parcelled": 0.6748708500266152,
+     "support": 0.11522514489522959
+    },
+    "feed": {
+     "weight": 0.5771206820940044,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 15,
+      "chars": 96,
+      "media": 0,
+      "shape": "ul > div"
+     },
+     "own": {
+      "count": 15,
+      "chars": 97,
+      "links": 1,
+      "pictured": 0
+     },
+     "says": 58
+    }
+   }
+  },
+  "ok": {
+   "baseline": true,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  },
+  "built": {
+   "baseline": true,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  }
+ },
+ {
+  "id": "hex",
+  "url": "https://hex.pm/packages",
+  "expect": "headline",
+  "why": "packages: a name and a line of description",
+  "elements": 676,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 0.4275142802150531,
+     "feed": 0.5724857197849469
+    },
+    "reading": "feed",
+    "share": 0.5724857197849469,
+    "listLand": 0.5724857197849469,
+    "territories": 14,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.5724857197849469
+    },
+    "fabric": {
+     "landmark": 0.005654857118963455,
+     "navigation": 0.12044546544526345,
+     "interactive": 0.12372775137427192,
+     "continuous": 0.027904871872596004,
+     "parcelled": 0.6042730690402749,
+     "structured": 0.06638394769203253,
+     "support": 0.051610037456597764
+    },
+    "feed": {
+     "weight": 0.5724857197849469,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 30,
+      "chars": 129.5,
+      "media": 0,
+      "shape": "ul > li"
+     },
+     "own": {
+      "count": 30,
+      "chars": 133.9,
+      "links": 2,
+      "pictured": 0
+     },
+     "says": 41
+    }
+   },
+   "first version": {
+    "land": {
+     "other": 0.42751428021505317,
+     "feed": 0.5724857197849469
+    },
+    "reading": "feed",
+    "share": 0.5724857197849469,
+    "listLand": 0.5724857197849469,
+    "territories": 13,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.5724857197849469
+    },
+    "fabric": {
+     "landmark": 0.005654857118963455,
+     "navigation": 0.12044546544526345,
+     "parcelled": 0.6437134119947082,
+     "interactive": 0.08428740841983867,
+     "continuous": 0.027904871872596004,
+     "structured": 0.06638394769203253,
+     "support": 0.051610037456597764
+    },
+    "feed": {
+     "weight": 0.5724857197849469,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 30,
+      "chars": 129.5,
+      "media": 0,
+      "shape": "ul > li"
+     },
+     "own": {
+      "count": 30,
+      "chars": 133.9,
+      "links": 2,
+      "pictured": 0
+     },
+     "says": 41
+    }
+   },
+   "with directories": {
+    "land": {
+     "other": 0.43012349595525945,
+     "feed": 0.5698765040447406
+    },
+    "reading": "feed",
+    "share": 0.5698765040447406,
+    "listLand": 0.5698765040447406,
+    "territories": 13,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.5698765040447406
+    },
+    "fabric": {
+     "landmark": 0.005629084000624433,
+     "parcelled": 0.640779562103414,
+     "interactive": 0.08390325205549674,
+     "continuous": 0.03169447296425504,
+     "structured": 0.06636599035378228,
+     "navigation": 0.11999093007915566,
+     "support": 0.05163670844327177
+    },
+    "feed": {
+     "weight": 0.5698765040447406,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 30,
+      "chars": 129.5,
+      "media": 0,
+      "shape": "ul > li"
+     },
+     "own": {
+      "count": 30,
+      "chars": 133.9,
+      "links": 2,
+      "pictured": 0
+     },
+     "says": 41
+    }
+   },
+   "final": {
+    "land": {
+     "other": 0.43012349595525945,
+     "feed": 0.5698765040447406
+    },
+    "reading": "feed",
+    "share": 0.5698765040447406,
+    "listLand": 0.5698765040447406,
+    "territories": 13,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.5698765040447406
+    },
+    "fabric": {
+     "landmark": 0.005629084000624433,
+     "parcelled": 0.640779562103414,
+     "interactive": 0.08390325205549674,
+     "continuous": 0.03169447296425504,
+     "structured": 0.06636599035378228,
+     "navigation": 0.11999093007915566,
+     "support": 0.05163670844327177
+    },
+    "feed": {
+     "weight": 0.5698765040447406,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 30,
+      "chars": 129.5,
+      "media": 0,
+      "shape": "ul > li"
+     },
+     "own": {
+      "count": 30,
+      "chars": 133.9,
+      "links": 2,
+      "pictured": 0
+     },
+     "says": 41
+    }
+   }
+  },
+  "ok": {
+   "baseline": true,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  },
+  "built": {
+   "baseline": true,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  }
+ },
+ {
+  "id": "discourse",
+  "url": "https://meta.discourse.org/latest",
+  "expect": "headline",
+  "why": "topic rows: a title, a category, counts",
+  "elements": 740,
+  "out": {
+   "baseline": {
+    "land": {
+     "images": 0.9738777536106835,
+     "other": 0.02612224638931651
+    },
+    "reading": "images",
+    "share": 0.9738777536106835,
+    "listLand": 0.9738777536106835,
+    "territories": 4,
+    "largest": {
+     "kind": "gallery",
+     "weight": 0.9738777536106835
+    },
+    "fabric": {
+     "media": 0.9738777536106835,
+     "marker": 0.0014561196379378196,
+     "support": 0.022648563557654468,
+     "continuous": 0.002017563193724225
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "images": 0.9738777536106835,
+     "other": 0.02612224638931651
+    },
+    "reading": "images",
+    "share": 0.9738777536106835,
+    "listLand": 0.9738777536106835,
+    "territories": 4,
+    "largest": {
+     "kind": "gallery",
+     "weight": 0.9738777536106835
+    },
+    "fabric": {
+     "media": 0.9738777536106835,
+     "marker": 0.0014561196379378196,
+     "support": 0.022648563557654468,
+     "continuous": 0.002017563193724225
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "feed": 0.9652426829530548,
+     "other": 0.03475731704694522
+    },
+    "reading": "feed",
+    "share": 0.9652426829530548,
+    "listLand": 0.9652426829530548,
+    "territories": 4,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.9652426829530548
+    },
+    "fabric": {
+     "parcelled": 0.9652426829530548,
+     "marker": 0.0019361590790162217,
+     "support": 0.030115122972265825,
+     "continuous": 0.0027060349956631756
+    },
+    "feed": {
+     "weight": 0.9652426829530548,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 30,
+      "chars": 92.5,
+      "media": 0,
+      "shape": "tbody > tr"
+     },
+     "own": {
+      "count": 30,
+      "chars": 98.1,
+      "links": 6.2,
+      "pictured": 0
+     },
+     "says": 16
+    }
+   },
+   "final": {
+    "land": {
+     "feed": 0.9652426829530548,
+     "other": 0.03475731704694522
+    },
+    "reading": "feed",
+    "share": 0.9652426829530548,
+    "listLand": 0.9652426829530548,
+    "territories": 4,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.9652426829530548
+    },
+    "fabric": {
+     "parcelled": 0.9652426829530548,
+     "marker": 0.0019361590790162217,
+     "support": 0.030115122972265825,
+     "continuous": 0.0027060349956631756
+    },
+    "feed": {
+     "weight": 0.9652426829530548,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 30,
+      "chars": 92.5,
+      "media": 0,
+      "shape": "tbody > tr"
+     },
+     "own": {
+      "count": 30,
+      "chars": 98.1,
+      "links": 6.2,
+      "pictured": 0
+     },
+     "says": 16
+    }
+   }
+  },
+  "ok": {
+   "baseline": false,
+   "first version": false,
+   "with directories": true,
+   "final": true
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": true,
+   "final": true
+  }
+ },
+ {
+  "id": "changelog",
+  "url": "https://changelog.com/news",
+  "expect": "post",
+  "why": "news items with a paragraph each",
+  "elements": 158,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 5,
+    "largest": {
+     "kind": "testimonials",
+     "weight": 0.8762821666366745
+    },
+    "fabric": {
+     "media": 0.8762821666366745,
+     "continuous": 0.12371783336332554
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 5,
+    "largest": {
+     "kind": "testimonials",
+     "weight": 0.8762821666366745
+    },
+    "fabric": {
+     "media": 0.8762821666366745,
+     "continuous": 0.12371783336332554
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "other": 0.3856309556848075,
+     "index": 0.22004428526340664,
+     "images": 0.39432475905178577
+    },
+    "reading": "images",
+    "share": 0.39432475905178577,
+    "listLand": 0.6143690443151923,
+    "territories": 10,
+    "largest": {
+     "kind": "showcase",
+     "weight": 0.39432475905178577
+    },
+    "fabric": {
+     "parcelled": 0.13974895016785693,
+     "continuous": 0.19427737488536745,
+     "marker": 0.015065579581708614,
+     "interactive": 0.036539051049874476,
+     "archive": 0.22004428526340664,
+     "media": 0.39432475905178577
+    },
+    "feed": null
+   },
+   "final": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 5,
+    "largest": {
+     "kind": "testimonials",
+     "weight": 0.8762821666366745
+    },
+    "fabric": {
+     "media": 0.8762821666366745,
+     "continuous": 0.12371783336332554
+    },
+    "feed": null
+   }
+  },
+  "ok": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  }
+ },
+ {
+  "id": "osnews",
+  "url": "https://www.osnews.com/",
+  "expect": "post",
+  "why": "stories with a long excerpt each",
+  "elements": 713,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 4,
+    "largest": {
+     "kind": "testimonials",
+     "weight": 0.9093960674827907
+    },
+    "fabric": {
+     "landmark": 0.03350106177620768,
+     "continuous": 0.9104729257848223,
+     "support": 0.05602601243897004
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 4,
+    "largest": {
+     "kind": "testimonials",
+     "weight": 0.9093960674827907
+    },
+    "fabric": {
+     "landmark": 0.03350106177620768,
+     "continuous": 0.9104729257848223,
+     "support": 0.05602601243897004
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "other": 0.19440230425004953,
+     "feed": 0.8055976957499505
+    },
+    "reading": "feed",
+    "share": 0.8055976957499505,
+    "listLand": 0.8055976957499505,
+    "territories": 9,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.8055976957499505
+    },
+    "fabric": {
+     "landmark": 0.03350106177620768,
+     "continuous": 0.8633892146715245,
+     "parcelled": 0.03290200154773444,
+     "interactive": 0.01418170956556334,
+     "support": 0.05602601243897004
+    },
+    "feed": {
+     "weight": 0.8055976957499505,
+     "mix": [
+      {
+       "comp": "continuous",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 20,
+      "chars": 1197,
+      "media": 0,
+      "shape": "div > article"
+     },
+     "own": {
+      "count": 20,
+      "chars": 1207.7,
+      "links": 6.35,
+      "pictured": 0
+     },
+     "says": 469
+    }
+   },
+   "final": {
+    "land": {
+     "other": 0.19440230425004953,
+     "feed": 0.8055976957499505
+    },
+    "reading": "feed",
+    "share": 0.8055976957499505,
+    "listLand": 0.8055976957499505,
+    "territories": 9,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.8055976957499505
+    },
+    "fabric": {
+     "landmark": 0.03350106177620768,
+     "continuous": 0.8633892146715245,
+     "parcelled": 0.03290200154773444,
+     "interactive": 0.01418170956556334,
+     "support": 0.05602601243897004
+    },
+    "feed": {
+     "weight": 0.8055976957499505,
+     "mix": [
+      {
+       "comp": "continuous",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 20,
+      "chars": 1197,
+      "media": 0,
+      "shape": "div > article"
+     },
+     "own": {
+      "count": 20,
+      "chars": 1207.7,
+      "links": 6.35,
+      "pictured": 0
+     },
+     "says": 469
+    }
+   }
+  },
+  "ok": {
+   "baseline": false,
+   "first version": false,
+   "with directories": true,
+   "final": true
+  },
+  "built": {
+   "baseline": true,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  }
+ },
+ {
+  "id": "planet-debian",
+  "url": "https://planet.debian.org/",
+  "expect": "post",
+  "why": "whole blog posts, aggregated",
+  "elements": 19618,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 0.9624895392067344,
+     "catalogue": 0.037510460793265456
+    },
+    "reading": "none",
+    "share": 0.037510460793265456,
+    "listLand": 0.037510460793265456,
+    "territories": 6,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.6454424692960391
+    },
+    "fabric": {
+     "continuous": 0.8957832264152032,
+     "grid": 0.037510460793265456,
+     "navigation": 0.0011336441906473122,
+     "support": 0.06557266860088387
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "other": 0.9624895392067344,
+     "catalogue": 0.037510460793265456
+    },
+    "reading": "none",
+    "share": 0.037510460793265456,
+    "listLand": 0.037510460793265456,
+    "territories": 6,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.6454424692960391
+    },
+    "fabric": {
+     "continuous": 0.8957832264152032,
+     "grid": 0.037510460793265456,
+     "navigation": 0.0011336441906473122,
+     "support": 0.06557266860088387
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "other": 0.9624895392067344,
+     "catalogue": 0.037510460793265456
+    },
+    "reading": "none",
+    "share": 0.037510460793265456,
+    "listLand": 0.037510460793265456,
+    "territories": 6,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.6454424692960391
+    },
+    "fabric": {
+     "continuous": 0.8957832264152032,
+     "grid": 0.037510460793265456,
+     "navigation": 0.0011336441906473122,
+     "support": 0.06557266860088387
+    },
+    "feed": null
+   },
+   "final": {
+    "land": {
+     "other": 0.9624895392067344,
+     "catalogue": 0.037510460793265456
+    },
+    "reading": "none",
+    "share": 0.037510460793265456,
+    "listLand": 0.037510460793265456,
+    "territories": 6,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.6454424692960391
+    },
+    "fabric": {
+     "continuous": 0.8957832264152032,
+     "grid": 0.037510460793265456,
+     "navigation": 0.0011336441906473122,
+     "support": 0.06557266860088387
+    },
+    "feed": null
+   }
+  },
+  "ok": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  },
+  "built": {
+   "baseline": true,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  }
+ },
+ {
+  "id": "osm-diary",
+  "url": "https://www.openstreetmap.org/diary",
+  "expect": "post",
+  "why": "diary entries, whole",
+  "elements": 782,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 1.0000000000000002
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 26,
+    "largest": {
+     "kind": "section",
+     "weight": 0.07928438480417704
+    },
+    "fabric": {
+     "landmark": 0.06057639449816679,
+     "parcelled": 0.13248346555300508,
+     "continuous": 0.67656876955669,
+     "structured": 0.08360904425259318,
+     "support": 0.028287845895702792,
+     "interactive": 0.018474480243842215
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "other": 0.9793880127682738,
+     "index": 0.020611987231726324
+    },
+    "reading": "none",
+    "share": 0.020611987231726324,
+    "listLand": 0.020611987231726324,
+    "territories": 26,
+    "largest": {
+     "kind": "section",
+     "weight": 0.07928438480417704
+    },
+    "fabric": {
+     "landmark": 0.06057639449816679,
+     "parcelled": 0.11436945629987633,
+     "continuous": 0.6740707915780925,
+     "structured": 0.08360904425259318,
+     "archive": 0.020611987231726324,
+     "support": 0.028287845895702792,
+     "interactive": 0.018474480243842215
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "other": 0.08911820824550709,
+     "feed": 0.9108817917544929
+    },
+    "reading": "feed",
+    "share": 0.9108817917544929,
+    "listLand": 0.9108817917544929,
+    "territories": 3,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.9108817917544929
+    },
+    "fabric": {
+     "landmark": 0.061976164550512976,
+     "continuous": 0.6864467878275382,
+     "media": 0.23267566801586778,
+     "interactive": 0.018901379606080983
+    },
+    "feed": {
+     "weight": 0.9108817917544929,
+     "mix": [
+      {
+       "comp": "continuous",
+       "share": 0.7445599746069135
+      },
+      {
+       "comp": "media",
+       "share": 0.25544002539308647
+      }
+     ],
+     "form": {
+      "count": 20,
+      "chars": 832,
+      "media": 1,
+      "shape": "turbo-frame > article"
+     },
+     "own": {
+      "count": 20,
+      "chars": 974.15,
+      "links": 7.55,
+      "pictured": 0.7
+     },
+     "says": 279
+    }
+   },
+   "final": {
+    "land": {
+     "other": 0.08911820824550709,
+     "feed": 0.9108817917544929
+    },
+    "reading": "feed",
+    "share": 0.9108817917544929,
+    "listLand": 0.9108817917544929,
+    "territories": 3,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.9108817917544929
+    },
+    "fabric": {
+     "landmark": 0.061976164550512976,
+     "continuous": 0.6864467878275382,
+     "media": 0.23267566801586778,
+     "interactive": 0.018901379606080983
+    },
+    "feed": {
+     "weight": 0.9108817917544929,
+     "mix": [
+      {
+       "comp": "continuous",
+       "share": 0.7445599746069135
+      },
+      {
+       "comp": "media",
+       "share": 0.25544002539308647
+      }
+     ],
+     "form": {
+      "count": 20,
+      "chars": 832,
+      "media": 1,
+      "shape": "turbo-frame > article"
+     },
+     "own": {
+      "count": 20,
+      "chars": 974.15,
+      "links": 7.55,
+      "pictured": 0.7
+     },
+     "says": 279
+    }
+   }
+  },
+  "ok": {
+   "baseline": false,
+   "first version": false,
+   "with directories": true,
+   "final": true
+  },
+  "built": {
+   "baseline": true,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  }
+ },
+ {
+  "id": "waxy",
+  "url": "https://waxy.org/",
+  "expect": "post",
+  "why": "blog posts and short links",
+  "elements": 430,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 0.49892808479845513,
+     "feed": 0.5010719152015449
+    },
+    "reading": "feed",
+    "share": 0.5010719152015449,
+    "listLand": 0.5010719152015449,
+    "territories": 13,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.5010719152015449
+    },
+    "fabric": {
+     "landmark": 0.049944328798443065,
+     "parcelled": 0.5640186319546668,
+     "continuous": 0.35559270682574656,
+     "support": 0.0304443324211436
+    },
+    "feed": {
+     "weight": 0.5010719152015449,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 20,
+      "chars": 118.5,
+      "media": 0,
+      "shape": "div > article"
+     },
+     "own": {
+      "count": 20,
+      "chars": 122.55,
+      "links": 2.8,
+      "pictured": 0
+     },
+     "says": 84
+    }
+   },
+   "first version": {
+    "land": {
+     "other": 0.49892808479845513,
+     "feed": 0.5010719152015449
+    },
+    "reading": "feed",
+    "share": 0.5010719152015449,
+    "listLand": 0.5010719152015449,
+    "territories": 13,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.5010719152015449
+    },
+    "fabric": {
+     "landmark": 0.049944328798443065,
+     "parcelled": 0.5640186319546668,
+     "continuous": 0.35559270682574656,
+     "support": 0.0304443324211436
+    },
+    "feed": {
+     "weight": 0.5010719152015449,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 20,
+      "chars": 118.5,
+      "media": 0,
+      "shape": "div > article"
+     },
+     "own": {
+      "count": 20,
+      "chars": 122.55,
+      "links": 2.8,
+      "pictured": 0
+     },
+     "says": 84
+    }
+   },
+   "with directories": {
+    "land": {
+     "other": 0.49892808479845513,
+     "feed": 0.5010719152015449
+    },
+    "reading": "feed",
+    "share": 0.5010719152015449,
+    "listLand": 0.5010719152015449,
+    "territories": 13,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.5010719152015449
+    },
+    "fabric": {
+     "landmark": 0.049944328798443065,
+     "parcelled": 0.39746937910080543,
+     "continuous": 0.522141959679608,
+     "support": 0.0304443324211436
+    },
+    "feed": {
+     "weight": 0.5010719152015449,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 0.6676140733473941
+      },
+      {
+       "comp": "continuous",
+       "share": 0.3323859266526059
+      }
+     ],
+     "form": {
+      "count": 20,
+      "chars": 118.5,
+      "media": 0,
+      "shape": "div > article"
+     },
+     "own": {
+      "count": 20,
+      "chars": 122.55,
+      "links": 2.8,
+      "pictured": 0
+     },
+     "says": 84
+    }
+   },
+   "final": {
+    "land": {
+     "other": 0.49892808479845513,
+     "feed": 0.5010719152015449
+    },
+    "reading": "feed",
+    "share": 0.5010719152015449,
+    "listLand": 0.5010719152015449,
+    "territories": 13,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.5010719152015449
+    },
+    "fabric": {
+     "landmark": 0.049944328798443065,
+     "parcelled": 0.39746937910080543,
+     "continuous": 0.522141959679608,
+     "support": 0.0304443324211436
+    },
+    "feed": {
+     "weight": 0.5010719152015449,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 0.6676140733473941
+      },
+      {
+       "comp": "continuous",
+       "share": 0.3323859266526059
+      }
+     ],
+     "form": {
+      "count": 20,
+      "chars": 118.5,
+      "media": 0,
+      "shape": "div > article"
+     },
+     "own": {
+      "count": 20,
+      "chars": 122.55,
+      "links": 2.8,
+      "pictured": 0
+     },
+     "says": 84
+    }
+   }
+  },
+  "ok": {
+   "baseline": true,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": true,
+   "final": true
+  }
+ },
+ {
+  "id": "hackaday",
+  "url": "https://hackaday.com/blog/",
+  "expect": "media-post",
+  "why": "posts with a picture and an excerpt",
+  "elements": 611,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 0.6552329945170164,
+     "images": 0.29430877570693537,
+     "feed": 0.05045822977604824
+    },
+    "reading": "none",
+    "share": 0.29430877570693537,
+    "listLand": 0.3447670054829836,
+    "territories": 26,
+    "largest": {
+     "kind": "showcase",
+     "weight": 0.07370805598796414
+    },
+    "fabric": {
+     "landmark": 0.048702497121208436,
+     "parcelled": 0.2557262779875364,
+     "continuous": 0.24737920601166133,
+     "media": 0.3289482168183307,
+     "interactive": 0.053631634760882924,
+     "support": 0.06561216730038022
+    },
+    "feed": {
+     "weight": 0.05045822977604824,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 10,
+      "chars": 51,
+      "media": 0,
+      "shape": "ul > li"
+     },
+     "own": {
+      "count": 10,
+      "chars": 53.9,
+      "links": 1.3,
+      "pictured": 0
+     },
+     "says": 51
+    }
+   },
+   "first version": {
+    "land": {
+     "other": 0.6552329945170164,
+     "images": 0.29430877570693537,
+     "index": 0.05045822977604824
+    },
+    "reading": "none",
+    "share": 0.29430877570693537,
+    "listLand": 0.3447670054829836,
+    "territories": 26,
+    "largest": {
+     "kind": "showcase",
+     "weight": 0.07370805598796414
+    },
+    "fabric": {
+     "landmark": 0.048702497121208436,
+     "parcelled": 0.20526804821148817,
+     "continuous": 0.24737920601166133,
+     "media": 0.3289482168183307,
+     "interactive": 0.053631634760882924,
+     "archive": 0.05045822977604824,
+     "support": 0.06561216730038022
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "other": 0.6552329945170164,
+     "images": 0.29430877570693537,
+     "index": 0.05045822977604824
+    },
+    "reading": "none",
+    "share": 0.29430877570693537,
+    "listLand": 0.3447670054829836,
+    "territories": 26,
+    "largest": {
+     "kind": "showcase",
+     "weight": 0.07370805598796414
+    },
+    "fabric": {
+     "landmark": 0.048702497121208436,
+     "parcelled": 0.20526804821148817,
+     "continuous": 0.24737920601166133,
+     "media": 0.3289482168183307,
+     "interactive": 0.053631634760882924,
+     "archive": 0.05045822977604824,
+     "support": 0.06561216730038022
+    },
+    "feed": null
+   },
+   "final": {
+    "land": {
+     "other": 0.6552329945170164,
+     "images": 0.29430877570693537,
+     "feed": 0.05045822977604824
+    },
+    "reading": "none",
+    "share": 0.29430877570693537,
+    "listLand": 0.3447670054829836,
+    "territories": 26,
+    "largest": {
+     "kind": "showcase",
+     "weight": 0.07370805598796414
+    },
+    "fabric": {
+     "landmark": 0.048702497121208436,
+     "parcelled": 0.2557262779875364,
+     "continuous": 0.24737920601166133,
+     "media": 0.3289482168183307,
+     "interactive": 0.053631634760882924,
+     "support": 0.06561216730038022
+    },
+    "feed": {
+     "weight": 0.05045822977604824,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 10,
+      "chars": 51,
+      "media": 0,
+      "shape": "ul > li"
+     },
+     "own": {
+      "count": 10,
+      "chars": 53.9,
+      "links": 1.3,
+      "pictured": 0
+     },
+     "says": 51
+    }
+   }
+  },
+  "ok": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  },
+  "built": {
+   "baseline": true,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  }
+ },
+ {
+  "id": "boingboing",
+  "url": "https://boingboing.net/",
+  "expect": "media-post",
+  "why": "posts with a picture and an excerpt",
+  "elements": 390,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 0.28189414423299214,
+     "images": 0.7181058557670079
+    },
+    "reading": "images",
+    "share": 0.7181058557670079,
+    "listLand": 0.7181058557670079,
+    "territories": 6,
+    "largest": {
+     "kind": "showcase",
+     "weight": 0.4911410453276061
+    },
+    "fabric": {
+     "media": 0.776148454980583,
+     "parcelled": 0.02649166349079639,
+     "navigation": 0.08154292581411028,
+     "support": 0.06760559251985815,
+     "continuous": 0.04821136319465212
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "other": 0.3049957926491543,
+     "feed": 0.46803939691144403,
+     "images": 0.22696481043940175
+    },
+    "reading": "feed",
+    "share": 0.46803939691144403,
+    "listLand": 0.6950042073508458,
+    "territories": 6,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.46803939691144403
+    },
+    "fabric": {
+     "media": 0.3008693770647171,
+     "parcelled": 0.5017707414066623,
+     "navigation": 0.08154292581411028,
+     "support": 0.06760559251985815,
+     "continuous": 0.04821136319465212
+    },
+    "feed": {
+     "weight": 0.46803939691144403,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 54,
+      "chars": 16,
+      "media": 0,
+      "shape": "div > a"
+     },
+     "own": {
+      "count": 20,
+      "chars": 82.55,
+      "links": 3.9,
+      "pictured": 1
+     },
+     "says": 0
+    }
+   },
+   "with directories": {
+    "land": {
+     "other": 0.3049957926491543,
+     "feed": 0.46803939691144403,
+     "images": 0.22696481043940175
+    },
+    "reading": "feed",
+    "share": 0.46803939691144403,
+    "listLand": 0.6950042073508458,
+    "territories": 6,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.46803939691144403
+    },
+    "fabric": {
+     "media": 0.43913750826394266,
+     "parcelled": 0.3635026102074368,
+     "navigation": 0.08154292581411028,
+     "support": 0.06760559251985815,
+     "continuous": 0.04821136319465212
+    },
+    "feed": {
+     "weight": 0.46803939691144403,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 0.7045801440826427
+      },
+      {
+       "comp": "media",
+       "share": 0.29541985591735725
+      }
+     ],
+     "form": {
+      "count": 54,
+      "chars": 16,
+      "media": 0,
+      "shape": "div > a"
+     },
+     "own": {
+      "count": 20,
+      "chars": 82.55,
+      "links": 3.9,
+      "pictured": 1
+     },
+     "says": 0
+    }
+   },
+   "final": {
+    "land": {
+     "other": 0.3049957926491543,
+     "feed": 0.46803939691144403,
+     "images": 0.22696481043940175
+    },
+    "reading": "feed",
+    "share": 0.46803939691144403,
+    "listLand": 0.6950042073508458,
+    "territories": 6,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.46803939691144403
+    },
+    "fabric": {
+     "media": 0.43913750826394266,
+     "parcelled": 0.3635026102074368,
+     "navigation": 0.08154292581411028,
+     "support": 0.06760559251985815,
+     "continuous": 0.04821136319465212
+    },
+    "feed": {
+     "weight": 0.46803939691144403,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 0.7045801440826427
+      },
+      {
+       "comp": "media",
+       "share": 0.29541985591735725
+      }
+     ],
+     "form": {
+      "count": 54,
+      "chars": 16,
+      "media": 0,
+      "shape": "div > a"
+     },
+     "own": {
+      "count": 20,
+      "chars": 82.55,
+      "links": 3.9,
+      "pictured": 1
+     },
+     "says": 0
+    }
+   }
+  },
+  "ok": {
+   "baseline": false,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  },
+  "built": {
+   "baseline": true,
+   "first version": false,
+   "with directories": true,
+   "final": true
+  }
+ },
+ {
+  "id": "newstack",
+  "url": "https://thenewstack.io/",
+  "expect": "cards",
+  "why": "cards: an image, a title, an excerpt",
+  "elements": 2377,
+  "out": {
+   "baseline": {
+    "land": {
+     "catalogue": 0.43510264324207126,
+     "other": 0.18253007452194442,
+     "images": 0.38236728223598443
+    },
+    "reading": "catalogue",
+    "share": 0.43510264324207126,
+    "listLand": 0.8174699254780557,
+    "territories": 7,
+    "largest": {
+     "kind": "pricing",
+     "weight": 0.43510264324207126
+    },
+    "fabric": {
+     "grid": 0.43510264324207126,
+     "parcelled": 0.01027096481636457,
+     "continuous": 0.047214338286949334,
+     "media": 0.38236728223598443,
+     "support": 0.03831400757769189,
+     "interactive": 0.08673076384093861
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "other": 0.3601355073844472,
+     "feed": 0.3466304392039665,
+     "images": 0.29323405341158626
+    },
+    "reading": "feed",
+    "share": 0.3466304392039665,
+    "listLand": 0.6398644926155528,
+    "territories": 11,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.23128725595388183
+    },
+    "fabric": {
+     "landmark": 0.006594455178240235,
+     "parcelled": 0.36920066159946263,
+     "continuous": 0.24028154836800997,
+     "media": 0.3205750996408778,
+     "navigation": 0.026031602657184343,
+     "support": 0.03731663255622506
+    },
+    "feed": {
+     "weight": 0.09526857027606477,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 60,
+      "chars": 109,
+      "media": 0,
+      "shape": "div > div"
+     },
+     "own": {
+      "count": 10,
+      "chars": 535,
+      "links": 5,
+      "pictured": 0
+     },
+     "says": 0
+    }
+   },
+   "with directories": {
+    "land": {
+     "other": 0.37013602472123,
+     "feed": 0.38257037321350174,
+     "images": 0.24729360206526826
+    },
+    "reading": "feed",
+    "share": 0.38257037321350174,
+    "listLand": 0.62986397527877,
+    "territories": 12,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.23128725595388183
+    },
+    "fabric": {
+     "landmark": 0.006594455178240235,
+     "parcelled": 0.3852059579299044,
+     "continuous": 0.26063831978737323,
+     "media": 0.2842130318910728,
+     "navigation": 0.026031602657184346,
+     "support": 0.03731663255622507
+    },
+    "feed": {
+     "weight": 0.09526857027606475,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 60,
+      "chars": 109,
+      "media": 0,
+      "shape": "div > div"
+     },
+     "own": {
+      "count": 10,
+      "chars": 535,
+      "links": 5,
+      "pictured": 0
+     },
+     "says": 0
+    }
+   },
+   "final": {
+    "land": {
+     "other": 0.37013602472123,
+     "feed": 0.38257037321350174,
+     "images": 0.24729360206526826
+    },
+    "reading": "feed",
+    "share": 0.38257037321350174,
+    "listLand": 0.62986397527877,
+    "territories": 12,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.23128725595388183
+    },
+    "fabric": {
+     "landmark": 0.006594455178240235,
+     "parcelled": 0.3852059579299044,
+     "continuous": 0.26063831978737323,
+     "media": 0.2842130318910728,
+     "navigation": 0.026031602657184346,
+     "support": 0.03731663255622507
+    },
+    "feed": {
+     "weight": 0.09526857027606475,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 60,
+      "chars": 109,
+      "media": 0,
+      "shape": "div > div"
+     },
+     "own": {
+      "count": 10,
+      "chars": 535,
+      "links": 5,
+      "pictured": 0
+     },
+     "says": 0
+    }
+   }
+  },
+  "ok": {
+   "baseline": false,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  }
+ },
+ {
+  "id": "g1",
+  "url": "https://g1.globo.com/",
+  "expect": "cards",
+  "why": "a river of story cards with a picture",
+  "elements": 325,
+  "out": {
+   "baseline": {
+    "land": {
+     "catalogue": 0.8519029065407131,
+     "other": 0.14809709345928693
+    },
+    "reading": "catalogue",
+    "share": 0.8519029065407131,
+    "listLand": 0.8519029065407131,
+    "territories": 4,
+    "largest": {
+     "kind": "pricing",
+     "weight": 0.8519029065407131
+    },
+    "fabric": {
+     "grid": 0.8519029065407131,
+     "marker": 0.025022857417833597,
+     "support": 0.06546845676338964,
+     "continuous": 0.05760577927806369
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "feed": 0.8519029065407131,
+     "other": 0.14809709345928693
+    },
+    "reading": "feed",
+    "share": 0.8519029065407131,
+    "listLand": 0.8519029065407131,
+    "territories": 4,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.8519029065407131
+    },
+    "fabric": {
+     "parcelled": 0.5872804130592985,
+     "media": 0.2646224934814147,
+     "marker": 0.025022857417833597,
+     "support": 0.06546845676338964,
+     "continuous": 0.05760577927806369
+    },
+    "feed": {
+     "weight": 0.8519029065407131,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 0.6893748202410105
+      },
+      {
+       "comp": "media",
+       "share": 0.31062517975898957
+      }
+     ],
+     "form": {
+      "count": 15,
+      "chars": 115,
+      "media": 1,
+      "shape": "div > div"
+     },
+     "own": {
+      "count": 9,
+      "chars": 191.22222222222223,
+      "links": 3.111111111111111,
+      "pictured": 1
+     },
+     "says": 22
+    }
+   },
+   "with directories": {
+    "land": {
+     "feed": 0.8519029065407131,
+     "other": 0.14809709345928693
+    },
+    "reading": "feed",
+    "share": 0.8519029065407131,
+    "listLand": 0.8519029065407131,
+    "territories": 4,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.8519029065407131
+    },
+    "fabric": {
+     "parcelled": 0.5998187765820312,
+     "media": 0.25208412995868185,
+     "marker": 0.025022857417833597,
+     "support": 0.06546845676338964,
+     "continuous": 0.05760577927806369
+    },
+    "feed": {
+     "weight": 0.8519029065407131,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 0.7040928866150845
+      },
+      {
+       "comp": "media",
+       "share": 0.2959071133849155
+      }
+     ],
+     "form": {
+      "count": 15,
+      "chars": 115,
+      "media": 1,
+      "shape": "div > div"
+     },
+     "own": {
+      "count": 9,
+      "chars": 191.22222222222223,
+      "links": 3.111111111111111,
+      "pictured": 1
+     },
+     "says": 22
+    }
+   },
+   "final": {
+    "land": {
+     "feed": 0.8519029065407131,
+     "other": 0.14809709345928693
+    },
+    "reading": "feed",
+    "share": 0.8519029065407131,
+    "listLand": 0.8519029065407131,
+    "territories": 4,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.8519029065407131
+    },
+    "fabric": {
+     "parcelled": 0.5998187765820312,
+     "media": 0.25208412995868185,
+     "marker": 0.025022857417833597,
+     "support": 0.06546845676338964,
+     "continuous": 0.05760577927806369
+    },
+    "feed": {
+     "weight": 0.8519029065407131,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 0.7040928866150845
+      },
+      {
+       "comp": "media",
+       "share": 0.2959071133849155
+      }
+     ],
+     "form": {
+      "count": 15,
+      "chars": 115,
+      "media": 1,
+      "shape": "div > div"
+     },
+     "own": {
+      "count": 9,
+      "chars": 191.22222222222223,
+      "links": 3.111111111111111,
+      "pictured": 1
+     },
+     "says": 22
+    }
+   }
+  },
+  "ok": {
+   "baseline": false,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  }
+ },
+ {
+  "id": "aljazeera",
+  "url": "https://www.aljazeera.com/",
+  "expect": "mixed",
+  "why": "an editorial front made of sections",
+  "elements": 901,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 0.8102485745440926,
+     "images": 0.08582792197327847,
+     "feed": 0.10392350348262883
+    },
+    "reading": "none",
+    "share": 0.10392350348262883,
+    "listLand": 0.18975142545590729,
+    "territories": 12,
+    "largest": {
+     "kind": "footer",
+     "weight": 0.16216538342351794
+    },
+    "fabric": {
+     "landmark": 0.15408826446333396,
+     "continuous": 0.24631530712030425,
+     "media": 0.23334376527552908,
+     "parcelled": 0.20408727971731472,
+     "support": 0.16216538342351794
+    },
+    "feed": {
+     "weight": 0.10392350348262883,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 10,
+      "chars": 71,
+      "media": 0,
+      "shape": "ol > li"
+     },
+     "own": {
+      "count": 10,
+      "chars": 64.5,
+      "links": 1,
+      "pictured": 0
+     },
+     "says": 1
+    }
+   },
+   "first version": {
+    "land": {
+     "other": 0.8178135142379578,
+     "images": 0.08582792197327847,
+     "index": 0.0963585637887636
+    },
+    "reading": "none",
+    "share": 0.0963585637887636,
+    "listLand": 0.18218648576204208,
+    "territories": 12,
+    "largest": {
+     "kind": "footer",
+     "weight": 0.16216538342351794
+    },
+    "fabric": {
+     "landmark": 0.15408826446333396,
+     "continuous": 0.24839897250283838,
+     "media": 0.2388250395868602,
+     "archive": 0.0963585637887636,
+     "support": 0.16216538342351794,
+     "parcelled": 0.10016377623468588
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "other": 0.8178135142379578,
+     "images": 0.08582792197327847,
+     "index": 0.0963585637887636
+    },
+    "reading": "none",
+    "share": 0.0963585637887636,
+    "listLand": 0.18218648576204208,
+    "territories": 12,
+    "largest": {
+     "kind": "footer",
+     "weight": 0.16216538342351794
+    },
+    "fabric": {
+     "landmark": 0.15408826446333396,
+     "continuous": 0.24839897250283838,
+     "media": 0.2388250395868602,
+     "archive": 0.0963585637887636,
+     "support": 0.16216538342351794,
+     "parcelled": 0.10016377623468588
+    },
+    "feed": null
+   },
+   "final": {
+    "land": {
+     "other": 0.8102485745440926,
+     "images": 0.08582792197327847,
+     "feed": 0.10392350348262883
+    },
+    "reading": "none",
+    "share": 0.10392350348262883,
+    "listLand": 0.18975142545590729,
+    "territories": 12,
+    "largest": {
+     "kind": "footer",
+     "weight": 0.16216538342351794
+    },
+    "fabric": {
+     "landmark": 0.15408826446333396,
+     "continuous": 0.24631530712030425,
+     "media": 0.23334376527552908,
+     "parcelled": 0.20408727971731472,
+     "support": 0.16216538342351794
+    },
+    "feed": {
+     "weight": 0.10392350348262883,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 10,
+      "chars": 71,
+      "media": 0,
+      "shape": "ol > li"
+     },
+     "own": {
+      "count": 10,
+      "chars": 64.5,
+      "links": 1,
+      "pictured": 0
+     },
+     "says": 1
+    }
+   }
+  },
+  "ok": {
+   "baseline": true,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  }
+ },
+ {
+  "id": "npr",
+  "url": "https://www.npr.org/",
+  "expect": "mixed",
+  "why": "an editorial front made of sections",
+  "elements": 4563,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 0.9813326260465762,
+     "images": 0.01866737395342379
+    },
+    "reading": "none",
+    "share": 0.01866737395342379,
+    "listLand": 0.01866737395342379,
+    "territories": 14,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.4017668658760188
+    },
+    "fabric": {
+     "media": 0.7757824496664173,
+     "continuous": 0.1601217097745545,
+     "interactive": 0.005059918057433045,
+     "navigation": 0.04476593167226478,
+     "support": 0.013802713000014965,
+     "parcelled": 0.00046727782931547647
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "other": 0.9813326260465762,
+     "images": 0.01866737395342379
+    },
+    "reading": "none",
+    "share": 0.01866737395342379,
+    "listLand": 0.01866737395342379,
+    "territories": 14,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.4017668658760188
+    },
+    "fabric": {
+     "media": 0.7757824496664173,
+     "continuous": 0.1601217097745545,
+     "interactive": 0.005059918057433045,
+     "navigation": 0.04476593167226478,
+     "support": 0.013802713000014965,
+     "parcelled": 0.00046727782931547647
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "other": 0.06517979848307669,
+     "feed": 0.9348202015169234
+    },
+    "reading": "feed",
+    "share": 0.9348202015169234,
+    "listLand": 0.9348202015169234,
+    "territories": 5,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.9348202015169234
+    },
+    "fabric": {
+     "continuous": 0.6590429219326445,
+     "media": 0.28197748679633233,
+     "navigation": 0.04476861009809345,
+     "support": 0.013743707050915465,
+     "parcelled": 0.00046727412201433245
+    },
+    "feed": {
+     "weight": 0.9348202015169234,
+     "mix": [
+      {
+       "comp": "continuous",
+       "share": 0.6983617958418418
+      },
+      {
+       "comp": "media",
+       "share": 0.30163820415815823
+      }
+     ],
+     "form": {
+      "count": 39,
+      "chars": 854.695652173913,
+      "media": 2.260869565217391,
+      "shape": "div > div"
+     },
+     "own": {
+      "count": 31,
+      "chars": 1112.774193548387,
+      "links": 8.935483870967742,
+      "pictured": 1
+     },
+     "says": 240
+    }
+   },
+   "final": {
+    "land": {
+     "other": 0.06517979848307669,
+     "feed": 0.9348202015169234
+    },
+    "reading": "feed",
+    "share": 0.9348202015169234,
+    "listLand": 0.9348202015169234,
+    "territories": 5,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.9348202015169234
+    },
+    "fabric": {
+     "continuous": 0.6590429219326445,
+     "media": 0.28197748679633233,
+     "navigation": 0.04476861009809345,
+     "support": 0.013743707050915465,
+     "parcelled": 0.00046727412201433245
+    },
+    "feed": {
+     "weight": 0.9348202015169234,
+     "mix": [
+      {
+       "comp": "continuous",
+       "share": 0.6983617958418418
+      },
+      {
+       "comp": "media",
+       "share": 0.30163820415815823
+      }
+     ],
+     "form": {
+      "count": 39,
+      "chars": 854.695652173913,
+      "media": 2.260869565217391,
+      "shape": "div > div"
+     },
+     "own": {
+      "count": 31,
+      "chars": 1112.774193548387,
+      "links": 8.935483870967742,
+      "pictured": 1
+     },
+     "says": 240
+    }
+   }
+  },
+  "ok": {
+   "baseline": true,
+   "first version": true,
+   "with directories": false,
+   "final": false
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  }
+ },
+ {
+  "id": "dw",
+  "url": "https://www.dw.com/en/",
+  "expect": "mixed",
+  "why": "an editorial front made of sections",
+  "elements": 1026,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 0.437618539116161,
+     "images": 0.5623814608838391
+    },
+    "reading": "images",
+    "share": 0.5623814608838391,
+    "listLand": 0.5623814608838391,
+    "territories": 18,
+    "largest": {
+     "kind": "showcase",
+     "weight": 0.17455669793548764
+    },
+    "fabric": {
+     "landmark": 0.005245995909813729,
+     "parcelled": 0.0828131069800484,
+     "continuous": 0.21880912134595337,
+     "media": 0.5623814608838391,
+     "marker": 0.002549031368080129,
+     "navigation": 0.060794398128711076,
+     "support": 0.06740688538355424
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "other": 0.437618539116161,
+     "images": 0.5623814608838391
+    },
+    "reading": "images",
+    "share": 0.5623814608838391,
+    "listLand": 0.5623814608838391,
+    "territories": 18,
+    "largest": {
+     "kind": "showcase",
+     "weight": 0.17455669793548764
+    },
+    "fabric": {
+     "landmark": 0.005245995909813729,
+     "parcelled": 0.0828131069800484,
+     "continuous": 0.21880912134595337,
+     "media": 0.5623814608838391,
+     "marker": 0.002549031368080129,
+     "navigation": 0.060794398128711076,
+     "support": 0.06740688538355424
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "other": 0.437618539116161,
+     "images": 0.5623814608838391
+    },
+    "reading": "images",
+    "share": 0.5623814608838391,
+    "listLand": 0.5623814608838391,
+    "territories": 18,
+    "largest": {
+     "kind": "showcase",
+     "weight": 0.17455669793548764
+    },
+    "fabric": {
+     "landmark": 0.005245995909813729,
+     "parcelled": 0.0828131069800484,
+     "continuous": 0.21880912134595337,
+     "media": 0.5623814608838391,
+     "marker": 0.002549031368080129,
+     "navigation": 0.060794398128711076,
+     "support": 0.06740688538355424
+    },
+    "feed": null
+   },
+   "final": {
+    "land": {
+     "other": 0.437618539116161,
+     "images": 0.5623814608838391
+    },
+    "reading": "images",
+    "share": 0.5623814608838391,
+    "listLand": 0.5623814608838391,
+    "territories": 18,
+    "largest": {
+     "kind": "showcase",
+     "weight": 0.17455669793548764
+    },
+    "fabric": {
+     "landmark": 0.005245995909813729,
+     "parcelled": 0.0828131069800484,
+     "continuous": 0.21880912134595337,
+     "media": 0.5623814608838391,
+     "marker": 0.002549031368080129,
+     "navigation": 0.060794398128711076,
+     "support": 0.06740688538355424
+    },
+    "feed": null
+   }
+  },
+  "ok": {
+   "baseline": true,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  }
+ },
+ {
+  "id": "oxylabs-products",
+  "url": "https://sandbox.oxylabs.io/products",
+  "expect": "catalogue",
+  "why": "product cards with a picture and a price",
+  "elements": 598,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 0.11606916196112277,
+     "catalogue": 0.8839308380388772
+    },
+    "reading": "catalogue",
+    "share": 0.8839308380388772,
+    "listLand": 0.8839308380388772,
+    "territories": 4,
+    "largest": {
+     "kind": "pricing",
+     "weight": 0.8839308380388772
+    },
+    "fabric": {
+     "parcelled": 0.05383633762638888,
+     "continuous": 0.022376953532561573,
+     "grid": 0.8839308380388772,
+     "support": 0.039855870802172316
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "other": 0.13125502533434857,
+     "catalogue": 0.8687449746656514
+    },
+    "reading": "catalogue",
+    "share": 0.8687449746656514,
+    "listLand": 0.8687449746656514,
+    "territories": 4,
+    "largest": {
+     "kind": "pricing",
+     "weight": 0.8687449746656514
+    },
+    "fabric": {
+     "continuous": 0.09139915453217624,
+     "grid": 0.8687449746656514,
+     "support": 0.039855870802172316
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "other": 0.13125502533434857,
+     "catalogue": 0.8687449746656514
+    },
+    "reading": "catalogue",
+    "share": 0.8687449746656514,
+    "listLand": 0.8687449746656514,
+    "territories": 4,
+    "largest": {
+     "kind": "pricing",
+     "weight": 0.8687449746656514
+    },
+    "fabric": {
+     "continuous": 0.09139915453217624,
+     "grid": 0.8687449746656514,
+     "support": 0.039855870802172316
+    },
+    "feed": null
+   },
+   "final": {
+    "land": {
+     "other": 0.13125502533434857,
+     "catalogue": 0.8687449746656514
+    },
+    "reading": "catalogue",
+    "share": 0.8687449746656514,
+    "listLand": 0.8687449746656514,
+    "territories": 4,
+    "largest": {
+     "kind": "pricing",
+     "weight": 0.8687449746656514
+    },
+    "fabric": {
+     "continuous": 0.09139915453217624,
+     "grid": 0.8687449746656514,
+     "support": 0.039855870802172316
+    },
+    "feed": null
+   }
+  },
+  "ok": {
+   "baseline": true,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  },
+  "built": {
+   "baseline": true,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  }
+ },
+ {
+  "id": "deathwish",
+  "url": "https://www.deathwishcoffee.com/collections/coffee",
+  "expect": "catalogue",
+  "why": "a product grid with a price on each",
+  "elements": 534,
+  "out": {
+   "baseline": {
+    "land": {
+     "faq": 0.8255248865599109,
+     "other": 0.1744751134400892
+    },
+    "reading": "faq",
+    "share": 0.8255248865599109,
+    "listLand": 0.8255248865599109,
+    "territories": 3,
+    "largest": {
+     "kind": "faq",
+     "weight": 0.8255248865599109
+    },
+    "fabric": {
+     "media": 0.8255248865599109,
+     "support": 0.13786134327774371,
+     "continuous": 0.036613770162345495
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "images": 0.3178502568749872,
+     "other": 0.6821497431250128
+    },
+    "reading": "images",
+    "share": 0.3178502568749872,
+    "listLand": 0.3178502568749872,
+    "territories": 8,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.3573661422762567
+    },
+    "fabric": {
+     "media": 0.6752163991512439,
+     "interactive": 0.06871963100837389,
+     "continuous": 0.02240540509238839,
+     "navigation": 0.11157554413717453,
+     "support": 0.12208302061081923
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "images": 0.3178502568749872,
+     "other": 0.6821497431250128
+    },
+    "reading": "images",
+    "share": 0.3178502568749872,
+    "listLand": 0.3178502568749872,
+    "territories": 8,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.3573661422762567
+    },
+    "fabric": {
+     "media": 0.6752163991512439,
+     "interactive": 0.06871963100837389,
+     "continuous": 0.02240540509238839,
+     "navigation": 0.11157554413717453,
+     "support": 0.12208302061081923
+    },
+    "feed": null
+   },
+   "final": {
+    "land": {
+     "images": 0.3178502568749872,
+     "other": 0.6821497431250128
+    },
+    "reading": "images",
+    "share": 0.3178502568749872,
+    "listLand": 0.3178502568749872,
+    "territories": 8,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.3573661422762567
+    },
+    "fabric": {
+     "media": 0.6752163991512439,
+     "interactive": 0.06871963100837389,
+     "continuous": 0.02240540509238839,
+     "navigation": 0.11157554413717453,
+     "support": 0.12208302061081923
+    },
+    "feed": null
+   }
+  },
+  "ok": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  }
+ },
+ {
+  "id": "hiut",
+  "url": "https://www.hiutdenim.co.uk/collections/mens",
+  "expect": "catalogue",
+  "why": "a product grid with a price on each",
+  "elements": 382,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 0.43406468038449836,
+     "images": 0.5659353196155017
+    },
+    "reading": "images",
+    "share": 0.5659353196155017,
+    "listLand": 0.5659353196155017,
+    "territories": 11,
+    "largest": {
+     "kind": "showcase",
+     "weight": 0.5659353196155017
+    },
+    "fabric": {
+     "continuous": 0.092390714069845,
+     "interactive": 0.08963418841945542,
+     "parcelled": 0.0877983469823496,
+     "media": 0.5659353196155017,
+     "navigation": 0.07670490985534102,
+     "support": 0.08753652105750734
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "other": 0.4348635346840956,
+     "catalogue": 0.5651364653159046
+    },
+    "reading": "catalogue",
+    "share": 0.5651364653159046,
+    "listLand": 0.5651364653159046,
+    "territories": 11,
+    "largest": {
+     "kind": "pricing",
+     "weight": 0.5651364653159046
+    },
+    "fabric": {
+     "continuous": 0.09251909219812827,
+     "interactive": 0.09030466459076944,
+     "parcelled": 0.0877983469823496,
+     "grid": 0.5651364653159046,
+     "navigation": 0.076704909855341,
+     "support": 0.08753652105750732
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "other": 0.4348635346840956,
+     "catalogue": 0.5651364653159046
+    },
+    "reading": "catalogue",
+    "share": 0.5651364653159046,
+    "listLand": 0.5651364653159046,
+    "territories": 11,
+    "largest": {
+     "kind": "pricing",
+     "weight": 0.5651364653159046
+    },
+    "fabric": {
+     "continuous": 0.09251909219812827,
+     "interactive": 0.09030466459076944,
+     "parcelled": 0.0877983469823496,
+     "grid": 0.5651364653159046,
+     "navigation": 0.076704909855341,
+     "support": 0.08753652105750732
+    },
+    "feed": null
+   },
+   "final": {
+    "land": {
+     "other": 0.4348635346840956,
+     "catalogue": 0.5651364653159046
+    },
+    "reading": "catalogue",
+    "share": 0.5651364653159046,
+    "listLand": 0.5651364653159046,
+    "territories": 11,
+    "largest": {
+     "kind": "pricing",
+     "weight": 0.5651364653159046
+    },
+    "fabric": {
+     "continuous": 0.09251909219812827,
+     "interactive": 0.09030466459076944,
+     "parcelled": 0.0877983469823496,
+     "grid": 0.5651364653159046,
+     "navigation": 0.076704909855341,
+     "support": 0.08753652105750732
+    },
+    "feed": null
+   }
+  },
+  "ok": {
+   "baseline": false,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  },
+  "built": {
+   "baseline": false,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  }
+ },
+ {
+  "id": "humble",
+  "url": "https://www.humblebundle.com/store",
+  "expect": "catalogue",
+  "why": "game tiles with a price",
+  "elements": 354,
+  "out": {
+   "baseline": {
+    "land": {
+     "catalogue": 0.7259457559587483,
+     "other": 0.27405424404125167
+    },
+    "reading": "catalogue",
+    "share": 0.7259457559587483,
+    "listLand": 0.7259457559587483,
+    "territories": 5,
+    "largest": {
+     "kind": "pricing",
+     "weight": 0.39637179494471186
+    },
+    "fabric": {
+     "grid": 0.7259457559587483,
+     "continuous": 0.0645664919301483,
+     "support": 0.20948775211110335
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "catalogue": 0.7259457559587483,
+     "other": 0.27405424404125167
+    },
+    "reading": "catalogue",
+    "share": 0.7259457559587483,
+    "listLand": 0.7259457559587483,
+    "territories": 5,
+    "largest": {
+     "kind": "pricing",
+     "weight": 0.39637179494471186
+    },
+    "fabric": {
+     "grid": 0.7259457559587483,
+     "continuous": 0.0645664919301483,
+     "support": 0.20948775211110335
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "catalogue": 0.7259457559587483,
+     "other": 0.27405424404125167
+    },
+    "reading": "catalogue",
+    "share": 0.7259457559587483,
+    "listLand": 0.7259457559587483,
+    "territories": 5,
+    "largest": {
+     "kind": "pricing",
+     "weight": 0.39637179494471186
+    },
+    "fabric": {
+     "grid": 0.7259457559587483,
+     "continuous": 0.0645664919301483,
+     "support": 0.20948775211110335
+    },
+    "feed": null
+   },
+   "final": {
+    "land": {
+     "catalogue": 0.7259457559587483,
+     "other": 0.27405424404125167
+    },
+    "reading": "catalogue",
+    "share": 0.7259457559587483,
+    "listLand": 0.7259457559587483,
+    "territories": 5,
+    "largest": {
+     "kind": "pricing",
+     "weight": 0.39637179494471186
+    },
+    "fabric": {
+     "grid": 0.7259457559587483,
+     "continuous": 0.0645664919301483,
+     "support": 0.20948775211110335
+    },
+    "feed": null
+   }
+  },
+  "ok": {
+   "baseline": true,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  },
+  "built": {
+   "baseline": true,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  }
+ },
+ {
+  "id": "scrapethissite",
+  "url": "https://www.scrapethissite.com/pages/simple/",
+  "expect": "headline",
+  "why": "250 country blocks: a name and three facts",
+  "elements": 2879,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 22,
+    "largest": {
+     "kind": "observed",
+     "weight": 0.764925883927718
+    },
+    "fabric": {
+     "continuous": 0.992063599550361,
+     "navigation": 0.006507577501794493,
+     "support": 0.0014288229478445764
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 22,
+    "largest": {
+     "kind": "observed",
+     "weight": 0.764925883927718
+    },
+    "fabric": {
+     "continuous": 0.992063599550361,
+     "navigation": 0.006507577501794493,
+     "support": 0.0014288229478445764
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 22,
+    "largest": {
+     "kind": "observed",
+     "weight": 0.764925883927718
+    },
+    "fabric": {
+     "continuous": 0.992063599550361,
+     "navigation": 0.006507577501794493,
+     "support": 0.0014288229478445764
+    },
+    "feed": null
+   },
+   "final": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 22,
+    "largest": {
+     "kind": "observed",
+     "weight": 0.764925883927718
+    },
+    "fabric": {
+     "continuous": 0.992063599550361,
+     "navigation": 0.006507577501794493,
+     "support": 0.0014288229478445764
+    },
+    "feed": null
+   }
+  },
+  "ok": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  }
+ },
+ {
+  "id": "xkcd-archive",
+  "url": "https://xkcd.com/archive/",
+  "expect": "directory",
+  "why": "comic titles, each a link",
+  "elements": 3386,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 2,
+    "largest": {
+     "kind": "observed",
+     "weight": 0.5174124417104872
+    },
+    "fabric": {
+     "continuous": 0.5174124417104872,
+     "navigation": 0.4825875582895128
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 2,
+    "largest": {
+     "kind": "observed",
+     "weight": 0.5174124417104872
+    },
+    "fabric": {
+     "continuous": 0.5174124417104872,
+     "navigation": 0.4825875582895128
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 3,
+    "largest": {
+     "kind": "observed",
+     "weight": 0.5174124417104872
+    },
+    "fabric": {
+     "landmark": 0.16946125607699175,
+     "continuous": 0.5174124417104872,
+     "navigation": 0.313126302212521
+    },
+    "feed": null
+   },
+   "final": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 3,
+    "largest": {
+     "kind": "observed",
+     "weight": 0.5174124417104872
+    },
+    "fabric": {
+     "landmark": 0.16946125607699175,
+     "continuous": 0.5174124417104872,
+     "navigation": 0.313126302212521
+    },
+    "feed": null
+   }
+  },
+  "ok": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  }
+ },
+ {
+  "id": "apod-archive",
+  "url": "https://apod.nasa.gov/apod/archivepix.html",
+  "expect": "directory",
+  "why": "dates and titles, each a link",
+  "elements": 560,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 0.4360291227521543,
+     "images": 0.5639708772478459
+    },
+    "reading": "images",
+    "share": 0.5639708772478459,
+    "listLand": 0.5639708772478459,
+    "territories": 9,
+    "largest": {
+     "kind": "showcase",
+     "weight": 0.5639708772478459
+    },
+    "fabric": {
+     "continuous": 0.010553629376145967,
+     "interactive": 0.1752958809958547,
+     "parcelled": 0.06722602006459508,
+     "media": 0.5639708772478459,
+     "marker": 0.007353532568106351,
+     "support": 0.17560005974745216
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "other": 0.6407000220880006,
+     "feed": 0.3592999779119995
+    },
+    "reading": "feed",
+    "share": 0.3592999779119995,
+    "listLand": 0.3592999779119995,
+    "territories": 13,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.3592999779119995
+    },
+    "fabric": {
+     "continuous": 0.020400408718258174,
+     "interactive": 0.2468328403303608,
+     "parcelled": 0.40960572667580947,
+     "navigation": 0.040176011292955144,
+     "media": 0.10738176625801463,
+     "marker": 0.007058096960606998,
+     "support": 0.16854514976399493
+    },
+    "feed": {
+     "weight": 0.3592999779119995,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 0.701136173505931
+      },
+      {
+       "comp": "media",
+       "share": 0.29886382649406895
+      }
+     ],
+     "form": {
+      "count": 15,
+      "chars": 79,
+      "media": 1,
+      "shape": "div > div"
+     },
+     "own": {
+      "count": 15,
+      "chars": 88.33333333333333,
+      "links": 2,
+      "pictured": 1
+     },
+     "says": 13
+    }
+   },
+   "with directories": {
+    "land": {
+     "other": 0.641022185663185,
+     "feed": 0.358977814336815
+    },
+    "reading": "feed",
+    "share": 0.358977814336815,
+    "listLand": 0.358977814336815,
+    "territories": 13,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.358977814336815
+    },
+    "fabric": {
+     "continuous": 0.020382116847921603,
+     "interactive": 0.24698542361545905,
+     "parcelled": 0.4116485042209765,
+     "navigation": 0.039116322204557505,
+     "media": 0.10607051246102352,
+     "marker": 0.007065889418830597,
+     "support": 0.16873123123123127
+    },
+    "feed": {
+     "weight": 0.358977814336815,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 0.7045207023253486
+      },
+      {
+       "comp": "media",
+       "share": 0.2954792976746514
+      }
+     ],
+     "form": {
+      "count": 15,
+      "chars": 79,
+      "media": 1,
+      "shape": "div > div"
+     },
+     "own": {
+      "count": 15,
+      "chars": 88.33333333333333,
+      "links": 2,
+      "pictured": 1
+     },
+     "says": 13
+    }
+   },
+   "final": {
+    "land": {
+     "other": 0.6407000220880006,
+     "feed": 0.3592999779119995
+    },
+    "reading": "feed",
+    "share": 0.3592999779119995,
+    "listLand": 0.3592999779119995,
+    "territories": 13,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.3592999779119995
+    },
+    "fabric": {
+     "continuous": 0.020400408718258174,
+     "interactive": 0.2468328403303608,
+     "parcelled": 0.41082178780586875,
+     "navigation": 0.040176011292955144,
+     "media": 0.10616570512795538,
+     "marker": 0.007058096960606998,
+     "support": 0.16854514976399493
+    },
+    "feed": {
+     "weight": 0.3592999779119995,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 0.7045207023253486
+      },
+      {
+       "comp": "media",
+       "share": 0.2954792976746514
+      }
+     ],
+     "form": {
+      "count": 15,
+      "chars": 79,
+      "media": 1,
+      "shape": "div > div"
+     },
+     "own": {
+      "count": 15,
+      "chars": 88.33333333333333,
+      "links": 2,
+      "pictured": 1
+     },
+     "says": 13
+    }
+   }
+  },
+  "ok": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  }
+ },
+ {
+  "id": "gutenberg-shelves",
+  "url": "https://www.gutenberg.org/ebooks/bookshelf/",
+  "expect": "directory",
+  "why": "bookshelf names, each a link",
+  "elements": 849,
+  "out": {
+   "baseline": {
+    "land": {
+     "index": 0.9267029878554078,
+     "other": 0.07329701214459211
+    },
+    "reading": "index",
+    "share": 0.9267029878554078,
+    "listLand": 0.9267029878554078,
+    "territories": 7,
+    "largest": {
+     "kind": "directory",
+     "weight": 0.9267029878554078
+    },
+    "fabric": {
+     "archive": 0.9267029878554078,
+     "marker": 0.005733636738277403,
+     "interactive": 0.015364354697102726,
+     "navigation": 0.02005876977656735,
+     "support": 0.022119295479385792,
+     "parcelled": 0.007729389561432557,
+     "continuous": 0.002291565891826286
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "feed": 0.9267029878554078,
+     "other": 0.07329701214459211
+    },
+    "reading": "feed",
+    "share": 0.9267029878554078,
+    "listLand": 0.9267029878554078,
+    "territories": 7,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.9267029878554078
+    },
+    "fabric": {
+     "parcelled": 0.9344323774168404,
+     "marker": 0.005733636738277403,
+     "interactive": 0.015364354697102726,
+     "navigation": 0.02005876977656735,
+     "support": 0.022119295479385792,
+     "continuous": 0.002291565891826286
+    },
+    "feed": {
+     "weight": 0.9267029878554078,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 335,
+      "chars": 19,
+      "media": 0,
+      "shape": "ul > a"
+     },
+     "own": {
+      "count": 21,
+      "chars": 296.14285714285717,
+      "links": 16.095238095238095,
+      "pictured": 0
+     },
+     "says": 1
+    }
+   },
+   "with directories": {
+    "land": {
+     "index": 0.9267029878554078,
+     "other": 0.07329701214459211
+    },
+    "reading": "index",
+    "share": 0.9267029878554078,
+    "listLand": 0.9267029878554078,
+    "territories": 7,
+    "largest": {
+     "kind": "directory",
+     "weight": 0.9267029878554078
+    },
+    "fabric": {
+     "archive": 0.9267029878554078,
+     "marker": 0.005733636738277403,
+     "interactive": 0.015364354697102726,
+     "navigation": 0.02005876977656735,
+     "support": 0.022119295479385792,
+     "parcelled": 0.007729389561432557,
+     "continuous": 0.002291565891826286
+    },
+    "feed": null
+   },
+   "final": {
+    "land": {
+     "index": 0.9267029878554078,
+     "other": 0.07329701214459211
+    },
+    "reading": "index",
+    "share": 0.9267029878554078,
+    "listLand": 0.9267029878554078,
+    "territories": 7,
+    "largest": {
+     "kind": "directory",
+     "weight": 0.9267029878554078
+    },
+    "fabric": {
+     "archive": 0.9267029878554078,
+     "marker": 0.005733636738277403,
+     "interactive": 0.015364354697102726,
+     "navigation": 0.02005876977656735,
+     "support": 0.022119295479385792,
+     "parcelled": 0.007729389561432557,
+     "continuous": 0.002291565891826286
+    },
+    "feed": null
+   }
+  },
+  "ok": {
+   "baseline": true,
+   "first version": false,
+   "with directories": true,
+   "final": true
+  },
+  "built": {
+   "baseline": true,
+   "first version": false,
+   "with directories": true,
+   "final": true
+  }
+ },
+ {
+  "id": "wiki-category",
+  "url": "https://en.wikipedia.org/wiki/Category:Programming_languages",
+  "expect": "directory",
+  "why": "page names, each a link",
+  "elements": 1883,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 0.46907947505361847,
+     "feed": 0.2720789181384297,
+     "index": 0.25884160680795176
+    },
+    "reading": "none",
+    "share": 0.2720789181384297,
+    "listLand": 0.5309205249463815,
+    "territories": 12,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.2720789181384297
+    },
+    "fabric": {
+     "landmark": 0.20818971551527216,
+     "parcelled": 0.45576211009782985,
+     "continuous": 0.010925591565921027,
+     "archive": 0.25884160680795176,
+     "navigation": 0.03060237973613857,
+     "marker": 0.000444156454806075,
+     "interactive": 0.013098173852231151,
+     "support": 0.022136265969849377
+    },
+    "feed": {
+     "weight": 0.2720789181384297,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 43,
+      "chars": 40,
+      "media": 0,
+      "shape": "ul > div"
+     },
+     "own": {
+      "count": 20,
+      "chars": 113.05,
+      "links": 2.75,
+      "pictured": 0
+     },
+     "says": 11
+    }
+   },
+   "first version": {
+    "land": {
+     "other": 0.47121243842645877,
+     "feed": 0.270180164531334,
+     "index": 0.25860739704220714
+    },
+    "reading": "none",
+    "share": 0.270180164531334,
+    "listLand": 0.5287875615735411,
+    "territories": 13,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.270180164531334
+    },
+    "fabric": {
+     "landmark": 0.20818971551527213,
+     "parcelled": 0.45386335649073406,
+     "continuous": 0.013058554938761367,
+     "archive": 0.25860739704220714,
+     "navigation": 0.03060237973613856,
+     "marker": 0.0004441564548060748,
+     "interactive": 0.013098173852231148,
+     "support": 0.022136265969849366
+    },
+    "feed": {
+     "weight": 0.270180164531334,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 43,
+      "chars": 40,
+      "media": 0,
+      "shape": "ul > div"
+     },
+     "own": {
+      "count": 20,
+      "chars": 113.05,
+      "links": 2.75,
+      "pictured": 0
+     },
+     "says": 11
+    }
+   },
+   "with directories": {
+    "land": {
+     "other": 0.47121243842645877,
+     "feed": 0.270180164531334,
+     "index": 0.25860739704220714
+    },
+    "reading": "none",
+    "share": 0.270180164531334,
+    "listLand": 0.5287875615735411,
+    "territories": 13,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.270180164531334
+    },
+    "fabric": {
+     "landmark": 0.20818971551527213,
+     "parcelled": 0.45386335649073406,
+     "continuous": 0.013058554938761367,
+     "archive": 0.25860739704220714,
+     "navigation": 0.03060237973613856,
+     "marker": 0.0004441564548060748,
+     "interactive": 0.013098173852231148,
+     "support": 0.022136265969849366
+    },
+    "feed": {
+     "weight": 0.270180164531334,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 43,
+      "chars": 40,
+      "media": 0,
+      "shape": "ul > div"
+     },
+     "own": {
+      "count": 20,
+      "chars": 113.05,
+      "links": 2.75,
+      "pictured": 0
+     },
+     "says": 11
+    }
+   },
+   "final": {
+    "land": {
+     "other": 0.47121243842645877,
+     "feed": 0.270180164531334,
+     "index": 0.25860739704220714
+    },
+    "reading": "none",
+    "share": 0.270180164531334,
+    "listLand": 0.5287875615735411,
+    "territories": 13,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.270180164531334
+    },
+    "fabric": {
+     "landmark": 0.20818971551527213,
+     "parcelled": 0.45386335649073406,
+     "continuous": 0.013058554938761367,
+     "archive": 0.25860739704220714,
+     "navigation": 0.03060237973613856,
+     "marker": 0.0004441564548060748,
+     "interactive": 0.013098173852231148,
+     "support": 0.022136265969849366
+    },
+    "feed": {
+     "weight": 0.270180164531334,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 43,
+      "chars": 40,
+      "media": 0,
+      "shape": "ul > div"
+     },
+     "own": {
+      "count": 20,
+      "chars": 113.05,
+      "links": 2.75,
+      "pictured": 0
+     },
+     "says": 11
+    }
+   }
+  },
+  "ok": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  }
+ },
+ {
+  "id": "ooh-directory",
+  "url": "https://ooh.directory/",
+  "expect": "directory",
+  "why": "category names with counts",
+  "elements": 505,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 0.7388294854340249,
+     "feed": 0.2611705145659751
+    },
+    "reading": "none",
+    "share": 0.2611705145659751,
+    "listLand": 0.2611705145659751,
+    "territories": 5,
+    "largest": {
+     "kind": "testimonials",
+     "weight": 0.682034006866823
+    },
+    "fabric": {
+     "landmark": 0.03942401809210876,
+     "parcelled": 0.2611705145659751,
+     "continuous": 0.6899758980753271,
+     "support": 0.009429569266589057
+    },
+    "feed": {
+     "weight": 0.2611705145659751,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 30,
+      "chars": 8,
+      "media": 0,
+      "shape": "ul > a"
+     },
+     "own": {
+      "count": 12,
+      "chars": 45.75,
+      "links": 3.5833333333333335,
+      "pictured": 0
+     },
+     "says": 5
+    }
+   },
+   "first version": {
+    "land": {
+     "other": 0.2156500932049535,
+     "feed": 0.7843499067950463
+    },
+    "reading": "feed",
+    "share": 0.7843499067950463,
+    "listLand": 0.7843499067950463,
+    "territories": 7,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.5253233620305822
+    },
+    "fabric": {
+     "landmark": 0.03942401809210876,
+     "continuous": 0.640643457485191,
+     "parcelled": 0.31050295515611104,
+     "support": 0.009429569266589057
+    },
+    "feed": {
+     "weight": 0.5253233620305822,
+     "mix": [
+      {
+       "comp": "continuous",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 15,
+      "chars": 371,
+      "media": 0,
+      "shape": "ol > li"
+     },
+     "own": {
+      "count": 15,
+      "chars": 371.26666666666665,
+      "links": 3,
+      "pictured": 0
+     },
+     "says": 203
+    }
+   },
+   "with directories": {
+    "land": {
+     "other": 0.2156500932049535,
+     "feed": 0.7843499067950463
+    },
+    "reading": "feed",
+    "share": 0.7843499067950463,
+    "listLand": 0.7843499067950463,
+    "territories": 7,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.5253233620305822
+    },
+    "fabric": {
+     "landmark": 0.03942401809210876,
+     "continuous": 0.640643457485191,
+     "parcelled": 0.31050295515611104,
+     "support": 0.009429569266589057
+    },
+    "feed": {
+     "weight": 0.5253233620305822,
+     "mix": [
+      {
+       "comp": "continuous",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 15,
+      "chars": 371,
+      "media": 0,
+      "shape": "ol > li"
+     },
+     "own": {
+      "count": 15,
+      "chars": 371.26666666666665,
+      "links": 3,
+      "pictured": 0
+     },
+     "says": 203
+    }
+   },
+   "final": {
+    "land": {
+     "other": 0.2156500932049535,
+     "feed": 0.7843499067950463
+    },
+    "reading": "feed",
+    "share": 0.7843499067950463,
+    "listLand": 0.7843499067950463,
+    "territories": 7,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.5253233620305822
+    },
+    "fabric": {
+     "landmark": 0.03942401809210876,
+     "continuous": 0.640643457485191,
+     "parcelled": 0.31050295515611104,
+     "support": 0.009429569266589057
+    },
+    "feed": {
+     "weight": 0.5253233620305822,
+     "mix": [
+      {
+       "comp": "continuous",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 15,
+      "chars": 371,
+      "media": 0,
+      "shape": "ol > li"
+     },
+     "own": {
+      "count": 15,
+      "chars": 371.26666666666665,
+      "links": 3,
+      "pictured": 0
+     },
+     "says": 203
+    }
+   }
+  },
+  "ok": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  }
+ },
+ {
+  "id": "python-library",
+  "url": "https://docs.python.org/3/library/index.html",
+  "expect": "directory",
+  "why": "a nested table of contents",
+  "elements": 1228,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 10,
+    "largest": {
+     "kind": "section",
+     "weight": 0.8919207032422963
+    },
+    "fabric": {
+     "parcelled": 0.3982638841349602,
+     "continuous": 0.555803535751823,
+     "interactive": 0.010869000370992357,
+     "marker": 0.0015953097892196949,
+     "navigation": 0.026568555114629668,
+     "support": 0.00689971483837518
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "other": 0.5572330154632107,
+     "index": 0.4427669845367892
+    },
+    "reading": "index",
+    "share": 0.4427669845367892,
+    "listLand": 0.4427669845367892,
+    "territories": 20,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.44915371870550697
+    },
+    "fabric": {
+     "parcelled": 0.1859533663828278,
+     "continuous": 0.325347068967166,
+     "archive": 0.4427669845367892,
+     "interactive": 0.010869000370992355,
+     "marker": 0.0015953097892196944,
+     "navigation": 0.02656855511462966,
+     "support": 0.006899714838375179
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "other": 0.5572330154632107,
+     "index": 0.4427669845367892
+    },
+    "reading": "index",
+    "share": 0.4427669845367892,
+    "listLand": 0.4427669845367892,
+    "territories": 20,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.44915371870550697
+    },
+    "fabric": {
+     "parcelled": 0.1859533663828278,
+     "continuous": 0.325347068967166,
+     "archive": 0.4427669845367892,
+     "interactive": 0.010869000370992355,
+     "marker": 0.0015953097892196944,
+     "navigation": 0.02656855511462966,
+     "support": 0.006899714838375179
+    },
+    "feed": null
+   },
+   "final": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 10,
+    "largest": {
+     "kind": "section",
+     "weight": 0.8919207032422963
+    },
+    "fabric": {
+     "parcelled": 0.3982638841349602,
+     "continuous": 0.555803535751823,
+     "interactive": 0.010869000370992357,
+     "marker": 0.0015953097892196949,
+     "navigation": 0.026568555114629668,
+     "support": 0.00689971483837518
+    },
+    "feed": null
+   }
+  },
+  "ok": {
+   "baseline": false,
+   "first version": true,
+   "with directories": true,
+   "final": false
+  },
+  "built": {
+   "baseline": false,
+   "first version": true,
+   "with directories": true,
+   "final": false
+  }
+ },
+ {
+  "id": "learnxinyminutes",
+  "url": "https://learnxinyminutes.com/",
+  "expect": "directory",
+  "why": "language names, each a link",
+  "elements": 1505,
+  "out": {
+   "baseline": {
+    "land": {
+     "index": 0.9095166608526437,
+     "feed": 0.053014276160555866,
+     "other": 0.037469062986800444
+    },
+    "reading": "index",
+    "share": 0.9095166608526437,
+    "listLand": 0.9625309370131996,
+    "territories": 5,
+    "largest": {
+     "kind": "directory",
+     "weight": 0.8010096577367212
+    },
+    "fabric": {
+     "archive": 0.9095166608526437,
+     "parcelled": 0.053014276160555866,
+     "support": 0.027272160902115112,
+     "continuous": 0.010196902084685332
+    },
+    "feed": {
+     "weight": 0.053014276160555866,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 20,
+      "chars": 2,
+      "media": 0,
+      "shape": "td > a"
+     },
+     "own": {
+      "count": 10,
+      "chars": 20.2,
+      "links": 3.7,
+      "pictured": 0
+     },
+     "says": 0
+    }
+   },
+   "first version": {
+    "land": {
+     "feed": 0.9625309370131996,
+     "other": 0.037469062986800444
+    },
+    "reading": "feed",
+    "share": 0.9625309370131996,
+    "listLand": 0.9625309370131996,
+    "territories": 5,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.8010096577367212
+    },
+    "fabric": {
+     "parcelled": 0.9625309370131996,
+     "support": 0.027272160902115112,
+     "continuous": 0.010196902084685332
+    },
+    "feed": {
+     "weight": 0.8010096577367212,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 98,
+      "chars": 20.5,
+      "media": 0,
+      "shape": "table > tr"
+     },
+     "own": {
+      "count": 98,
+      "chars": 21.29591836734694,
+      "links": 6.612244897959184,
+      "pictured": 0
+     },
+     "says": 0
+    }
+   },
+   "with directories": {
+    "land": {
+     "feed": 0.9625309370131996,
+     "other": 0.037469062986800444
+    },
+    "reading": "feed",
+    "share": 0.9625309370131996,
+    "listLand": 0.9625309370131996,
+    "territories": 5,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.8010096577367212
+    },
+    "fabric": {
+     "parcelled": 0.9625309370131996,
+     "support": 0.027272160902115112,
+     "continuous": 0.010196902084685332
+    },
+    "feed": {
+     "weight": 0.8010096577367212,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 98,
+      "chars": 20.5,
+      "media": 0,
+      "shape": "table > tr"
+     },
+     "own": {
+      "count": 98,
+      "chars": 21.29591836734694,
+      "links": 6.612244897959184,
+      "pictured": 0
+     },
+     "says": 0
+    }
+   },
+   "final": {
+    "land": {
+     "feed": 0.9625309370131996,
+     "other": 0.037469062986800444
+    },
+    "reading": "feed",
+    "share": 0.9625309370131996,
+    "listLand": 0.9625309370131996,
+    "territories": 5,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.8010096577367212
+    },
+    "fabric": {
+     "parcelled": 0.9625309370131996,
+     "support": 0.027272160902115112,
+     "continuous": 0.010196902084685332
+    },
+    "feed": {
+     "weight": 0.8010096577367212,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 98,
+      "chars": 20.5,
+      "media": 0,
+      "shape": "table > tr"
+     },
+     "own": {
+      "count": 98,
+      "chars": 21.29591836734694,
+      "links": 6.612244897959184,
+      "pictured": 0
+     },
+     "says": 0
+    }
+   }
+  },
+  "ok": {
+   "baseline": true,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  },
+  "built": {
+   "baseline": true,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  }
+ },
+ {
+  "id": "debian-packages",
+  "url": "https://packages.debian.org/stable/",
+  "expect": "directory",
+  "why": "section names with a description",
+  "elements": 263,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 4,
+    "largest": {
+     "kind": "main",
+     "weight": 0.8100074786417053
+    },
+    "fabric": {
+     "continuous": 0.8131582779206913,
+     "navigation": 0.07079066155414261,
+     "support": 0.11605106052516624
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 4,
+    "largest": {
+     "kind": "main",
+     "weight": 0.8100074786417053
+    },
+    "fabric": {
+     "continuous": 0.8131582779206913,
+     "navigation": 0.07079066155414261,
+     "support": 0.11605106052516624
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "other": 0.2859973753889963,
+     "index": 0.7140026246110037
+    },
+    "reading": "index",
+    "share": 0.7140026246110037,
+    "listLand": 0.7140026246110037,
+    "territories": 6,
+    "largest": {
+     "kind": "directory",
+     "weight": 0.3629405689463903
+    },
+    "fabric": {
+     "parcelled": 0.09600485403070148,
+     "archive": 0.7140026246110037,
+     "navigation": 0.07079066155414261,
+     "support": 0.11605106052516624,
+     "continuous": 0.003150799278985939
+    },
+    "feed": null
+   },
+   "final": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 4,
+    "largest": {
+     "kind": "main",
+     "weight": 0.8100074786417053
+    },
+    "fabric": {
+     "continuous": 0.8131582779206913,
+     "navigation": 0.07079066155414261,
+     "support": 0.11605106052516624
+    },
+    "feed": null
+   }
+  },
+  "ok": {
+   "baseline": false,
+   "first version": false,
+   "with directories": true,
+   "final": false
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": true,
+   "final": false
+  }
+ },
+ {
+  "id": "gnu-free-sw",
+  "url": "https://www.gnu.org/philosophy/free-sw.html",
+  "expect": "none",
+  "why": "one essay",
+  "elements": 493,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 0.3823623496809491,
+     "catalogue": 0.6176376503190508
+    },
+    "reading": "catalogue",
+    "share": 0.6176376503190508,
+    "listLand": 0.6176376503190508,
+    "territories": 8,
+    "largest": {
+     "kind": "pricing",
+     "weight": 0.6176376503190508
+    },
+    "fabric": {
+     "landmark": 0.03752599529681098,
+     "parcelled": 0.23478399866657576,
+     "grid": 0.6176376503190508,
+     "interactive": 0.01301397797634496,
+     "navigation": 0.061868920939774814,
+     "continuous": 0.00859770689722452,
+     "support": 0.026571749904218105
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "other": 0.917963443197791,
+     "index": 0.08203655680220905
+    },
+    "reading": "none",
+    "share": 0.08203655680220905,
+    "listLand": 0.08203655680220905,
+    "territories": 9,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.5607312366996594
+    },
+    "fabric": {
+     "landmark": 0.039052834916124116,
+     "parcelled": 0.20441079795002678,
+     "continuous": 0.5696192686170624,
+     "archive": 0.08203655680220905,
+     "interactive": 0.013453430433116136,
+     "navigation": 0.06395809377794813,
+     "support": 0.02746901750351348
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "other": 0.6970957902687667,
+     "index": 0.3029042097312334
+    },
+    "reading": "index",
+    "share": 0.3029042097312334,
+    "listLand": 0.3029042097312334,
+    "territories": 10,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.339863583770635
+    },
+    "fabric": {
+     "landmark": 0.039052834916124116,
+     "parcelled": 0.20441079795002678,
+     "continuous": 0.348751615688038,
+     "archive": 0.3029042097312334,
+     "interactive": 0.013453430433116136,
+     "navigation": 0.06395809377794813,
+     "support": 0.02746901750351348
+    },
+    "feed": null
+   },
+   "final": {
+    "land": {
+     "other": 0.917963443197791,
+     "index": 0.08203655680220905
+    },
+    "reading": "none",
+    "share": 0.08203655680220905,
+    "listLand": 0.08203655680220905,
+    "territories": 9,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.5607312366996594
+    },
+    "fabric": {
+     "landmark": 0.039052834916124116,
+     "parcelled": 0.20441079795002678,
+     "continuous": 0.5696192686170624,
+     "archive": 0.08203655680220905,
+     "interactive": 0.013453430433116136,
+     "navigation": 0.06395809377794813,
+     "support": 0.02746901750351348
+    },
+    "feed": null
+   }
+  },
+  "ok": {
+   "baseline": false,
+   "first version": true,
+   "with directories": false,
+   "final": true
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  }
+ },
+ {
+  "id": "effective-go",
+  "url": "https://go.dev/doc/effective_go",
+  "expect": "none",
+  "why": "one long document",
+  "elements": 1451,
+  "out": {
+   "baseline": {
+    "land": {
+     "images": 0.08761986077303979,
+     "other": 0.9123801392269603
+    },
+    "reading": "none",
+    "share": 0.08761986077303979,
+    "listLand": 0.08761986077303979,
+    "territories": 5,
+    "largest": {
+     "kind": "section",
+     "weight": 0.8526909604822507
+    },
+    "fabric": {
+     "media": 0.08761986077303979,
+     "continuous": 0.8581499421276668,
+     "navigation": 0.054230197099293415
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "images": 0.08761986077303979,
+     "other": 0.9123801392269603
+    },
+    "reading": "none",
+    "share": 0.08761986077303979,
+    "listLand": 0.08761986077303979,
+    "territories": 5,
+    "largest": {
+     "kind": "section",
+     "weight": 0.8526909604822507
+    },
+    "fabric": {
+     "media": 0.08761986077303979,
+     "continuous": 0.8581499421276668,
+     "navigation": 0.054230197099293415
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "images": 0.08761986077303979,
+     "other": 0.9123801392269603
+    },
+    "reading": "none",
+    "share": 0.08761986077303979,
+    "listLand": 0.08761986077303979,
+    "territories": 5,
+    "largest": {
+     "kind": "section",
+     "weight": 0.8526909604822507
+    },
+    "fabric": {
+     "media": 0.08761986077303979,
+     "continuous": 0.8581499421276668,
+     "navigation": 0.054230197099293415
+    },
+    "feed": null
+   },
+   "final": {
+    "land": {
+     "images": 0.08761986077303979,
+     "other": 0.9123801392269603
+    },
+    "reading": "none",
+    "share": 0.08761986077303979,
+    "listLand": 0.08761986077303979,
+    "territories": 5,
+    "largest": {
+     "kind": "section",
+     "weight": 0.8526909604822507
+    },
+    "fabric": {
+     "media": 0.08761986077303979,
+     "continuous": 0.8581499421276668,
+     "navigation": 0.054230197099293415
+    },
+    "feed": null
+   }
+  },
+  "ok": {
+   "baseline": true,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  }
+ },
+ {
+  "id": "sqlite-about",
+  "url": "https://sqlite.org/about.html",
+  "expect": "none",
+  "why": "one short document",
+  "elements": 116,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 18,
+    "largest": {
+     "kind": "observed",
+     "weight": 0.12164724932263969
+    },
+    "fabric": {
+     "parcelled": 0.2821248800149933,
+     "continuous": 0.5400917191752901,
+     "marker": 0.0050607287449392704,
+     "navigation": 0.11705465587044532,
+     "interactive": 0.05566801619433198
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "other": 0.7390987598955496,
+     "index": 0.2609012401044504
+    },
+    "reading": "none",
+    "share": 0.2609012401044504,
+    "listLand": 0.2609012401044504,
+    "territories": 13,
+    "largest": {
+     "kind": "directory",
+     "weight": 0.2609012401044504
+    },
+    "fabric": {
+     "parcelled": 0.11916071184406898,
+     "continuous": 0.4448919570653829,
+     "archive": 0.2609012401044504,
+     "marker": 0.004982809307887788,
+     "navigation": 0.11525237929144452,
+     "interactive": 0.05481090238676567
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "other": 0.7390987598955496,
+     "index": 0.2609012401044504
+    },
+    "reading": "none",
+    "share": 0.2609012401044504,
+    "listLand": 0.2609012401044504,
+    "territories": 13,
+    "largest": {
+     "kind": "directory",
+     "weight": 0.2609012401044504
+    },
+    "fabric": {
+     "parcelled": 0.11916071184406898,
+     "continuous": 0.4448919570653829,
+     "archive": 0.2609012401044504,
+     "marker": 0.004982809307887788,
+     "navigation": 0.11525237929144452,
+     "interactive": 0.05481090238676567
+    },
+    "feed": null
+   },
+   "final": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 18,
+    "largest": {
+     "kind": "observed",
+     "weight": 0.12164724932263969
+    },
+    "fabric": {
+     "parcelled": 0.2821248800149933,
+     "continuous": 0.5400917191752901,
+     "marker": 0.0050607287449392704,
+     "navigation": 0.11705465587044532,
+     "interactive": 0.05566801619433198
+    },
+    "feed": null
+   }
+  },
+  "ok": {
+   "baseline": true,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  }
+ },
+ {
+  "id": "wiki-isometric",
+  "url": "https://en.wikipedia.org/wiki/Isometric_projection",
+  "expect": "none",
+  "why": "an encyclopedia article",
+  "elements": 1506,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 0.7334092892699677,
+     "index": 0.23946767858837137,
+     "images": 0.027123032141660723
+    },
+    "reading": "none",
+    "share": 0.23946767858837137,
+    "listLand": 0.2665907107300321,
+    "territories": 19,
+    "largest": {
+     "kind": "directory",
+     "weight": 0.1382263160117671
+    },
+    "fabric": {
+     "landmark": 0.07385996348912717,
+     "archive": 0.23946767858837137,
+     "parcelled": 0.18830225051487912,
+     "continuous": 0.2418407899892417,
+     "media": 0.07087994195539307,
+     "structured": 0.11041064056855607,
+     "navigation": 0.034793938077900044,
+     "marker": 0.0005049918443817133,
+     "interactive": 0.014892209490816722,
+     "support": 0.02504759548133298
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "other": 0.7041753442092966,
+     "index": 0.2687016236490426,
+     "images": 0.027123032141660723
+    },
+    "reading": "none",
+    "share": 0.2687016236490426,
+    "listLand": 0.29582465579070333,
+    "territories": 20,
+    "largest": {
+     "kind": "directory",
+     "weight": 0.1382263160117671
+    },
+    "fabric": {
+     "landmark": 0.07385996348912717,
+     "archive": 0.2687016236490426,
+     "parcelled": 0.18830225051487912,
+     "continuous": 0.2418407899892417,
+     "media": 0.07087994195539307,
+     "structured": 0.08117669550788482,
+     "navigation": 0.034793938077900044,
+     "marker": 0.0005049918443817133,
+     "interactive": 0.014892209490816722,
+     "support": 0.02504759548133298
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "other": 0.6702138337570918,
+     "index": 0.30266313410124773,
+     "images": 0.02712303214166073
+    },
+    "reading": "index",
+    "share": 0.30266313410124773,
+    "listLand": 0.32978616624290846,
+    "territories": 25,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.12142696736464198
+    },
+    "fabric": {
+     "landmark": 0.07385996348912718,
+     "archive": 0.30266313410124773,
+     "parcelled": 0.16120670421851807,
+     "continuous": 0.24184078998924177,
+     "media": 0.0708799419553931,
+     "structured": 0.07431073135204089,
+     "navigation": 0.03479393807790005,
+     "marker": 0.0005049918443817133,
+     "interactive": 0.014892209490816724,
+     "support": 0.02504759548133298
+    },
+    "feed": null
+   },
+   "final": {
+    "land": {
+     "other": 0.7334092892699677,
+     "index": 0.23946767858837137,
+     "images": 0.027123032141660723
+    },
+    "reading": "none",
+    "share": 0.23946767858837137,
+    "listLand": 0.2665907107300321,
+    "territories": 19,
+    "largest": {
+     "kind": "directory",
+     "weight": 0.1382263160117671
+    },
+    "fabric": {
+     "landmark": 0.07385996348912717,
+     "archive": 0.23946767858837137,
+     "parcelled": 0.18830225051487912,
+     "continuous": 0.2418407899892417,
+     "media": 0.07087994195539307,
+     "structured": 0.11041064056855607,
+     "navigation": 0.034793938077900044,
+     "marker": 0.0005049918443817133,
+     "interactive": 0.014892209490816722,
+     "support": 0.02504759548133298
+    },
+    "feed": null
+   }
+  },
+  "ok": {
+   "baseline": true,
+   "first version": true,
+   "with directories": false,
+   "final": true
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  }
+ },
+ {
+  "id": "sep-turing",
+  "url": "https://plato.stanford.edu/entries/turing-machine/",
+  "expect": "none",
+  "why": "a long encyclopedia entry",
+  "elements": 1317,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 6,
+    "largest": {
+     "kind": "testimonials",
+     "weight": 0.9205081435675312
+    },
+    "fabric": {
+     "continuous": 0.9225383217023809,
+     "marker": 0.004644632172097801,
+     "navigation": 0.032103288436772084,
+     "interactive": 0.004649281453551353,
+     "support": 0.03606447623519783
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 6,
+    "largest": {
+     "kind": "testimonials",
+     "weight": 0.9205081435675312
+    },
+    "fabric": {
+     "continuous": 0.9225383217023809,
+     "marker": 0.004644632172097801,
+     "navigation": 0.032103288436772084,
+     "interactive": 0.004649281453551353,
+     "support": 0.03606447623519783
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 6,
+    "largest": {
+     "kind": "testimonials",
+     "weight": 0.9205081435675312
+    },
+    "fabric": {
+     "continuous": 0.9225383217023809,
+     "marker": 0.004644632172097801,
+     "navigation": 0.032103288436772084,
+     "interactive": 0.004649281453551353,
+     "support": 0.03606447623519783
+    },
+    "feed": null
+   },
+   "final": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 6,
+    "largest": {
+     "kind": "testimonials",
+     "weight": 0.9205081435675312
+    },
+    "fabric": {
+     "continuous": 0.9225383217023809,
+     "marker": 0.004644632172097801,
+     "navigation": 0.032103288436772084,
+     "interactive": 0.004649281453551353,
+     "support": 0.03606447623519783
+    },
+    "feed": null
+   }
+  },
+  "ok": {
+   "baseline": true,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  }
+ },
+ {
+  "id": "postgres-select",
+  "url": "https://www.postgresql.org/docs/current/sql-select.html",
+  "expect": "none",
+  "why": "a reference page",
+  "elements": 1719,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 21,
+    "largest": {
+     "kind": "section",
+     "weight": 0.1549467825133442
+    },
+    "fabric": {
+     "continuous": 0.9170767759223004,
+     "navigation": 0.023645478796798822,
+     "interactive": 0.005059332168153803,
+     "support": 0.004236040842608776,
+     "parcelled": 0.04998237227013831
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 21,
+    "largest": {
+     "kind": "section",
+     "weight": 0.1549467825133442
+    },
+    "fabric": {
+     "continuous": 0.9170767759223004,
+     "navigation": 0.023645478796798822,
+     "interactive": 0.005059332168153803,
+     "support": 0.004236040842608776,
+     "parcelled": 0.04998237227013831
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 21,
+    "largest": {
+     "kind": "section",
+     "weight": 0.1549467825133442
+    },
+    "fabric": {
+     "continuous": 0.9170767759223004,
+     "navigation": 0.023645478796798822,
+     "interactive": 0.005059332168153803,
+     "support": 0.004236040842608776,
+     "parcelled": 0.04998237227013831
+    },
+    "feed": null
+   },
+   "final": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 21,
+    "largest": {
+     "kind": "section",
+     "weight": 0.1549467825133442
+    },
+    "fabric": {
+     "continuous": 0.9170767759223004,
+     "navigation": 0.023645478796798822,
+     "interactive": 0.005059332168153803,
+     "support": 0.004236040842608776,
+     "parcelled": 0.04998237227013831
+    },
+    "feed": null
+   }
+  },
+  "ok": {
+   "baseline": true,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  }
+ },
+ {
+  "id": "django",
+  "url": "https://www.djangoproject.com/",
+  "expect": "none",
+  "why": "a project landing page",
+  "elements": 262,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 11,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.26734055078548713
+    },
+    "fabric": {
+     "landmark": 0.09373945384583664,
+     "continuous": 0.41632856317374034,
+     "parcelled": 0.15874357230170047,
+     "marker": 0.0030943004284415972,
+     "navigation": 0.05948413900549617,
+     "interactive": 0.0423581860714606,
+     "support": 0.22625178517332412
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 11,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.26734055078548713
+    },
+    "fabric": {
+     "landmark": 0.09373945384583664,
+     "continuous": 0.41632856317374034,
+     "parcelled": 0.15874357230170047,
+     "marker": 0.0030943004284415972,
+     "navigation": 0.05948413900549617,
+     "interactive": 0.0423581860714606,
+     "support": 0.22625178517332412
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 11,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.26734055078548713
+    },
+    "fabric": {
+     "landmark": 0.09373945384583664,
+     "continuous": 0.41632856317374034,
+     "parcelled": 0.15874357230170047,
+     "marker": 0.0030943004284415972,
+     "navigation": 0.05948413900549617,
+     "interactive": 0.0423581860714606,
+     "support": 0.22625178517332412
+    },
+    "feed": null
+   },
+   "final": {
+    "land": {
+     "other": 1
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 11,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.26734055078548713
+    },
+    "fabric": {
+     "landmark": 0.09373945384583664,
+     "continuous": 0.41632856317374034,
+     "parcelled": 0.15874357230170047,
+     "marker": 0.0030943004284415972,
+     "navigation": 0.05948413900549617,
+     "interactive": 0.0423581860714606,
+     "support": 0.22625178517332412
+    },
+    "feed": null
+   }
+  },
+  "ok": {
+   "baseline": true,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  }
+ },
+ {
+  "id": "svelte",
+  "url": "https://svelte.dev/",
+  "expect": "none",
+  "why": "a project landing page",
+  "elements": 225,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 0.9162059533463671,
+     "images": 0.08379404665363287
+    },
+    "reading": "none",
+    "share": 0.08379404665363287,
+    "listLand": 0.08379404665363287,
+    "territories": 8,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.39405988936186165
+    },
+    "fabric": {
+     "landmark": 0.049976053782914524,
+     "media": 0.31485544200657667,
+     "parcelled": 0.25748047022659226,
+     "interactive": 0.02789461972950385,
+     "continuous": 0.10192007652308399,
+     "navigation": 0.2307211555154334,
+     "support": 0.017152182215895276
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "other": 0.6723849572738683,
+     "images": 0.08379404665363287,
+     "feed": 0.243820996072499
+    },
+    "reading": "none",
+    "share": 0.243820996072499,
+    "listLand": 0.32761504272613184,
+    "territories": 9,
+    "largest": {
+     "kind": "feed",
+     "weight": 0.243820996072499
+    },
+    "fabric": {
+     "landmark": 0.049976053782914524,
+     "media": 0.2812254696448445,
+     "continuous": 0.14920952303890944,
+     "interactive": 0.02789461972950385,
+     "parcelled": 0.243820996072499,
+     "navigation": 0.2307211555154334,
+     "support": 0.017152182215895276
+    },
+    "feed": {
+     "weight": 0.243820996072499,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 96,
+      "chars": 10.526315789473685,
+      "media": 0,
+      "shape": "div > a"
+     },
+     "own": {
+      "count": 96,
+      "chars": 10.614583333333334,
+      "links": 1,
+      "pictured": 0
+     },
+     "says": 0
+    }
+   },
+   "with directories": {
+    "land": {
+     "other": 0.6723849572738683,
+     "images": 0.08379404665363287,
+     "index": 0.243820996072499
+    },
+    "reading": "none",
+    "share": 0.243820996072499,
+    "listLand": 0.32761504272613184,
+    "territories": 9,
+    "largest": {
+     "kind": "directory",
+     "weight": 0.243820996072499
+    },
+    "fabric": {
+     "landmark": 0.049976053782914524,
+     "media": 0.2812254696448445,
+     "continuous": 0.14920952303890944,
+     "interactive": 0.02789461972950385,
+     "archive": 0.243820996072499,
+     "navigation": 0.2307211555154334,
+     "support": 0.017152182215895276
+    },
+    "feed": null
+   },
+   "final": {
+    "land": {
+     "other": 0.9162059533463671,
+     "images": 0.08379404665363287
+    },
+    "reading": "none",
+    "share": 0.08379404665363287,
+    "listLand": 0.08379404665363287,
+    "territories": 8,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.39405988936186165
+    },
+    "fabric": {
+     "landmark": 0.049976053782914524,
+     "media": 0.31485544200657667,
+     "parcelled": 0.25748047022659226,
+     "interactive": 0.02789461972950385,
+     "continuous": 0.10192007652308399,
+     "navigation": 0.2307211555154334,
+     "support": 0.017152182215895276
+    },
+    "feed": null
+   }
+  },
+  "ok": {
+   "baseline": true,
+   "first version": false,
+   "with directories": false,
+   "final": true
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  }
+ },
+ {
+  "id": "rust-lang",
+  "url": "https://www.rust-lang.org/",
+  "expect": "none",
+  "why": "a project landing page",
+  "elements": 176,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 0.9999999999999998
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 14,
+    "largest": {
+     "kind": "features",
+     "weight": 0.19435791741393682
+    },
+    "fabric": {
+     "landmark": 0.059269429735835176,
+     "continuous": 0.4564143251180057,
+     "media": 0.19435791741393682,
+     "navigation": 0.1040798494421293,
+     "support": 0.18587847829009274
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "other": 0.9999999999999998
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 14,
+    "largest": {
+     "kind": "features",
+     "weight": 0.19435791741393682
+    },
+    "fabric": {
+     "landmark": 0.059269429735835176,
+     "continuous": 0.4564143251180057,
+     "media": 0.19435791741393682,
+     "navigation": 0.1040798494421293,
+     "support": 0.18587847829009274
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "other": 0.9999999999999998
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 14,
+    "largest": {
+     "kind": "features",
+     "weight": 0.19435791741393682
+    },
+    "fabric": {
+     "landmark": 0.059269429735835176,
+     "continuous": 0.4564143251180057,
+     "media": 0.19435791741393682,
+     "navigation": 0.1040798494421293,
+     "support": 0.18587847829009274
+    },
+    "feed": null
+   },
+   "final": {
+    "land": {
+     "other": 0.9999999999999998
+    },
+    "reading": "none",
+    "share": 0,
+    "listLand": 0,
+    "territories": 14,
+    "largest": {
+     "kind": "features",
+     "weight": 0.19435791741393682
+    },
+    "fabric": {
+     "landmark": 0.059269429735835176,
+     "continuous": 0.4564143251180057,
+     "media": 0.19435791741393682,
+     "navigation": 0.1040798494421293,
+     "support": 0.18587847829009274
+    },
+    "feed": null
+   }
+  },
+  "ok": {
+   "baseline": true,
+   "first version": true,
+   "with directories": true,
+   "final": true
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  }
+ },
+ {
+  "id": "vue",
+  "url": "https://vuejs.org/",
+  "expect": "none",
+  "why": "a project landing page",
+  "elements": 400,
+  "out": {
+   "baseline": {
+    "land": {
+     "index": 0.17871437477856467,
+     "other": 0.5230261043496913,
+     "feed": 0.29825952087174407
+    },
+    "reading": "none",
+    "share": 0.29825952087174407,
+    "listLand": 0.47697389565030873,
+    "territories": 8,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.31858625663537304
+    },
+    "fabric": {
+     "archive": 0.17871437477856467,
+     "parcelled": 0.6381817557773678,
+     "continuous": 0.06359855456801902,
+     "marker": 0.006407741598012294,
+     "navigation": 0.11309757327803624
+    },
+    "feed": {
+     "weight": 0.29825952087174407,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 32,
+      "chars": 10.5,
+      "media": 0,
+      "shape": "ul > a"
+     },
+     "own": {
+      "count": 8,
+      "chars": 53.375,
+      "links": 4.5,
+      "pictured": 0
+     },
+     "says": 7
+    }
+   },
+   "first version": {
+    "land": {
+     "index": 0.17871437477856467,
+     "other": 0.5343656190759748,
+     "feed": 0.2869200061454605
+    },
+    "reading": "none",
+    "share": 0.2869200061454605,
+    "listLand": 0.46563438092402515,
+    "territories": 8,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.33315489337953763
+    },
+    "fabric": {
+     "archive": 0.17871437477856467,
+     "parcelled": 0.6405997062387196,
+     "continuous": 0.0611806041066672,
+     "marker": 0.006407741598012291,
+     "navigation": 0.11309757327803618
+    },
+    "feed": {
+     "weight": 0.2869200061454605,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 32,
+      "chars": 10.5,
+      "media": 0,
+      "shape": "ul > a"
+     },
+     "own": {
+      "count": 8,
+      "chars": 53.375,
+      "links": 4.5,
+      "pictured": 0
+     },
+     "says": 7
+    }
+   },
+   "with directories": {
+    "land": {
+     "index": 0.03908025999028119,
+     "feed": 0.46563438092402515,
+     "other": 0.4952853590856937
+    },
+    "reading": "feed",
+    "share": 0.46563438092402515,
+    "listLand": 0.5047146409143063,
+    "territories": 9,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.2940746333892565
+    },
+    "fabric": {
+     "archive": 0.03908025999028119,
+     "parcelled": 0.7802338210270032,
+     "continuous": 0.0611806041066672,
+     "marker": 0.006407741598012293,
+     "navigation": 0.11309757327803621
+    },
+    "feed": {
+     "weight": 0.2869200061454605,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 32,
+      "chars": 10.5,
+      "media": 0,
+      "shape": "ul > a"
+     },
+     "own": {
+      "count": 8,
+      "chars": 53.375,
+      "links": 4.5,
+      "pictured": 0
+     },
+     "says": 7
+    }
+   },
+   "final": {
+    "land": {
+     "feed": 0.46563438092402515,
+     "other": 0.5343656190759748
+    },
+    "reading": "feed",
+    "share": 0.46563438092402515,
+    "listLand": 0.46563438092402515,
+    "territories": 8,
+    "largest": {
+     "kind": "remainder",
+     "weight": 0.33315489337953763
+    },
+    "fabric": {
+     "parcelled": 0.8193140810172843,
+     "continuous": 0.0611806041066672,
+     "marker": 0.006407741598012291,
+     "navigation": 0.11309757327803618
+    },
+    "feed": {
+     "weight": 0.2869200061454605,
+     "mix": [
+      {
+       "comp": "parcelled",
+       "share": 1
+      }
+     ],
+     "form": {
+      "count": 32,
+      "chars": 10.5,
+      "media": 0,
+      "shape": "ul > a"
+     },
+     "own": {
+      "count": 8,
+      "chars": 53.375,
+      "links": 4.5,
+      "pictured": 0
+     },
+     "says": 7
+    }
+   }
+  },
+  "ok": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  }
+ },
+ {
+  "id": "supabase",
+  "url": "https://supabase.com/",
+  "expect": "none",
+  "why": "a product landing page",
+  "elements": 1284,
+  "out": {
+   "baseline": {
+    "land": {
+     "other": 0.6734422718537836,
+     "images": 0.32655772814621636
+    },
+    "reading": "images",
+    "share": 0.32655772814621636,
+    "listLand": 0.32655772814621636,
+    "territories": 11,
+    "largest": {
+     "kind": "showcase",
+     "weight": 0.22845110577700845
+    },
+    "fabric": {
+     "landmark": 0.010953687603287996,
+     "interactive": 0.17962776107080916,
+     "continuous": 0.028646270888094693,
+     "media": 0.5831628904136037,
+     "navigation": 0.03717989809790117,
+     "support": 0.16042949192630332
+    },
+    "feed": null
+   },
+   "first version": {
+    "land": {
+     "other": 0.6734422718537836,
+     "images": 0.32655772814621636
+    },
+    "reading": "images",
+    "share": 0.32655772814621636,
+    "listLand": 0.32655772814621636,
+    "territories": 11,
+    "largest": {
+     "kind": "showcase",
+     "weight": 0.22845110577700845
+    },
+    "fabric": {
+     "landmark": 0.010953687603287996,
+     "interactive": 0.17962776107080916,
+     "continuous": 0.028646270888094693,
+     "media": 0.5831628904136037,
+     "navigation": 0.03717989809790117,
+     "support": 0.16042949192630332
+    },
+    "feed": null
+   },
+   "with directories": {
+    "land": {
+     "other": 0.6672255566772582,
+     "images": 0.33277444332274164
+    },
+    "reading": "images",
+    "share": 0.33277444332274164,
+    "listLand": 0.33277444332274164,
+    "territories": 11,
+    "largest": {
+     "kind": "showcase",
+     "weight": 0.23280015445651786
+    },
+    "fabric": {
+     "landmark": 0.011162214151867446,
+     "interactive": 0.2435056120406462,
+     "continuous": 0.029191613079173187,
+     "media": 0.5158751007657238,
+     "navigation": 0.03767963350843983,
+     "support": 0.16258582645414935
+    },
+    "feed": null
+   },
+   "final": {
+    "land": {
+     "other": 0.6672255566772582,
+     "images": 0.33277444332274164
+    },
+    "reading": "images",
+    "share": 0.33277444332274164,
+    "listLand": 0.33277444332274164,
+    "territories": 11,
+    "largest": {
+     "kind": "showcase",
+     "weight": 0.23280015445651786
+    },
+    "fabric": {
+     "landmark": 0.011162214151867446,
+     "interactive": 0.2435056120406462,
+     "continuous": 0.029191613079173187,
+     "media": 0.5158751007657238,
+     "navigation": 0.03767963350843983,
+     "support": 0.16258582645414935
+    },
+    "feed": null
+   }
+  },
+  "ok": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  },
+  "built": {
+   "baseline": false,
+   "first version": false,
+   "with directories": false,
+   "final": false
+  }
+ }
+]
