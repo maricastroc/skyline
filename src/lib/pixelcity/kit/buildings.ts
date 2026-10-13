@@ -55,6 +55,7 @@ export interface Program {
   unitFrom?: number;
   use?: Use;
   useReason?: string;
+  market?: boolean;
 }
 
 type Side = "front" | "right" | "back" | "left";
@@ -735,12 +736,13 @@ export function building(kit: Kit, w: number, d: number, P: Program): number {
       return v.top;
     }
     case "shed": {
-      const hallH = 1.3;
+      const hallH = P.market ? 1.9 : 1.3;
       const ad = Math.min(1.6, d * 0.35);
       volume(kit, { x0, x1, z0, z1: z1 - ad, y0: 0, y1: hallH, wall: P.wall, surf: Surf.PLAIN, roof: P.roof === "gable" ? "gable" : "sawtooth", roofColor: P.roofColor, ridge: "x" });
-      face(kit, x0, x1, z0, z1 - ad, "right", (span) => kit.sign(P.label ?? "WORKS", span / 2, hallH - 0.5, 0.01, { bg: darkOf(P.wall, 0.15), fg: white, texel: 0.06, maxW: span - 0.6 }));
-      const annex = { ...P, ground: "docks" as Ground };
+      face(kit, x0, x1, z0, z1 - ad, "right", (span) => kit.sign(P.label ?? (P.market ? "MARKET" : "WORKS"), span / 2, hallH - 0.5, 0.01, { bg: darkOf(P.wall, 0.15), fg: white, texel: 0.06, maxW: span - 0.6 }));
+      const annex = { ...P, ground: (P.market ? "shop" : "docks") as Ground };
       block(kit, x0, x1, z1 - ad, z1, 1, annex, ["front"], { roof: "flat", cornice: "none", label: P.label });
+      if (P.market) return hallH + 1;
       const sx = x1 - 0.7;
       const sz = z0 + 0.7;
       kit.cyl(sx, 0, sz, 0.5, hallH + 2.2, 0.5, mix(kit.palette.walls.retro[0], white, 0.1));

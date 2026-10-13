@@ -1,0 +1,320 @@
+[
+ {
+  "id": "old-reddit",
+  "url": "https://old.reddit.com/r/programming/",
+  "ok": false,
+  "note": "auth_required: auth_required: redirected to /login/"
+ },
+ {
+  "id": "tildes",
+  "url": "https://tildes.net/",
+  "ok": true,
+  "note": "static, 1449 elements"
+ },
+ {
+  "id": "lwn",
+  "url": "https://lwn.net/",
+  "ok": true,
+  "note": "static, 364 elements"
+ },
+ {
+  "id": "slashdot",
+  "url": "https://slashdot.org/",
+  "ok": true,
+  "note": "static, 1077 elements"
+ },
+ {
+  "id": "techmeme",
+  "url": "https://www.techmeme.com/",
+  "ok": true,
+  "note": "static, 1123 elements"
+ },
+ {
+  "id": "pinboard",
+  "url": "https://pinboard.in/popular/",
+  "ok": true,
+  "note": "static, 522 elements"
+ },
+ {
+  "id": "github-trending",
+  "url": "https://github.com/trending",
+  "ok": true,
+  "note": "static, 2855 elements"
+ },
+ {
+  "id": "stackoverflow",
+  "url": "https://stackoverflow.com/questions?tab=Newest",
+  "ok": false,
+  "note": "blocked: blocked: HTTP 403"
+ },
+ {
+  "id": "arxiv",
+  "url": "https://arxiv.org/list/cs.AI/recent",
+  "ok": true,
+  "note": "static, 1144 elements"
+ },
+ {
+  "id": "npr-text",
+  "url": "https://text.npr.org/",
+  "ok": true,
+  "note": "static, 72 elements"
+ },
+ {
+  "id": "cnn-lite",
+  "url": "https://lite.cnn.com/",
+  "ok": true,
+  "note": "static, 223 elements"
+ },
+ {
+  "id": "hn-thread",
+  "url": "https://news.ycombinator.com/item?id=1",
+  "ok": false,
+  "note": "http_error: http_error: HTTP 419"
+ },
+ {
+  "id": "lemmy",
+  "url": "https://lemmy.world/",
+  "ok": false,
+  "note": "blocked: blocked: HTTP 403"
+ },
+ {
+  "id": "devto",
+  "url": "https://dev.to/",
+  "ok": true,
+  "note": "static, 1564 elements"
+ },
+ {
+  "id": "simonwillison",
+  "url": "https://simonwillison.net/",
+  "ok": true,
+  "note": "static, 1032 elements"
+ },
+ {
+  "id": "schneier",
+  "url": "https://www.schneier.com/",
+  "ok": true,
+  "note": "static, 516 elements"
+ },
+ {
+  "id": "daringfireball",
+  "url": "https://daringfireball.net/",
+  "ok": true,
+  "note": "static, 643 elements"
+ },
+ {
+  "id": "kottke",
+  "url": "https://kottke.org/",
+  "ok": true,
+  "note": "static, 2704 elements"
+ },
+ {
+  "id": "jvns",
+  "url": "https://jvns.ca/",
+  "ok": true,
+  "note": "static, 2046 elements"
+ },
+ {
+  "id": "cloudflare-blog",
+  "url": "https://blog.cloudflare.com/",
+  "ok": true,
+  "note": "static, 960 elements"
+ },
+ {
+  "id": "verge",
+  "url": "https://www.theverge.com/",
+  "ok": true,
+  "note": "static, 1888 elements"
+ },
+ {
+  "id": "bbc-news",
+  "url": "https://www.bbc.com/news",
+  "ok": true,
+  "note": "static, 1144 elements"
+ },
+ {
+  "id": "apnews",
+  "url": "https://apnews.com/",
+  "ok": false,
+  "note": "blocked: blocked: HTTP 403"
+ },
+ {
+  "id": "books-toscrape",
+  "url": "https://books.toscrape.com/",
+  "ok": true,
+  "note": "static, 522 elements"
+ },
+ {
+  "id": "webscraper-laptops",
+  "url": "https://webscraper.io/test-sites/e-commerce/static/computers/laptops",
+  "ok": true,
+  "note": "static, 332 elements"
+ },
+ {
+  "id": "steam-top",
+  "url": "https://store.steampowered.com/search/?filter=topsellers",
+  "ok": true,
+  "note": "static, 5568 elements"
+ },
+ {
+  "id": "itch",
+  "url": "https://itch.io/games",
+  "ok": true,
+  "note": "static, 1234 elements"
+ },
+ {
+  "id": "ikea-chairs",
+  "url": "https://www.ikea.com/us/en/cat/chairs-fu002/",
+  "ok": true,
+  "note": "static, 1230 elements"
+ },
+ {
+  "id": "gog",
+  "url": "https://www.gog.com/en/games",
+  "ok": true,
+  "note": "static, 3212 elements"
+ },
+ {
+  "id": "ebay-laptops",
+  "url": "https://www.ebay.com/b/Laptops-Netbooks/175672/bn_1648276",
+  "ok": false,
+  "note": "blocked: blocked: HTTP 403"
+ },
+ {
+  "id": "bandcamp",
+  "url": "https://bandcamp.com/discover",
+  "ok": true,
+  "note": "rendered, 1720 elements"
+ },
+ {
+  "id": "mercadolivre",
+  "url": "https://www.mercadolivre.com.br/ofertas",
+  "ok": true,
+  "note": "static, 35 elements"
+ },
+ {
+  "id": "commons-category",
+  "url": "https://commons.wikimedia.org/wiki/Category:Featured_pictures_of_Brazil",
+  "ok": true,
+  "note": "static, 714 elements"
+ },
+ {
+  "id": "unsplash",
+  "url": "https://unsplash.com/t/nature",
+  "ok": false,
+  "note": "auth_required: auth_required"
+ },
+ {
+  "id": "flickr",
+  "url": "https://www.flickr.com/explore",
+  "ok": true,
+  "note": "rendered, 1267 elements"
+ },
+ {
+  "id": "artic",
+  "url": "https://www.artic.edu/collection",
+  "ok": false,
+  "note": "blocked: blocked: HTTP 403"
+ },
+ {
+  "id": "dribbble",
+  "url": "https://dribbble.com/shots/popular",
+  "ok": false,
+  "note": "blocked: blocked: HTTP 202, a challenge in progress"
+ },
+ {
+  "id": "openlibrary",
+  "url": "https://openlibrary.org/trending/daily",
+  "ok": true,
+  "note": "static, 1064 elements"
+ },
+ {
+  "id": "gutenberg-top",
+  "url": "https://www.gutenberg.org/browse/scores/top",
+  "ok": true,
+  "note": "static, 1357 elements"
+ },
+ {
+  "id": "wiki-list",
+  "url": "https://en.wikipedia.org/wiki/List_of_programming_languages",
+  "ok": true,
+  "note": "static, 2564 elements"
+ },
+ {
+  "id": "curlie",
+  "url": "https://curlie.org/",
+  "ok": true,
+  "note": "static, 459 elements"
+ },
+ {
+  "id": "awesome",
+  "url": "https://github.com/sindresorhus/awesome",
+  "ok": true,
+  "note": "static, 2711 elements"
+ },
+ {
+  "id": "w3c-tr",
+  "url": "https://www.w3.org/TR/",
+  "ok": true,
+  "note": "static, 22116 elements"
+ },
+ {
+  "id": "pg-essay",
+  "url": "https://www.paulgraham.com/greatwork.html",
+  "ok": true,
+  "note": "static, 206 elements"
+ },
+ {
+  "id": "react-learn",
+  "url": "https://react.dev/learn",
+  "ok": true,
+  "note": "static, 1849 elements"
+ },
+ {
+  "id": "rust-book",
+  "url": "https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html",
+  "ok": true,
+  "note": "static, 429 elements"
+ },
+ {
+  "id": "stripe",
+  "url": "https://stripe.com/",
+  "ok": true,
+  "note": "static, 1356 elements"
+ },
+ {
+  "id": "tailwind",
+  "url": "https://tailwindcss.com/",
+  "ok": true,
+  "note": "static, 1811 elements"
+ },
+ {
+  "id": "cloudflare",
+  "url": "https://www.cloudflare.com/",
+  "ok": true,
+  "note": "static, 1683 elements"
+ },
+ {
+  "id": "wiki-fortaleza",
+  "url": "https://en.wikipedia.org/wiki/Fortaleza",
+  "ok": true,
+  "note": "static, 5529 elements"
+ },
+ {
+  "id": "mdn-details",
+  "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details",
+  "ok": true,
+  "note": "static, 1538 elements"
+ },
+ {
+  "id": "notion-product",
+  "url": "https://www.notion.com/product",
+  "ok": true,
+  "note": "static, 636 elements"
+ },
+ {
+  "id": "figma",
+  "url": "https://www.figma.com/",
+  "ok": true,
+  "note": "static, 770 elements"
+ }
+]

@@ -189,16 +189,63 @@ Picking é raycast contra os instanced meshes (instanceId → nodeId).
 ```ts
 acquire(url, { strategy: 'auto' | 'static' | 'rendered' })
   fetchStaticPage(url)        // implementado
-  captureRenderedPage(url)    // interface + detecção; implementação Playwright plugável
+  captureRenderedPage(url)    // navegador local (só desenvolvimento) ou renderer externo (SKYLINE_RENDERER_URL)
 ```
 
 `auto` = estático primeiro; se o resultado parece um *SPA shell* (`<div id="root"></div>`,
 pouquíssimo conteúdo, `noscript` pedindo JS), tenta a captura renderizada se houver
-renderer configurado; senão devolve a cidade estática com o aviso `spa_shell`, que a UI
-explica.
+renderer; senão devolve a cidade estática com o aviso `spa_shell`. O `PixelApp` mostra esse
+aviso junto dos números da cidade e no painel "Why this city?" (`snapshot/caveat.ts`), e
+`npm run test:warnings` falha se ele deixar de aparecer.
 
-A captura renderizada produz o **mesmo `DomSnapshot`**, com `box` e `position` computados.
-Nesse caso o layout pode usar as caixas reais da página em vez do treemap.
+A captura renderizada abre a página num Chromium, espera ela se montar e passa o HTML
+resultante pelo **mesmo `snapshotFromHtml()`** do estático, com as mesmas recusas (desafio
+anti-bot, login, 403). Hoje ela existe só na máquina de desenvolvimento
+(`SKYLINE_LOCAL_RENDERER=1`; nunca em build de produção nem na Vercel), porque o navegador
+faz conexões próprias que não passam pelo `safe-fetch`. O filtro de requisições aplica a
+política de URL a cada pedido da página, mas não fecha DNS rebinding nem WebSocket. O que
+falta para publicar está em `RENDERED_CAPTURE_PLAN.md`.
+
+Pedidos de imagem não saem da máquina: depois da política de URL, cada um é respondido da
+memória com um GIF de 1 pixel (`render-page.ts`), para que páginas que só escrevem o endereço
+da imagem depois do `onload` cheguem ao snapshot com suas imagens. Essas respostas têm teto
+próprio e não gastam o orçamento de 400 pedidos de rede. `SKYLINE_RENDER_IMAGES=abort` volta
+ao comportamento de recusar.
+
+O caminho do produto não liga nenhum experimento. `semantics/experiments.ts` registra três,
+acessíveis só pela visão de desenvolvimento (`/pixel/kit?exp=`): `reading` (leitura de listas
+validada em páginas não vistas), `forum` e `market` (tipologias experimentais; a primeira usa
+`kit/layout.ts` para conservar contagens). O histórico e as decisões estão em
+`MORPHOLOGY_CLOSING.md`.
+
+**Itens medidos.** Antes de ler o HTML, a captura renderizada local mede a página
+(`MEASURE_BOXES` em `render-page.ts`): cada elemento visível e com área recebe sua caixa e o
+tamanho da fonte, que chegam ao snapshot (`box`, `fontSize`, `layout`) e ao documento
+normalizado. A medição tem orçamento de tempo e de tamanho: se estourar qualquer um, a página
+é capturada sem caixas, como antes. A captura estática nunca tem caixas, e um atributo de
+caixa escrito pela própria página é ignorado.
+
+Com caixas, `kit/series.ts` (`unitsOf`) lê a unidade repetida de cada território: itens irmãos
+de largura parecida, o nível certo do aninhamento, o conjunto que cobre mais área, o tipo
+(imagem, cartão ou tecla) e quantos cabem numa fileira. Nos territórios de mídia com oito
+lotes ou mais, `composeEnsemble` (`kit/compose.ts`) mantém a torre e o anexo de hoje e
+acrescenta frentes baixas: uma a seis, conforme os itens por fileira; sobrados geminados ou
+edifícios isolados, conforme a largura; numa face ou em duas, conforme haja uma fileira ou
+várias. Territórios de teclas e páginas sem caixas ficam com a receita de sempre. A decisão, o
+que foi descartado e os limites estão em `MORPHOLOGY_DECISION.md`; `npm run test:items` guarda
+os invariantes.
+
+O layout da cidade segue no treemap: as caixas servem só para ler os itens.
+
+**Explorar com mais detalhes.** O modo automático continua sendo o padrão de `/pixel`. Sobre uma
+cidade vinda da captura estática, a página oferece "Explore in more detail", que repete a captura
+com `strategy: "rendered"` (`?mode=detailed` na URL). A opção só aparece quando `GET /api/capture`
+responde que há um renderizador utilizável, o que é verificado tentando-o (`rendererReady()` em
+`rendered-capture.ts`), não pela configuração. A cidade na tela só é trocada quando a nova captura
+dá certo; se falha, ela fica e a falha é dita (`lib/pixelcity/capture-mode.ts` guarda essa regra, e
+`npm run test:warnings` a verifica). É uma integração intermediária: as medidas dependem de um
+navegador, e em produção a opção fica oculta até a rota de renderização de
+`RENDERED_CAPTURE_PLAN.md` existir.
 
 **Defesas (`safe-fetch.ts`):**
 

@@ -1,0 +1,333 @@
+diff --git a/src/lib/pixelcity/kit/compose.ts b/src/lib/pixelcity/kit/compose.ts
+index f1da260..a41b0aa 100644
+--- a/src/lib/pixelcity/kit/compose.ts
++++ b/src/lib/pixelcity/kit/compose.ts
+@@ -3,12 +3,13 @@ import type { GamePalette } from "../palette";
+ import { Surf } from "../types";
+ import type { PlazaAnchor } from "./actors";
+ import { programFor, type Brief } from "./brief";
+-import { building, type Family, type Program } from "./buildings";
++import { building, FLOOR, type Family, type Program } from "./buildings";
+ import type { Kit } from "./core";
+ import type { Run } from "./frontage";
+ import type { Layout, Room } from "./layout";
+ import { plaza, type RoofFamily } from "./massing";
+ import { softMix, type Comp, type Plan, type Territory } from "./plan";
++import type { Series } from "./series";
+ import type { Experiment } from "../../semantics/experiments";
+ import type { Use } from "./surface";
+ import { bench, tree } from "./street";
+@@ -260,6 +261,81 @@ function forum(ctx: ComposeCtx, pc: Piece, t: Territory, salt: number, W: number
+   stalls(ctx, base, at);
+ }
+ 
++export interface SeriesPart {
++  ordinal: number;
++  lead: boolean;
++}
++
++const FACE = 13.8;
++const STREET_FLOOR = 0.74;
++export const HEADED = 1.25;
++export const ROOM_FOR_SERIES = 8;
++const TOWER = 9;
++
++const unitWidth = (s: Series) => FACE / Math.min(Math.max(s.perRow, 2), 8);
++function unitFloors(s: Series, k: number): number {
++  const [w, h] = s.sizes[k % s.sizes.length];
++  return Math.max(1, Math.min(18, Math.round(((unitWidth(s) * h) / w - STREET_FLOOR) / FLOOR)));
++}
++
++function unitProgram(ctx: ComposeCtx, t: Territory, comp: Comp, salt: number, floors: number, width: number): Program {
++  const P = prog(ctx, t, comp, salt);
++  const base: Program = comp === "media" ? { ...P, signage: "screen", facade: "curtain" } : { ...P, ground: "shop", signage: "shop" };
++  if (floors >= TOWER) return { ...base, family: width >= 4 ? "podiumTower" : "narrowTower", floors };
++  if (floors >= 5 && width >= 4.5) return { ...base, family: "asymmetric", floors: Math.max(2, floors - 3) };
++  return { ...base, family: "walkup", floors };
++}
++
++export function composeSeries(ctx: ComposeCtx, pc: Piece, t: Territory, comp: Comp, salt: number, part: SeriesPart) {
++  const s = t.series!;
++  const { kit } = ctx;
++  kit.frame(pc.x, pc.z, pc.rot, () => {
++    const W = pc.w - 0.2;
++    const D = pc.d - 0.2;
++    if (s.arrangement === "tiles") {
++      const n = Math.max(1, Math.min(pc.type === "full" || pc.type === "half" ? 6 : pc.type === "quad" ? 3 : 1, s.perRow));
++      const P: Program = { ...prog(ctx, t, comp, salt), label: shortLabel(t.label) };
++      const at: Array<[number, number, number]> = Array.from({ length: n }, (_, k) => [-W / 2 + ((k + 0.5) * W) / n, pc.type === "lot" ? 0 : D / 2 - 1.0, Math.PI]);
++      if (pc.type === "full" && s.rows >= 2) for (let k = 0; k < n; k++) at.push([-W / 2 + ((k + 0.5) * W) / n, -D / 2 + 1.0, 0]);
++      plaza(kit, -W / 2, W / 2, -D / 2, D / 2, salt, part.lead && pc.type === "full", undefined, at.map(([x, z, rot]): PlazaAnchor => ({ kind: "kiosk", x, z, rot })));
++      stalls(ctx, P, at);
++      return;
++    }
++    const n = Math.max(1, Math.round(W / unitWidth(s)));
++    const headed = part.lead && s.head >= HEADED && pc.type !== "lot";
++    const gap = s.arrangement === "grid" ? 0.6 : 0;
++    const row = (z: number, rot: number, from: number, lead: boolean) => {
++      const floors = unitFloors(s, from);
++      const headFloors = Math.max(floors + 2, Math.min(20, Math.round(floors * Math.min(s.head, 2.5))));
++      const span = Math.min(W / 2, Math.max(2 * (W / n), 4.2));
++      const taken = lead ? Math.max(1, Math.round(span / (W / n))) : 0;
++      const side = rot === 0 ? 1 : -1;
++      if (lead) place(ctx, side * (-W / 2 + (taken * W) / n / 2), z, rot, (taken * W) / n - 0.06, 4.0, { ...unitProgram(ctx, t, comp, salt + 5, headFloors, (taken * W) / n), brand: shortLabel(t.label)?.toUpperCase() });
++      const rest = n - taken;
++      if (rest <= 0) return;
++      const x0 = -W / 2 + (taken * W) / n;
++      const length = W - (taken * W) / n;
++      if (s.arrangement === "strip" && floors <= 5 && rest >= 3) {
++        const P = unitProgram(ctx, t, comp, salt, floors, W / n);
++        place(ctx, side * (x0 + length / 2), z, rot, length, 4.0, { ...P, family: "rows", units: rest, unitFrom: from, roof: P.style === "modern" || P.style === "tech" ? P.roof : "gable" });
++        return;
++      }
++      const w = (length - gap * (rest - 1)) / rest;
++      for (let k = 0; k < rest; k++) place(ctx, side * (x0 + k * (w + gap) + w / 2), z, rot, w - 0.06, 4.0, unitProgram(ctx, t, comp, salt + 13 * (k + 1), unitFloors(s, from + taken + k), w));
++    };
++    if (pc.type === "full") {
++      const street = unitFloors(s, part.ordinal * 2 * n) < TOWER;
++      plaza(kit, -W / 2, W / 2, street ? -2.8 : -D / 2, 2.8, salt, !street && headed);
++      row(4.9, 0, part.ordinal * 2 * n, headed);
++      if (street) row(-4.9, Math.PI, part.ordinal * 2 * n + n, false);
++    } else if (pc.type === "lot") place(ctx, 0, 0, 0, W, D, unitProgram(ctx, t, comp, salt, unitFloors(s, part.ordinal), W));
++    else {
++      plaza(kit, -W / 2, W / 2, -D / 2, D / 2 - 4.3, salt, false);
++      row(D / 2 - 2.1, 0, part.ordinal * n, headed);
++    }
++  });
++}
++
+ export function composePiece(ctx: ComposeCtx, pc: Piece, t: Territory, comp: Comp, salt: number) {
+   const { kit } = ctx;
+   const w = t.weight;
+diff --git a/src/lib/pixelcity/kit/district.ts b/src/lib/pixelcity/kit/district.ts
+index 2349b2f..505576a 100644
+--- a/src/lib/pixelcity/kit/district.ts
++++ b/src/lib/pixelcity/kit/district.ts
+@@ -7,7 +7,7 @@ import { Surf, type Part, type PixelCity } from "../types";
+ import type { Brief } from "./brief";
+ import type { Program } from "./buildings";
+ import { programUse, type Anatomy, type Use } from "./surface";
+-import { composeLandmark, composePiece, piecesOfBlock, ROOM, type LandmarkInfo, type Piece, type PieceType } from "./compose";
++import { composeLandmark, composePiece, composeSeries, HEADED, piecesOfBlock, ROOM, ROOM_FOR_SERIES, type LandmarkInfo, type Piece, type PieceType, type SeriesPart } from "./compose";
+ import { planFrontage, type FrontagePlan, type Run } from "./frontage";
+ import { Kit, type PeopleMode } from "./core";
+ import { layoutOf, type Layout, type PlacedPiece } from "./layout";
+@@ -276,6 +276,34 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}):
+     layout = layoutOf(plan, alloc, placed, (comp, type) => ROOM[comp]?.[type] ?? null);
+     if (trace) trace.layout = layout;
+   }
++  const seriesParts = new Map<Piece, SeriesPart>();
++  if (plan.exp?.has("series")) {
++    const governed = new Map<number, Array<{ pc: Piece; at: number }>>();
++    for (let i = 0; i < BLOCKS; i++)
++      for (let j = 0; j < BLOCKS; j++)
++        for (const pc of blockPieces[i][j]) {
++          if (pc.seg < 0 || pc.interior) continue;
++          const seg = alloc.segments[pc.seg];
++          if (!plan.territories[seg.territory].series || (seg.comp !== "media" && seg.comp !== "grid") || alloc.lots[seg.territory] < ROOM_FOR_SERIES) continue;
++          const at = pathIndex.get((i * LOTS + Math.floor((pc.x + 7) / 3.5)) * N + (j * LOTS + Math.floor((pc.z + 7) / 3.5))) ?? 0;
++          governed.set(seg.territory, [...(governed.get(seg.territory) ?? []), { pc, at }]);
++        }
++    for (const [ti, list] of [...governed].sort((a, b) => a[0] - b[0])) {
++      const s = plan.territories[ti].series!;
++      list.sort((a, b) => a.at - b.at);
++      const hosts = list.filter((x) => x.pc.type !== "lot").length;
++      const groups = s.head >= HEADED ? Math.min(s.groups, hosts) : 0;
++      const total = list.reduce((sum, x) => sum + x.pc.lots, 0);
++      let before = 0;
++      let opened = 0;
++      list.forEach((x, ordinal) => {
++        const lead = opened < groups && x.pc.type !== "lot" && before >= (opened * total) / groups;
++        if (lead) opened++;
++        seriesParts.set(x.pc, { ordinal, lead });
++        before += x.pc.lots;
++      });
++    }
++  }
+   const ctx = { kit, g: grammar, p: palette, plan, vf: 0.7 + 0.6 * grammar.verticality, record, frontage, lots: alloc.lots, layout };
+ 
+   for (let i = 0; i < BLOCKS; i++)
+@@ -296,10 +324,12 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}):
+               current = { territory: seg.territory, comp: seg.comp, piece: pc.type, block: [i, j] };
+               const salt = 1000 + seg.territory * 131 + (i * 4 + j) * 17 + k;
+               const isLm = lmPiece && lmPiece.i === i && lmPiece.j === j && lmPiece.k === k;
++              const part = seriesParts.get(pc);
+               if (isLm) {
+                 const info = composeLandmark(ctx, pc, t, salt);
+                 if (trace) trace.landmark = { ...info, x: bx + pc.x, z: bz + pc.z, block: [i, j] };
+-              } else composePiece(ctx, pc, t, seg.comp, salt);
++              } else if (part) composeSeries(ctx, pc, t, seg.comp, salt, part);
++              else composePiece(ctx, pc, t, seg.comp, salt);
+               current = null;
+               trace?.pieces.push({ territory: seg.territory, comp: seg.comp, piece: pc, block: [i, j], parts: [from, kit.parts.length] });
+             }),
+diff --git a/src/lib/pixelcity/kit/plan.ts b/src/lib/pixelcity/kit/plan.ts
+index 2eea21f..42d00c1 100644
+--- a/src/lib/pixelcity/kit/plan.ts
++++ b/src/lib/pixelcity/kit/plan.ts
+@@ -6,6 +6,7 @@ import { chromeFactors, chromeOf, contentImages, contentWeight, observedBlocks }
+ import type { MediaReport } from "../../snapshot/media";
+ import type { Content } from "./brief";
+ import { itemsOf, type ItemForm } from "./items";
++import { seriesOf, type Series } from "./series";
+ import { scopeOf, structureOf, type Structure } from "./structure";
+ 
+ export type Comp = "landmark" | "marker" | "continuous" | "parcelled" | "archive" | "grid" | "media" | "interactive" | "navigation" | "support" | "structured";
+@@ -39,6 +40,8 @@ export interface Territory {
+   structure?: Structure;
+   items?: ItemForm;
+   census?: Census;
++  scope?: { roots: number[]; excluded: number[] };
++  series?: Series;
+ }
+ 
+ export interface Census {
+@@ -172,7 +175,9 @@ export function planFromPage(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
+   };
+ 
+   const counting = exp.has("forum") || exp.has("market");
++  const measured = exp.has("series") && !!doc.layout;
+   const count = (at: number, roots: number[], excluded: number[], listed: number[] = []) => {
++    if (doc.layout) out[at].scope = { roots, excluded };
+     if (counting) out[at].census = censusOf(doc, roots, excluded, listed, out[at].items);
+   };
+   const merges: PlanHygiene["merges"] = [];
+@@ -321,6 +326,8 @@ export function planFromPage(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
+       t.why.push(`T3 item anatomy (${a.count} items, the longest text of one outside its links ~${Math.round(says)} characters, ${Math.round(a.pictured * 100)}% with a picture) → ${t.mix.map((x) => `${x.comp} ${Math.round(x.share * 100)}%`).join(" + ")}`);
+     }
+ 
++  if (measured) for (const t of out) if (t.scope) t.series = seriesOf(doc, t.scope) ?? undefined;
++
+   const order = out.map((t, i) => i).sort((a, b) => out[a].tier - out[b].tier || out[a].order - out[b].order);
+   const territories = order.map((i) => out[i]);
+   for (const t of territories) t.why.unshift(`T2 tier ${t.tier} (${["hero", "main content", "chrome", "footer", "page remainder"][t.tier]})`);
+@@ -331,7 +338,7 @@ export function planFromPage(doc: NormalizedDocument, sem: Semantics, fp: SiteFi
+     territories,
+     hero: heroR ? territories.findIndex((t) => t.region === heroR.id && t.source === "region") : -1,
+     hygiene: { media: doc.media, coverage, fallback, chrome: { before: f.before, after: f.after, regions: out.filter(isChrome).length }, merges },
+-    ...(counting ? { exp } : {}),
++    ...(counting || measured ? { exp } : {}),
+   };
+ }
+ 
+diff --git a/src/lib/semantics/experiments.ts b/src/lib/semantics/experiments.ts
+index ba24e06..db35e66 100644
+--- a/src/lib/semantics/experiments.ts
++++ b/src/lib/semantics/experiments.ts
+@@ -1,4 +1,4 @@
+-export const EXPERIMENTS = ["reading", "forum", "market"] as const;
++export const EXPERIMENTS = ["reading", "forum", "market", "series"] as const;
+ export type Experiment = (typeof EXPERIMENTS)[number];
+ export type Experiments = ReadonlySet<Experiment>;
+ 
+diff --git a/src/lib/pixelcity/kit/series.ts b/src/lib/pixelcity/kit/series.ts
+new file mode 100644
+index 0000000..77d362d
+--- /dev/null
++++ b/src/lib/pixelcity/kit/series.ts
+@@ -0,0 +1,105 @@
++import type { NNode, NormalizedDocument } from "../../model/types";
++import { scopeOf } from "./structure";
++
++export type Arrangement = "strip" | "grid" | "tiles";
++
++export interface Series {
++  arrangement: Arrangement;
++  units: number;
++  width: number;
++  height: number;
++  perRow: number;
++  rows: number;
++  groups: number;
++  head: number;
++  sizes: Array<[number, number]>;
++}
++
++const TILE = 72;
++const MIN_UNITS = 4;
++const MIN_PICTURE = 24;
++const WRAP = 6;
++
++interface Unit {
++  x: number;
++  y: number;
++  w: number;
++  h: number;
++}
++
++const median = (v: number[]) => (v.length ? [...v].sort((a, b) => a - b)[Math.floor(v.length / 2)] : 0);
++
++export function seriesOf(doc: NormalizedDocument, scope: { roots: number[]; excluded: number[] }): Series | null {
++  const nodes = doc.nodes;
++  const ids = scopeOf(nodes, scope.roots, scope.excluded);
++  const inScope = new Set(ids);
++  const boxed = (n: NNode): n is NNode & { box: [number, number, number, number] } => !!n.box && !n.cluster;
++  const pictures = ids.filter((i) => nodes[i].role === "image" && boxed(nodes[i]) && nodes[i].box![2] >= MIN_PICTURE && nodes[i].box![3] >= MIN_PICTURE);
++  const prefix = new Int32Array(nodes.length + 1);
++  const isPicture = new Set(pictures);
++  for (let i = 0; i < nodes.length; i++) prefix[i + 1] = prefix[i] + (isPicture.has(i) ? 1 : 0);
++  const held = (i: number) => prefix[nodes[i].end] - prefix[i];
++
++  const cards: Unit[] = [];
++  const seen = new Set<number>();
++  for (const i of pictures) {
++    const area = nodes[i].box![2] * nodes[i].box![3];
++    let at = i;
++    for (let p = nodes[at].parent; p >= 0 && inScope.has(p) && boxed(nodes[p]) && held(p) === 1 && nodes[p].box![2] * nodes[p].box![3] <= WRAP * area; p = nodes[p].parent) at = p;
++    if (seen.has(at)) continue;
++    seen.add(at);
++    const b = nodes[at].box!;
++    cards.push({ x: b[0], y: b[1], w: b[2], h: b[3] });
++  }
++  const keys: Unit[] = ids
++    .filter((i) => (nodes[i].role === "button" || nodes[i].role === "control") && boxed(nodes[i]) && nodes[i].box![2] <= TILE && nodes[i].box![3] <= TILE && nodes[i].box![2] >= 12 && nodes[i].box![3] >= 12)
++    .map((i) => ({ x: nodes[i].box![0], y: nodes[i].box![1], w: nodes[i].box![2], h: nodes[i].box![3] }));
++
++  const small = cards.filter((u) => u.w <= TILE && u.h <= TILE);
++  const large = cards.filter((u) => u.w > TILE || u.h > TILE);
++  const tiles = [...small, ...keys];
++  const tiled = tiles.length >= MIN_UNITS && tiles.length >= 2 * large.length;
++  const pool = tiled ? tiles : large;
++  if (pool.length < MIN_UNITS) return null;
++
++  const width = median(pool.map((u) => u.w));
++  const alike = pool.filter((u) => Math.abs(u.w - width) <= 0.35 * width).sort((a, b) => a.y - b.y || a.x - b.x);
++  if (alike.length < MIN_UNITS) return null;
++  const height = median(alike.map((u) => u.h));
++
++  const lines: Unit[][] = [];
++  for (const u of alike) {
++    const line = lines[lines.length - 1];
++    if (line && Math.abs(u.y - line[0].y) <= 0.5 * height) line.push(u);
++    else lines.push([u]);
++  }
++  const perRow = median(lines.map((l) => l.length));
++  if (perRow < 2) return null;
++
++  const headings = ids.filter((i) => nodes[i].heading && boxed(nodes[i]) && nodes[i].fontSize).map((i) => ({ y: nodes[i].box![1], px: nodes[i].fontSize! }));
++  const heads: number[] = [];
++  let groups = 1;
++  const first = headings.filter((h) => h.y < lines[0][0].y && h.y >= lines[0][0].y - 2 * height);
++  if (first.length) heads.push(Math.max(...first.map((h) => h.px)));
++  for (let k = 1; k < lines.length; k++) {
++    const above = lines[k - 1][0].y + lines[k - 1][0].h;
++    const between = headings.filter((h) => h.y >= above - 4 && h.y < lines[k][0].y);
++    if (!between.length) continue;
++    groups++;
++    heads.push(Math.max(...between.map((h) => h.px)));
++  }
++  const body = median(ids.filter((i) => nodes[i].fontSize && nodes[i].ownChars > 0).map((i) => nodes[i].fontSize!)) || 16;
++  const rows = Math.max(1, Math.round(lines.length / groups));
++
++  return {
++    arrangement: tiled ? "tiles" : rows <= 1 ? "strip" : "grid",
++    units: alike.length,
++    width,
++    height,
++    perRow,
++    rows,
++    groups,
++    head: heads.length ? median(heads) / body : 0,
++    sizes: alike.slice(0, 32).map((u) => [u.w, u.h]),
++  };
++}

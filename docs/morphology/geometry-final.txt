@@ -1,0 +1,37 @@
+135 pages · share of the ground plan whose height changes (the project's own raster, flat view)
+
+text ±10%
+  default        270 cases · any height change: mean   8.3%, over 15% in  46 · built ↔ open: mean  2.3%, median  0.4%, over 10% in  17 · two floors or more: mean  3.0%, over 10% in  21
+  reading        270 cases · any height change: mean   9.2%, over 15% in  55 · built ↔ open: mean  2.2%, median  0.4%, over 10% in  13 · two floors or more: mean  2.9%, over 10% in  19
+
+one link in ten removed
+  default        135 cases · any height change: mean  19.2%, over 15% in  55 · built ↔ open: mean  6.3%, median  3.5%, over 10% in  29 · two floors or more: mean  7.8%, over 10% in  37
+  reading        135 cases · any height change: mean  22.0%, over 15% in  62 · built ↔ open: mean  7.0%, median  4.3%, over 10% in  31 · two floors or more: mean  9.0%, over 10% in  39
+
+a secondary section removed
+  default        135 cases · any height change: mean  14.6%, over 15% in  42 · built ↔ open: mean  5.8%, median  0.0%, over 10% in  29 · two floors or more: mean  6.9%, over 10% in  35
+  reading        135 cases · any height change: mean  14.4%, over 15% in  42 · built ↔ open: mean  5.2%, median  0.0%, over 10% in  26 · two floors or more: mean  6.3%, over 10% in  34
+
+one item removed or added
+  default        217 cases · any height change: mean  21.1%, over 15% in  86 · built ↔ open: mean  8.0%, median  3.9%, over 10% in  59 · two floors or more: mean  9.6%, over 10% in  70
+  reading        217 cases · any height change: mean  21.3%, over 15% in  88 · built ↔ open: mean  7.8%, median  4.0%, over 10% in  57 · two floors or more: mean  9.8%, over 10% in  67
+
+two items removed or added
+  default        207 cases · any height change: mean  28.3%, over 15% in 120 · built ↔ open: mean 11.0%, median  7.4%, over 10% in  78 · two floors or more: mean 13.4%, over 10% in  95
+  reading        207 cases · any height change: mean  30.0%, over 15% in 115 · built ↔ open: mean 11.1%, median  6.8%, over 10% in  75 · two floors or more: mean 14.3%, over 10% in  91
+
+single-item edits by half of the page set (0 guided the fixes, 1 did not):
+  half 0 · default         110 cases · built ↔ open: mean  6.8% · over 10% in 27 · disproportionate  9 · territory set changed in 25 · two floors or more: mean  8.1%
+  half 0 · reading         110 cases · built ↔ open: mean  7.9% · over 10% in 31 · disproportionate  8 · territory set changed in 22 · two floors or more: mean 10.0%
+  half 1 · default         107 cases · built ↔ open: mean  9.2% · over 10% in 32 · disproportionate 16 · territory set changed in 23 · two floors or more: mean 11.3%
+  half 1 · reading         107 cases · built ↔ open: mean  7.8% · over 10% in 26 · disproportionate 11 · territory set changed in 15 · two floors or more: mean  9.7%
+
+where the default's large changes come from (built ↔ open on more than 10% of the ground plan):
+  text ±10%                       17 cases · same territories and fabrics, different geometry: 1 (same pieces 0) · the plan itself changed: 16
+  one link in ten removed         29 cases · same territories and fabrics, different geometry: 5 (same pieces 0) · the plan itself changed: 24
+  a secondary section removed     29 cases · same territories and fabrics, different geometry: 4 (same pieces 0) · the plan itself changed: 25
+  one item removed or added       59 cases · same territories and fabrics, different geometry: 5 (same pieces 0) · the plan itself changed: 54
+  two items removed or added      78 cases · same territories and fabrics, different geometry: 11 (same pieces 0) · the plan itself changed: 67
+
+case by case:
+  the reading against the default, all pages: 964 cases · reading minus default: mean 1.0 points · worse by 10 points or more 100 · better by 10 or more 61

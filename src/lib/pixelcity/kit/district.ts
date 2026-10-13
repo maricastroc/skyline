@@ -7,9 +7,10 @@ import { Surf, type Part, type PixelCity } from "../types";
 import type { Brief } from "./brief";
 import type { Program } from "./buildings";
 import { programUse, type Anatomy, type Use } from "./surface";
-import { composeLandmark, composePiece, piecesOfBlock, type LandmarkInfo, type Piece, type PieceType } from "./compose";
+import { composeEnsemble, composeLandmark, composePiece, piecesOfBlock, ROOM, ROOM_FOR_SERIES, type LandmarkInfo, type Piece, type PieceType } from "./compose";
 import { planFrontage, type FrontagePlan, type Run } from "./frontage";
 import { Kit, type PeopleMode } from "./core";
+import { layoutOf, type Layout, type PlacedPiece } from "./layout";
 import type { Comp, Plan, Territory } from "./plan";
 import { bench, bin, bollards, busShelter, CARRIAGEWAY, hydrant, laneOffset, mailbox, meter, newsBoxes, SIDEWALK_H, streetLamp, streetSurfaces, streetTree, trafficSignal, uniformStreetSurfaces, type Grid } from "./street";
 import { planStreets, RANK, type StreetPlan, type StreetRole, type StreetSegment } from "./street-roles";
@@ -123,6 +124,7 @@ export interface KitTrace {
   buildings: TraceBuilding[];
   landmark: LandmarkInfo | null;
   frontage: Array<{ territory: number } & Omit<FrontagePlan, "rows">>;
+  layout?: Layout;
   range: [number, number];
   streets?: StreetSegment[];
   scene?: { furniture: [number, number]; crossings: [number, number]; traffic: [number, number]; stories?: [number, number]; foci?: [number, number] };
@@ -261,7 +263,20 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
       trace.frontage.push({ territory: ti, groups, clusters, slots, passages, clusterShares, clusterSlots, why });
     }
   }
-  const ctx = { kit, g: grammar, p: palette, plan, vf: 0.7 + 0.6 * grammar.verticality, record, frontage };
+  let layout: Layout | undefined;
+  if (plan.exp?.has("forum")) {
+    const placed: PlacedPiece[] = [];
+    for (let i = 0; i < BLOCKS; i++)
+      for (let j = 0; j < BLOCKS; j++)
+        for (const pc of blockPieces[i][j]) {
+          if (pc.seg < 0) continue;
+          const seg = alloc.segments[pc.seg];
+          placed.push({ piece: pc, at: pathIndex.get((i * LOTS + Math.floor((pc.x + 7) / 3.5)) * N + (j * LOTS + Math.floor((pc.z + 7) / 3.5))) ?? 0, territory: seg.territory, comp: seg.comp });
+        }
+    layout = layoutOf(plan, alloc, placed, (comp, type) => ROOM[comp]?.[type] ?? null);
+    if (trace) trace.layout = layout;
+  }
+  const ctx = { kit, g: grammar, p: palette, plan, vf: 0.7 + 0.6 * grammar.verticality, record, frontage, lots: alloc.lots, layout };
 
   for (let i = 0; i < BLOCKS; i++)
     for (let j = 0; j < BLOCKS; j++) {
@@ -281,10 +296,12 @@ export function generateKitDistrict(base: SiteFingerprint, o: KitOptions = {}): 
               current = { territory: seg.territory, comp: seg.comp, piece: pc.type, block: [i, j] };
               const salt = 1000 + seg.territory * 131 + (i * 4 + j) * 17 + k;
               const isLm = lmPiece && lmPiece.i === i && lmPiece.j === j && lmPiece.k === k;
+              const fronted = !pc.interior && seg.comp === "media" && !!t.series && t.series.kind !== "key" && alloc.lots[seg.territory] >= ROOM_FOR_SERIES;
               if (isLm) {
                 const info = composeLandmark(ctx, pc, t, salt);
                 if (trace) trace.landmark = { ...info, x: bx + pc.x, z: bz + pc.z, block: [i, j] };
-              } else composePiece(ctx, pc, t, seg.comp, salt);
+              } else if (fronted) composeEnsemble(ctx, pc, t, salt);
+              else composePiece(ctx, pc, t, seg.comp, salt);
               current = null;
               trace?.pieces.push({ territory: seg.territory, comp: seg.comp, piece: pc, block: [i, j], parts: [from, kit.parts.length] });
             }),

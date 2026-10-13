@@ -192,7 +192,7 @@ npm run dev
 npm test
 ```
 
-> Run one stage (also `test:hygiene`, `test:surface`, `test:openings`, `test:composition`, `test:program`, `test:streets`, `test:life`, `test:atmosphere`, `test:polish`):
+> Run one stage (also `test:warnings`, `test:hygiene`, `test:surface`, `test:openings`, `test:composition`, `test:program`, `test:streets`, `test:life`, `test:atmosphere`, `test:polish`):
 
 ```bash
 npm run test:allocation
@@ -227,7 +227,7 @@ npm run probe -- https://news.ycombinator.com
 
 ### ⚠️ Known limits
 
-- **SPAs:** the static capture only sees the HTML the server sends; `captureRenderedPage` is ready for a browser worker (`SKYLINE_RENDERER_URL`).
+- **Pages that build themselves in the browser:** the capture only sees the HTML the server sends, and the city says so ("Scaffolding only"). A rendered capture exists for local development (`SKYLINE_LOCAL_RENDERER=1`) and is not deployed: a browser's own connections don't go through the SSRF guard yet ([plan](docs/RENDERED_CAPTURE_PLAN.md)).
 - **Blocked sites:** pages behind a bot challenge or a login are refused with an explanation.
 - **In-memory state:** rate limiting, cache and the signing secret live per process. With more than one instance, set `SKYLINE_ASSET_SECRET` and use a shared store.
 

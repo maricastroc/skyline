@@ -28,6 +28,7 @@ export interface SnapshotNode {
   bg?: string;
   image?: string;
   box?: { x: number; y: number; w: number; h: number };
+  fontSize?: number;
   children: SnapshotNode[];
 }
 
@@ -65,6 +66,7 @@ export interface DomSnapshot {
     maxDepth: number;
     truncated: boolean;
   };
+  layout?: { width: number; height: number; viewport: number };
   root: SnapshotNode;
   warnings: CaptureWarning[];
 }

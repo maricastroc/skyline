@@ -2,6 +2,7 @@ import { computeFingerprint, type SiteFingerprint } from "../../fingerprint/fing
 import { normalize } from "../../model/normalize";
 import type { NormalizedDocument } from "../../model/types";
 import { analyzeSemantics, type Semantics } from "../../semantics/analyze";
+import { NO_EXPERIMENTS, type Experiments } from "../../semantics/experiments";
 import type { DomSnapshot, SnapshotNode } from "../../snapshot/types";
 import { planFromPage, type Plan } from "./plan";
 
@@ -16,12 +17,12 @@ export interface RealPage {
   perturbed?: string;
 }
 
-export function realPage(snapshot: DomSnapshot, perturbation: Perturbation = "none"): RealPage {
+export function realPage(snapshot: DomSnapshot, perturbation: Perturbation = "none", experiments: Experiments = NO_EXPERIMENTS): RealPage {
   const { snap, note } = perturb(snapshot, perturbation);
-  const doc = normalize(snap);
-  const sem = analyzeSemantics(doc, { contentMedia: true, explicitFooter: true });
+  const doc = normalize(snap, experiments);
+  const sem = analyzeSemantics(doc, { contentMedia: true, explicitFooter: true, experiments });
   const fp = computeFingerprint(doc);
-  return { doc, sem, fp, plan: planFromPage(doc, sem, fp), perturbed: note };
+  return { doc, sem, fp, plan: planFromPage(doc, sem, fp, experiments), perturbed: note };
 }
 
 const clone = <T,>(v: T): T => JSON.parse(JSON.stringify(v));

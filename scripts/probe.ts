@@ -1,3 +1,4 @@
+import { captureWithLocalBrowser } from "../src/lib/acquisition/rendered-capture";
 import { fetchStaticPage } from "../src/lib/acquisition/static-fetch";
 import { normalizeInputUrl } from "../src/lib/acquisition/url-policy";
 import { CaptureError } from "../src/lib/acquisition/errors";
@@ -6,21 +7,25 @@ import { generateCity } from "../src/lib/city/generate";
 import { LUMEN_SAMPLE_HTML } from "../src/lib/fixtures/lumen";
 import { buildSnapshot, parsePage } from "../src/lib/snapshot/parse-html";
 
+const rendered = process.argv.includes("--rendered");
+
 async function main() {
-  for (const input of process.argv.slice(2)) {
+  for (const input of process.argv.slice(2).filter((a) => !a.startsWith("--"))) {
     const t0 = Date.now();
     try {
       const snap =
         input === "sample:lumen"
           ? buildSnapshot(parsePage(LUMEN_SAMPLE_HTML, "https://lumen.example/"), { requestedUrl: input, finalUrl: "https://lumen.example/", strategy: "sample", status: 200, bytes: 0, durationMs: 0, redirects: [] })
-          : await fetchStaticPage(normalizeInputUrl(input));
+          : rendered
+            ? await captureWithLocalBrowser(normalizeInputUrl(input))
+            : await fetchStaticPage(normalizeInputUrl(input));
       const doc = normalize(snap);
       const city = generateCity(doc);
       const roles: Record<string, number> = {};
       for (const n of doc.nodes) roles[n.role] = (roles[n.role] ?? 0) + 1;
       const kinds: Record<string, number> = {};
       for (const s of city.structures) kinds[s.mesh] = (kinds[s.mesh] ?? 0) + 1;
-      console.log(`\n■ ${input} → ${snap.source.finalUrl} (${Date.now() - t0}ms, ${(snap.source.bytes / 1024).toFixed(0)}KB)`);
+      console.log(`\n■ ${input} → ${snap.source.finalUrl} (${snap.source.strategy}, ${Date.now() - t0}ms, ${(snap.source.bytes / 1024).toFixed(0)}KB)`);
       console.log("  title:", snap.document.title, "| warnings:", snap.warnings.map((w) => w.code).join(",") || "-");
       console.log("  stats:", JSON.stringify(doc.stats));
       console.log("  roles:", JSON.stringify(roles));

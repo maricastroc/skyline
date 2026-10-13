@@ -1,0 +1,9 @@
+shots/
+sheets-full/
+holdout/snapshots/
+holdout2/snapshots/
+all-snapshots/
+geometry-*.jsonl
+archive/*.jsonl
+recapture/
+archive-local/

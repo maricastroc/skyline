@@ -1,0 +1,140 @@
+export type Expect = "headline" | "post" | "media-post" | "cards" | "catalogue" | "gallery" | "directory" | "mixed" | "none";
+
+export interface Holdout {
+  id: string;
+  url: string;
+  expect: Expect;
+  why: string;
+}
+
+const h = (id: string, url: string, expect: Expect, why: string): Holdout => ({ id, url, expect, why });
+
+export const HOLDOUT: Holdout[] = [
+  h("old-reddit", "https://old.reddit.com/r/programming/", "headline", "link aggregator: a title and a row of metadata links per item"),
+  h("tildes", "https://tildes.net/", "headline", "topic titles with metadata"),
+  h("lwn", "https://lwn.net/", "post", "headlines each followed by a paragraph of summary"),
+  h("slashdot", "https://slashdot.org/", "post", "stories with a long summary each"),
+  h("techmeme", "https://www.techmeme.com/", "post", "clustered stories with a summary sentence each"),
+  h("pinboard", "https://pinboard.in/popular/", "headline", "bookmark titles with tags"),
+  h("github-trending", "https://github.com/trending", "headline", "repositories: a name, one line of description, metadata"),
+  h("stackoverflow", "https://stackoverflow.com/questions?tab=Newest", "headline", "question titles with an excerpt, tags and counts"),
+  h("arxiv", "https://arxiv.org/list/cs.AI/recent", "post", "entries with title, authors and subjects"),
+  h("npr-text", "https://text.npr.org/", "directory", "a list of headline links and nothing else"),
+  h("cnn-lite", "https://lite.cnn.com/", "directory", "a list of headline links and nothing else"),
+  h("hn-thread", "https://news.ycombinator.com/item?id=1", "post", "a comment thread: each item is a paragraph or more"),
+  h("lemmy", "https://lemmy.world/", "headline", "link aggregator with small thumbnails"),
+  h("devto", "https://dev.to/", "headline", "post cards: title, tags and counts, few with a cover"),
+  h("simonwillison", "https://simonwillison.net/", "post", "a blog index that shows whole entries"),
+  h("schneier", "https://www.schneier.com/", "post", "a blog index that shows whole entries"),
+  h("daringfireball", "https://daringfireball.net/", "post", "linked list with commentary paragraphs"),
+  h("kottke", "https://kottke.org/", "media-post", "whole posts, many with an image or a video"),
+  h("jvns", "https://jvns.ca/", "directory", "post titles grouped by topic"),
+  h("cloudflare-blog", "https://blog.cloudflare.com/", "cards", "cards: an image, a title, an excerpt"),
+  h("verge", "https://www.theverge.com/", "mixed", "an editorial front made of sections"),
+  h("bbc-news", "https://www.bbc.com/news", "mixed", "an editorial front made of sections"),
+  h("apnews", "https://apnews.com/", "mixed", "an editorial front made of sections"),
+
+  h("books-toscrape", "https://books.toscrape.com/", "catalogue", "twenty book cards, each with a cover and a price"),
+  h("webscraper-laptops", "https://webscraper.io/test-sites/e-commerce/static/computers/laptops", "catalogue", "product cards with a price"),
+  h("steam-top", "https://store.steampowered.com/search/?filter=topsellers", "catalogue", "rows: a capsule image, a title and a price"),
+  h("itch", "https://itch.io/games", "catalogue", "game cards with a cover, some with a price"),
+  h("ikea-chairs", "https://www.ikea.com/us/en/cat/chairs-fu002/", "catalogue", "a product listing: every card has a price"),
+  h("gog", "https://www.gog.com/en/games", "catalogue", "game tiles with a price"),
+  h("ebay-laptops", "https://www.ebay.com/b/Laptops-Netbooks/175672/bn_1648276", "catalogue", "listing rows with a price"),
+  h("bandcamp", "https://bandcamp.com/discover", "cards", "album covers with a title and an artist"),
+  h("mercadolivre", "https://www.mercadolivre.com.br/ofertas", "catalogue", "offer cards with a price"),
+
+  h("commons-category", "https://commons.wikimedia.org/wiki/Category:Featured_pictures_of_Brazil", "gallery", "thumbnails with a file name"),
+  h("unsplash", "https://unsplash.com/t/nature", "gallery", "photographs and almost no text"),
+  h("flickr", "https://www.flickr.com/explore", "gallery", "photographs and almost no text"),
+  h("artic", "https://www.artic.edu/collection", "gallery", "artwork images with a short caption"),
+  h("dribbble", "https://dribbble.com/shots/popular", "gallery", "shot thumbnails with an author"),
+  h("openlibrary", "https://openlibrary.org/trending/daily", "cards", "book rows: a cover, a title, an author"),
+
+  h("gutenberg-top", "https://www.gutenberg.org/browse/scores/top", "directory", "ordered lists of book titles, each a link"),
+  h("wiki-list", "https://en.wikipedia.org/wiki/List_of_programming_languages", "directory", "names, each a link, in columns"),
+  h("curlie", "https://curlie.org/", "directory", "category names"),
+  h("awesome", "https://github.com/sindresorhus/awesome", "directory", "a README made of lists of links"),
+  h("w3c-tr", "https://www.w3.org/TR/", "headline", "specification titles with status and date"),
+
+  h("pg-essay", "https://www.paulgraham.com/greatwork.html", "none", "one long essay"),
+  h("react-learn", "https://react.dev/learn", "none", "a documentation page: prose and code"),
+  h("rust-book", "https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html", "none", "a book chapter"),
+  h("stripe", "https://stripe.com/", "none", "a product landing page"),
+  h("tailwind", "https://tailwindcss.com/", "none", "a product landing page"),
+  h("cloudflare", "https://www.cloudflare.com/", "none", "a product landing page"),
+  h("wiki-fortaleza", "https://en.wikipedia.org/wiki/Fortaleza", "none", "an encyclopedia article"),
+  h("mdn-details", "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details", "none", "a reference page"),
+  h("notion-product", "https://www.notion.com/product", "none", "a product landing page"),
+  h("figma", "https://www.figma.com/", "none", "a product landing page"),
+];
+
+export const HOLDOUT_B: Holdout[] = [
+  h("bearblog", "https://bearblog.dev/discover/", "headline", "post titles with a domain and a vote count"),
+  h("tilde-news", "https://tilde.news/", "headline", "link aggregator on the same engine as lobste.rs"),
+  h("lesswrong", "https://www.lesswrong.com/", "headline", "post titles with author and score"),
+  h("sourcehut", "https://sr.ht/projects", "headline", "projects: a name and a line of description"),
+  h("codeberg", "https://codeberg.org/explore/repos", "headline", "repositories: a name, a description, metadata"),
+  h("pkg-go", "https://pkg.go.dev/search?q=http", "headline", "packages: a name, a synopsis, metadata"),
+  h("rubygems", "https://rubygems.org/search?query=http", "headline", "gems: a name and a line of description"),
+  h("packagist", "https://packagist.org/explore/popular", "headline", "packages: a name and a line of description"),
+  h("hex", "https://hex.pm/packages", "headline", "packages: a name and a line of description"),
+  h("discourse", "https://meta.discourse.org/latest", "headline", "topic rows: a title, a category, counts"),
+  h("changelog", "https://changelog.com/news", "post", "news items with a paragraph each"),
+  h("osnews", "https://www.osnews.com/", "post", "stories with a long excerpt each"),
+  h("metafilter", "https://www.metafilter.com/", "post", "posts of a paragraph or more"),
+  h("planet-debian", "https://planet.debian.org/", "post", "whole blog posts, aggregated"),
+  h("osm-diary", "https://www.openstreetmap.org/diary", "post", "diary entries, whole"),
+  h("waxy", "https://waxy.org/", "post", "blog posts and short links"),
+  h("phoronix", "https://www.phoronix.com/", "media-post", "stories: a small image, a title, a paragraph"),
+  h("hackaday", "https://hackaday.com/blog/", "media-post", "posts with a picture and an excerpt"),
+  h("boingboing", "https://boingboing.net/", "media-post", "posts with a picture and an excerpt"),
+  h("arstechnica", "https://arstechnica.com/", "cards", "cards: an image, a title, an excerpt"),
+  h("newstack", "https://thenewstack.io/", "cards", "cards: an image, a title, an excerpt"),
+  h("g1", "https://g1.globo.com/", "cards", "a river of story cards with a picture"),
+  h("aljazeera", "https://www.aljazeera.com/", "mixed", "an editorial front made of sections"),
+  h("npr", "https://www.npr.org/", "mixed", "an editorial front made of sections"),
+  h("dw", "https://www.dw.com/en/", "mixed", "an editorial front made of sections"),
+
+  h("oxylabs-products", "https://sandbox.oxylabs.io/products", "catalogue", "product cards with a picture and a price"),
+  h("fieldnotes", "https://www.fieldnotesbrand.com/products", "catalogue", "a product grid with a price on each"),
+  h("deathwish", "https://www.deathwishcoffee.com/collections/coffee", "catalogue", "a product grid with a price on each"),
+  h("hiut", "https://www.hiutdenim.co.uk/collections/mens", "catalogue", "a product grid with a price on each"),
+  h("humble", "https://www.humblebundle.com/store", "catalogue", "game tiles with a price"),
+  h("scrapethissite", "https://www.scrapethissite.com/pages/simple/", "headline", "250 country blocks: a name and three facts"),
+
+  h("picsum", "https://picsum.photos/images", "gallery", "thumbnails and almost no text"),
+  h("met", "https://www.metmuseum.org/art/collection/search?showOnly=highlights", "gallery", "artwork images with a short caption"),
+  h("openverse", "https://openverse.org/search?q=city", "gallery", "thumbnails and almost no text"),
+  h("wikiart", "https://www.wikiart.org/en/popular-paintings", "gallery", "paintings with a title and an artist"),
+
+  h("xkcd-archive", "https://xkcd.com/archive/", "directory", "comic titles, each a link"),
+  h("apod-archive", "https://apod.nasa.gov/apod/archivepix.html", "directory", "dates and titles, each a link"),
+  h("gutenberg-shelves", "https://www.gutenberg.org/ebooks/bookshelf/", "directory", "bookshelf names, each a link"),
+  h("wiki-category", "https://en.wikipedia.org/wiki/Category:Programming_languages", "directory", "page names, each a link"),
+  h("ooh-directory", "https://ooh.directory/", "directory", "category names with counts"),
+  h("python-library", "https://docs.python.org/3/library/index.html", "directory", "a nested table of contents"),
+  h("learnxinyminutes", "https://learnxinyminutes.com/", "directory", "language names, each a link"),
+  h("debian-packages", "https://packages.debian.org/stable/", "directory", "section names with a description"),
+
+  h("gnu-free-sw", "https://www.gnu.org/philosophy/free-sw.html", "none", "one essay"),
+  h("effective-go", "https://go.dev/doc/effective_go", "none", "one long document"),
+  h("sqlite-about", "https://sqlite.org/about.html", "none", "one short document"),
+  h("wiki-isometric", "https://en.wikipedia.org/wiki/Isometric_projection", "none", "an encyclopedia article"),
+  h("sep-turing", "https://plato.stanford.edu/entries/turing-machine/", "none", "a long encyclopedia entry"),
+  h("postgres-select", "https://www.postgresql.org/docs/current/sql-select.html", "none", "a reference page"),
+  h("django", "https://www.djangoproject.com/", "none", "a project landing page"),
+  h("svelte", "https://svelte.dev/", "none", "a project landing page"),
+  h("rust-lang", "https://www.rust-lang.org/", "none", "a project landing page"),
+  h("vue", "https://vuejs.org/", "none", "a project landing page"),
+  h("supabase", "https://supabase.com/", "none", "a product landing page"),
+];
+
+export const FABRIC: Partial<Record<Expect, string[]>> = {
+  headline: ["parcelled"],
+  post: ["continuous"],
+  "media-post": ["continuous", "media"],
+  catalogue: ["grid"],
+  gallery: ["media"],
+  directory: ["archive"],
+};

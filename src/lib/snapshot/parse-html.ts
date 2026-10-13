@@ -88,7 +88,17 @@ export interface SnapshotSource {
   redirects: string[];
 }
 
-export function buildSnapshot(page: ParsedPage, source: SnapshotSource, externalCss: string[] = []): DomSnapshot {
+export function snapshotFromHtml(
+  html: string,
+  url: string,
+  strategy: SnapshotSource["strategy"],
+  extra: { source?: Partial<SnapshotSource>; externalCss?: string[]; layout?: DomSnapshot["layout"] } = {},
+): DomSnapshot {
+  const source: SnapshotSource = { requestedUrl: url, finalUrl: url, strategy, status: 200, bytes: html.length, durationMs: 0, redirects: [], ...extra.source };
+  return buildSnapshot(parsePage(html, source.finalUrl), source, extra.externalCss, extra.layout);
+}
+
+export function buildSnapshot(page: ParsedPage, source: SnapshotSource, externalCss: string[] = [], layout?: DomSnapshot["layout"]): DomSnapshot {
   const base = resolveUrl(page.baseHref, source.finalUrl) ?? source.finalUrl;
   const colors = new Map<string, number>();
   const positionRules: PositionRule[] = [];
@@ -143,6 +153,13 @@ export function buildSnapshot(page: ParsedPage, source: SnapshotSource, external
     if (tag === "input" && (attr(el, "type") ?? "").toLowerCase() === "hidden") return null;
 
     const node: SnapshotNode = { tag, text: 0, children: [] };
+    if (layout) {
+      const m = attr(el, "data-sk-box")?.split(" ").map(Number);
+      if (m && m.length === 5 && m.every(Number.isFinite) && m[2] > 0 && m[3] > 0) {
+        node.box = { x: m[0], y: m[1], w: m[2], h: m[3] };
+        if (m[4] > 0) node.fontSize = m[4];
+      }
+    }
     if (tag === "font" || tag === "center" || attr(el, "bgcolor") || attr(el, "valign") || (attr(el, "align") && tag !== "img"))
       markup.legacy++;
     const rawClass = attr(el, "class");
@@ -233,7 +250,7 @@ export function buildSnapshot(page: ParsedPage, source: SnapshotSource, external
   const warnings: CaptureWarning[] = [];
   const totalText = sumText(root);
   if (truncated) warnings.push({ code: "truncated", message: `Only the first ${MAX_ELEMENTS.toLocaleString("en")} elements were read.` });
-  if (looksLikeSpaShell(root, elementCount, totalText, noscriptText)) {
+  if (looksLikeSpaShell(root, elementCount, totalText, noscriptText) || isMarkupWithoutWords(elementCount, totalText, source.bytes)) {
     warnings.push({
       code: "spa_shell",
       message:
@@ -257,6 +274,7 @@ export function buildSnapshot(page: ParsedPage, source: SnapshotSource, external
         .map(([hex, weight]) => ({ hex, weight: Math.round(weight * 10) / 10 })),
     },
     stats: { elementCount, maxDepth, truncated },
+    ...(layout ? { layout } : {}),
     root,
     warnings,
   };
@@ -397,6 +415,11 @@ function pickSourceSrc(picture: P5Element, base: string): string | undefined {
     if (u) return u;
   }
   return undefined;
+}
+
+export function isMarkupWithoutWords(elementCount: number, text: number, bytes: number): boolean {
+  if (elementCount < 60) return false;
+  return text / elementCount < 2 && text / Math.max(bytes / 1024, 1) < 2;
 }
 
 function looksLikeSpaShell(root: SnapshotNode, elementCount: number, text: number, noscriptText: number): boolean {

@@ -1,4 +1,4 @@
-import { acquire, CaptureError, SAMPLE_URLS, type StrategyPreference } from "@/lib/acquisition";
+import { acquire, CaptureError, rendererReady, SAMPLE_URLS, type StrategyPreference } from "@/lib/acquisition";
 import { toCaptureError } from "@/lib/acquisition/errors";
 import { clientKey, Lru, takeToken } from "@/lib/acquisition/rate-limit";
 import { assetProxyPath } from "@/lib/acquisition/signing";
@@ -13,7 +13,15 @@ export type CaptureResponse =
   | { ok: true; doc: NormalizedDocument; timings: { acquireMs: number; normalizeMs: number }; cached: boolean }
   | { ok: false; error: ReturnType<CaptureError["toPayload"]> };
 
+export interface CaptureModes {
+  detailed: boolean;
+}
+
 const cache = new Lru<NormalizedDocument>(40, 5 * 60_000);
+
+export async function GET(): Promise<Response> {
+  return Response.json({ detailed: await rendererReady() } satisfies CaptureModes, { headers: { "cache-control": "no-store" } });
+}
 
 export async function POST(req: Request): Promise<Response> {
   let body: { url?: unknown; strategy?: unknown };

@@ -74,6 +74,8 @@ export interface NNode {
   image?: { src: string; alt?: string; priority: number; proxy?: string };
   link?: { kind: "anchor" | "internal" | "external"; target?: number; path?: string };
   cluster?: { tag: string; count: number };
+  box?: [number, number, number, number];
+  fontSize?: number;
 }
 
 export interface NormalizedDocument {
@@ -97,4 +99,5 @@ export interface NormalizedDocument {
   };
   warnings: CaptureWarning[];
   media?: MediaReport;
+  layout?: DomSnapshot["layout"];
 }

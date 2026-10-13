@@ -1,0 +1,326 @@
+[
+ {
+  "id": "bearblog",
+  "url": "https://bearblog.dev/discover/",
+  "ok": false,
+  "note": "blocked: blocked: HTTP 403"
+ },
+ {
+  "id": "tilde-news",
+  "url": "https://tilde.news/",
+  "ok": true,
+  "note": "static, 768 elements"
+ },
+ {
+  "id": "lesswrong",
+  "url": "https://www.lesswrong.com/",
+  "ok": true,
+  "note": "rendered, 5952 elements"
+ },
+ {
+  "id": "sourcehut",
+  "url": "https://sr.ht/projects",
+  "ok": false,
+  "note": "http_error: http_error: HTTP 418"
+ },
+ {
+  "id": "codeberg",
+  "url": "https://codeberg.org/explore/repos",
+  "ok": true,
+  "note": "static, 3 elements, warnings: few_elements"
+ },
+ {
+  "id": "pkg-go",
+  "url": "https://pkg.go.dev/search?q=http",
+  "ok": true,
+  "note": "static, 782 elements"
+ },
+ {
+  "id": "rubygems",
+  "url": "https://rubygems.org/search?query=http",
+  "ok": true,
+  "note": "static, 398 elements"
+ },
+ {
+  "id": "packagist",
+  "url": "https://packagist.org/explore/popular",
+  "ok": true,
+  "note": "static, 351 elements"
+ },
+ {
+  "id": "hex",
+  "url": "https://hex.pm/packages",
+  "ok": true,
+  "note": "static, 676 elements"
+ },
+ {
+  "id": "discourse",
+  "url": "https://meta.discourse.org/latest",
+  "ok": true,
+  "note": "static, 740 elements"
+ },
+ {
+  "id": "changelog",
+  "url": "https://changelog.com/news",
+  "ok": true,
+  "note": "static, 158 elements"
+ },
+ {
+  "id": "osnews",
+  "url": "https://www.osnews.com/",
+  "ok": true,
+  "note": "static, 713 elements"
+ },
+ {
+  "id": "metafilter",
+  "url": "https://www.metafilter.com/",
+  "ok": false,
+  "note": "blocked: blocked: HTTP 403"
+ },
+ {
+  "id": "planet-debian",
+  "url": "https://planet.debian.org/",
+  "ok": true,
+  "note": "static, 19618 elements"
+ },
+ {
+  "id": "osm-diary",
+  "url": "https://www.openstreetmap.org/diary",
+  "ok": true,
+  "note": "static, 782 elements"
+ },
+ {
+  "id": "waxy",
+  "url": "https://waxy.org/",
+  "ok": true,
+  "note": "static, 430 elements"
+ },
+ {
+  "id": "phoronix",
+  "url": "https://www.phoronix.com/",
+  "ok": false,
+  "note": "blocked: blocked: HTTP 403"
+ },
+ {
+  "id": "hackaday",
+  "url": "https://hackaday.com/blog/",
+  "ok": true,
+  "note": "static, 611 elements"
+ },
+ {
+  "id": "boingboing",
+  "url": "https://boingboing.net/",
+  "ok": true,
+  "note": "static, 390 elements"
+ },
+ {
+  "id": "arstechnica",
+  "url": "https://arstechnica.com/",
+  "ok": false,
+  "note": "http_error: http_error: HTTP 405"
+ },
+ {
+  "id": "newstack",
+  "url": "https://thenewstack.io/",
+  "ok": true,
+  "note": "static, 2377 elements"
+ },
+ {
+  "id": "g1",
+  "url": "https://g1.globo.com/",
+  "ok": true,
+  "note": "static, 325 elements"
+ },
+ {
+  "id": "aljazeera",
+  "url": "https://www.aljazeera.com/",
+  "ok": true,
+  "note": "static, 901 elements"
+ },
+ {
+  "id": "npr",
+  "url": "https://www.npr.org/",
+  "ok": true,
+  "note": "static, 4563 elements"
+ },
+ {
+  "id": "dw",
+  "url": "https://www.dw.com/en/",
+  "ok": true,
+  "note": "static, 1026 elements"
+ },
+ {
+  "id": "oxylabs-products",
+  "url": "https://sandbox.oxylabs.io/products",
+  "ok": true,
+  "note": "static, 598 elements"
+ },
+ {
+  "id": "fieldnotes",
+  "url": "https://www.fieldnotesbrand.com/products",
+  "ok": false,
+  "note": "http_error: http_error: HTTP 404"
+ },
+ {
+  "id": "deathwish",
+  "url": "https://www.deathwishcoffee.com/collections/coffee",
+  "ok": true,
+  "note": "static, 534 elements"
+ },
+ {
+  "id": "hiut",
+  "url": "https://www.hiutdenim.co.uk/collections/mens",
+  "ok": true,
+  "note": "static, 382 elements"
+ },
+ {
+  "id": "humble",
+  "url": "https://www.humblebundle.com/store",
+  "ok": true,
+  "note": "static, 354 elements"
+ },
+ {
+  "id": "scrapethissite",
+  "url": "https://www.scrapethissite.com/pages/simple/",
+  "ok": true,
+  "note": "static, 2879 elements"
+ },
+ {
+  "id": "picsum",
+  "url": "https://picsum.photos/images",
+  "ok": true,
+  "note": "static, 46 elements"
+ },
+ {
+  "id": "met",
+  "url": "https://www.metmuseum.org/art/collection/search?showOnly=highlights",
+  "ok": false,
+  "note": "blocked: blocked: HTTP 429"
+ },
+ {
+  "id": "openverse",
+  "url": "https://openverse.org/search?q=city",
+  "ok": false,
+  "note": "blocked: blocked: HTTP 403"
+ },
+ {
+  "id": "wikiart",
+  "url": "https://www.wikiart.org/en/popular-paintings",
+  "ok": false,
+  "note": "blocked: blocked: HTTP 403"
+ },
+ {
+  "id": "xkcd-archive",
+  "url": "https://xkcd.com/archive/",
+  "ok": true,
+  "note": "static, 3386 elements"
+ },
+ {
+  "id": "apod-archive",
+  "url": "https://apod.nasa.gov/apod/archivepix.html",
+  "ok": true,
+  "note": "static, 560 elements"
+ },
+ {
+  "id": "gutenberg-shelves",
+  "url": "https://www.gutenberg.org/ebooks/bookshelf/",
+  "ok": true,
+  "note": "static, 849 elements"
+ },
+ {
+  "id": "wiki-category",
+  "url": "https://en.wikipedia.org/wiki/Category:Programming_languages",
+  "ok": true,
+  "note": "static, 1883 elements"
+ },
+ {
+  "id": "ooh-directory",
+  "url": "https://ooh.directory/",
+  "ok": true,
+  "note": "static, 505 elements"
+ },
+ {
+  "id": "python-library",
+  "url": "https://docs.python.org/3/library/index.html",
+  "ok": true,
+  "note": "static, 1228 elements"
+ },
+ {
+  "id": "learnxinyminutes",
+  "url": "https://learnxinyminutes.com/",
+  "ok": true,
+  "note": "static, 1505 elements"
+ },
+ {
+  "id": "debian-packages",
+  "url": "https://packages.debian.org/stable/",
+  "ok": true,
+  "note": "rendered, 263 elements"
+ },
+ {
+  "id": "gnu-free-sw",
+  "url": "https://www.gnu.org/philosophy/free-sw.html",
+  "ok": true,
+  "note": "static, 493 elements"
+ },
+ {
+  "id": "effective-go",
+  "url": "https://go.dev/doc/effective_go",
+  "ok": true,
+  "note": "static, 1451 elements"
+ },
+ {
+  "id": "sqlite-about",
+  "url": "https://sqlite.org/about.html",
+  "ok": true,
+  "note": "static, 116 elements"
+ },
+ {
+  "id": "wiki-isometric",
+  "url": "https://en.wikipedia.org/wiki/Isometric_projection",
+  "ok": true,
+  "note": "static, 1506 elements"
+ },
+ {
+  "id": "sep-turing",
+  "url": "https://plato.stanford.edu/entries/turing-machine/",
+  "ok": true,
+  "note": "static, 1317 elements"
+ },
+ {
+  "id": "postgres-select",
+  "url": "https://www.postgresql.org/docs/current/sql-select.html",
+  "ok": true,
+  "note": "static, 1719 elements"
+ },
+ {
+  "id": "django",
+  "url": "https://www.djangoproject.com/",
+  "ok": true,
+  "note": "static, 262 elements"
+ },
+ {
+  "id": "svelte",
+  "url": "https://svelte.dev/",
+  "ok": true,
+  "note": "static, 225 elements"
+ },
+ {
+  "id": "rust-lang",
+  "url": "https://www.rust-lang.org/",
+  "ok": true,
+  "note": "static, 176 elements"
+ },
+ {
+  "id": "vue",
+  "url": "https://vuejs.org/",
+  "ok": true,
+  "note": "static, 400 elements"
+ },
+ {
+  "id": "supabase",
+  "url": "https://supabase.com/",
+  "ok": true,
+  "note": "static, 1284 elements"
+ }
+]

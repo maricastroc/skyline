@@ -1,0 +1,141 @@
+--- a/src/lib/pixelcity/kit/compose.ts
++++ b/src/lib/pixelcity/kit/compose.ts
+@@ -332,7 +332,71 @@
+     else {
+       plaza(kit, -W / 2, W / 2, -D / 2, D / 2 - 4.3, salt, false);
+       row(D / 2 - 2.1, 0, part.ordinal * n, headed);
++    }
++  });
++}
++
++const PORTRAIT = 1.5;
++const LANDSCAPE = 0.75;
++const REACH = 8.5;
++const TERRACED = 2.9;
++
++export function composeEnsemble(ctx: ComposeCtx, pc: Piece, t: Territory, salt: number, part: SeriesPart) {
++  const s = t.series!;
++  const { kit } = ctx;
++  kit.frame(pc.x, pc.z, pc.rot, () => {
++    const W = pc.w - 0.2;
++    const D = pc.d - 0.2;
++    const whole = fl(ctx, 6 + 10 * (1 - Math.exp(-t.weight / 0.08)), 4);
++    const P: Program = { ...prog(ctx, t, "media", salt), signage: "screen", facade: "curtain" };
++    if (pc.type === "lot") return place(ctx, 0, 0, 0, W, D, { ...P, family: "asymmetric", floors: Math.max(2, Math.round(whole / 4)) });
++    const cadence = Math.min(Math.max(s.perRow, 2), 8);
++    const n = cadence - 2;
++    const keys = s.arrangement === "tiles" && n > 0;
++    const aspect = s.arrangement === "tiles" ? 1 : s.height / s.width;
++    const floors = part.lead ? whole : Math.max(4, Math.round(whole / Math.sqrt(Math.min(Math.max(s.head, 1), 2.25))));
++    const brand = shortLabel(t.label)?.toUpperCase();
++    const dominant = (f: number, branded: boolean): Program => {
++      if (aspect >= PORTRAIT) return { ...P, family: "narrowTower", floors: f, brand: branded ? brand : undefined };
++      if (aspect < LANDSCAPE) return { ...P, family: "slab", floors: Math.max(3, Math.round(f * Math.max(0.5, aspect / LANDSCAPE))), ground: "shop" };
++      return { ...P, family: "podiumTower", floors: f, brand: branded ? brand : undefined };
++    };
++    const annex: Program = { ...P, family: "asymmetric", floors: Math.max(3, Math.round(whole / 3)), seed: P.seed + 3 };
++    const split = (pc.type === "full" && s.arrangement === "grid") || (keys && s.rows >= 2) ? [Math.ceil(n / 2), Math.floor(n / 2)] : [n, 0];
++    const booths = (at: Array<[number, number, number]>) => stalls(ctx, { ...prog(ctx, t, "media", salt), label: shortLabel(t.label) }, at);
++    if (pc.type === "quad") return place(ctx, 0, 0, 0, W, D, dominant(Math.max(4, Math.round(floors * 0.75)), false));
++    if (pc.type === "half") {
++      place(ctx, -3.5, 0, 0, 6.6, D, dominant(floors, true));
++      if (!keys) return place(ctx, 3.5, 0.8, 0, 6.4, D - 1.6, annex);
++      const m = Math.min(3, n);
++      const at: Array<[number, number, number]> = Array.from({ length: m }, (_, k) => [0.3 + ((k + 0.5) * 6.4) / m, D / 2 - 1.0, 0]);
++      plaza(kit, 0.2, W / 2, -D / 2, D / 2, salt, false, undefined, at.map(([x, z, rot]): PlazaAnchor => ({ kind: "kiosk", x, z, rot })));
++      booths(at);
++      return;
+     }
++    const side = Math.min(8, Math.max(5.6, 9 - cadence / 2));
++    const keep: [number, number, number, number] = [-W / 2, -W / 2 + side + 0.2, -D / 2, -D / 2 + side + 0.2];
++    const home = () => place(ctx, -W / 2 + 0.1 + side / 2, -D / 2 + 0.1 + side / 2, 0, side, side, dominant(floors, true));
++    if (keys) {
++      const at: Array<[number, number, number]> = [];
++      for (let k = 0; k < split[0]; k++) at.push([-W / 2 + ((k + 0.5) * W) / split[0], D / 2 - 1.0, 0]);
++      for (let k = 0; k < split[1]; k++) at.push([W / 2 - 1.0, -D / 2 + ((k + 0.5) * (D - 2.4)) / split[1], Math.PI / 2]);
++      plaza(kit, -W / 2, W / 2, -D / 2, D / 2, salt, false, keep, at.map(([x, z, rot]): PlazaAnchor => ({ kind: "kiosk", x, z, rot })));
++      home();
++      booths(at);
++      return;
++    }
++    plaza(kit, -W / 2, W / 2, -D / 2, D / 2, salt, false, keep);
++    home();
++    place(ctx, W / 2 - 2.6, D / 2 - 2.6, 0, 5, 5, annex);
++    split.forEach((units, arm) => {
++      if (!units) return;
++      const u = Math.min(3.6, REACH / units);
++      const low = Math.max(2, Math.min(annex.floors, Math.round((u * aspect) / FLOOR)));
++      const along = (at: number, length: number, Q: Program) => (arm ? place(ctx, W / 2 - 2.0, -D / 2 + at, Math.PI / 2, length, 4.0, Q) : place(ctx, -W / 2 + at, D / 2 - 2.0, 0, length, 4.0, Q));
++      if (u <= TERRACED) return along((units * u) / 2, units * u, { ...P, family: "rows", units, unitFrom: arm ? split[0] : 0, floors: low, roof: P.style === "modern" || P.style === "tech" ? P.roof : "gable", seed: P.seed + 7 + arm });
++      for (let k = 0; k < units; k++) along((k + 0.5) * u, u - 0.3, { ...prog(ctx, t, "media", salt + 17 * (k + 1) + 5 * arm), signage: "screen", facade: "curtain", family: "walkup", floors: low });
++    });
+   });
+ }
+ 
+--- a/src/lib/pixelcity/kit/district.ts
++++ b/src/lib/pixelcity/kit/district.ts
+@@ -7,7 +7,7 @@
+ import type { Brief } from "./brief";
+ import type { Program } from "./buildings";
+ import { programUse, type Anatomy, type Use } from "./surface";
+-import { composeLandmark, composePiece, composeSeries, HEADED, piecesOfBlock, ROOM, ROOM_FOR_SERIES, type LandmarkInfo, type Piece, type PieceType, type SeriesPart } from "./compose";
++import { composeEnsemble, composeLandmark, composePiece, composeSeries, HEADED, piecesOfBlock, ROOM, ROOM_FOR_SERIES, type LandmarkInfo, type Piece, type PieceType, type SeriesPart } from "./compose";
+ import { planFrontage, type FrontagePlan, type Run } from "./frontage";
+ import { Kit, type PeopleMode } from "./core";
+ import { layoutOf, type Layout, type PlacedPiece } from "./layout";
+@@ -277,14 +277,15 @@
+     if (trace) trace.layout = layout;
+   }
+   const seriesParts = new Map<Piece, SeriesPart>();
+-  if (plan.exp?.has("series")) {
++  const ensemble = plan.exp?.has("ensemble") ?? false;
++  if (ensemble || plan.exp?.has("series")) {
+     const governed = new Map<number, Array<{ pc: Piece; at: number }>>();
+     for (let i = 0; i < BLOCKS; i++)
+       for (let j = 0; j < BLOCKS; j++)
+         for (const pc of blockPieces[i][j]) {
+           if (pc.seg < 0 || pc.interior) continue;
+           const seg = alloc.segments[pc.seg];
+-          if (!plan.territories[seg.territory].series || (seg.comp !== "media" && seg.comp !== "grid") || alloc.lots[seg.territory] < ROOM_FOR_SERIES) continue;
++          if (!plan.territories[seg.territory].series || (seg.comp !== "media" && (ensemble || seg.comp !== "grid")) || alloc.lots[seg.territory] < ROOM_FOR_SERIES) continue;
+           const at = pathIndex.get((i * LOTS + Math.floor((pc.x + 7) / 3.5)) * N + (j * LOTS + Math.floor((pc.z + 7) / 3.5))) ?? 0;
+           governed.set(seg.territory, [...(governed.get(seg.territory) ?? []), { pc, at }]);
+         }
+@@ -292,7 +293,7 @@
+       const s = plan.territories[ti].series!;
+       list.sort((a, b) => a.at - b.at);
+       const hosts = list.filter((x) => x.pc.type !== "lot").length;
+-      const groups = s.head >= HEADED ? Math.min(s.groups, hosts) : 0;
++      const groups = ensemble ? Math.min(Math.max(s.groups, 1), hosts) : s.head >= HEADED ? Math.min(s.groups, hosts) : 0;
+       const total = list.reduce((sum, x) => sum + x.pc.lots, 0);
+       let before = 0;
+       let opened = 0;
+@@ -328,7 +329,8 @@
+               if (isLm) {
+                 const info = composeLandmark(ctx, pc, t, salt);
+                 if (trace) trace.landmark = { ...info, x: bx + pc.x, z: bz + pc.z, block: [i, j] };
+-              } else if (part) composeSeries(ctx, pc, t, seg.comp, salt, part);
++              } else if (part && ensemble) composeEnsemble(ctx, pc, t, salt, part);
++              else if (part) composeSeries(ctx, pc, t, seg.comp, salt, part);
+               else composePiece(ctx, pc, t, seg.comp, salt);
+               current = null;
+               trace?.pieces.push({ territory: seg.territory, comp: seg.comp, piece: pc, block: [i, j], parts: [from, kit.parts.length] });
+--- a/src/lib/pixelcity/kit/plan.ts
++++ b/src/lib/pixelcity/kit/plan.ts
+@@ -175,7 +175,7 @@
+   };
+ 
+   const counting = exp.has("forum") || exp.has("market");
+-  const measured = exp.has("series") && !!doc.layout;
++  const measured = (exp.has("series") || exp.has("ensemble")) && !!doc.layout;
+   const count = (at: number, roots: number[], excluded: number[], listed: number[] = []) => {
+     if (doc.layout) out[at].scope = { roots, excluded };
+     if (counting) out[at].census = censusOf(doc, roots, excluded, listed, out[at].items);
+--- a/src/lib/semantics/experiments.ts
++++ b/src/lib/semantics/experiments.ts
+@@ -1,4 +1,4 @@
+-export const EXPERIMENTS = ["reading", "forum", "market", "series"] as const;
++export const EXPERIMENTS = ["reading", "forum", "market", "series", "ensemble"] as const;
+ export type Experiment = (typeof EXPERIMENTS)[number];
+ export type Experiments = ReadonlySet<Experiment>;
+ 

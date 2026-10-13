@@ -1,3 +1,4 @@
+import { NO_EXPERIMENTS, type Experiments } from "../semantics/experiments";
 import { countSources, emptyReport, imageVerdict, type MediaReport } from "../snapshot/media";
 import type { DomSnapshot, SnapshotNode } from "../snapshot/types";
 import { classify, STRUCTURAL } from "./classify";
@@ -46,9 +47,15 @@ interface W {
   cluster?: { tag: string; count: number };
   mergedInto?: W;
   nid?: number;
+  box?: Box;
+  fontSize?: number;
 }
 
+type Box = [number, number, number, number];
+const union = (a?: Box, b?: Box): Box | undefined => (a && b ? [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[2], b[2]), Math.max(a[3], b[3])] : a ?? b);
+
 interface Counters {
+  reading: boolean;
   images: number;
   sources: Map<string, number>;
   media: MediaReport;
@@ -58,8 +65,8 @@ interface Counters {
   idMap: Map<string, W>;
 }
 
-export function normalize(snapshot: DomSnapshot): NormalizedDocument {
-  const counters: Counters = { images: 0, sources: countSources(snapshot.root), media: emptyReport(), headings: 0, forms: 0, buttons: 0, idMap: new Map() };
+export function normalize(snapshot: DomSnapshot, experiments: Experiments = NO_EXPERIMENTS): NormalizedDocument {
+  const counters: Counters = { images: 0, sources: countSources(snapshot.root), media: emptyReport(), headings: 0, forms: 0, buttons: 0, idMap: new Map(), reading: experiments.has("reading") };
   const big = snapshot.stats.elementCount > 4000;
   CLUSTER_MIN = big ? 12 : 32;
   CLUSTER_KEEP = big ? 8 : 20;
@@ -92,6 +99,7 @@ export function normalize(snapshot: DomSnapshot): NormalizedDocument {
     },
     warnings: snapshot.warnings,
     media: counters.media,
+    ...(snapshot.layout ? { layout: snapshot.layout } : {}),
   };
 }
 
@@ -136,12 +144,14 @@ function build(s: SnapshotNode, depth: number, insideContent: boolean, c: Counte
     ownImages: 0,
     ownControls: isControl ? 1 : 0,
     absorbed: 0,
+    box: s.box ? [s.box.x, s.box.y, s.box.x + s.box.w, s.box.y + s.box.h] : undefined,
+    fontSize: s.fontSize,
     wrappers: 0,
     children: [],
   };
 
   if (s.image || role === "image") {
-    const v = imageVerdict(s, c.sources);
+    const v = imageVerdict(s, c.sources, c.reading);
     c.media.total++;
     c.media.byReason[v]++;
     if (v === "content") c.media.content++;
@@ -162,6 +172,7 @@ function build(s: SnapshotNode, depth: number, insideContent: boolean, c: Counte
 
   const childInside = insideContent || ["article", "section", "main", "aside", "header", "footer"].includes(role);
   for (const sc of s.children) {
+    if (c.reading && isConsent(sc)) continue;
     const cw = build(sc, depth + 1, childInside, c);
     w.children.push(cw);
     w.oChars += cw.oChars;
@@ -172,6 +183,11 @@ function build(s: SnapshotNode, depth: number, insideContent: boolean, c: Counte
     w.oDescendants += 1 + cw.oDescendants;
   }
   return w;
+}
+
+const CONSENT = /(^|[\s_-])(onetrust|didomi|usercentrics|truste|cookie-?consent|cookie-?banner|consent-?(banner|manager|modal|sdk|wrapper)|sp_message_container)/i;
+function isConsent(s: SnapshotNode): boolean {
+  return CONSENT.test(`${s.id ?? ""} ${(s.classes ?? []).join(" ")}`);
 }
 
 function simplify(w: W): void {
@@ -208,6 +224,7 @@ function absorbLeaf(p: W, c: W): void {
   p.ownImages += c.ownImages + (c.image ? 1 : 0);
   p.ownControls += c.ownControls;
   p.absorbed += 1 + c.absorbed;
+  p.box = union(p.box, c.box);
   if (!p.label && c.label && (p.role === "heading" || p.role === "button" || p.role === "link" || c.role === "link" || c.role === "heading")) p.label = c.label;
   c.mergedInto = p;
 }
@@ -231,6 +248,8 @@ function collapseWrappers(w: W): void {
         absorbed: c.absorbed + 1 + self.absorbed,
         position: c.position ?? self.position,
         bg: c.bg ?? self.bg,
+        box: union(self.box, c.box),
+        fontSize: c.fontSize ?? self.fontSize,
       });
       c.mergedInto = w;
       continue;
@@ -241,6 +260,7 @@ function collapseWrappers(w: W): void {
       w.absorbed += 1 + c.absorbed;
       w.position ??= c.position;
       w.bg ??= c.bg;
+      w.box = union(w.box, c.box);
       c.mergedInto = w;
       continue;
     }
@@ -299,6 +319,7 @@ function clusterRepeats(w: W): void {
         text: 0, ownLinks: 0, ownImages: 0, ownControls: 0, absorbed: -1, wrappers: 0,
         children: [],
         mergedInto: undefined,
+        box: undefined,
       };
       clusters.set(sig, cl);
       out.push(cl);
@@ -316,6 +337,7 @@ function clusterRepeats(w: W): void {
     cl.ownImages += c.oImages;
     cl.ownControls += c.oControls;
     cl.absorbed += represented(c);
+    cl.box = union(cl.box, c.box);
     markMerged(c, cl);
   }
   w.children = out;
@@ -496,6 +518,8 @@ function flatten(root: W, finalUrl: string, idMap: Map<string, W>): NNode[] {
     if (w.image) n.image = { src: w.image, alt: w.label, priority: Math.round(w.imagePriority) };
     if (w.bg) n.tint = w.bg;
     if (w.cluster) n.cluster = { ...w.cluster };
+    if (w.box) n.box = [w.box[0], w.box[1], w.box[2] - w.box[0], w.box[3] - w.box[1]];
+    if (w.fontSize) n.fontSize = w.fontSize;
     nodes.push(n);
 
     for (const c of w.children) n.children.push(visit(c, id, level + 1));

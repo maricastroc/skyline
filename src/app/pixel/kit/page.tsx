@@ -7,9 +7,11 @@ import { PERTURBATIONS, realPage, type Perturbation } from "@/lib/pixelcity/kit/
 import { forceStyle, STYLES } from "@/lib/pixelcity/diagnostics";
 import { groupFixture } from "@/lib/pixelcity/kit/fixtures";
 import { vacantFingerprint } from "@/lib/pixelcity/vacant-fingerprint";
+import { parseExperiments } from "@/lib/semantics/experiments";
 import type { DomSnapshot } from "@/lib/snapshot/types";
 
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
+const PAIRS_DIR = (process.env.SKYLINE_PAIRS_DIR ?? "docs/rendered-capture/snapshots").split("/");
 const PROFILES: ProfileName[] = ["mixed", "portal", "product", "reference"];
 
 export default async function KitPage({ searchParams }: PageProps<"/pixel/kit">) {
@@ -37,11 +39,12 @@ export default async function KitPage({ searchParams }: PageProps<"/pixel/kit">)
   };
   const id = one(sp.page);
   if (id && /^[a-z0-9-]+$/.test(id)) {
-    const file = path.join(process.cwd(), "docs/real-pages/snapshots", `${id}.json`);
+    const pairs = process.env.NODE_ENV !== "production" && one(sp.set) === "rendered-capture";
+    const file = pairs ? path.join(process.cwd(), ...PAIRS_DIR, `${id}.json`) : path.join(process.cwd(), "docs/real-pages/snapshots", `${id}.json`);
     const snap = JSON.parse(await readFile(file, "utf8")) as DomSnapshot;
     const pt = one(sp.perturb) as Perturbation;
     const perturbation = PERTURBATIONS.includes(pt) ? pt : "none";
-    const page = realPage(snap, perturbation);
+    const page = realPage(snap, perturbation, process.env.NODE_ENV !== "production" ? parseExperiments(one(sp.exp)) : undefined);
     const st = one(sp.style) as ArchStyle;
     if (STYLES.includes(st)) return <KitView {...common} fp={forceStyle(page.fp, st)} profile={{ ...page.plan, identity: forceStyle(page.plan.identity, st) }} />;
     return <KitView {...common} fp={page.fp} profile={page.plan} />;

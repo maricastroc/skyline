@@ -3,13 +3,14 @@ import { decodeHtml, safeFetch, type SafeResponseHead } from "./safe-fetch";
 import { buildSnapshot, parsePage } from "../snapshot/parse-html";
 import type { DomSnapshot } from "../snapshot/types";
 
-const MAX_HTML_BYTES = 4 * 1024 * 1024;
+export const MAX_HTML_BYTES = 4 * 1024 * 1024;
 const MAX_CSS_BYTES = 700 * 1024;
 const MAX_STYLESHEETS = 10;
 
 const CHALLENGE_RE =
   /<title>\s*(just a moment|attention required|access denied|are you a robot|verify you are human|security check|ddos-guard|request blocked|pardon our interruption)/i;
-const CHALLENGE_MARKERS = /cf-browser-verification|challenge-platform|_cf_chl_opt|perimeterx|px-captcha|datadome|captcha-delivery|akamai.*bot manager/i;
+const CHALLENGE_MARKERS =
+  /cf-browser-verification|challenge-platform|_cf_chl_opt|perimeterx|px-captcha|datadome|captcha-delivery|akamai.*bot manager|awsWafCookieDomainList|aws-waf-token|\/__challenge_\w+\//i;
 const LOGIN_PATH_RE = /\/(login|log-in|signin|sign-in|sign_in|auth|sso|account\/login|session\/new|oauth)(\/|\?|$)/i;
 
 export async function fetchStaticPage(url: URL, signal?: AbortSignal): Promise<DomSnapshot> {
@@ -21,12 +22,10 @@ export async function fetchStaticPage(url: URL, signal?: AbortSignal): Promise<D
     checkResponse: checkHtmlResponse,
   });
 
-  if (LOGIN_PATH_RE.test(res.url.pathname) && !LOGIN_PATH_RE.test(url.pathname))
-    throw new CaptureError("auth_required", `redirected to ${res.url.pathname}`);
+  assertNotLoginRedirect(url, res.url);
 
   const html = decodeHtml(res.body, res.contentType);
-  if (CHALLENGE_RE.test(html.slice(0, 4000)) || (html.length < 60_000 && CHALLENGE_MARKERS.test(html)))
-    throw new CaptureError("blocked", "bot challenge page");
+  assertNotChallenge(html);
 
   const page = parsePage(html, res.url.toString());
   if (!page.body) throw new CaptureError("empty_page");
@@ -52,9 +51,20 @@ export async function fetchStaticPage(url: URL, signal?: AbortSignal): Promise<D
   return snapshot;
 }
 
-function checkHtmlResponse(head: SafeResponseHead): void {
+export function assertNotLoginRedirect(requested: URL, final: URL): void {
+  if (LOGIN_PATH_RE.test(final.pathname) && !LOGIN_PATH_RE.test(requested.pathname))
+    throw new CaptureError("auth_required", `redirected to ${final.pathname}`);
+}
+
+export function assertNotChallenge(html: string): void {
+  if (CHALLENGE_RE.test(html.slice(0, 4000)) || (html.length < 60_000 && CHALLENGE_MARKERS.test(html)))
+    throw new CaptureError("blocked", "bot challenge page");
+}
+
+export function checkHtmlResponse(head: Pick<SafeResponseHead, "status" | "headers" | "contentType">): void {
   const { status, headers, contentType } = head;
   if (status === 401 || status === 407) throw new CaptureError("auth_required", undefined, status);
+  if (status === 202) throw new CaptureError("blocked", "HTTP 202, a challenge in progress", status);
   if (status === 403 || status === 429 || (status === 503 && headers["cf-mitigated"]) || headers["cf-mitigated"])
     throw new CaptureError("blocked", `HTTP ${status}`, status);
   if (status === 451) throw new CaptureError("blocked", "unavailable for legal reasons", status);
@@ -63,7 +73,7 @@ function checkHtmlResponse(head: SafeResponseHead): void {
     throw new CaptureError("not_html", contentType.split(";")[0]);
 }
 
-async function fetchStylesheets(urls: string[], signal?: AbortSignal): Promise<string[]> {
+export async function fetchStylesheets(urls: string[], signal?: AbortSignal): Promise<string[]> {
   const picked = [...new Set(urls)].filter((u) => u.startsWith("https://")).slice(0, MAX_STYLESHEETS);
   const results = await Promise.allSettled(
     picked.map(async (u) => {
@@ -83,7 +93,7 @@ async function fetchStylesheets(urls: string[], signal?: AbortSignal): Promise<s
   return results.flatMap((r) => (r.status === "fulfilled" ? [r.value] : []));
 }
 
-function looksLikeLoginWall(s: DomSnapshot): boolean {
+export function looksLikeLoginWall(s: DomSnapshot): boolean {
   let password = false;
   let text = 0;
   const stack = [s.root];

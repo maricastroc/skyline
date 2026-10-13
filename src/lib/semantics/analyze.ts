@@ -1,4 +1,5 @@
 import type { NNode, NormalizedDocument } from "../model/types";
+import { NO_EXPERIMENTS, type Experiments } from "./experiments";
 
 export type RegionKind =
   | "page"
@@ -51,6 +52,10 @@ export interface Semantics {
 }
 
 const PRICE_RE = /(?:[$€£¥]|R\$|US\$)\s?\d|\d+(?:[.,]\d+)?\s?(?:[$€£]|\/\s?(?:mo|month|mês|user|seat|yr|year)|per (?:month|user|seat|year))|\bfree\b/i;
+const ITEM_TAG = /^(li|tr|article|div|a)$/;
+const LIST_MIN = 8;
+const NEAR_TIE = 0.8;
+const AMOUNT_RE = /(?:[$€£¥]|R\$|US\$)\s?\d|\d+(?:[.,]\d+)?\s?(?:[$€£]|\/\s?(?:mo|month|mês|user|seat|yr|year)|per (?:month|user|seat|year))/i;
 const CTA_RE = /^(get started|start( (building|now|free|for free|today|your))?|sign ?up|try( it)?( for)?( free)?|download|book( a)? (demo|call)|request( a)? demo|contact( sales| us)?|buy|join|subscribe|create( an)? account|get (the app|a demo|in touch|access)|learn more|see (pricing|plans)|open app|log ?in to|deploy)/i;
 
 const pct = (v: number) => `${Math.round(v * 100)}%`;
@@ -59,12 +64,14 @@ const q = (s?: string, n = 42) => (s ? `“${s.length > n ? `${s.slice(0, n - 1)
 export interface AnalyzeOptions {
   contentMedia?: boolean;
   explicitFooter?: boolean;
+  experiments?: Experiments;
 }
 
 const GENERIC_SLD = /^(com|net|org|gov|edu|mil|int|co|ac|go|or|ne|gob|gouv|nom|ltd|plc|sch|biz|info|art|blog|app|eco|emp|ind|inf|jus|leg|mus|adv|eng|med|tv)$/;
 
 export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions = {}): Semantics {
   const nodes = doc.nodes;
+  const exp = opts.experiments ?? NO_EXPERIMENTS;
   const imgs = (n: NNode) => (opts.contentMedia ? n.images - (n.incidentalImages ?? 0) : n.images);
   const N = nodes.length;
   const total = nodes[0]?.weight || 1;
@@ -111,12 +118,105 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
     }
     let best: number[] = [];
     for (const g of groups.values()) if (g.length > best.length) best = g;
+    if (best.length >= 2) {
+      const weightOf = (g: number[]) => g.reduce((s2, c) => s2 + nodes[c].weight, 0);
+      const most = best.length;
+      for (const g of groups.values()) if (g.length >= NEAR_TIE * most && weightOf(g) > weightOf(best)) best = g;
+    }
     return best;
   };
   const countIn = (i: number, pred: (m: NNode) => boolean) => {
     let c = 0;
     for (let k = i; k < nodes[i].end; k++) if (pred(nodes[k])) c++;
     return c;
+  };
+  const disclosed = (i: number) => {
+    const seen = new Set<number>();
+    let chars = 0;
+    let links = 0;
+    for (let k = i; k < nodes[i].end; k++) {
+      const p = nodes[k].parent;
+      if (nodes[k].tag !== "summary" || p < i || seen.has(p)) continue;
+      let nested = false;
+      for (let q = nodes[p].parent; q >= i; q = nodes[q].parent) if (seen.has(q)) nested = true;
+      if (!nested) {
+        chars += nodes[p].chars;
+        links += nodes[p].links;
+      }
+      seen.add(p);
+    }
+    return { chars, links };
+  };
+  const answered = (i: number) => {
+    const d = disclosed(i);
+    return d.chars >= 0.5 * nodes[i].chars && d.chars / Math.max(d.links, 1) >= 60;
+  };
+
+  const reading = exp.has("reading");
+  const runCache = new Map<number, boolean>();
+  const runAt = (i: number): boolean => {
+    if (runCache.has(i)) return runCache.get(i)!;
+    runCache.set(i, false);
+    const items = repeated(i);
+    const seen = items.filter((c) => !nodes[c].cluster);
+    const ok =
+      items.reduce((s2, c) => s2 + countOf(c), 0) >= LIST_MIN &&
+      items.every((c) => ITEM_TAG.test(nodes[c].tag)) &&
+      items.reduce((s2, c) => s2 + nodes[c].weight, 0) >= 0.4 * nodes[i].weight &&
+      seen.filter(holdsList).length < seen.length / 2;
+    runCache.set(i, ok);
+    return ok;
+  };
+  const countOf = (c: number) => nodes[c].cluster?.count ?? 1;
+  const holdsList = (c: number): boolean => {
+    const w = nodes[c].weight;
+    for (let k = c; k < nodes[c].end; k++) {
+      if (nodes[k].children.length < 3) continue;
+      const run = repeated(k);
+      const told = run.filter((x) => (nodes[x].chars >= 18 || imgs(nodes[x]) > 0) && (!reading || ITEM_TAG.test(nodes[x].tag)));
+      if (told.length >= 3 && told.reduce((s2, x) => s2 + nodes[x].weight, 0) >= 0.4 * w) return true;
+      if (k !== c && nodes[k].weight >= 0.4 * w && reading && listAt(k)) return true;
+    }
+    return false;
+  };
+  interface ListForm {
+    kind: RegionKind;
+    items: number[];
+    chars: number;
+    links: number;
+    pictured: number;
+    priced: number;
+    count: number;
+  }
+  const listCache = new Map<number, ListForm | null>();
+  const listAt = (i: number): ListForm | null => {
+    if (listCache.has(i)) return listCache.get(i)!;
+    const n = nodes[i];
+    const items = repeated(i);
+    const found = ((): ListForm | null => {
+      const count = items.reduce((s2, c) => s2 + countOf(c), 0);
+      if (count < LIST_MIN || !items.every((c) => ITEM_TAG.test(nodes[c].tag))) return null;
+      if (items.reduce((s2, c) => s2 + nodes[c].weight, 0) < 0.4 * n.weight) return null;
+      const chars = items.reduce((s2, c) => s2 + nodes[c].chars, 0) / count;
+      const links = items.reduce((s2, c) => s2 + nodes[c].links, 0) / count;
+      if (chars < 4) return null;
+      const seen = items.filter((c) => !nodes[c].cluster);
+      if (seen.filter((c) => nodes[c].links > 0).length < seen.length * 0.6 && !/^(li|article)$/.test(nodes[items[0]].tag)) return null;
+      if (seen.filter(holdsList).length >= seen.length / 2) return null;
+      const pictured = seen.filter((c) => imgs(nodes[c]) > 0).length / Math.max(seen.length, 1);
+      const priced = seen.filter((c) => countIn(c, (m) => PRICE_RE.test(text(m))) > 0).length / Math.max(seen.length, 1);
+      const kind: RegionKind =
+        priced >= 0.5 && countIn(i, (m) => AMOUNT_RE.test(text(m))) > 0
+          ? "pricing"
+          : pictured >= 0.8 && n.chars / Math.max(imgs(n), 1) < 80
+            ? "gallery"
+            : links <= 1.5 && pictured < 0.2 && (nodes[items[0]].tag === "a" || chars < 80)
+              ? "directory"
+              : "feed";
+      return { kind, items, chars, links, pictured: Math.round(pictured * count), priced: Math.round(priced * count), count };
+    })();
+    listCache.set(i, found);
+    return found;
   };
   const collectIn = (i: number, pred: (m: NNode) => boolean, max = 8) => {
     const out: NNode[] = [];
@@ -319,7 +419,8 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
   const claimed = () => regions.filter((r) => r.kind === "toc" || r.kind === "nav" || r.kind === "footer");
   for (let i = 1; i < N; i++) {
     const n = nodes[i];
-    if (taken.has(i) || !n.children.length || share(n) < 0.006 || share(n) > 0.97) continue;
+    if (taken.has(i) || !n.children.length || share(n) < 0.006) continue;
+    if (share(n) > 0.97 && !(reading && listAt(i))) continue;
     const owner = claimed().find((r) => inside(i, r.node) && r.node !== i);
     if (owner) {
       i = nodes[owner.node].end - 1;
@@ -341,8 +442,34 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
       i = n.end - 1;
       continue;
     }
-    const prices = collectIn(i, (m) => PRICE_RE.test(text(m)), 6);
-    if ((prices.length >= 2 && items.length >= 2) || /(^|[\s_-])(pricing|plans|tiers|price-?table)([\s_-]|$)/.test(nm) || /^(pricing|plans|choose your plan)/i.test(ht)) {
+    let holdsAList = false;
+    if (reading) {
+      const typedHere = (k: number) => {
+        const l = listAt(k);
+        return l && (share(nodes[k]) >= 0.03 || l.count >= 15) && l.kind !== "directory" ? l : null;
+      };
+      const list = typedHere(i);
+      if (list) {
+        const what = list.kind === "pricing" ? `${list.priced} of them priced` : list.kind === "gallery" ? `${list.pictured} of them a picture` : `each with ~${Math.round(list.chars)} characters and ${list.links.toFixed(1)} links`;
+        add(i, list.kind, [`${list.count} repeated items with the same structure (${q(sigOf(nodes[list.items[0]]), 24)})`, what], {
+          title: ht || nodes[list.items[0]].label || (list.kind === "pricing" ? "Catalogue" : list.kind === "gallery" ? "Gallery" : "Feed"),
+          items: list.items.slice(0, 60),
+        });
+        i = n.end - 1;
+        continue;
+      }
+      let held = 0;
+      for (let k = i + 1; k < n.end; k++) {
+        if (nodes[k].children.length < 2 || nodes[k].weight <= held) continue;
+        if (typedHere(k)) held = nodes[k].weight;
+      }
+      if (held >= 0.6 * n.weight) continue;
+      holdsAList = held >= 0.25 * n.weight;
+    }
+    const prices = holdsAList ? [] : collectIn(i, (m) => PRICE_RE.test(text(m)), 6);
+    const quoted = !reading || countIn(i, (m) => AMOUNT_RE.test(text(m))) > 0;
+    const pricedList = prices.length >= 2 && items.length >= 2 && quoted;
+    if (!holdsAList && (pricedList || /(^|[\s_-])(pricing|plans|tiers|price-?table)([\s_-]|$)/.test(nm) || /^(pricing|plans|choose your plan)/i.test(ht))) {
       if (prices.length >= 1) {
         add(i, "pricing", [
           prices.length ? `${prices.length} prices: ${prices.slice(0, 3).map((p) => q((PRICE_RE.exec(text(p))?.[0] ?? "").trim(), 10)).join(", ")}` : `heading ${q(ht)}`,
@@ -352,7 +479,7 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
         continue;
       }
     }
-    if (!containsHero && imgs(n) >= 4 && n.chars / Math.max(imgs(n), 1) < 140) {
+    if (!holdsAList && !containsHero && imgs(n) >= 4 && n.chars / Math.max(imgs(n), 1) < 140) {
       const logo = /(^|[\s_-])(logos?|customers|clients|partners|brands|trusted|companies|integrations)([\s_-]|$)/.test(nm) || /trusted|customers|used by|companies|integrations/i.test(ht);
       const explicit = /(^|[\s_-])(gallery|carousel|slider|photos|images|media)([\s_-]|$)/.test(nm) || /gallery|photos|images|screenshots/i.test(ht);
       const grid = items.length >= 4 && items.filter((c) => imgs(nodes[c]) > 0).length >= items.length * 0.8 && n.chars / imgs(n) < 80;
@@ -364,17 +491,20 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
       i = n.end - 1;
       continue;
     }
-    if (/(^|[\s_-])(testimonials?|quotes?|reviews?)([\s_-]|$)/.test(nm) || countIn(i, (m) => m.tag === "blockquote") >= 2 || /what .* say|testimonials|reviews|loved by/i.test(ht)) {
+    if (!holdsAList && (/(^|[\s_-])(testimonials?|quotes?|reviews?)([\s_-]|$)/.test(nm) || countIn(i, (m) => m.tag === "blockquote") >= 2 || /what .* say|testimonials|reviews|loved by/i.test(ht))) {
       add(i, "testimonials", [countIn(i, (m) => m.tag === "blockquote") >= 2 ? `${countIn(i, (m) => m.tag === "blockquote")} quotes` : `named ${q(nm.split(" ")[0] || ht)}`], { title: ht || "Testimonials", items: items.slice(0, 6) });
       i = n.end - 1;
       continue;
     }
-    if (/(^|[\s_-])faq([\s_-]|$)/.test(nm) || /faq|frequently asked|questions/i.test(ht) || countIn(i, (m) => m.tag === "summary") >= 3) {
+    const asked = reading
+      ? /^(faqs?|frequently asked|common questions|questions (and|&) answers|q\s?&\s?a)\b/i.test(ht) || (countIn(i, (m) => m.tag === "summary") >= 3 && answered(i))
+      : /faq|frequently asked|questions/i.test(ht) || countIn(i, (m) => m.tag === "summary") >= 3;
+    if (!holdsAList && (/(^|[\s_-])faq([\s_-]|$)/.test(nm) || asked)) {
       add(i, "faq", [ht ? `heading ${q(ht)}` : "question/answer pairs"], { title: ht || "FAQ", items: items.slice(0, 8) });
       i = n.end - 1;
       continue;
     }
-    if (items.length >= 6 && !containsHero) {
+    if (!holdsAList && items.length >= 6 && !containsHero) {
       const tagsOk = items.every((c) => /^(li|tr|article|div|section)$/.test(nodes[c].tag)) && nodes[items[0]].tag !== "p";
       const linked = items.filter((c) => nodes[c].links > 0).length;
       const avgChars = items.reduce((s2, c) => s2 + nodes[c].chars, 0) / items.length;
@@ -400,7 +530,7 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
     }
     const itemShares = items.map((c) => share(nodes[c]));
     const alike = itemShares.length ? Math.max(...itemShares) / Math.max(Math.min(...itemShares), 1e-6) < 4 : false;
-    if (items.length >= 3 && items.length <= 12 && share(n) <= 0.25 && Math.max(0, ...itemShares) <= 0.08 && alike && items.filter((c) => countIn(c, (m) => !!m.heading) > 0).length >= Math.ceil(items.length * 0.66)) {
+    if (!holdsAList && items.length >= 3 && items.length <= 12 && share(n) <= 0.25 && Math.max(0, ...itemShares) <= 0.08 && alike && items.filter((c) => countIn(c, (m) => !!m.heading) > 0).length >= Math.ceil(items.length * 0.66)) {
       add(i, "features", [`${items.length} sibling cards, each with its own heading`, ht ? `introduced by ${q(ht)}` : ""].filter(Boolean), {
         title: ht || nodes[items[0]].label,
         items,
@@ -408,7 +538,8 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
       i = n.end - 1;
       continue;
     }
-    if ((n.role === "section" || n.role === "article" || (head && head.heading! <= 3 && head.id - i < 6)) && share(n) >= 0.02 && n.level <= 8) {
+    const inRun = reading && n.parent >= 0 && runAt(n.parent) && repeated(n.parent).includes(i);
+    if (!inRun && (n.role === "section" || n.role === "article" || (head && head.heading! <= 3 && head.id - i < 6)) && share(n) >= 0.02 && n.level <= 8) {
       const lead = !ht && !regions.some((r) => r.kind === "section");
       add(i, "section", [n.role === "section" || n.role === "article" ? `a <${n.tag}>` : "a block opened by a heading", ht ? `heading ${q(ht)}` : lead ? "the first, untitled section: the page's introduction" : "", `${pct(share(n))} of the page`].filter(Boolean), { title: ht || (lead ? "Introduction" : n.label) });
     }
