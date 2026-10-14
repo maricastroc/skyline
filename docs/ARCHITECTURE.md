@@ -297,6 +297,7 @@ quando ele não está configurado, não responde ou o navegador dele não inicia
 | Excesso de recursos por captura | 400 pedidos, 250 conexões, 64 MB trafegados, 4 MB de HTML |
 | Vazamento entre capturas | um navegador, um perfil temporário e um proxy por captura, destruídos no fim |
 | Serviço usado como navegador aberto | pedidos assinados por HMAC com janela de 90 s; sem assinatura, só "ok" |
+| Custo do serviço | teto mensal de horas ligada e diário de capturas, gravados num volume (`renderer/usage.ts`); no teto, o serviço pausa, sai e a máquina sai do roteamento; o serviço também sai sozinho quando fica parado |
 | Abuso e custo | capturas simultâneas e fila com teto, limite por visitante, cache curto, uma única captura para pedidos iguais |
 | Serviço comprometido | não guarda segredo do app; o navegador não recebe variáveis com segredos; o app valida forma e tamanho da resposta e refaz as recusas |
 | Detalhes internos nos erros | falhas do serviço chegam ao visitante só como "sem navegador disponível" |
