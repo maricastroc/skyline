@@ -9,7 +9,7 @@ export function isPublicAddress(address: string): boolean {
   if (addr.kind() === "ipv6") {
     const v6 = addr as ipaddr.IPv6;
     if (v6.range() !== "unicast") return false;
-    const embedded = ["64:ff9b::/96", "64:ff9b:1::/48", "2002::/16", "2001::/32", "2001:db8::/32"];
+    const embedded = ["::/96", "64:ff9b::/96", "64:ff9b:1::/48", "2002::/16", "2001::/32", "2001:db8::/32"];
     return !embedded.some((cidr) => v6.match(ipaddr.parseCIDR(cidr) as [ipaddr.IPv6, number]));
   }
   return addr.range() === "unicast";

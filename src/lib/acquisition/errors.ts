@@ -16,6 +16,7 @@ export type CaptureErrorCode =
   | "empty_page"
   | "rate_limited"
   | "renderer_unavailable"
+  | "renderer_busy"
   | "internal";
 
 export interface CaptureErrorPayload {
@@ -79,7 +80,7 @@ const COPY: Record<CaptureErrorCode, { title: string; detail: string; hint?: str
   },
   too_large: {
     title: "This page is too heavy to survey",
-    detail: "The HTML is larger than the capture limit.",
+    detail: "It is larger than the capture can take in.",
     http: 413,
   },
   not_html: {
@@ -107,7 +108,7 @@ const COPY: Record<CaptureErrorCode, { title: string; detail: string; hint?: str
   empty_page: {
     title: "There's nothing here to build",
     detail: "The page arrived, but its body is empty.",
-    hint: "Pages rendered entirely in the browser need the rendered capture mode, which isn't enabled yet.",
+    hint: "Pages that build themselves entirely in the browser have to be opened in one, and no browser is available right now.",
     http: 422,
   },
   rate_limited: {
@@ -117,9 +118,16 @@ const COPY: Record<CaptureErrorCode, { title: string; detail: string; hint?: str
     http: 429,
   },
   renderer_unavailable: {
-    title: "Rendered capture isn't enabled",
-    detail: "This page needs a real browser to assemble itself, and no renderer is configured on this server.",
-    http: 501,
+    title: "No browser to open this page with",
+    detail: "This needs a real browser to open the page, and none is answering right now.",
+    hint: "Try again in a moment.",
+    http: 503,
+  },
+  renderer_busy: {
+    title: "The browser is busy",
+    detail: "Opening a page in a browser takes a few seconds, and too many are being opened right now.",
+    hint: "Try again in a moment.",
+    http: 503,
   },
   internal: {
     title: "Something broke on our side",
@@ -127,6 +135,12 @@ const COPY: Record<CaptureErrorCode, { title: string; detail: string; hint?: str
     http: 500,
   },
 };
+
+const PRIVATE_DETAIL = new Set<CaptureErrorCode>(["internal", "renderer_unavailable", "renderer_busy"]);
+
+export function isCaptureErrorCode(code: unknown): code is CaptureErrorCode {
+  return typeof code === "string" && Object.prototype.hasOwnProperty.call(COPY, code);
+}
 
 export class CaptureError extends Error {
   readonly code: CaptureErrorCode;
@@ -149,7 +163,7 @@ export class CaptureError extends Error {
     return {
       code: this.code,
       title: c.title,
-      detail: this.extra ? `${c.detail} (${this.extra})` : c.detail,
+      detail: this.extra && !PRIVATE_DETAIL.has(this.code) ? `${c.detail} (${this.extra})` : c.detail,
       hint: c.hint,
       status: this.upstreamStatus,
     };

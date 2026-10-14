@@ -110,6 +110,11 @@ export function PixelApp({
     if (switchError) setMode(shownMode);
   }
   const [canDetail, setCanDetail] = useState(false);
+  const [seenDown, setSeenDown] = useState(switchError);
+  if (switchError !== seenDown) {
+    setSeenDown(switchError);
+    if (switchError?.error.code === "renderer_unavailable") setCanDetail(false);
+  }
   useEffect(() => {
     let alive = true;
     fetch("/api/capture")
@@ -842,7 +847,7 @@ export function PixelApp({
 const DETAIL_WHAT = "Explore in more detail to build the city from the page the way a browser shows it, following how it is arranged on screen.";
 const DETAIL_COST = "It takes a few seconds and can build a different city.";
 const DETAIL_WAIT = "Looking at the page the way a browser shows it, to follow how it is arranged on screen. This can take a few seconds.";
-const whyNot = (e: CaptureErrorPayload) => (e.code === "renderer_unavailable" ? "There is no browser on this server to open the page with." : `${e.title}. ${e.detail}`);
+const whyNot = (e: CaptureErrorPayload) => (e.code === "renderer_unavailable" ? "There is no browser available right now to open the page with." : `${e.title}. ${e.detail}`);
 
 const IconDetail = () => (
   <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
