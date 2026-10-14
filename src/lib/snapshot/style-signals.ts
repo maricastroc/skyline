@@ -1,4 +1,7 @@
+import { customProperties, fontDeclarations, stripComments } from "./css-scan";
 import { firstColor } from "./css-signals";
+
+const MAX_RESOLVED = 4_096;
 
 export interface StyleSignals {
   cssBytes: number;
@@ -66,19 +69,22 @@ function median(xs: number[]): number {
 
 function varResolver(css: string): (v: string) => string {
   const vars = new Map<string, string>();
-  for (const m of css.matchAll(/(--[\w-]+)\s*:\s*([^;}]+)/g)) if (!vars.has(m[1])) vars.set(m[1], m[2].trim());
-  const resolve = (v: string, depth = 0): string =>
-    depth > 4 || !v.includes("var(")
-      ? v
-      : resolve(
-          v.replace(/var\(\s*(--[\w-]+)\s*(?:,\s*([^()]*))?\)/g, (_, name: string, fb?: string) => vars.get(name) ?? fb ?? ""),
-          depth + 1,
-        );
+  for (const [name, value] of customProperties(css)) if (!vars.has(name)) vars.set(name, value.trim());
+  const resolve = (v: string, depth = 0): string => {
+    if (depth > 4 || v.length > MAX_RESOLVED || !v.includes("var(")) return v;
+    let room = MAX_RESOLVED;
+    const next = v.replace(/var\(\s*(--[\w-]+)\s*(?:,\s*([^()]*))?\)/g, (_, name: string, fb?: string) => {
+      const value = vars.get(name) ?? fb ?? "";
+      room -= value.length;
+      return room >= 0 ? value : "";
+    });
+    return resolve(next, depth + 1);
+  };
   return resolve;
 }
 
 export function extractStyleSignals(css: string[], markup: MarkupSignals, themeColor?: string): StyleSignals {
-  const all = css.join("\n").replace(/\/\*[\s\S]*?\*\//g, "");
+  const all = stripComments(css.join("\n"));
   const resolve = varResolver(all);
 
   const radii: number[] = [];
@@ -104,9 +110,9 @@ export function extractStyleSignals(css: string[], markup: MarkupSignals, themeC
   }
   for (const v of markup.utilSpacing) if (v > 0) spaces.push(v);
   const fonts = { serif: markup.utilFonts.serif * 0.5, sans: markup.utilFonts.sans * 0.5, mono: markup.utilFonts.mono * 0.5 };
-  for (const m of all.matchAll(/([^{}]*)\{[^{}]*?font(?:-family)?\s*:\s*([^;}]+)/gi)) {
-    const sel = m[1].trim().toLowerCase();
-    const decl = resolve(m[2]);
+  for (const [selector, value] of fontDeclarations(all)) {
+    const sel = selector.trim().toLowerCase();
+    const decl = resolve(value);
     if (!/[a-z]{3,}/i.test(decl) || /^\s*(inherit|initial|unset|var\()/i.test(decl)) continue;
     const weight = /(^|[\s,])(html|body|:root)\b/.test(sel) ? 10 : /\bh[1-3]\b|title|heading|headline|display/.test(sel) ? 6 : 1;
     const stack = decl.replace(/!important/i, "").trim();
@@ -127,8 +133,8 @@ export function extractStyleSignals(css: string[], markup: MarkupSignals, themeC
   }
   if (!pageBg && themeColor) pageBg = firstColor(themeColor);
   if (!pageBg) {
-    for (const m of all.matchAll(/--[\w-]*(?:bg|background)[\w-]*\s*:\s*([^;}]+)/gi)) {
-      const c = firstColor(m[1]);
+    for (const [, value] of customProperties(all, /bg|background/i)) {
+      const c = firstColor(value);
       if (c) {
         pageBg = c;
         break;
