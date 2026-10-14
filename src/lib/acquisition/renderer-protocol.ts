@@ -23,7 +23,7 @@ export interface RenderRequest {
   client?: string;
 }
 
-export type RendererFailure = CaptureErrorCode | "busy" | "unauthorized" | "bad_request" | "not_found";
+export type RendererFailure = CaptureErrorCode | "busy" | "paused" | "unauthorized" | "bad_request" | "not_found";
 
 export interface RendererHealth {
   v: number;
@@ -34,6 +34,8 @@ export interface RendererHealth {
   capacity?: number;
   queued?: number;
   platformApi?: boolean;
+  paused?: string;
+  usage?: { month: string; seconds: number; monthlySeconds: number; boots: number; captures: number; day: string; dayCaptures: number; dailyCaptures: number; persistent: boolean };
 }
 
 const digest = (body: string) => crypto.createHash("sha256").update(body).digest("hex");

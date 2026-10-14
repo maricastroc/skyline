@@ -21,6 +21,7 @@ import {
   type RenderRequest,
 } from "../src/lib/acquisition/renderer-protocol";
 import { assertFetchableUrl } from "../src/lib/acquisition/url-policy";
+import type { Pause, Usage } from "./usage";
 
 const gzip = promisify(zlib.gzip);
 
@@ -39,10 +40,19 @@ export interface RendererConfig {
   renderOptions?: Pick<RenderOptions, "intercept" | "egress" | "launchArgs" | "deadlineMs">;
   probe?: () => Promise<string>;
   log?: (line: Record<string, unknown>) => void;
+  usage?: Usage;
+  onPaused?: (why: Pause) => void;
+}
+
+export interface Activity {
+  lastRender: number;
+  lastHealth: number;
+  busy: boolean;
 }
 
 export interface Renderer {
   server: http.Server;
+  activity(): Activity;
   listen(port: number, host?: string): Promise<number>;
   close(): Promise<void>;
 }
@@ -89,6 +99,13 @@ export function createRenderer(config: RendererConfig): Renderer {
   const waiting: Array<(ok: boolean) => void> = [];
   let active = 0;
   let closing = false;
+  let lastRender = 0;
+  let lastHealth = 0;
+  const pausedNow = (): Pause | null => config.usage?.paused() ?? null;
+  const refusePaused = (why: Pause) => {
+    config.onPaused?.(why);
+    return new Refusal(503, "paused", why);
+  };
   let probed: { at: number; result: Promise<{ ok: boolean; chrome?: string }> } | null = null;
 
   const health = () => {
@@ -137,6 +154,11 @@ export function createRenderer(config: RendererConfig): Renderer {
 
   const capture = async (url: URL, viewport: { width: number; height: number }, signal: AbortSignal): Promise<Buffer> => {
     if (!(await takeSlot(signal))) throw new Refusal(503, "busy");
+    const over = config.usage?.takeCapture();
+    if (over) {
+      freeSlot();
+      throw refusePaused(over);
+    }
     const t0 = Date.now();
     const host = url.hostname;
     try {
@@ -192,10 +214,14 @@ export function createRenderer(config: RendererConfig): Renderer {
     if (!verifyRequest(config.secret, { time: req.headers[TIME_HEADER], signature: req.headers[SIGNATURE_HEADER] }, method, path, body)) throw new Refusal(401, "unauthorized");
 
     if (path === "/health") {
-      const state = await health();
-      const answer: RendererHealth = { v: PROTOCOL, ok: state.ok && !closing, chrome: state.chrome, sandbox: !config.noSandbox, active, capacity: concurrency, queued: waiting.length, platformApi: !!config.platformApi };
+      lastHealth = Date.now();
+      const paused = pausedNow();
+      if (paused) config.onPaused?.(paused);
+      const state = paused ? { ok: false, chrome: undefined } : await health();
+      const answer: RendererHealth = { v: PROTOCOL, ok: state.ok && !closing && !paused, chrome: state.chrome, sandbox: !config.noSandbox, active, capacity: concurrency, queued: waiting.length, platformApi: !!config.platformApi, paused: paused ?? undefined, usage: config.usage?.snapshot() };
       return send(res, answer.ok ? 200 : 503, Buffer.from(JSON.stringify(answer)));
     }
+    lastRender = Date.now();
 
     if (closing) throw new Refusal(503, "busy");
     let ask: RenderRequest;
@@ -217,6 +243,9 @@ export function createRenderer(config: RendererConfig): Renderer {
     }
     const viewport = clampViewport(ask.viewport);
     const key = `${viewport.width}x${viewport.height} ${url.toString()}`;
+
+    const paused = pausedNow();
+    if (paused) throw refusePaused(paused);
 
     const hit = cache.get(key);
     if (hit) {
@@ -243,6 +272,7 @@ export function createRenderer(config: RendererConfig): Renderer {
       send(res, 200, await job.result, req, true);
     } finally {
       left = true;
+      lastRender = Date.now();
     }
   };
 
@@ -253,7 +283,7 @@ export function createRenderer(config: RendererConfig): Renderer {
       if (res.headersSent || res.destroyed) return void res.destroy();
       const error: { code: RendererFailure; extra?: string } = { code: refusal.code };
       if (refusal.extra && refusal.code !== "internal") error.extra = refusal.extra.slice(0, 120);
-      send(res, refusal.status, Buffer.from(JSON.stringify({ v: PROTOCOL, error })), undefined, false, refusal.code === "busy" || refusal.code === "rate_limited" ? { "retry-after": "5" } : refusal.status === 413 ? { connection: "close" } : undefined);
+      send(res, refusal.status, Buffer.from(JSON.stringify({ v: PROTOCOL, error })), undefined, false, refusal.code === "busy" || refusal.code === "rate_limited" ? { "retry-after": "5" } : refusal.code === "paused" ? { "retry-after": "3600" } : refusal.status === 413 ? { connection: "close" } : undefined);
     });
   });
   server.headersTimeout = 10_000;
@@ -263,11 +293,12 @@ export function createRenderer(config: RendererConfig): Renderer {
 
   return {
     server,
+    activity: () => ({ lastRender, lastHealth, busy: active > 0 || waiting.length > 0 || jobs.size > 0 }),
     listen: (port, host = "0.0.0.0") =>
       new Promise<number>((ready, failed) => {
         server.once("error", failed);
         server.listen(port, host, () => {
-          void health();
+          if (!pausedNow()) void health();
           ready((server.address() as { port: number }).port);
         });
       }),

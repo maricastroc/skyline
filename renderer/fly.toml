@@ -1,4 +1,4 @@
-app = "skyline-renderer"
+app = "skyline-renderer-CHANGE-ME"
 primary_region = "iad"
 kill_signal = "SIGTERM"
 kill_timeout = 10
@@ -10,6 +10,21 @@ kill_timeout = 10
   PORT = "8080"
   SKYLINE_RENDERER_CONCURRENCY = "2"
   SKYLINE_RENDERER_QUEUE = "4"
+  SKYLINE_RENDERER_USAGE_FILE = "/data/usage.json"
+  SKYLINE_RENDERER_MONTHLY_HOURS = "50"
+  SKYLINE_RENDERER_DAILY_CAPTURES = "100"
+  SKYLINE_RENDERER_BOOT_SECONDS = "5"
+  SKYLINE_RENDERER_IDLE_EXIT_SECONDS = "60"
+
+[[mounts]]
+  source = "renderer_data"
+  destination = "/data"
+  initial_size = "1gb"
+  snapshot_retention = 1
+
+[[restart]]
+  policy = "on-failure"
+  retries = 3
 
 [http_service]
   internal_port = 8080
@@ -24,8 +39,8 @@ kill_timeout = 10
     hard_limit = 12
 
   [[http_service.checks]]
-    grace_period = "15s"
-    interval = "30s"
+    grace_period = "5s"
+    interval = "15s"
     timeout = "5s"
     method = "GET"
     path = "/healthz"

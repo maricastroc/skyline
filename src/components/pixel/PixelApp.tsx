@@ -113,9 +113,11 @@ export function PixelApp({
   const [seenDown, setSeenDown] = useState(switchError);
   if (switchError !== seenDown) {
     setSeenDown(switchError);
-    if (switchError?.error.code === "renderer_unavailable") setCanDetail(false);
+    if (switchError?.error.code === "renderer_unavailable" || switchError?.error.code === "renderer_paused") setCanDetail(false);
   }
+  const askDetail = fetchedDoc?.source.strategy === "static";
   useEffect(() => {
+    if (!askDetail) return;
     let alive = true;
     fetch("/api/capture")
       .then((r) => r.json() as Promise<CaptureModes>)
@@ -124,7 +126,7 @@ export function PixelApp({
     return () => {
       alive = false;
     };
-  }, []);
+  }, [askDetail]);
   useEffect(() => {
     try {
       const sp = new URLSearchParams(window.location.search);

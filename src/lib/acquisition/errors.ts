@@ -17,6 +17,7 @@ export type CaptureErrorCode =
   | "rate_limited"
   | "renderer_unavailable"
   | "renderer_busy"
+  | "renderer_paused"
   | "internal";
 
 export interface CaptureErrorPayload {
@@ -129,6 +130,12 @@ const COPY: Record<CaptureErrorCode, { title: string; detail: string; hint?: str
     hint: "Try again in a moment.",
     http: 503,
   },
+  renderer_paused: {
+    title: "Detailed exploration is paused",
+    detail: "The browser that opens pages has reached its usage limit for now.",
+    hint: "The standard city still works. Detailed exploration comes back later.",
+    http: 503,
+  },
   internal: {
     title: "Something broke on our side",
     detail: "The capture failed unexpectedly.",
@@ -136,7 +143,7 @@ const COPY: Record<CaptureErrorCode, { title: string; detail: string; hint?: str
   },
 };
 
-const PRIVATE_DETAIL = new Set<CaptureErrorCode>(["internal", "renderer_unavailable", "renderer_busy"]);
+const PRIVATE_DETAIL = new Set<CaptureErrorCode>(["internal", "renderer_unavailable", "renderer_busy", "renderer_paused"]);
 
 export function isCaptureErrorCode(code: unknown): code is CaptureErrorCode {
   return typeof code === "string" && Object.prototype.hasOwnProperty.call(COPY, code);
