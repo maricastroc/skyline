@@ -6,6 +6,8 @@ Escrito em 11/10/2026, a partir do código em `main` (`b1eb38d`).
 >
 > **Dependência acrescentada em 12/10/2026.** A exploração detalhada de `/pixel` e as frentes baixas lidas de itens medidos só funcionam onde há renderizador. Em produção, as duas dependem das fases 2 e 3 deste plano. Ver `MORPHOLOGY_DECISION.md`, "Como C chega ao produto".
 
+> **Estado em 13/10/2026.** O código das fases 2 e 3 existe, com uma mudança de desenho: o navegador não roda na Vercel nem numa rota `/api/render`, e sim num serviço à parte (`renderer/`), que devolve a página montada e medida para o app transformar em snapshot. O proxy de saída da D3 foi feito como descrito e é usado também pelo navegador local. A publicação depende da escolha de hospedagem. Ver [RENDERED_CAPTURE_PRODUCTION.md](RENDERED_CAPTURE_PRODUCTION.md).
+
 ## Objetivo
 
 Hoje uma página que se monta no navegador vira cidade a partir do esqueleto que o servidor manda. O objetivo é construir a cidade a partir da página já montada, sem abrir mão das três garantias que o README faz:
