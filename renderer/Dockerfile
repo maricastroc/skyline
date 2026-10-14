@@ -15,7 +15,7 @@ ENV NODE_ENV=production CHROME_PATH=/usr/bin/chromium PORT=8080 UV_THREADPOOL_SI
 RUN useradd --create-home --uid 10001 --shell /usr/sbin/nologin renderer
 WORKDIR /srv/renderer
 COPY --from=build /app/renderer/dist/server.cjs ./server.cjs
-USER renderer
+COPY renderer/entrypoint.sh ./entrypoint.sh
 EXPOSE 8080
 ENTRYPOINT ["tini", "--"]
-CMD ["node", "--max-old-space-size=384", "server.cjs"]
+CMD ["/srv/renderer/entrypoint.sh"]

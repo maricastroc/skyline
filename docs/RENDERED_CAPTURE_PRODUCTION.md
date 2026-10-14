@@ -75,46 +75,42 @@ A correção troca seis expressões por varredores lineares e limita a expansão
 
 ## 3. Configuração para produção
 
-O host escolhido é o Fly.io. A configuração está em [`renderer/fly.toml`](../renderer/fly.toml); nada foi criado no Fly ainda.
+O host é o Fly.io, com um teto de **R$ 20 por mês** para essa infraestrutura. A configuração está em [`renderer/fly.toml`](../renderer/fly.toml); nada foi criado no Fly ainda.
 
-**A máquina:** uma só, `performance-1x` (1 vCPU dedicada, 2 GB), em `iad`, desligando quando ociosa (`auto_stop_machines = "stop"`, `min_machines_running = 0`) e ligando no primeiro pedido.
+**A máquina:** uma só, `performance-1x` (1 vCPU dedicada, 2 GB), em `iad`, a mesma região das funções da Vercel. Ela fica parada até chegar um pedido, liga sozinha e para sozinha:
+
+- `auto_stop_machines = "stop"`, `min_machines_running = 0` e nenhuma máquina de reserva (`--ha=false`).
+- O próprio serviço sai quando fica parado: 60 s depois da última captura, 20 s depois da última checagem de saúde e 30 s depois de ligar se nenhum pedido assinado chegar. Ao sair com código 0, a máquina para e só liga de novo no próximo pedido (`restart = on-failure`). O desligamento automático do Fly, que leva "alguns minutos", fica como segunda camada.
+- As checagens de saúde do Fly (`/healthz`) não mantêm a máquina ligada (a equipe do Fly diz que só pedidos de fora, pelo proxy, contam) e não contam como atividade para o serviço.
 
 Por que `performance-1x` e não `shared-cpu-2x`, que custa menos da metade:
 
 - **A CPU compartilhada do Fly tem cota.** Na documentação: 5 ms a cada 80 ms por vCPU, somados entre as vCPUs (12,5% de um núcleo numa `shared-cpu-2x`), mais um crédito de rajada que começa em 5 s por vCPU.
 - **Uma captura gasta 1,4 a 6,3 s de CPU.** Média de 3,4 s, medida no contêiner em 12 páginas reais.
 - **Com o crédito esgotado, nada passa.** Com a cota reproduzida no Docker, Hacker News, Books to Scrape e Guardian estouraram os 22 s. Com uma CPU inteira, as cinco páginas testadas passaram em 3,4 a 11,9 s.
-- **O crédito não dura.** Dá para as primeiras duas ou três capturas depois que a máquina liga, e não se recupera rápido o bastante para uso seguido.
 
-**Por que `stop` e não `suspend`:**
+**Por que `stop` e não `suspend`:** `stop` devolve o sistema de arquivos limpo a cada partida. Depois de um `suspend`, o relógio pode ficar alguns segundos atrás, e a assinatura dos pedidos tem janela de 90 s. Parada, a máquina custa o mesmo nos dois modos.
 
-- `stop` devolve o sistema de arquivos limpo a cada partida; `suspend` mantém tudo como estava, inclusive o que uma página hostil possa ter deixado.
-- Depois de um `suspend`, o relógio pode ficar alguns segundos atrás até sincronizar, e a assinatura dos pedidos tem janela de 90 s.
-- O custo parado é o mesmo nos dois modos: só o disco.
+**Um volume de 1 GB** (`/data`) guarda o registro de uso do mês, para que os tetos da seção 4 sobrevivam a cada desligamento. Sem ele, a máquina volta limpa a cada partida e nenhum limite global seria possível. Ele custa cerca de R$ 0,83/mês.
+
+**O contêiner começa como root só para três coisas:** dar o volume ao usuário do serviço, fechar o socket da API de máquinas do Fly (`/.fly/api`) para esse usuário, e tirar a própria máquina do roteamento quando o teto do mês acaba. O Node e o Chromium rodam sem privilégios (`setpriv`).
 
 **Serviço de renderização**
 
 | Variável | Valor |
 |---|---|
 | `SKYLINE_RENDERER_SECRET` | Obrigatória, 32 caracteres ou mais (`openssl rand -hex 32`), definida com `fly secrets set`. É o único segredo do serviço |
-| `PORT`, `SKYLINE_RENDERER_CONCURRENCY`, `SKYLINE_RENDERER_QUEUE` | No `fly.toml`: 8080, 2 capturas simultâneas, 4 em espera |
-| `SKYLINE_RENDERER_NO_SANDBOX` | Não definir. Só existe para um host que não permita o sandbox, e é uma decisão sua, não um padrão |
+| `SKYLINE_RENDERER_MONTHLY_HOURS` | 50: horas ligada por mês antes de parar de vez (seção 4). Com 0, o renderizador fica desligado: pausa e faz `cordon` assim que liga |
+| `SKYLINE_RENDERER_DAILY_CAPTURES` | 100: capturas novas por dia (UTC) antes de pausar até o dia seguinte |
+| `SKYLINE_RENDERER_IDLE_EXIT_SECONDS` | 60: segundos sem captura antes de sair |
+| `SKYLINE_RENDERER_USAGE_FILE` | `/data/usage.json`, no volume |
+| `SKYLINE_RENDERER_BOOT_SECONDS` | 5: segundos somados a cada partida, pelo tempo de ligar e desligar a máquina |
+| `PORT`, `SKYLINE_RENDERER_CONCURRENCY`, `SKYLINE_RENDERER_QUEUE` | 8080, 2 capturas simultâneas, 4 em espera |
+| `SKYLINE_RENDERER_NO_SANDBOX` | Não definir |
 
-- Imagem: `renderer/Dockerfile` (Debian 13, Chromium do repositório de segurança, usuário sem privilégios). O contexto de build é a raiz do repositório.
-- O Fly verifica `GET /healthz`, que responde só "ok" e não abre o navegador. O `hard_limit` do Fly (12) fica acima da capacidade do próprio serviço (2 + 4), para que quem diga "ocupado" seja o serviço.
-- Comandos previstos para a publicação, ainda não executados:
-
-```
-fly apps create skyline-renderer
-fly secrets set --app skyline-renderer SKYLINE_RENDERER_SECRET=<segredo>
-fly deploy . --config renderer/fly.toml --dockerfile renderer/Dockerfile --ha=false
-fly scale count 1 --app skyline-renderer
-fly ips list --app skyline-renderer
-```
-
-- `--ha=false` e `fly scale count 1`: o primeiro deploy cria duas máquinas por padrão (uma reserva). Com uma só, o teto de custo é o de uma máquina.
-- `fly ips list`: deve mostrar IPv4 compartilhado e IPv6. IPv4 dedicado custa US$ 2/mês e não é necessário.
-- O nome do app pode ser outro; a URL fica `https://<app>.fly.dev`.
+- Imagem: `renderer/Dockerfile` (Debian 13, Chromium do repositório de segurança). O contexto de build é a raiz do repositório, e o build é local (`--local-only`), o que evita qualquer cobrança de builder.
+- O Fly verifica `GET /healthz` (5 s depois de ligar, depois a cada 15 s), que responde só "ok" e não abre o navegador.
+- O nome do app deve ser difícil de adivinhar (por exemplo `skyline-renderer-` seguido de 8 letras aleatórias): a URL do serviço nunca vai para o navegador do visitante, e um nome secreto reduz quem consegue acordar a máquina.
 
 **App na Vercel**
 
@@ -123,103 +119,98 @@ fly ips list --app skyline-renderer
 | `SKYLINE_RENDERER_URL` | `https://<app>.fly.dev`, sem caminho |
 | `SKYLINE_RENDERER_SECRET` | O mesmo segredo |
 
-Sem as duas, ou com o serviço fora do ar, o app se comporta como hoje. Para desligar na hora, use `fly scale count 0`, que remove a máquina; um `fly deploy` a recria. Só `fly machine stop` não basta, porque o próximo pedido a liga de novo. As cascas de SPA voltam ao esqueleto estático na primeira falha, e a opção some em até 5 minutos, ou na primeira tentativa que falhar. Remover a variável na Vercel só vale no deploy seguinte.
+Sem as duas, ou com o serviço fora do ar ou pausado, o app se comporta como hoje para a captura padrão.
 
-**Conferir um serviço publicado:** `SKYLINE_RENDERER_URL=… SKYLINE_RENDERER_SECRET=… npm run renderer:ask -- --compare <urls>` mostra a saúde (com `sandbox` e `platformApi`), captura pelas duas vias e compara as leituras.
+**Desligar na hora, sem afetar a captura estática:** `fly machine cordon <id>`. A máquina sai do roteamento e nenhum pedido a liga mais; `fly machine uncordon <id>` desfaz. `fly scale count 0` também serve, mas apaga a máquina (o volume fica).
 
 ### Desligamento e retomada
 
 | Passo | Tempo que o app espera |
 |---|---|
-| Checagem de saúde (`GET /api/capture`, fora do caminho da captura) | até 10 s |
+| Checagem de saúde (`GET /api/capture`) | até 10 s. Só é feita quando uma cidade padrão está na tela, e uma resposta "pronto" vale 2 horas por instância da Vercel |
 | Captura renderizada | até 40 s: partida a frio, fila de até 8 s, captura de até 22 s, encerramento |
-| Rota `/api/capture` | `maxDuration` de 75 s: estática de até 15 s, renderizada de até 40 s, folhas de estilo |
-| Resposta positiva da saúde | Guardada 5 minutos por instância da Vercel |
-| Falha | Pausa de 15 s antes de tentar de novo nas cascas de SPA |
+| Rota `/api/capture` | `maxDuration` de 75 s |
+| Serviço pausado | O app não o chama de novo por 30 minutos |
+| Falha | Pausa de 15 s nas cascas de SPA |
 
-Simulei o proxy do Fly localmente: contêiner parado, com uma CPU, que só é ligado quando chega o primeiro pedido, e o pedido segura até o serviço responder. Com os prazos acima, em três rodadas:
+Simulei o proxy do Fly localmente: contêiner parado, com uma CPU, que só liga quando chega o primeiro pedido. A checagem de saúde saindo do zero respondeu em 0,64 s, e uma captura em 4,9 a 5,2 s. A confirmação no Fly está nos critérios de lançamento.
 
-- a checagem de saúde saindo do zero respondeu "pronto" em 0,64 s;
-- uma captura do Hacker News saindo do zero levou 4,9 a 5,2 s;
-- saúde e captura juntas, como num link direto `mode=detailed`, levaram 5,7 a 6,2 s.
+## 4. Custos e proteção do orçamento
 
-O Docker liga um contêiner mais rápido que o Fly liga uma máquina (a documentação dele fala em "~2+ s"), e mesmo somando isso a folga é grande. A confirmação no Fly está nos critérios de lançamento.
+### Premissas verificáveis
 
-## 4. Custos e limites
+| | Valor | Fonte |
+|---|---|---|
+| Dólar | R$ 5,0096 (PTAX venda de 13/10/2026) | API de dados do Banco Central, série PTAX |
+| IOF em compra internacional no cartão | 3,5% | Decreto 12.499/2025, segundo guias de 2026 (o texto do decreto não foi aberto) |
+| Spread do banco sobre a PTAX | 6% (suposição; varia por emissor) | Estimativa |
+| Dólar efetivo na fatura | **R$ 5,50** (5,0096 × 1,035 × 1,06) | Cálculo |
+| `performance-1x` ligada | US$ 0,00001273/s = US$ 0,0458/h = **R$ 0,252/h** | Página de preços do Fly |
+| Máquina parada | US$ 0,15 por GB de disco por mês | Página de preços do Fly |
+| Volume | US$ 0,15 por GB por mês, cobrado ligado ou não | Página de preços do Fly |
+| Snapshots do volume | 10 GB grátis por mês | Página de preços do Fly |
+| Saída de dados | US$ 0,02/GB; entrada grátis | Página de preços do Fly |
+| IPv4 compartilhado e IPv6 | Grátis | Página de preços do Fly |
 
-### Preços confirmados na página do Fly (14/10/2026)
+### Custos fixos por mês
 
-| Item | Preço |
+| Item | Estimativa |
 |---|---|
-| `performance-1x` com 2 GB, ligada | US$ 0,00001273 por segundo: US$ 33,00 por 30 dias ligada o tempo todo |
-| Máquina parada | Só o disco: US$ 0,15 por GB por mês |
-| Saída de dados para a internet (América do Norte) | US$ 0,02/GB; entrada grátis |
-| IPv4 compartilhado e IPv6 | Grátis |
-| IPv4 dedicado | US$ 2/mês (não necessário) |
-| Certificado de domínio próprio | US$ 0,10/mês, os 10 primeiros grátis (não necessário com `*.fly.dev`) |
-| RAM além da incluída | US$ 6/GB/mês (não necessário: o `performance-1x` já tem 2 GB) |
-| Camada gratuita | Nenhuma; teste de 2 h de máquina ou 7 dias sem cartão, depois cartão obrigatório |
+| Volume de 1 GB | US$ 0,15 = R$ 0,83 |
+| Disco da máquina parada (imagem de cerca de 1,7 GB) | US$ 0,26 = R$ 1,40 |
+| Snapshots (o registro tem menos de 1 KB) | R$ 0 |
+| Tráfego de saída (8 a 134 KB por captura) | menos de R$ 0,10 |
+| IP, certificado (`*.fly.dev`), builder (build local) | R$ 0 |
+| **Total** | **cerca de R$ 2,30** |
 
-Para comparar: a `shared-cpu-2x` com 2 GB custa US$ 13,39 por 30 dias, mas não dá conta da carga (seção 3).
+### Quanto tempo ligada cabe em R$ 20
 
-### Medido aqui
+- **Sem nenhuma margem:** (R$ 20 − R$ 2,30) ÷ R$ 0,252/h = cerca de 70 h.
+- **Com o teto escolhido:** **50 h por mês**, que custam R$ 12,60. Somados aos fixos, dão **R$ 14,90 no pior mês normal**.
+- **Margem:** sobram R$ 5,10 (25%) para variação do câmbio, um spread maior e cobranças que o Fly não detalha.
 
-| | |
-|---|---|
-| CPU por captura | 1,4 a 6,3 s de CPU, média 3,4 s (12 páginas reais) |
-| Captura renderizada, do pedido ao snapshot | 2,6 a 15 s em 14 páginas. As mais lentas foram medidas antes da correção do leitor de CSS; depois dela, Guardian 5,0 s, Pinterest 6,5 s e Hacker News 2,9 s |
-| Captura estática, com o serviço configurado | 0,26 a 0,92 s (Guardian, Paul Graham, GitHub, Hacker News) |
-| Memória do contêiner | 47 a 86 MiB ocioso; pico de 533 MiB com duas páginas pesadas ao mesmo tempo |
-| Página que consome memória sem parar | O processo dela para em cerca de 0,9 GB |
-| Imagem | 1,63 GB descompactada |
-| Resposta do serviço | 8 a 134 KB compactados por página |
+### Projeção por volume de uso
 
-### O que de fato custa
+Uma visita que pede uma captura deixa a máquina ligada cerca de 75 s: 5 s para ligar, a captura, e 60 s até ela sair sozinha. Uma checagem de saúde que acorda a máquina custa cerca de 25 s.
 
-O que pesa é o tempo em que a máquina fica ligada, não o número de capturas.
+| Uso por dia | Horas ligada no mês | Custo estimado no mês |
+|---|---|---|
+| 5 visitas com captura, 10 checagens | cerca de 5 h | R$ 3,60 |
+| 20 visitas com captura, 40 checagens | cerca de 21 h | R$ 7,50 |
+| 50 visitas com captura, 60 checagens | cerca de 44 h | R$ 13,30 |
+| Mais que isso | 50 h, e a renderização para até o mês seguinte | R$ 14,90 |
 
-- **O que a acorda:** qualquer pedido. Uma captura, ou a checagem de saúde que o app faz quando alguém abre `/pixel`, no máximo uma vez a cada 5 minutos por instância da Vercel.
-- **Quando ela desliga:** depois de "alguns minutos" sem pedidos. O Fly não dá o número exato.
-- **Com visitas esparsas:** a máquina passa a maior parte do mês parada.
-- **Com `/pixel` aberto o dia inteiro:** ela não para.
+### Proteções e o que cada uma garante
 
-| Tempo ligada por mês | Estimativa |
-|---|---|
-| 10 h | US$ 0,46 + disco US$ 0,25 = cerca de US$ 0,70 |
-| 100 h | US$ 4,58 + US$ 0,25 = cerca de US$ 4,85 |
-| 300 h | US$ 13,75 + US$ 0,25 = cerca de US$ 14 |
-| O mês todo (teto) | US$ 33,00 |
+| Proteção | Tipo | O que garante |
+|---|---|---|
+| Teto mensal de 50 h ligada, gravado no volume | Do Skyline, persistente | Conta todo o tempo em que o processo fica de pé, qualquer que seja o motivo, inclusive tráfego de fora; grava a cada 5 s e soma 5 s por partida. Ao passar do teto, o serviço sai e o processo root tira a máquina do roteamento (`cordon`): nenhum pedido a liga de novo neste mês. Volta com `fly machine uncordon` no mês seguinte |
+| Registro ausente, ilegível ou sem gravação | Do Skyline | Sem volume, ou sem conseguir gravar: o serviço pausa e faz `cordon`. Registro ilegível: é guardado como `usage.json.unreadable-…`, o mês é tratado como gasto e o serviço volta sozinho no mês seguinte |
+| Teto diário de 100 capturas novas, gravado no volume | Do Skyline, persistente | Um dia de abuso não gasta o mês inteiro. Conta só capturas que de fato começam: respostas do cache, pedidos iguais em andamento e pedidos recusados por "ocupado" não contam. A contagem é síncrona, então pedidos simultâneos não passam do teto. Ao chegar a 100, o serviço pausa até 0h UTC e não faz `cordon` |
+| Saída por ociosidade (60/20/30 s) | Do Skyline | Cada acordar custa segundos, não minutos |
+| Uma máquina só, sem reserva | Configuração do Fly | O teto físico é uma máquina |
+| Limite por visitante | Do Skyline, na memória | Por instância da Vercel e por partida do serviço; dificulta abuso, mas não é global |
+| Cache e uma captura para pedidos iguais | Do Skyline, na memória | Evita trabalho repetido enquanto a máquina está ligada |
+| Checagem de saúde só com cidade na tela e guardada 2 h; 30 min sem chamar depois de uma pausa | Do Skyline | Evita acordar a máquina por quem só abre a página |
+| `fly machine cordon` | Manual | Desliga na hora, sem afetar a captura estática |
+| Registros e checagem de saúde com o uso do mês | Métrica | `npm run renderer:ask` mostra horas, partidas e capturas do mês e do dia |
+| Teto de gasto no Fly | **Não existe** | A documentação do Fly não tem limite de gasto nem alerta |
+| Créditos pré-pagos do Fly | Do Fly, não confirmado | Compra mínima de US$ 25 (cerca de R$ 140). A equipe do Fly disse no fórum, há anos, que apps são suspensos quando os créditos acabam, mas outro usuário relata cobrança no cartão depois. Só vale confirmado com billing@fly.io |
+| Alertas | **Não existe no Fly** | Recomendo acompanhar pelo `renderer:ask` e pelo painel do Fly; nenhum dos dois para cobranças |
 
-As estimativas somam o preço por segundo e o disco parado, contando 1,7 GB de imagem.
+**Grau real de proteção.**
 
-- **Tráfego de saída:** a resposta de cada captura tem 8 a 134 KB compactados. Mesmo 30.000 capturas ficam abaixo de US$ 0,10.
-- **Downloads das páginas:** o que o navegador baixa delas é tráfego de entrada, que é grátis.
-
-### Cobranças possíveis além da máquina
-
-| Cobrança | Como evitar ou o que esperar |
-|---|---|
-| Segunda máquina criada pelo primeiro deploy | `--ha=false` e `fly scale count 1`. Parada, ela custaria cerca de US$ 0,25/mês de disco; ligada por falha de hardware, o preço normal |
-| IPv4 dedicado | Não alocar; o compartilhado basta |
-| Builder remoto | A página de preços não fala dele. A equipe do Fly diz no fórum que é grátis, mas anunciou cobrança por minuto de build para o builder novo (US$ 0,05/min depois de 300 min), sem confirmação de que começou. Alternativa: `fly deploy --local-only` |
-| Imagem guardada no registro do Fly | A página de preços não fala dela. Segundo a equipe no fórum, não é cobrada |
-| Logs e métricas | A página de preços não fala deles |
-| Cancelamento de fatura pequena | Não documentado; contar com a cobrança integral |
-| Impostos | Não verificado |
-
-**Não foi possível confirmar:**
-
-- se o sandbox do Chromium funciona no Fly (não há documento oficial; seção 5);
-- se as checagens de saúde do próprio Fly mantêm a máquina ligada (a documentação não diz);
-- o tempo de partida desta imagem lá;
-- quantas páginas respondem a um IP de datacenter.
+- **Uso que passa pelo Skyline:** o teto mensal limita o gasto a cerca de R$ 15, gravado em disco e independente de reinícios, deploys ou de quantas instâncias da Vercel existam.
+- **O teto é contado pelo próprio serviço.** Ele soma 5 s por partida para cobrir o que acontece antes de ele iniciar; a comparação com o painel do Fly está nos critérios.
+- **O que fica descoberto:** o `cordon` automático só funciona se, no Fly, o root da máquina alcançar `/.fly/api` e se uma máquina tirada do roteamento não for ligada pelo proxy. As duas coisas funcionaram aqui com uma API falsa, e as duas precisam ser vistas no Fly.
+- **Se não funcionarem:** depois do teto, cada pedido ainda liga a máquina por cerca de 6 s (ligar, ver que está pausada, sair). Alguém que descubra o endereço e o chame sem parar poderia mantê-la quase sempre ligada, até US$ 33/mês, cerca de R$ 180. A proteção nesse caso é o nome secreto do app e o `cordon` manual.
 
 ### Limites de uso
 
 | | |
 |---|---|
 | Por captura | 22 s, 400 pedidos, 250 conexões, 64 MB trafegados, 4 MB de HTML, 10 navegações, janela de 1440×900, sem rolagem |
-| No serviço | 2 capturas simultâneas, 4 em espera por até 8 s, 4 capturas seguidas por visitante e depois uma a cada 30 s, cache de 3 minutos para 12 páginas |
+| No serviço | 2 capturas simultâneas, 4 em espera por até 8 s, 4 capturas seguidas por visitante (por partida) e depois uma a cada 30 s, cache de 3 minutos para 12 páginas, 100 capturas por dia, 50 h por mês |
 | No app | Captura renderizada custa 3 das 8 fichas do visitante (por instância); resposta do serviço limitada a 16 MB; espera de até 40 s |
 
 ## 5. Testes e verificações
@@ -284,7 +275,7 @@ Diferenças legítimas observadas:
 | Segredo do serviço | O segredo é tirado do ambiente antes de abrir o navegador, e o navegador recebe um ambiente sem variáveis de segredo | Continua no ambiente inicial do processo Node, como acontece com qualquer segredo passado por variável |
 | Falha de segurança no Chromium | Sandbox ligado, usuário sem privilégios, serviço sem segredos do app, um navegador por captura | Escape do sandbox dá acesso ao contêiner e à rede dele. A imagem precisa ser reconstruída para receber correções; o Debian publica em 2 a 6 dias depois do Chrome |
 | Host sem suporte ao sandbox | O serviço não se declara pronto se o navegador não iniciar com o sandbox | Decisão sua entre trocar de host e aceitar `--no-sandbox` |
-| Abuso e custo | Assinatura, limites da seção 4, uma máquina no máximo (`--ha=false`, `fly scale count 1`) | O limite por visitante do app é por instância da Vercel. O do serviço é global, mas confia no identificador que o app envia. O Fly não tem teto de gasto: o teto vem de haver uma máquina só |
+| Abuso e custo | Assinatura; teto mensal de horas e diário de capturas gravados no volume; `cordon` automático no teto; saída por ociosidade; uma máquina só (`--ha=false`) | O Fly não tem teto de gasto nem alerta. Se o `cordon` automático não funcionar no Fly, alguém que descubra o endereço do serviço pode mantê-lo ligado depois do teto, até cerca de R$ 180/mês (seção 4) |
 | CPU compartilhada estrangulada | `performance-1x` em vez de `shared-cpu-2x` | Com uma CPU, duas capturas simultâneas dividem o núcleo; a mais pesada medida levou 11,9 s sozinha |
 | Página hostil esgota recursos | Prazo, heap limitado, tetos de pedidos, conexões, bytes e consultas de DNS, HTML medido antes de sair do navegador, memória do contêiner | O limite de heap não cobre `ArrayBuffer` nem WebAssembly: o teto real é a memória da máquina. Duas páginas no limite ao mesmo tempo podem levar a máquina de 2 GB ao limite; o sistema mata o maior processo, que é o da página |
 | Serviço indisponível | Captura padrão não depende dele; falha dita na tela; pausa de 15 s | Uma casca de SPA pode esperar até 40 s na primeira falha de um serviço que não responde. Depois de uma queda, a opção pode continuar visível por até 5 minutos numa instância da Vercel; quem clicar vê a falha dita, e a opção some |
@@ -296,23 +287,44 @@ Diferenças legítimas observadas:
 
 ## 7. O que depende da sua aprovação
 
-O host está escolhido (Fly.io, seção 3). Faltam, nesta ordem e com autorização sua em cada passo:
+Etapas B, C e D. Cada uma espera um sinal seu.
 
-1. Criar a conta e a organização no Fly, com cartão.
-2. Gerar o segredo, definir no Fly (`fly secrets set`) e na Vercel (`SKYLINE_RENDERER_URL`, `SKYLINE_RENDERER_SECRET`).
-3. Publicar o serviço (`fly deploy … --ha=false`) e depois o app.
-4. Se o host não permitir o sandbox, ou se `platformApi` vier `true`: decidir entre endurecer a imagem (iniciar como root só para fechar o socket e então baixar privilégios) e aceitar o risco.
-5. Merge do pull request.
+1. **Etapa B, recursos:** criar a conta e uma organização só para o renderizador no Fly, com cartão. O primeiro deploy cria um app, uma máquina `performance-1x` e um volume de 1 GB.
+2. **Etapa C, deploy controlado:** gerar o segredo, `fly secrets set`, `fly deploy --local-only --ha=false`, e os testes de infraestrutura com `npm run renderer:ask` contra o serviço real, sem tocar na Vercel.
+3. **Etapa D, ativação:** definir `SKYLINE_RENDERER_URL` e `SKYLINE_RENDERER_SECRET` na Vercel e publicar.
+4. Se o sandbox não funcionar no Fly, ou se o `cordon` automático não puder ser comprovado: decidir entre aceitar o risco descrito na seção 4 e não ativar.
+
+### Checklist do primeiro deploy
+
+1. Instalar o `flyctl` e entrar na conta (`fly auth login`).
+2. Criar uma organização só para o renderizador e o app com nome difícil de adivinhar: `fly apps create skyline-renderer-<8 letras aleatórias> --org <org>`. O nome vai em `--app` em cada comando e não entra no repositório, que é público.
+3. Gerar o segredo (`openssl rand -hex 32`) e guardá-lo num gerenciador de senhas. Definir com `fly secrets set --app <app> --stage SKYLINE_RENDERER_SECRET=…`.
+4. `fly deploy . --config renderer/fly.toml --app <app> --local-only --ha=false`. O build local gera a imagem amd64 no Docker da máquina.
+5. Conferir que existe uma máquina só (`fly scale show`; se houver duas, `fly scale count 1`), um volume de 1 GB (`fly volumes list`) e só IPs compartilhados (`fly ips list`; se aparecer IPv4 dedicado, `fly ips release`).
+6. Rodar os critérios 2 a 8 da seção 8 com `npm run renderer:ask`, ainda sem nada na Vercel.
+7. Ensaiar o teto: `fly machine update <id> --env SKYLINE_RENDERER_MONTHLY_HOURS=0`. O serviço liga, pausa e faz `cordon`; pedidos depois disso não podem ligá-lo. Para voltar: `--env SKYLINE_RENDERER_MONTHLY_HOURS=50` e `fly machine uncordon <id>`.
+8. Só então pedir a ativação na Vercel.
 
 ## 8. Critérios de lançamento
 
 1. CI verde na branch, com `test:capture` rodando no Linux do GitHub.
-2. Serviço publicado com uma máquina só (`fly scale show`), IPv4 compartilhado (`fly ips list`), e `npm run renderer:ask` mostrando `"ok":true,"sandbox":true,"platformApi":false`.
-3. Desligamento e retomada no Fly: a máquina para sozinha depois de alguns minutos sem pedidos (`fly machine list`), e a primeira checagem de saúde e a primeira captura depois disso cabem nos prazos da seção 3 (10 s e 40 s).
-4. `npm run renderer:ask -- --compare` nas 11 páginas estáveis da seção 5: mesma leitura em pelo menos 10, e cada diferença explicada.
-5. Os endereços hostis da seção 5 enviados ao serviço publicado: todos recusados.
-6. Taxa de sucesso a partir do datacenter: das páginas da seção 5 que funcionam localmente, registrar quais o serviço publicado consegue ler. Abaixo de 70%, reavaliar antes de anunciar o recurso.
-7. Em produção: `GET /api/capture` responde `{"detailed":true}`; a captura padrão do Hacker News continua abaixo de 2 s; `?mode=detailed` funciona em três páginas; o Bluesky chega como "Read in a browser".
-8. Ensaio de desligamento: com `fly scale count 0`, a captura padrão segue funcionando, o link detalhado mostra a falha, e a opção some na primeira falha ou em até 5 minutos.
-9. Alerta de gasto configurado na conta do Fly, se a conta oferecer.
-10. Dois dias de observação dos registros do serviço: menos de 5% de capturas com resultado `internal`, memória abaixo de 1,5 GB, nenhum processo do Chromium sobrando, e o tempo ligada por dia compatível com a estimativa da seção 4.
+2. Serviço publicado com uma máquina só (`fly scale show`), um volume de 1 GB (`fly volumes list`), IPv4 compartilhado (`fly ips list`). `npm run renderer:ask` deve mostrar `"ok":true`, `"sandbox":true`, `"platformApi":false` e `"usage":{…,"persistent":true}`.
+3. **Desligamento e retomada no Fly:**
+   - a máquina para sozinha cerca de 60 s depois da última captura (`fly machine list` mostra `stopped`);
+   - a primeira checagem de saúde depois disso cabe em 10 s, e a primeira captura em 40 s;
+   - o uso do mês no registro sobe a cada partida.
+4. **Teto no Fly**, com o teto temporariamente em 0 h:
+   - ao atingir o teto, o serviço sai, a máquina fica `cordoned` (`fly machine status`);
+   - um pedido depois disso não a liga;
+   - `fly machine uncordon` e o teto de volta a 50 h restauram o serviço.
+5. **Acesso privilegiado:** pelo `fly ssh console`, o usuário `renderer` não consegue usar `/.fly/api` nem ler o ambiente de outros processos, e os processos do Chromium aparecem com sandbox (seccomp ativo e namespace de usuário próprio).
+6. `npm run renderer:ask -- --compare` nas 11 páginas estáveis da seção 5: mesma leitura em pelo menos 10, e cada diferença explicada.
+7. Os endereços hostis da seção 5 enviados ao serviço publicado (literais privados, metadados, nomes que resolvem para rede privada, redirecionamentos, portas): todos recusados. A página com WebRTC, WebTransport e WebSocket do `test:egress` não abre nada fora do proxy.
+8. Taxa de sucesso a partir do datacenter: das páginas da seção 5 que funcionam localmente, registrar quais o serviço publicado consegue ler. Abaixo de 70%, reavaliar antes de ativar.
+9. **Em produção, depois da ativação:**
+   - `GET /api/capture` responde `{"detailed":true}`;
+   - a captura padrão do Hacker News continua abaixo de 2 s;
+   - `?mode=detailed` funciona em três páginas;
+   - o Bluesky chega como "Read in a browser";
+   - com a máquina em `cordon`, a captura padrão segue funcionando e o link detalhado mostra a falha.
+10. **Uma semana de observação:** as horas ligada contadas pelo serviço ficam próximas das do painel do Fly (diferença abaixo de 10%), e a projeção do mês fica abaixo de R$ 15.

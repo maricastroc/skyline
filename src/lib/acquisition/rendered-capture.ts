@@ -20,13 +20,15 @@ interface Remote {
   secret: string;
 }
 
-const READY_FOR_MS = 5 * 60_000;
+const READY_FOR_MS = 2 * 60 * 60_000;
 const DOWN_FOR_MS = 15_000;
+const PAUSED_FOR_MS = 30 * 60_000;
 const HEALTH_MS = 10_000;
 const RENDER_MS = 40_000;
 const LOOPBACK = new Set(["127.0.0.1", "localhost", "[::1]"]);
 
-let tried: { at: number; setup: string; ready: Promise<boolean>; value?: boolean } | null = null;
+type Readiness = "ready" | "down" | "paused";
+let tried: { until: number; setup: string; ready: Promise<boolean>; value?: boolean } | null = null;
 
 function remoteRenderer(): Remote | null {
   const raw = process.env.SKYLINE_RENDERER_URL;
@@ -44,10 +46,10 @@ function remoteRenderer(): Remote | null {
 
 const currentSetup = () => `${process.env.SKYLINE_RENDERER_URL ?? ""} ${createHash("sha256").update(process.env.SKYLINE_RENDERER_SECRET ?? "").digest("hex").slice(0, 12)} ${isLocalRendererEnabled()} ${localChromePath() ?? ""}`;
 
-const knownDown = () => !!tried && tried.setup === currentSetup() && tried.value === false && Date.now() - tried.at < DOWN_FOR_MS;
+const knownDown = () => !!tried && tried.setup === currentSetup() && tried.value === false && Date.now() < tried.until;
 
-function markDown(): void {
-  tried = { at: Date.now(), setup: currentSetup(), ready: Promise.resolve(false), value: false };
+function markDown(forMs = DOWN_FOR_MS): void {
+  tried = { until: Date.now() + forMs, setup: currentSetup(), ready: Promise.resolve(false), value: false };
 }
 
 export function isRendererAvailable(): boolean {
@@ -57,35 +59,38 @@ export function isRendererAvailable(): boolean {
 /** Whether a rendered capture can run right now: the renderer is tried, not assumed from the configuration. */
 export function rendererReady(): Promise<boolean> {
   const setup = currentSetup();
-  const fresh = tried && tried.setup === setup && Date.now() - tried.at < (tried.value === false ? DOWN_FOR_MS : READY_FOR_MS);
+  const fresh = tried && tried.setup === setup && Date.now() < tried.until;
   if (!fresh) {
-    const attempt: NonNullable<typeof tried> = { at: Date.now(), setup, ready: tryRenderer() };
-    void attempt.ready.then((value) => {
-      attempt.value = value;
+    const checking = tryRenderer();
+    const attempt: NonNullable<typeof tried> = { until: Date.now() + READY_FOR_MS, setup, ready: checking.then((r) => r === "ready") };
+    void checking.then((r) => {
+      attempt.value = r === "ready";
+      if (r !== "ready") attempt.until = Date.now() + (r === "paused" ? PAUSED_FOR_MS : DOWN_FOR_MS);
     });
     tried = attempt;
   }
   return tried!.ready;
 }
 
-async function tryRenderer(): Promise<boolean> {
+async function tryRenderer(): Promise<Readiness> {
   try {
     const remote = remoteRenderer();
     if (remote) {
       const res = await fetch(new URL("/health", remote.base), { headers: signedHeaders(remote.secret, "GET", "/health", ""), signal: AbortSignal.timeout(HEALTH_MS), redirect: "error", cache: "no-store" });
-      if (!res.ok) return false;
-      const health = JSON.parse(await readCapped(res, 4_096)) as RendererHealth;
-      return health.v === PROTOCOL && health.ok === true;
+      const health = JSON.parse(await readCapped(res, 8_192)) as RendererHealth;
+      if (health.v !== PROTOCOL) return "down";
+      if (health.paused) return "paused";
+      return res.ok && health.ok === true ? "ready" : "down";
     }
-    if (!isLocalRendererEnabled()) return false;
+    if (!isLocalRendererEnabled()) return "down";
     const browser = await launchBrowser({ noSandbox: !!process.env.CI });
     try {
-      return (await browser.version()).length > 0;
+      return (await browser.version()).length > 0 ? "ready" : "down";
     } finally {
       await browser.close().catch(() => undefined);
     }
   } catch {
-    return false;
+    return "down";
   }
 }
 
@@ -139,6 +144,11 @@ async function askRenderer(remote: Remote, url: URL, opts: RenderedCaptureOption
   if (!res.ok) {
     const code = payload.error?.code;
     if (code === "busy") throw new CaptureError("renderer_busy");
+    if (code === "paused") {
+      console.error("[renderer] paused by its usage limit");
+      markDown(PAUSED_FOR_MS);
+      throw new CaptureError("renderer_paused");
+    }
     if (code === "internal") throw new CaptureError("internal");
     if (code === "bad_request") throw unavailable(`refused this request (HTTP ${res.status})`, false);
     if (!isCaptureErrorCode(code) || code === "renderer_unavailable" || code === "renderer_busy") throw unavailable(`refused (HTTP ${res.status}, ${String(code).slice(0, 40)})`);

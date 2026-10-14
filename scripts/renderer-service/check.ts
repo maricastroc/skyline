@@ -1,7 +1,12 @@
-import { execSync } from "node:child_process";
+import { execSync, spawn } from "node:child_process";
+import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import http from "node:http";
-import type net from "node:net";
+import net from "node:net";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { cordonSelf } from "../../renderer/platform";
 import { createRenderer, type Renderer, type RendererConfig } from "../../renderer/service";
+import { createUsage } from "../../renderer/usage";
 import { acquire, type AcquireSources } from "../../src/lib/acquisition/acquire";
 import { networkOf } from "../../src/lib/acquisition/rate-limit";
 import { CaptureError } from "../../src/lib/acquisition/errors";
@@ -79,12 +84,12 @@ const errorOf = async (work: Promise<unknown>) => {
 };
 
 const open: Array<() => Promise<void>> = [];
-async function service(config: Partial<RendererConfig> = {}): Promise<{ base: string; renderer: Renderer; lines: Array<Record<string, unknown>> }> {
+async function service(config: Partial<RendererConfig> = {}): Promise<{ base: string; renderer: Renderer; server: http.Server; lines: Array<Record<string, unknown>> }> {
   const lines: Array<Record<string, unknown>> = [];
   const renderer = createRenderer({ secret: SECRET, probe: async () => "Chrome/fixture", log: (l) => lines.push(l), ...config });
   const port = await renderer.listen(0, "127.0.0.1");
   open.push(() => renderer.close());
-  return { base: `http://127.0.0.1:${port}`, renderer, lines };
+  return { base: `http://127.0.0.1:${port}`, renderer, server: renderer.server, lines };
 }
 async function impostor(handler: http.RequestListener): Promise<string> {
   const server = http.createServer(handler);
@@ -380,6 +385,164 @@ async function theClient() {
   check("a busy renderer is said to be busy, not broken", (await codeOf(captureRenderedPage(new URL(`${SITE}/next`)))) === "renderer_busy" && isRendererAvailable());
 }
 
+async function budget() {
+  console.log("\n# Keeping to a budget");
+  const dir = mkdtempSync(join(tmpdir(), "skyline-usage-"));
+  const file = join(dir, "usage.json");
+  let clock = Date.parse("2026-10-14T10:00:00Z");
+  const now = () => clock;
+  const limits = { monthlySeconds: 3_600, dailyCaptures: 3, bootSeconds: 5 };
+
+  const first = createUsage(file, limits, now);
+  first.boot();
+  clock += 600_000;
+  first.tick();
+  check("awake time is counted from boot, with a fixed cost for each start, and written down", first.snapshot().seconds === 605 && JSON.parse(readFileSync(file, "utf8")).seconds === 605);
+  const again = createUsage(file, limits, now);
+  again.boot();
+  check("a new start continues the month where the last one stopped", again.snapshot().seconds === 610 && again.snapshot().boots === 2);
+  clock += 3_000_000;
+  check("past the monthly allowance the renderer is paused for the month", again.paused() === "monthly" && again.takeCapture() === "monthly");
+  clock = Date.parse("2026-11-01T00:00:10Z");
+  check("a new month starts from zero", again.paused() === null && again.snapshot().month === "2026-11" && again.snapshot().seconds < 20);
+  const day = createUsage(null, { ...limits, monthlySeconds: 10_000_000 }, now);
+  const taken = [day.takeCapture(), day.takeCapture(), day.takeCapture(), day.takeCapture()];
+  check("past the daily number of captures the renderer is paused until the next day", taken.join() === ",,,daily" && day.paused() === "daily");
+  clock += 86_400_000;
+  check("and the next day it opens again", day.paused() === null && day.takeCapture() === null);
+  const daily = createUsage(file, limits, now);
+  daily.takeCapture();
+  daily.takeCapture();
+  check("the number of captures of the day is kept across starts", createUsage(file, limits, now).snapshot().dayCaptures === 2);
+  writeFileSync(file, "{ not json");
+  const unreadable = createUsage(file, limits, now);
+  check("a usage record that cannot be read is kept aside, and the month is taken as spent instead of guessed", unreadable.paused() === "monthly" && readdirSync(dir).some((f) => f.startsWith("usage.json.unreadable-")));
+  clock = Date.parse("2026-12-01T00:00:05Z");
+  check("and the renderer comes back by itself in the next month", unreadable.paused() === null);
+  writeFileSync(join(dir, "a-file"), "x");
+  const unwritable = createUsage(join(dir, "a-file", "usage.json"), limits, now);
+  unwritable.boot();
+  check("a usage record that cannot be written pauses the renderer instead of guessing", unwritable.paused() === "unrecorded");
+  rmSync(dir, { recursive: true, force: true });
+
+  let probes = 0;
+  let renders = 0;
+  const pauses: string[] = [];
+  const spent = createUsage(null, { monthlySeconds: 1, dailyCaptures: 100, bootSeconds: 5 }, Date.now);
+  spent.boot();
+  const tired = await service({
+    usage: spent,
+    onPaused: (why) => void pauses.push(why),
+    probe: async () => {
+      probes++;
+      return "Chrome/fixture";
+    },
+    render: async () => {
+      renders++;
+      return pageOf(SHELF);
+    },
+  });
+  const tiredHealth = await call(tired.base, "GET", "/health");
+  const tiredRender = await render(tired.base, `${SITE}/`);
+  check("a paused renderer says so to its caller and does not start a browser to answer", tiredHealth.status === 503 && /"paused":"monthly"/.test(tiredHealth.text) && /"usage":\{/.test(tiredHealth.text) && tiredRender.status === 503 && /"code":"paused"/.test(tiredRender.text) && renders === 0 && probes <= 1, `${tiredHealth.status}, ${tiredRender.status}, ${probes} probe(s)`);
+  check("and asks to be stopped", pauses.includes("monthly"));
+
+  point(tired.base);
+  let healthCalls = 0;
+  tired.server.on("request", (req) => req.url === "/health" && healthCalls++);
+  const said = await errorOf(captureRenderedPage(new URL(`${SITE}/again`)));
+  const before = healthCalls;
+  const readyAfter = await rendererReady();
+  const readyLater = await rendererReady();
+  check("the application tells the visitor detailed exploration is paused, and stops waking the renderer for a while", said?.code === "renderer_paused" && !isRendererAvailable() && !readyAfter && !readyLater && healthCalls === before, `${said?.code}, ${healthCalls - before} health call(s) after the pause`);
+
+  const counted = createUsage(null, { monthlySeconds: 3_600, dailyCaptures: 2, bootSeconds: 0 }, Date.now);
+  let counter = 0;
+  const thrifty = await service({ usage: counted, render: async () => (counter++, pageOf(SHELF)), perClient: { capacity: 100, refillPerSec: 0 } });
+  const asked = [await render(thrifty.base, `${SITE}/a`, "x1"), await render(thrifty.base, `${SITE}/a`, "x2"), await render(thrifty.base, `${SITE}/b`, "x3"), await render(thrifty.base, `${SITE}/c`, "x4")];
+  check("only new captures count against the daily number: an answer from the cache does not", asked.map((a) => a.status).join() === "200,200,200,503" && counter === 2 && /"daily"/.test(asked[3].text), asked.map((a) => a.status).join());
+  let running = 0;
+  let mostAtOnce = 0;
+  let ran = 0;
+  const capped = createUsage(null, { monthlySeconds: 3_600, dailyCaptures: 2, bootSeconds: 0 }, Date.now);
+  const crowded = await service({
+    usage: capped,
+    concurrency: 2,
+    queue: 4,
+    perClient: { capacity: 100, refillPerSec: 0 },
+    render: async () => {
+      ran++;
+      mostAtOnce = Math.max(mostAtOnce, ++running);
+      await sleep(300);
+      running--;
+      return pageOf(SHELF);
+    },
+  });
+  const rush = await Promise.all(Array.from({ length: 8 }, (_, i) => render(crowded.base, `${SITE}/rush-${i}`, `rush-${i}`)));
+  check("eight different pages asked at the same moment cannot get past a daily limit of two", ran === 2 && rush.filter((r) => r.status === 200).length === 2 && rush.filter((r) => /"code":"paused"/.test(r.text)).length === 6 && capped.snapshot().dayCaptures === 2, `${ran} rendered, ${rush.map((r) => r.status).join(",")}`);
+
+  const roomy = createUsage(null, { monthlySeconds: 3_600, dailyCaptures: 10, bootSeconds: 0 }, Date.now);
+  const narrow = await service({ usage: roomy, concurrency: 1, queue: 0, perClient: { capacity: 100, refillPerSec: 0 }, render: async () => (await sleep(300), pageOf(SHELF)) });
+  const squeezed = await Promise.all(Array.from({ length: 3 }, (_, i) => render(narrow.base, `${SITE}/squeeze-${i}`, `squeeze-${i}`)));
+  check("a request turned away as busy does not use up the day's captures", squeezed.filter((r) => r.status === 200).length === 1 && squeezed.filter((r) => /"code":"busy"/.test(r.text)).length === 2 && roomy.snapshot().dayCaptures === 1, squeezed.map((r) => r.status).join(","));
+
+  const activity = thrifty.renderer.activity();
+  check("the service knows when it last worked, for stopping when idle", activity.lastRender > 0 && !activity.busy);
+
+  const socketDir = mkdtempSync(join(tmpdir(), "skyline-api-"));
+  const socketPath = join(socketDir, "api.sock");
+  const seen: string[] = [];
+  const api = http.createServer((req, res) => {
+    seen.push(`${req.method} ${req.url}`);
+    res.writeHead(200, { "content-type": "application/json" }).end('{"message":"OK"}');
+  });
+  await new Promise<void>((r) => api.listen(socketPath, r));
+  const cordoned = await cordonSelf(socketPath, "skyline-renderer-x", "m123");
+  const anonymous = await cordonSelf(socketPath, undefined, "m123");
+  const nowhere = await cordonSelf(join(socketDir, "missing.sock"), "a", "b");
+  await new Promise<void>((r) => api.close(() => r()));
+  rmSync(socketDir, { recursive: true, force: true });
+  check("at the monthly limit the machine takes itself out of the platform's routing, through the platform's own API", cordoned === "HTTP 200" && seen.join() === "POST /v1/apps/skyline-renderer-x/machines/m123/cordon", `${cordoned}; ${seen.join()}`);
+  check("and does nothing without a machine identity or a reachable API", anonymous === "no machine identity" && nowhere.startsWith("failed"), `${anonymous}; ${nowhere}`);
+}
+
+async function lifecycle() {
+  console.log("\n# Stopping by itself");
+  if (!localChromePath()) return console.log("– skipped: no local Chrome (set CHROME_PATH)");
+  const run = (env: Record<string, string>, poke?: (port: number) => void) =>
+    new Promise<{ code: number | null; ms: number; why: string }>((done) => {
+      const t0 = Date.now();
+      const child = spawn(process.execPath, ["--import", "tsx", "renderer/server.ts"], { env: { ...process.env, SKYLINE_RENDERER_SECRET: SECRET, HOST: "127.0.0.1", PORT: "0", NODE_ENV: "production", ...env }, stdio: ["ignore", "pipe", "pipe"] });
+      let out = "";
+      let timer: NodeJS.Timeout | undefined;
+      child.stdout.on("data", (chunk: Buffer) => {
+        out += chunk.toString();
+        const port = /"event":"listening","port":(\d+)/.exec(out)?.[1];
+        if (port && poke && !timer) timer = setInterval(() => poke(Number(port)), 1_000);
+      });
+      const kill = setTimeout(() => child.kill("SIGKILL"), 40_000);
+      child.on("exit", (code) => {
+        clearTimeout(kill);
+        clearInterval(timer);
+        done({ code, ms: Date.now() - t0, why: /"event":"exiting","why":"([^"]+)"/.exec(out)?.[1] ?? out.slice(-200) });
+      });
+    });
+  const knock = (port: number) => void fetch(`http://127.0.0.1:${port}/healthz`).catch(() => undefined);
+  const idle = await run({ SKYLINE_RENDERER_IDLE_EXIT_SECONDS: "4" }, knock);
+  check("a renderer nobody signs a request to exits on its own after a few seconds, whatever unsigned traffic keeps arriving", idle.code === 0 && idle.why === "idle" && idle.ms < 15_000, `${idle.why}, exit ${idle.code} after ${idle.ms} ms`);
+
+  const dir = mkdtempSync(join(tmpdir(), "skyline-usage-"));
+  const file = join(dir, "usage.json");
+  const month = new Date().toISOString().slice(0, 7);
+  writeFileSync(file, JSON.stringify({ month, seconds: 999_999, boots: 3, captures: 10, day: new Date().toISOString().slice(0, 10), dayCaptures: 0 }));
+  const spent = await run({ SKYLINE_RENDERER_USAGE_FILE: file, SKYLINE_RENDERER_MONTHLY_HOURS: "1" });
+  check("a renderer started after its monthly allowance is spent stops at once and asks to be taken out of routing", spent.code === 75 && spent.why === "paused: monthly" && spent.ms < 10_000, `${spent.why}, exit ${spent.code} after ${spent.ms} ms`);
+  rmSync(dir, { recursive: true, force: true });
+
+  const off = await run({ SKYLINE_RENDERER_MONTHLY_HOURS: "0" });
+  check("an allowance of zero hours turns the renderer off: it stops at once and asks to be taken out of routing", off.code === 75 && off.why === "paused: monthly" && off.ms < 10_000, `${off.why}, exit ${off.code} after ${off.ms} ms`);
+}
+
 function networks() {
   console.log("\n# Who counts as one visitor");
   const same = networkOf("2001:db8:1:2:aaaa::1") === networkOf("2001:db8:1:2:bbbb::9");
@@ -520,6 +683,8 @@ async function main() {
   await limits();
   await theClient();
   networks();
+  await budget();
+  await lifecycle();
   await decisions();
   await sameReading();
   point(env.url, env.secret);
