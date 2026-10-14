@@ -53,7 +53,7 @@ function main() {
   const usage = createUsage(
     process.env.SKYLINE_RENDERER_USAGE_FILE || null,
     {
-      monthlySeconds: int("SKYLINE_RENDERER_MONTHLY_HOURS", 50, 1, 744) * 3600,
+      monthlySeconds: int("SKYLINE_RENDERER_MONTHLY_HOURS", 50, 0, 744) * 3600,
       dailyCaptures: int("SKYLINE_RENDERER_DAILY_CAPTURES", 100, 1, 100_000),
       bootSeconds: int("SKYLINE_RENDERER_BOOT_SECONDS", 5, 0, 120),
     },

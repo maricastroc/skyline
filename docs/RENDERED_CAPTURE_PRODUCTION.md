@@ -100,7 +100,7 @@ Por que `performance-1x` e não `shared-cpu-2x`, que custa menos da metade:
 | Variável | Valor |
 |---|---|
 | `SKYLINE_RENDERER_SECRET` | Obrigatória, 32 caracteres ou mais (`openssl rand -hex 32`), definida com `fly secrets set`. É o único segredo do serviço |
-| `SKYLINE_RENDERER_MONTHLY_HOURS` | 50: horas ligada por mês antes de parar de vez (seção 4) |
+| `SKYLINE_RENDERER_MONTHLY_HOURS` | 50: horas ligada por mês antes de parar de vez (seção 4). Com 0, o renderizador fica desligado: pausa e faz `cordon` assim que liga |
 | `SKYLINE_RENDERER_DAILY_CAPTURES` | 100: capturas novas por dia (UTC) antes de pausar até o dia seguinte |
 | `SKYLINE_RENDERER_IDLE_EXIT_SECONDS` | 60: segundos sem captura antes de sair |
 | `SKYLINE_RENDERER_USAGE_FILE` | `/data/usage.json`, no volume |
@@ -297,12 +297,12 @@ Etapas B, C e D. Cada uma espera um sinal seu.
 ### Checklist do primeiro deploy
 
 1. Instalar o `flyctl` e entrar na conta (`fly auth login`).
-2. Criar uma organização só para o renderizador e o app com nome difícil de adivinhar: `fly apps create skyline-renderer-<8 letras aleatórias> --org <org>`. Pôr o nome em `renderer/fly.toml`.
+2. Criar uma organização só para o renderizador e o app com nome difícil de adivinhar: `fly apps create skyline-renderer-<8 letras aleatórias> --org <org>`. O nome vai em `--app` em cada comando e não entra no repositório, que é público.
 3. Gerar o segredo (`openssl rand -hex 32`) e guardá-lo num gerenciador de senhas. Definir com `fly secrets set --app <app> --stage SKYLINE_RENDERER_SECRET=…`.
-4. `fly deploy . --config renderer/fly.toml --local-only --ha=false`. O build local gera a imagem amd64 no Docker da máquina.
+4. `fly deploy . --config renderer/fly.toml --app <app> --local-only --ha=false`. O build local gera a imagem amd64 no Docker da máquina.
 5. Conferir que existe uma máquina só (`fly scale show`; se houver duas, `fly scale count 1`), um volume de 1 GB (`fly volumes list`) e só IPs compartilhados (`fly ips list`; se aparecer IPv4 dedicado, `fly ips release`).
 6. Rodar os critérios 2 a 8 da seção 8 com `npm run renderer:ask`, ainda sem nada na Vercel.
-7. Ensaiar o teto: `SKYLINE_RENDERER_MONTHLY_HOURS=1` por um deploy, ver o `cordon`, desfazer com `fly machine uncordon` e voltar o teto a 50.
+7. Ensaiar o teto: `fly machine update <id> --env SKYLINE_RENDERER_MONTHLY_HOURS=0`. O serviço liga, pausa e faz `cordon`; pedidos depois disso não podem ligá-lo. Para voltar: `--env SKYLINE_RENDERER_MONTHLY_HOURS=50` e `fly machine uncordon <id>`.
 8. Só então pedir a ativação na Vercel.
 
 ## 8. Critérios de lançamento
@@ -313,7 +313,7 @@ Etapas B, C e D. Cada uma espera um sinal seu.
    - a máquina para sozinha cerca de 60 s depois da última captura (`fly machine list` mostra `stopped`);
    - a primeira checagem de saúde depois disso cabe em 10 s, e a primeira captura em 40 s;
    - o uso do mês no registro sobe a cada partida.
-4. **Teto no Fly**, com um teto temporário de 1 h e um volume reiniciado para o teste:
+4. **Teto no Fly**, com o teto temporariamente em 0 h:
    - ao atingir o teto, o serviço sai, a máquina fica `cordoned` (`fly machine status`);
    - um pedido depois disso não a liga;
    - `fly machine uncordon` e o teto de volta a 50 h restauram o serviço.

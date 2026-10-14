@@ -538,6 +538,9 @@ async function lifecycle() {
   const spent = await run({ SKYLINE_RENDERER_USAGE_FILE: file, SKYLINE_RENDERER_MONTHLY_HOURS: "1" });
   check("a renderer started after its monthly allowance is spent stops at once and asks to be taken out of routing", spent.code === 75 && spent.why === "paused: monthly" && spent.ms < 10_000, `${spent.why}, exit ${spent.code} after ${spent.ms} ms`);
   rmSync(dir, { recursive: true, force: true });
+
+  const off = await run({ SKYLINE_RENDERER_MONTHLY_HOURS: "0" });
+  check("an allowance of zero hours turns the renderer off: it stops at once and asks to be taken out of routing", off.code === 75 && off.why === "paused: monthly" && off.ms < 10_000, `${off.why}, exit ${off.code} after ${off.ms} ms`);
 }
 
 function networks() {
