@@ -1,3 +1,4 @@
+import { createHmac } from "node:crypto";
 import { acquire, CaptureError, rendererReady, SAMPLE_URLS, type StrategyPreference } from "@/lib/acquisition";
 import { toCaptureError } from "@/lib/acquisition/errors";
 import { clientKey, Lru, takeToken } from "@/lib/acquisition/rate-limit";
@@ -7,7 +8,7 @@ import { normalize } from "@/lib/model/normalize";
 import type { NormalizedDocument } from "@/lib/model/types";
 
 export const runtime = "nodejs";
-export const maxDuration = 30;
+export const maxDuration = 75;
 
 export type CaptureResponse =
   | { ok: true; doc: NormalizedDocument; timings: { acquireMs: number; normalizeMs: number }; cached: boolean }
@@ -18,6 +19,9 @@ export interface CaptureModes {
 }
 
 const cache = new Lru<NormalizedDocument>(40, 5 * 60_000);
+const RENDERED_COST = 3;
+
+const anonymous = (client: string) => createHmac("sha256", process.env.SKYLINE_ASSET_SECRET ?? "skyline").update(client).digest("hex").slice(0, 20);
 
 export async function GET(): Promise<Response> {
   return Response.json({ detailed: await rendererReady() } satisfies CaptureModes, { headers: { "cache-control": "no-store" } });
@@ -43,11 +47,12 @@ export async function POST(req: Request): Promise<Response> {
   const hit = cache.get(key);
   if (hit) return Response.json({ ok: true, doc: hit, timings: { acquireMs: 0, normalizeMs: 0 }, cached: true } satisfies CaptureResponse);
 
-  if (!takeToken(clientKey(req))) return fail(new CaptureError("rate_limited"));
+  const client = clientKey(req);
+  if (!takeToken(client, 8, 0.2, strategy === "rendered" ? RENDERED_COST : 1)) return fail(new CaptureError("rate_limited"));
 
   try {
     const t0 = Date.now();
-    const snapshot = await acquire(input, strategy, req.signal);
+    const snapshot = await acquire(input, strategy, { signal: req.signal, client: anonymous(client) });
     const t1 = Date.now();
     const doc = normalize(snapshot);
     for (const n of doc.nodes) if (n.image) n.image.proxy = assetProxyPath(n.image.src);

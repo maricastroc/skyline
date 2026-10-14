@@ -88,6 +88,8 @@ export interface SnapshotSource {
   redirects: string[];
 }
 
+const MAX_STYLE_SCAN = 8_192;
+
 export function snapshotFromHtml(
   html: string,
   url: string,
@@ -192,7 +194,7 @@ export function buildSnapshot(page: ParsedPage, source: SnapshotSource, external
       collectColors(style, colors, 0.5);
       const pos = /position\s*:\s*(fixed|sticky)/i.exec(style);
       if (pos) node.position = pos[1].toLowerCase() as "fixed" | "sticky";
-      const bg = /background(?:-image)?\s*:[^;]*url\(\s*['"]?([^'")]+)['"]?\s*\)/i.exec(style);
+      const bg = /background(?:-image)?\s*:[^;]*url\(\s*['"]?([^'")]+)['"]?\s*\)/i.exec(style.length > MAX_STYLE_SCAN ? style.slice(0, MAX_STYLE_SCAN) : style);
       if (bg) node.image = imageUrl(bg[1], base);
     }
     for (const legacy of ["bgcolor", "color"]) {

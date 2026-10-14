@@ -192,10 +192,16 @@ npm run dev
 npm test
 ```
 
-> Run one stage (also `test:warnings`, `test:hygiene`, `test:surface`, `test:openings`, `test:composition`, `test:program`, `test:streets`, `test:life`, `test:atmosphere`, `test:polish`):
+> Run one stage (also `test:warnings`, `test:hygiene`, `test:surface`, `test:openings`, `test:composition`, `test:program`, `test:streets`, `test:life`, `test:atmosphere`, `test:polish`, `test:css`):
 
 ```bash
 npm run test:allocation
+```
+
+> Run the capture checks, which open a real Chrome (`test:rendered`, `test:egress`, `test:renderer`):
+
+```bash
+npm run test:capture
 ```
 
 > GitHub Actions runs `lint`, `typecheck`, `npm test` and `build` on every push to `main` and on every pull request ([`ci.yml`](.github/workflows/ci.yml)).
@@ -224,10 +230,11 @@ npm run probe -- https://news.ycombinator.com
 | [PIXEL_VISUAL_POLISH_V1.md](docs/PIXEL_VISUAL_POLISH_V1.md)             | Haze and assets                         |
 | [PIXEL_PRODUCT_COMMUNICATION.md](docs/PIXEL_PRODUCT_COMMUNICATION.md)   | Page → city in the interface            |
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md)                                 | Capture, security and the original maquette |
+| [RENDERED_CAPTURE_PRODUCTION.md](docs/RENDERED_CAPTURE_PRODUCTION.md)   | The renderer service: design, setup, limits |
 
 ### ⚠️ Known limits
 
-- **Pages that build themselves in the browser:** the capture only sees the HTML the server sends, and the city says so ("Scaffolding only"). A rendered capture exists for local development (`SKYLINE_LOCAL_RENDERER=1`) and is not deployed: a browser's own connections don't go through the SSRF guard yet ([plan](docs/RENDERED_CAPTURE_PLAN.md)).
+- **Pages that build themselves in the browser:** on its own, the capture only sees the HTML the server sends, and the city says so ("Scaffolding only"). Opening such pages in a headless browser, and the optional "Explore in more detail" reading, need the renderer service in [`renderer/`](renderer): a separate container the app calls over a signed request (`SKYLINE_RENDERER_URL`, `SKYLINE_RENDERER_SECRET`), never a browser inside the app's own host. That browser's only way out is an egress proxy that applies the same SSRF guard at the socket. Without the service, or while it is not answering, everything else works as before ([operation](docs/RENDERED_CAPTURE_PRODUCTION.md)).
 - **Blocked sites:** pages behind a bot challenge or a login are refused with an explanation.
 - **In-memory state:** rate limiting, cache and the signing secret live per process. With more than one instance, set `SKYLINE_ASSET_SECRET` and use a shared store.
 

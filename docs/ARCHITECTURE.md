@@ -48,7 +48,7 @@ um `Mesh` por prédio → armas (pulso/míssil/meteoro) → "Demolição %".
 ┌──────────── client ────────────┐        ┌──────────────── server (Node runtime) ────────────────┐
 │ Landing  ──POST /api/capture──▶│───────▶│ url-policy → acquire()                                 │
 │                                │        │   ├ fetchStaticPage(url)      (safe-fetch, SSRF guard) │
-│                                │        │   └ captureRenderedPage(url)  (interface; Playwright)  │
+│                                │        │   └ captureRenderedPage(url)  (renderer, quando há)    │
 │                                │        │ parseHtml()  → DomSnapshot      (sanitizado, sem HTML) │
 │                                │◀───────│ normalize()  → NormalizedDocument (orçamento aplicado) │
 │ generateCity() → CityModel     │        └────────────────────────────────────────────────────────┘
@@ -189,7 +189,7 @@ Picking é raycast contra os instanced meshes (instanceId → nodeId).
 ```ts
 acquire(url, { strategy: 'auto' | 'static' | 'rendered' })
   fetchStaticPage(url)        // implementado
-  captureRenderedPage(url)    // navegador local (só desenvolvimento) ou renderer externo (SKYLINE_RENDERER_URL)
+  captureRenderedPage(url)    // serviço de renderização (SKYLINE_RENDERER_URL) ou navegador local (só desenvolvimento)
 ```
 
 `auto` = estático primeiro; se o resultado parece um *SPA shell* (`<div id="root"></div>`,
@@ -200,11 +200,27 @@ aviso junto dos números da cidade e no painel "Why this city?" (`snapshot/cavea
 
 A captura renderizada abre a página num Chromium, espera ela se montar e passa o HTML
 resultante pelo **mesmo `snapshotFromHtml()`** do estático, com as mesmas recusas (desafio
-anti-bot, login, 403). Hoje ela existe só na máquina de desenvolvimento
-(`SKYLINE_LOCAL_RENDERER=1`; nunca em build de produção nem na Vercel), porque o navegador
-faz conexões próprias que não passam pelo `safe-fetch`. O filtro de requisições aplica a
-política de URL a cada pedido da página, mas não fecha DNS rebinding nem WebSocket. O que
-falta para publicar está em `RENDERED_CAPTURE_PLAN.md`.
+anti-bot, login, 403). O navegador nunca roda dentro do app na Vercel. Há dois lugares onde
+ele pode rodar, com o mesmo código (`render-page.ts`):
+
+- **Serviço de renderização** (`renderer/`, produção): um processo Node à parte, num contêiner
+  sem nenhum segredo do app. O app o chama por HTTPS (`SKYLINE_RENDERER_URL`) com um pedido
+  assinado por HMAC (`SKYLINE_RENDERER_SECRET`, `renderer-protocol.ts`); o serviço devolve a
+  página montada e medida, e é o app que a transforma em snapshot, com o parser e as recusas de
+  sempre. O serviço tem fila, teto de capturas simultâneas, limite por visitante e um cache de
+  minutos.
+- **Navegador local** (`SKYLINE_LOCAL_RENDERER=1`): só na máquina de desenvolvimento; nunca em
+  build de produção nem na Vercel.
+
+Nos dois casos o navegador só alcança a rede por um **proxy de saída** (`egress-proxy.ts`) que
+sobe junto com cada captura: só aceita `CONNECT` para a porta 443, aplica a política de URL ao
+nome, resolve o DNS ali mesmo, recusa se qualquer endereço não for público e conecta no
+endereço que acabou de validar. WebSocket, workers e redirecionamentos passam pelo mesmo lugar,
+e o Chromium é lançado sem resolver nomes por conta própria. O filtro de requisições da página
+continua existindo como segunda camada: política de URL por pedido, teto de pedidos e de
+navegações, e nada de imagem, mídia ou fonte. `npm run test:egress` guarda um caso por ataque;
+`npm run test:renderer`, o serviço e o cliente. A operação está em
+`RENDERED_CAPTURE_PRODUCTION.md`.
 
 Pedidos de imagem não saem da máquina: depois da política de URL, cada um é respondido da
 memória com um GIF de 1 pixel (`render-page.ts`), para que páginas que só escrevem o endereço
@@ -243,9 +259,9 @@ com `strategy: "rendered"` (`?mode=detailed` na URL). A opção só aparece quan
 responde que há um renderizador utilizável, o que é verificado tentando-o (`rendererReady()` em
 `rendered-capture.ts`), não pela configuração. A cidade na tela só é trocada quando a nova captura
 dá certo; se falha, ela fica e a falha é dita (`lib/pixelcity/capture-mode.ts` guarda essa regra, e
-`npm run test:warnings` a verifica). É uma integração intermediária: as medidas dependem de um
-navegador, e em produção a opção fica oculta até a rota de renderização de
-`RENDERED_CAPTURE_PLAN.md` existir.
+`npm run test:warnings` a verifica). As medidas dependem de um navegador: em produção a opção
+aparece quando o serviço de renderização responde à checagem assinada de saúde, e fica oculta
+quando ele não está configurado, não responde ou o navegador dele não inicia.
 
 **Defesas (`safe-fetch.ts`):**
 
@@ -263,7 +279,28 @@ navegador, e em produção a opção fica oculta até a rota de renderização d
 | Assets cross-origin | proxy `/api/asset` com **assinatura HMAC**: só URLs extraídas por nós são proxiáveis (não é um proxy aberto) |
 | Bloqueio de bots | User-Agent honesto (`SkylineDOM`); 403/429/503 e páginas de desafio (Cloudflare etc.) viram `blocked`, explicado na UI. Não tentamos burlar desafios |
 | Autenticação | 401/407, redirects para `/login`/`/signin`, páginas dominadas por formulário de senha → `auth_required` |
-| Abuso | rate limit por IP (token bucket em memória) + cache LRU de capturas |
+| Abuso | rate limit por IP (token bucket em memória) + cache LRU de capturas; captura renderizada custa três fichas |
+| CSS que esgota a CPU | regras, comentários, fontes, cores e variáveis lidos por varredores lineares (`snapshot/css-scan.ts`), com o mesmo resultado das expressões que substituem; `npm run test:css` |
+
+**Defesas da captura renderizada (`egress-proxy.ts`, `render-page.ts`, `renderer/service.ts`):**
+
+| Risco | Tratamento |
+|---|---|
+| SSRF pelo navegador (sub-recursos, `fetch`, frames, WebSocket, workers) | toda conexão sai por um proxy local que só aceita `CONNECT host:443`; nome sob a política de URL, DNS resolvido no proxy, **todos** os endereços públicos ou nada, conexão no endereço validado |
+| DNS rebinding | o Chromium não resolve nomes (`--host-resolver-rules`); cada conexão nova é resolvida e validada de novo no proxy |
+| Loopback, rede privada, link-local, metadados de nuvem | recusados por literal e por resolução; o Chromium não contorna o proxy para loopback (`<-loopback>`) |
+| HTTP puro, portas diferentes de 443, QUIC | recusados no proxy; QUIC desligado no lançamento |
+| WebRTC e WebTransport (UDP fora do proxy) | removidos de todo documento antes dos scripts da página, inclusive frames; `window.open` não abre nada |
+| DNS lento ou hostil | consultas por resolvedor assíncrono, com prazo e no máximo 8 simultâneas por captura |
+| Redirecionamentos | cada salto passa pelo filtro e pelo proxy; mais de dez navegações do quadro principal encerram a captura |
+| Página que trava, nunca termina ou esgota memória | prazo total de 22 s com morte do grupo de processos; heap do V8 limitado; queda do processo da página encerra a captura |
+| Excesso de recursos por captura | 400 pedidos, 250 conexões, 64 MB trafegados, 4 MB de HTML |
+| Vazamento entre capturas | um navegador, um perfil temporário e um proxy por captura, destruídos no fim |
+| Serviço usado como navegador aberto | pedidos assinados por HMAC com janela de 90 s; sem assinatura, só "ok" |
+| Abuso e custo | capturas simultâneas e fila com teto, limite por visitante, cache curto, uma única captura para pedidos iguais |
+| Serviço comprometido | não guarda segredo do app; o navegador não recebe variáveis com segredos; o app valida forma e tamanho da resposta e refaz as recusas |
+| Detalhes internos nos erros | falhas do serviço chegam ao visitante só como "sem navegador disponível" |
+| Anti-bot e login | user agent declarado; desafio, 403 e login são recusas também depois de renderizar |
 
 Cada falha tem um código (`CaptureErrorCode`) com título, explicação e sugestão,
 renderizados de forma editorial pela landing.
@@ -279,7 +316,8 @@ src/
   lib/
     acquisition/                camada de aquisição (server-only)
       url-policy.ts  net-guard.ts  safe-fetch.ts  signing.ts  errors.ts
-      static-fetch.ts  rendered-capture.ts  index.ts  rate-limit.ts
+      static-fetch.ts  rendered-capture.ts  acquire.ts  index.ts  rate-limit.ts
+      render-page.ts  local-browser.ts  egress-proxy.ts  renderer-protocol.ts
     snapshot/                   HTML → DomSnapshot
       types.ts  parse-html.ts  css-signals.ts
     model/                      DomSnapshot → NormalizedDocument (puro, isomórfico)
@@ -294,6 +332,8 @@ src/
     scene/                      CityScene, materiais com shader, controles, picking, destruição
     hud/                        HUD editorial, inspetor, árvore (icicle), integridade
   audio/sfx.ts                  sons sintetizados via WebAudio (sem assets)
+renderer/                       serviço de renderização (contêiner à parte; não entra no build do app)
+  server.ts  service.ts  Dockerfile
 ```
 
 ## 8. Vertical slice
@@ -303,8 +343,6 @@ DOM INTEGRITY. Veja `README.md` para rodar e os controles.
 
 ### Próximos passos naturais
 
-- `captureRenderedPage` com Playwright em worker separado (fila + pool de browsers) e layout por
-  caixas reais.
 - Geração da cidade num Web Worker para DOMs muito grandes.
 - Modo "dusk" (iluminação noturna com janelas acesas) mantendo a mesma IR.
 - Compartilhamento: snapshot da câmera + id de captura → URL compartilhável.

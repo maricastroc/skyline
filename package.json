@@ -11,7 +11,7 @@
     "shoot": "node scripts/shoot.mjs",
     "typecheck": "next typegen && tsc --noEmit",
     "fingerprint": "tsx scripts/fingerprint.ts",
-    "test": "npm run test:warnings && npm run test:allocation && npm run test:hygiene && npm run test:surface && npm run test:openings && npm run test:composition && npm run test:program && npm run test:streets && npm run test:life && npm run test:atmosphere && npm run test:polish && npm run test:layout && npm run test:items",
+    "test": "npm run test:warnings && npm run test:allocation && npm run test:hygiene && npm run test:surface && npm run test:openings && npm run test:composition && npm run test:program && npm run test:streets && npm run test:life && npm run test:atmosphere && npm run test:polish && npm run test:layout && npm run test:items && npm run test:css",
     "test:warnings": "tsx scripts/capture-warnings/check.ts",
     "test:allocation": "tsx scripts/semantic-allocation/check.ts",
     "test:hygiene": "tsx scripts/semantic-hygiene/check.ts",
@@ -24,8 +24,15 @@
     "test:atmosphere": "tsx scripts/atmosphere/check.ts",
     "test:polish": "tsx scripts/polish-assets/check.ts",
     "test:rendered": "tsx scripts/rendered-capture/check.ts",
+    "test:egress": "tsx scripts/egress/check.ts",
+    "test:renderer": "tsx scripts/renderer-service/check.ts",
+    "test:capture": "npm run test:rendered && npm run test:egress && npm run test:renderer",
+    "renderer:build": "esbuild renderer/server.ts --bundle --platform=node --target=node22 --format=cjs --external:bufferutil --external:utf-8-validate --outfile=renderer/dist/server.cjs --log-level=warning",
+    "renderer:start": "node renderer/dist/server.cjs",
+    "renderer:ask": "tsx scripts/renderer-service/ask.ts",
     "test:layout": "tsx scripts/territory-layout/check.ts",
-    "test:items": "tsx scripts/item-frontages/check.ts"
+    "test:items": "tsx scripts/item-frontages/check.ts",
+    "test:css": "tsx scripts/css-scan/check.ts"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",
@@ -47,6 +54,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/three": "^0.186.0",
+    "esbuild": "^0.28.2",
     "eslint": "^9",
     "eslint-config-next": "16.3.8",
     "puppeteer-core": "^24.43.1",

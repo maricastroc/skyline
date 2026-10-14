@@ -1,3 +1,5 @@
+import { colorFunctions, cssRules, stripComments } from "./css-scan";
+
 export interface PositionRule {
   tag?: string;
   id?: string;
@@ -6,15 +8,14 @@ export interface PositionRule {
 }
 
 const HEX_RE = /#([0-9a-f]{3,8})\b/gi;
-const FN_RE = /\b(rgba?|hsla?)\(\s*([^)]+)\)/gi;
 
 export function collectColors(css: string, into: Map<string, number>, weight = 1): void {
   for (const m of css.matchAll(HEX_RE)) {
     const hex = expandHex(m[1]);
     if (hex) into.set(hex, (into.get(hex) ?? 0) + weight);
   }
-  for (const m of css.matchAll(FN_RE)) {
-    const hex = fnToHex(m[1].toLowerCase(), m[2]);
+  for (const fn of colorFunctions(css)) {
+    const hex = fnToHex(fn.name.toLowerCase(), fn.args);
     if (hex) into.set(hex, (into.get(hex) ?? 0) + weight);
   }
 }
@@ -48,18 +49,16 @@ function fnToHex(fn: string, args: string): string | null {
   return `#${to(r)}${to(g)}${to(b)}`;
 }
 
-const RULE_RE = /([^{}]+)\{([^{}]*)\}/g;
 const POS_RE = /position\s*:\s*(fixed|sticky|-webkit-sticky)/i;
 const SIMPLE_RE = /^([a-z][a-z0-9-]*)?(?:#([\w-]+))?(?:\.([\w-]+))?$/i;
 
 export function collectPositionRules(css: string, into: PositionRule[], max = 200): void {
-  const clean = css.replace(/\/\*[\s\S]*?\*\//g, "");
-  for (const m of clean.matchAll(RULE_RE)) {
+  for (const [selector, body] of cssRules(stripComments(css))) {
     if (into.length >= max) return;
-    const pos = POS_RE.exec(m[2]);
+    const pos = POS_RE.exec(body);
     if (!pos) continue;
     const position = pos[1].toLowerCase() === "fixed" ? "fixed" : "sticky";
-    for (const raw of m[1].split(",")) {
+    for (const raw of selector.split(",")) {
       const last = raw.trim().split(/[\s>+~]+/).pop() ?? "";
       const compound = last.replace(/:{1,2}[\w-]+(\([^)]*\))?/g, "").replace(/\[[^\]]*\]/g, "");
       const s = SIMPLE_RE.exec(compound);
@@ -97,22 +96,21 @@ const BG_RE = /background(?:-color)?\s*:\s*([^;!}]+)/i;
 export function firstColor(value: string): string | undefined {
   const tmp = new Map<string, number>();
   const hex = /#([0-9a-f]{3,8})\b/i.exec(value);
-  const fn = /\b(rgba?|hsla?)\([^)]+\)/i.exec(value);
-  const first = hex && (!fn || hex.index < fn.index) ? hex[0] : fn?.[0];
+  const fn = colorFunctions(value).next().value;
+  const first = hex && (!fn || hex.index < fn.index) ? hex[0] : fn ? value.slice(fn.index, fn.end) : undefined;
   if (!first) return undefined;
   collectColors(first, tmp);
   return tmp.keys().next().value;
 }
 
 export function collectBackgroundRules(css: string, into: BackgroundRule[], max = 400): void {
-  const clean = css.replace(/\/\*[\s\S]*?\*\//g, "");
-  for (const m of clean.matchAll(RULE_RE)) {
+  for (const [selector, body] of cssRules(stripComments(css))) {
     if (into.length >= max) return;
-    const bg = BG_RE.exec(m[2]);
+    const bg = BG_RE.exec(body);
     if (!bg) continue;
     const hex = firstColor(bg[1]);
     if (!hex) continue;
-    for (const raw of m[1].split(",")) {
+    for (const raw of selector.split(",")) {
       const sel = raw.trim();
       if (/[\s>+~:[]/.test(sel)) continue;
       const s = SIMPLE_RE.exec(sel);
