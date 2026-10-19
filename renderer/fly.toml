@@ -4,7 +4,7 @@ kill_signal = "SIGTERM"
 kill_timeout = 10
 
 [build]
-  dockerfile = "renderer/Dockerfile"
+  dockerfile = "Dockerfile"
 
 [env]
   PORT = "8080"
