@@ -2,9 +2,17 @@
 
 Escrito em 13/10/2026 e revisto em 14/10/2026 e em 19/10/2026.
 
-**Estado em 19/10/2026:** o renderizador foi implantado no Fly.io pela primeira vez com o teto em 0 h e está parado, em `cordon` e sem IP público. A Vercel não tem as variáveis do renderizador, e a captura renderizada continua desligada para os visitantes.
+**Estado em 19/10/2026: ativo em produção.**
 
-No Fly, o `cordon` automático pelo socket `/.fly/api` foi recusado, e o proxy ainda ligou uma vez uma máquina que tinha acabado de entrar em `cordon`. Esta revisão troca o socket por um token restrito e acrescenta uma trava que não depende do proxy: no teto, a máquina também retira os IPs públicos do app (seção 9). A trava por IPs ainda não foi vista no Fly, e nenhum teste com captura foi feito lá.
+- **Fly.io:** o renderizador roda com o teto de 50 h por mês.
+- **Vercel:** a produção tem `SKYLINE_RENDERER_URL` e `SKYLINE_RENDERER_SECRET`, e `GET /api/capture` responde `{"detailed":true}`.
+- **Critérios:** os de lançamento, de 2 a 9, foram verificados no Fly e em produção (seção 9). O critério 6 foi aceito com 7 de 11 páginas, porque as diferenças são regionais. O critério 10, uma semana de observação, vai até 26/10.
+
+**O que mudou no caminho:**
+
+- **No Fly, o `cordon` automático pelo socket `/.fly/api` foi recusado.** O socket foi trocado por um token restrito.
+- **O proxy do Fly ainda ligou uma vez uma máquina que tinha acabado de entrar em `cordon`.** Por isso, no teto, a máquina também retira os IPs públicos do app, uma trava que não depende do proxy.
+- **A checagem de disponibilidade passou de 10 s para 30 s.** A partida a frio fica perto de 8 s, e com o limite antigo a opção "Explore in more detail" às vezes não aparecia.
 
 ## 1. Arquitetura
 
@@ -305,14 +313,28 @@ Diferenças legítimas observadas:
 | Resultado diferente do local | Mesmo código e mesmo parser nas duas vias | Fontes, conteúdo dinâmico, país e reputação do IP |
 | Esgotar a CPU do app com CSS | Leitores lineares; `test:css` | Outras partes do parser não foram auditadas com o mesmo cuidado |
 
-## 7. O que depende da sua aprovação
+## 7. Etapas e operação
 
-Etapas B, C e D. Cada uma espera um sinal seu.
+As três etapas foram concluídas, cada uma com a sua aprovação.
 
 1. **Etapa B, recursos:** feita em 18/10. Conta e cartão na org `personal`, que não tem outros apps; um app, uma máquina `performance-1x` e um volume de 1 GB.
-2. **Etapa C, deploy controlado:** começou em 18/10 com o teto em 0 h (seção 9). O `cordon` com token restrito já foi visto no Fly. Falta ver a retirada dos IPs no teto, com 0 h, e depois fazer os testes com captura contra o serviço real, sem tocar na Vercel.
-3. **Etapa D, ativação:** definir `SKYLINE_RENDERER_URL` e `SKYLINE_RENDERER_SECRET` na Vercel e publicar.
-4. Se o sandbox não funcionar no Fly, ou se a retirada automática dos IPs não puder ser comprovada: decidir entre aceitar o risco descrito na seção 4 e não ativar.
+2. **Etapa C, deploy controlado:** feita em 18 e 19/10 (seção 9). O teto foi testado com 0 h: a máquina retira os IPs e faz `cordon` sozinha. Depois vieram os testes de lançamento com 50 h, ainda sem nada na Vercel.
+3. **Etapa D, ativação:** feita em 19/10.
+   - O renderizador foi religado com 50 h, IPs novos e `uncordon`.
+   - `SKYLINE_RENDERER_URL` e `SKYLINE_RENDERER_SECRET` foram definidas na produção da Vercel, pela entrada padrão e marcadas como sensíveis.
+   - Um novo deploy de produção aplicou as variáveis, e as verificações do critério 9 passaram (seção 9).
+
+### Operação
+
+| Situação | O que fazer |
+|---|---|
+| Teto diário (100 capturas novas) | Nada. O renderizador volta sozinho à meia-noite UTC (21h em Brasília) |
+| Teto mensal (50 h) atingido | A máquina retirou os IPs e fez `cordon`, e o site segue com a captura padrão. No mês seguinte, quando o registro já zerou sozinho: `fly ips allocate-v6 --app <app>`, `fly ips allocate-v4 --shared --app <app>` e `fly machine uncordon <id> --app <app>` |
+| Desligar na hora | `fly ips release` para cada IP de `fly ips list`, depois `fly machine stop <id>` e `fly machine cordon <id>`. Para religar, os comandos da linha anterior |
+| Atualizar o Chromium | `fly deploy . --config renderer/fly.toml --app <app> --local-only --ha=false --no-public-ips` a partir da `main`. A máquina continua parada, e a primeira partida depois do deploy também baixa a imagem (cerca de 19 s) |
+| Trocar o segredo | Gravar o novo valor no Fly (`fly secrets import`) e na produção da Vercel, e fazer um novo deploy de produção. As variáveis da Vercel só valem a partir do deploy seguinte |
+| Tokens do Fly | Vencem em 19/10/2027. O do `cordon` vale só para a máquina atual: se ela for recriada, refazer os passos 7 a 9 do checklist |
+| Acompanhar o uso | `npm run renderer:ask`, com `SKYLINE_RENDERER_URL` e `SKYLINE_RENDERER_SECRET` no ambiente, mostra as horas e as capturas do mês e do dia. O painel de cobrança do Fly mostra o valor. O Fly não tem teto de gasto nem alerta |
 
 ### Checklist do primeiro deploy
 
@@ -464,3 +486,14 @@ O teto voltou a 50 h, os IPs foram realocados e o `cordon` desfeito, ainda sem n
 | Erros | Certificado expirado: `tls_error`. Domínio reservado: recusado. Resposta 404, 403 ou 500 sem corpo: `forbidden_host` ("the page navigated away"), o que é impreciso. Uma imagem solta é lida como página |
 
 **Consumo:** cerca de 12 minutos de máquina ligada nas duas fases, em 15 partidas; o registro do serviço contou 13 min. Daqui ao fim de outubro, o custo estimado é de cerca de R$ 0,80, somando volume e disco parado. Enquanto ficar bloqueado, o custo fixo é de cerca de R$ 1,75 por mês.
+
+### Ativação em produção (19/10/2026, 12:34 a 12:42 UTC)
+
+| Critério 9 | Resultado |
+|---|---|
+| `GET /api/capture` | `{"detailed":true}`, com 8,1 s numa partida a frio |
+| Captura padrão do Hacker News | 1,23 s, lida sem navegador |
+| `mode=detailed` em três páginas | Books to Scrape (5,3 s), Gutenberg (4,8 s) e Guardian (14,7 s), lidas no navegador. Na interface, o Books to Scrape passa de 44 para 68 estruturas |
+| Bluesky no modo automático | Lido no navegador ("Read in a browser") |
+| Renderizador em `cordon` | A captura padrão continuou funcionando (0,99 s), e a detalhada respondeu `renderer_unavailable` em 35,7 s. O `cordon` foi desfeito em seguida |
+
