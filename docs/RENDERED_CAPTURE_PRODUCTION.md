@@ -142,7 +142,7 @@ Sem as duas, ou com o serviço fora do ar ou pausado, o app se comporta como hoj
 
 | Passo | Tempo que o app espera |
 |---|---|
-| Checagem de saúde (`GET /api/capture`) | até 10 s. Só é feita quando uma cidade padrão está na tela, e uma resposta "pronto" vale 2 horas por instância da Vercel |
+| Checagem de saúde (`GET /api/capture`) | Até 30 s. Só é feita quando uma cidade padrão está na tela, e uma resposta "pronto" vale 2 horas por instância da Vercel. Com a máquina parada, a resposta inclui ligá-la e abrir o Chromium: cerca de 8 s medidos no Fly. Na primeira partida depois de um deploy, a máquina ainda baixa a imagem (19 s no primeiro deploy). Com o limite antigo, de 10 s, a resposta chegava perto do limite, e a opção "Explore in more detail" deixava de aparecer naquela cidade. A checagem roda em segundo plano: um limite maior só faz a opção aparecer mais tarde |
 | Captura renderizada | até 40 s: partida a frio, fila de até 8 s, captura de até 22 s, encerramento |
 | Rota `/api/capture` | `maxDuration` de 75 s |
 | Serviço pausado | O app não o chama de novo por 30 minutos |
@@ -339,7 +339,7 @@ Etapas B, C e D. Cada uma espera um sinal seu.
 2. Serviço publicado com uma máquina só (`fly scale show`), um volume de 1 GB (`fly volumes list`), IPv4 compartilhado (`fly ips list`). `npm run renderer:ask` deve mostrar `"ok":true`, `"sandbox":true`, `"platformApi":false` e `"usage":{…,"persistent":true}`.
 3. **Desligamento e retomada no Fly:**
    - a máquina para sozinha cerca de 60 s depois da última captura (`fly machine list` mostra `stopped`);
-   - a primeira checagem de saúde depois disso cabe em 10 s, e a primeira captura em 40 s;
+   - a primeira checagem de saúde depois disso cabe em 30 s (cerca de 8 s medidos), e a primeira captura em 40 s;
    - o uso do mês no registro sobe a cada partida.
 4. **Teto no Fly**, com o teto temporariamente em 0 h:
    - ao atingir o teto, o serviço sai, a própria máquina retira os IPs do app e se põe em `cordon`: `fly ips list` fica vazio, e a API mostra `cordoned: true`;
