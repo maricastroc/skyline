@@ -446,3 +446,21 @@ O caveat `Mutations` funciona como lista branca de toda a GraphQL, até das cons
 O endereço interno `_api.internal:4280` não atende a rota de IPs (502 depois de cerca de 8 s), e por isso a liberação passou a tentar `api.machines.dev` primeiro.
 
 O DNS do Fly continuou publicando por algum tempo um IPv6 já liberado, embora a API não mostrasse nenhum. Não foi possível testar esse endereço sem IPv6.
+
+### Testes de lançamento com 50 h (19/10/2026, 11:41 a 11:58 UTC)
+
+O teto voltou a 50 h, os IPs foram realocados e o `cordon` desfeito, ainda sem nada na Vercel.
+
+| Critério | Resultado |
+|---|---|
+| 2. Serviço publicado | `"ok":true`, `"sandbox":true`, `"platformApi":false`, Chrome 155.0.8059.39 em x86_64, registro `persistent` |
+| 3. Desligamento e retomada | O serviço sai sozinho por ociosidade (`idle`) e, quando só a checagem de saúde o acordou, 30 s depois. Numa das vezes, o desligamento automático do Fly agiu antes, cerca de 50 s depois da última captura. A checagem de saúde a frio levou 7,9 s, e a captura a frio 11,2 s de ponta a ponta. O registro subiu a cada partida (`boots` de 11 a 15) |
+| 4. Teto com 0 h | Depois de um deploy em 0 h e uma partida, a máquina liberou os dois IPs por `api.machines.dev` (204) e fez `cordon` (200) em 3,4 s. O app passou a ver o serviço como indisponível em 0,5 s |
+| 5. Acesso privilegiado | Os processos de página do Chromium têm `Seccomp: 2` e namespaces de usuário e de rede próprios. Tudo roda como `renderer`, com `NoNewPrivs` e o Node sem capacidades. O `/.fly/api` é `srw------- root`, e o usuário do serviço recebe `EACCES`. Ele também não lê o ambiente dos processos root, e o Node não tem nenhum token do Fly |
+| 6. Local × serviço | 7 de 11 com a mesma leitura. O itch.io falhou na rede local e foi lido pelo serviço. Guardian, IKEA e Spotify deram a mesma diferença em duas visitas seguidas, provavelmente por país: o serviço sai dos EUA, e a leitura local foi feita no Brasil. **Abaixo da meta de 10** |
+| 7. Endereços hostis | 18 de 18 recusados: metadados, DNS interno do Fly, `_api.internal`, loopback, a porta do próprio serviço, rede 10/8, nomes que resolvem para endereço privado, rebinding, HTTP sem TLS, portas, redirecionamentos para endereço privado e `file://`. Numa página, WebRTC e WebTransport não existiam, o WebSocket para o loopback foi bloqueado, e os 7 pedidos a endereços privados foram recusados |
+| 8. Sucesso a partir do datacenter | 11 de 11 páginas lidas pelo serviço |
+| Limites | 8 páginas de uma vez: 4 renderizadas e 4 recusadas como "ocupado". O mesmo visitante faz 4 capturas e depois recebe 429. Pedido sem assinatura, com segredo errado ou com assinatura de 5 min recebe 401. A página com laço infinito foi encerrada por prazo, e a que esgota memória não derrubou o serviço |
+| Erros | Certificado expirado: `tls_error`. Domínio reservado: recusado. Resposta 404, 403 ou 500 sem corpo: `forbidden_host` ("the page navigated away"), o que é impreciso. Uma imagem solta é lida como página |
+
+**Consumo:** cerca de 12 minutos de máquina ligada nas duas fases, em 15 partidas; o registro do serviço contou 13 min. Daqui ao fim de outubro, o custo estimado é de cerca de R$ 0,80, somando volume e disco parado. Enquanto ficar bloqueado, o custo fixo é de cerca de R$ 1,75 por mês.
