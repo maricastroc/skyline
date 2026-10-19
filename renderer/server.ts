@@ -18,7 +18,7 @@ const PLATFORM_SOCKET = process.env.SKYLINE_PLATFORM_SOCKET || "/.fly/api";
 const STOP_FOR_GOOD = 75;
 
 if (process.argv.includes("--cordon")) {
-  void cordonSelf(PLATFORM_SOCKET, process.env.FLY_APP_NAME, process.env.FLY_MACHINE_ID).then((result) => {
+  void cordonSelf(process.env.SKYLINE_RENDERER_CORDON_TOKEN, process.env.FLY_APP_NAME, process.env.FLY_MACHINE_ID).then((result) => {
     log({ event: "cordon", result });
     process.exit(0);
   });
@@ -29,6 +29,8 @@ if (process.argv.includes("--cordon")) {
 function main() {
   const secret = process.env.SKYLINE_RENDERER_SECRET ?? "";
   delete process.env.SKYLINE_RENDERER_SECRET;
+  if (process.env.SKYLINE_RENDERER_CORDON_TOKEN) log({ event: "warning", detail: "the cordon token reached the service process" });
+  delete process.env.SKYLINE_RENDERER_CORDON_TOKEN;
   if (secret.length < MIN_SECRET_CHARS) {
     log({ event: "fatal", error: `SKYLINE_RENDERER_SECRET needs at least ${MIN_SECRET_CHARS} characters` });
     process.exit(1);
