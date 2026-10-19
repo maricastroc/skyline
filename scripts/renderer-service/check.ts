@@ -517,7 +517,7 @@ async function budget() {
   check("and does nothing without a token or a machine identity, and says when no address answers", tokenless === "no cordon token" && anonymous === "no machine identity" && seen.length === calls.length && /failed/.test(nowhere), `${tokenless}; ${anonymous}; ${nowhere}`);
 
   const IPS_TOKEN = "FlyV1 fm2_test-ips-token";
-  const assigned = new Set(["2a09:8280:1::1bd:f74b:7", "66.241.124.10", "203.0.113.9"]);
+  const assigned = new Set(["2001:db8::7", "192.0.2.10", "203.0.113.9"]);
   const egress = "203.0.113.9";
   const hits: string[] = [];
   const addressesApi = async (behaviour: "refuse" | "flaky" | "grant") => {
@@ -526,7 +526,7 @@ async function budget() {
       const json = (status: number, body: unknown) => res.writeHead(status, { "content-type": "application/json" }).end(JSON.stringify(body));
       if (behaviour === "refuse") return json(403, { error: "unauthorized" });
       const ip = /\/ip_assignments\/(.+)$/.exec(decodeURIComponent(req.url ?? ""))?.[1];
-      if (req.method === "GET") return json(200, { ips: [...assigned].map((a) => ({ ip: a, shared: a === "66.241.124.10", egress: a === egress })) });
+      if (req.method === "GET") return json(200, { ips: [...assigned].map((a) => ({ ip: a, shared: a === "192.0.2.10", egress: a === egress })) });
       if (req.method === "DELETE" && ip && behaviour === "flaky") return json(500, { error: "try emptied" });
       if (req.method === "DELETE" && ip && assigned.delete(ip)) return void res.writeHead(204).end();
       json(404, { error: "ip not found on app" });
@@ -543,7 +543,7 @@ async function budget() {
   await Promise.all([refusingIps, flakyIps, grantingIps].map(({ api }) => new Promise<void>((r) => api.close(() => r()))));
   check(
     "at the monthly limit the machine also gives up its public addresses with its own token, so no request from outside can reach it, trying the next address of the API when one fails, refuses or leaves some behind",
-    left.join() === egress && /failed.*; .* list HTTP 403; .* HTTP 500.* HTTP 500; .* HTTP 204, .* HTTP 204$/.test(released) && hits.every((a) => a.endsWith(IPS_TOKEN)) && hits.some((a) => a.includes("DELETE /v1/apps/skyline-renderer-x/ip_assignments/2a09:8280:1::1bd:f74b:7")) && !released.includes("fm2_"),
+    left.join() === egress && /failed.*; .* list HTTP 403; .* HTTP 500.* HTTP 500; .* HTTP 204, .* HTTP 204$/.test(released) && hits.every((a) => a.endsWith(IPS_TOKEN)) && hits.some((a) => a.includes("DELETE /v1/apps/skyline-renderer-x/ip_assignments/2001:db8::7")) && !released.includes("fm2_"),
     `${released}; left ${left.join()}`,
   );
   check("and says when there is nothing left to give up, or no token or app to do it with", /nothing to release$/.test(emptied) && withoutToken === "no address token" && withoutApp === "no app identity", `${emptied}; ${withoutToken}; ${withoutApp}`);
