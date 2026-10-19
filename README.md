@@ -60,6 +60,7 @@
 | **🪧 Doto Signs**            | Shop signs and billboards are lettered in Doto, the same bitmap face as the home screen.                                                                                                          |
 | **📮 Postcard**              | Save the current view as an image. **H** hides the interface for a clean shot.                                                                                                                     |
 | **🔗 Deep Links**            | `/pixel?url=…` builds a site directly, and `?at=references` (or any other part name) opens the city already focused on that district.                                                             |
+| **🔍 Explore in More Detail** | A second reading of the same page: it is opened in a real, sandboxed browser, and the city follows how the page is arranged on screen — what sits side by side and how large each item is. **Standard view** goes back. Pages that only build themselves in the browser are read that way from the start ("Read in a browser"). When the browser isn't available, the standard city stays and the app says why. |
 | **⚠️ Clear Feedback**        | Typed addresses are checked before anything is fetched; an invalid one gets a bold title, one hint line and a highlighted field, cleared as soon as you edit. Blocked sites say why they're blocked. |
 | **📱 Narrow Screens**        | A small-screen layout: icon-only controls that never wrap, and a home and drawer sized for phones.                                                                                                                     |
 
@@ -105,7 +106,7 @@
 | **Rendering**      | Three.js, React Three Fiber, drei, postprocessing                      |
 | **State**          | Zustand                                                                |
 | **Styling**        | Tailwind CSS v4, Doto · Instrument Serif · Instrument Sans · Geist    |
-| **Capture**        | parse5 (static HTML parsing), ipaddr.js (socket-level SSRF guard)      |
+| **Capture**        | parse5 (static HTML parsing), ipaddr.js (socket-level SSRF guard), Puppeteer + Chromium in a separate renderer service on Fly.io |
 | **Testing**        | `tsx` check scripts over a corpus of real pages, Puppeteer captures    |
 | **Tooling**        | ESLint                                                                 |
 
@@ -131,12 +132,13 @@ Each part of the page — hero, navigation, feed, index, references, footer — 
 The pipeline is split between a server that captures and a client that builds:
 
 ```
-URL ─▶ /api/capture ─▶ static capture ─▶ DomSnapshot ─▶ normalize() ─▶ NormalizedDocument
-                                                                              │ (client)
+URL ─▶ /api/capture ─┬─▶ static capture ───────┬─▶ DomSnapshot ─▶ normalize() ─▶ NormalizedDocument
+                     └─▶ renderer (Chromium) ──┘                                         │ (client)
    analyzeSemantics ─▶ computeFingerprint ─▶ planFromPage ─▶ generateKitDistrict ─▶ PixelScene
    (regions)           (visual identity)     (territories)   (kit city)              (three.js)
 ```
 
+- **Capture** — static first: the server fetches the HTML and reads it. Pages that only build themselves in the browser, and the optional **Explore in more detail**, go through the renderer service ([`renderer/`](renderer)), which opens the page in Chromium and returns it rendered and measured. The app reads that page with the same parser and the same refusals as the static one.
 - **Semantics** — page regions (hero, navigation, feed, index, references, footer…) are inferred from tag, position, size, content and class names, never from the hostname.
 - **Allocation** — territories fill 256 lots in reading order, from the centre outwards, with land proportional to each one's weight.
 - **City** — composition, massing, program, façades, streets, street life and atmosphere all come from the kit ([`src/lib/pixelcity/kit`](src/lib/pixelcity/kit)). Each layer is checked against a corpus of real pages, on its own and switched on and off.
@@ -151,6 +153,10 @@ Fetching arbitrary URLs on a server is the riskiest thing this app does, so the 
 - **The client never receives HTML** — only structure and metrics.
 - **SSRF is closed at the socket level** — DNS is resolved and validated, the connection goes to the validated IP, and every redirect is validated again ([`net-guard.ts`](src/lib/acquisition/net-guard.ts), [`safe-fetch.ts`](src/lib/acquisition/safe-fetch.ts)).
 - **Signed image proxy** — real images are served only for URLs the server signed itself ([`signing.ts`](src/lib/acquisition/signing.ts)).
+- **The browser runs elsewhere** — rendered captures run in a separate service ([`renderer/`](renderer), on Fly.io), never on the app's host. Every request to it is HMAC-signed, and it holds none of the app's secrets.
+- **Sandboxed and unprivileged** — Chromium keeps its sandbox (seccomp, its own user and network namespaces) and runs as an unprivileged user, one browser per capture, with time, memory, request and size limits.
+- **One way out** — the browser reaches the internet only through an egress proxy that applies the same SSRF guard at the socket: HTTPS on port 443, DNS resolved and checked in the proxy, private and internal addresses refused. WebRTC and WebTransport are removed from every page.
+- **A hard monthly budget** — the renderer counts its own awake time on a volume. After 50 hours in a month it stops, gives up its public addresses and takes itself out of routing, so nothing from outside can wake it ([operation and costs](docs/RENDERED_CAPTURE_PRODUCTION.md)).
 - **No evasion** — sites behind a bot challenge (Cloudflare and the like) or a login are refused with an explanation. Skyline doesn't try to get around them.
 
 <br/>
@@ -186,6 +192,14 @@ npm run dev
 > ⏩ Access [http://localhost:3000](http://localhost:3000) (it redirects to `/pixel`), paste a URL and press **Build**.
 > Direct link: `http://localhost:3000/pixel?url=https://news.ycombinator.com`.
 
+> To try **Explore in more detail** locally, start it with the local renderer. It opens pages in the Chrome installed on your machine, behind the same egress proxy, and only works in development (set `CHROME_PATH` if Chrome isn't in the default macOS location):
+
+```bash
+SKYLINE_LOCAL_RENDERER=1 npm run dev
+```
+
+> Then open `http://localhost:3000/pixel?url=https://books.toscrape.com/&mode=detailed`. To run the renderer as its own service, and to deploy it, see [RENDERED_CAPTURE_PRODUCTION.md](docs/RENDERED_CAPTURE_PRODUCTION.md).
+
 > Run every check over the real-page corpus (`test:polish` paints the signs in Chrome; set `CHROME_PATH` if it isn't in the default macOS location):
 
 ```bash
@@ -204,7 +218,7 @@ npm run test:allocation
 npm run test:capture
 ```
 
-> GitHub Actions runs `lint`, `typecheck`, `npm test` and `build` on every push to `main` and on every pull request ([`ci.yml`](.github/workflows/ci.yml)).
+> GitHub Actions runs `lint`, `typecheck`, `npm test`, `test:capture`, `renderer:build` and `build` on every push to `main` and on every pull request ([`ci.yml`](.github/workflows/ci.yml)).
 
 > Run capture → normalization in the terminal and print a summary:
 
@@ -230,11 +244,13 @@ npm run probe -- https://news.ycombinator.com
 | [PIXEL_VISUAL_POLISH_V1.md](docs/PIXEL_VISUAL_POLISH_V1.md)             | Haze and assets                         |
 | [PIXEL_PRODUCT_COMMUNICATION.md](docs/PIXEL_PRODUCT_COMMUNICATION.md)   | Page → city in the interface            |
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md)                                 | Capture, security and the original maquette |
-| [RENDERED_CAPTURE_PRODUCTION.md](docs/RENDERED_CAPTURE_PRODUCTION.md)   | The renderer service: design, setup, limits |
+| [RENDERED_CAPTURE_PRODUCTION.md](docs/RENDERED_CAPTURE_PRODUCTION.md)   | The renderer service: design, budget, deploy and operation |
 
 ### ⚠️ Known limits
 
-- **Pages that build themselves in the browser:** on its own, the capture only sees the HTML the server sends, and the city says so ("Scaffolding only"). Opening such pages in a headless browser, and the optional "Explore in more detail" reading, need the renderer service in [`renderer/`](renderer): a separate container the app calls over a signed request (`SKYLINE_RENDERER_URL`, `SKYLINE_RENDERER_SECRET`), never a browser inside the app's own host. That browser's only way out is an egress proxy that applies the same SSRF guard at the socket. Without the service, or while it is not answering, everything else works as before ([operation](docs/RENDERED_CAPTURE_PRODUCTION.md)).
+- **Pages that build themselves in the browser:** the static capture only sees the HTML the server sends. Such pages, and **Explore in more detail**, need the renderer service, which the app reaches with `SKYLINE_RENDERER_URL` and `SKYLINE_RENDERER_SECRET`. Without those, or while the service is unavailable, the city is built from the HTML alone and says so ("Scaffolding only").
+- **The renderer has limits:** 100 new captures in the browser a day across the whole site, and 50 hours awake a month. Past the daily limit, detailed exploration pauses until midnight UTC. Past the monthly one, it stays off until it is switched back on by hand. The standard city keeps working in both cases ([operation](docs/RENDERED_CAPTURE_PRODUCTION.md)).
+- **Rendered readings can differ by place:** the renderer browses from a datacenter in the US, and some sites show different content there.
 - **Blocked sites:** pages behind a bot challenge or a login are refused with an explanation.
 - **In-memory state:** rate limiting, cache and the signing secret live per process. With more than one instance, set `SKYLINE_ASSET_SECRET` and use a shared store.
 
