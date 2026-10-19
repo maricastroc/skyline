@@ -438,4 +438,11 @@ O caveat `Mutations` funciona como lista branca de toda a GraphQL, até das cons
 
 **Isolamento, num contêiner local:** só o `tini` e o `entrypoint`, que rodam como root, têm os dois tokens no ambiente. O Node, que roda como `renderer`, e o Chromium não os têm, e o usuário `renderer` não consegue ler o ambiente do `entrypoint`. Sem rede, o modo de parada registra as duas etapas, primeiro os IPs e depois o `cordon`, com o endereço e o resultado de cada tentativa, sem os tokens.
 
-**Ainda falta ver no Fly:** a retirada dos IPs feita de dentro da máquina, no teto com 0 h (passo 9 do checklist).
+**A retirada dos IPs no Fly, com 0 h** (19/10, 11:34 UTC). A máquina viu o teto, liberou o IPv6 e o IPv4 compartilhado (HTTP 204) e fez `cordon` (HTTP 200), tudo sozinha. Depois disso:
+
+- `fly ips list` ficou vazio, e a API confirmou nenhum IP;
+- o IPv4 antigo passou a ter a conexão TLS cortada pelo Fly.
+
+O endereço interno `_api.internal:4280` não atende a rota de IPs (502 depois de cerca de 8 s), e por isso a liberação passou a tentar `api.machines.dev` primeiro.
+
+O DNS do Fly continuou publicando por algum tempo um IPv6 já liberado, embora a API não mostrasse nenhum. Não foi possível testar esse endereço sem IPv6.

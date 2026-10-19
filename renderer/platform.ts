@@ -1,4 +1,5 @@
 export const MACHINES_API = ["http://_api.internal:4280", "https://api.machines.dev"];
+export const ADDRESSES_API = ["https://api.machines.dev", "http://_api.internal:4280"];
 
 type Answer = { status: number; body: unknown } | string;
 
@@ -34,7 +35,7 @@ export async function cordonSelf(token: string | undefined, app: string | undefi
   return tried.join("; ");
 }
 
-export async function releasePublicIps(token: string | undefined, app: string | undefined, endpoints: readonly string[] = MACHINES_API, timeoutMs = 10_000): Promise<string> {
+export async function releasePublicIps(token: string | undefined, app: string | undefined, endpoints: readonly string[] = ADDRESSES_API, timeoutMs = 10_000): Promise<string> {
   if (!app) return "no app identity";
   if (!token) return "no address token";
   const tried: string[] = [];
