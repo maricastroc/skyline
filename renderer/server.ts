@@ -4,7 +4,7 @@ import { join } from "node:path";
 import puppeteer from "puppeteer-core";
 import { localChromePath, setBrowserDriver } from "../src/lib/acquisition/local-browser";
 import { MIN_SECRET_CHARS } from "../src/lib/acquisition/renderer-protocol";
-import { cordonSelf } from "./platform";
+import { cordonSelf, releasePublicIps } from "./platform";
 import { createRenderer } from "./service";
 import { createUsage, type Pause } from "./usage";
 
@@ -17,11 +17,14 @@ const int = (name: string, fallback: number, min: number, max: number) => {
 const PLATFORM_SOCKET = process.env.SKYLINE_PLATFORM_SOCKET || "/.fly/api";
 const STOP_FOR_GOOD = 75;
 
+const ROOT_TOKENS = ["SKYLINE_RENDERER_IPS_TOKEN", "SKYLINE_RENDERER_CORDON_TOKEN"];
+
 if (process.argv.includes("--cordon")) {
-  void cordonSelf(process.env.SKYLINE_RENDERER_CORDON_TOKEN, process.env.FLY_APP_NAME, process.env.FLY_MACHINE_ID).then((result) => {
-    log({ event: "cordon", result });
+  void (async () => {
+    log({ event: "release_ips", result: await releasePublicIps(process.env.SKYLINE_RENDERER_IPS_TOKEN, process.env.FLY_APP_NAME) });
+    log({ event: "cordon", result: await cordonSelf(process.env.SKYLINE_RENDERER_CORDON_TOKEN, process.env.FLY_APP_NAME, process.env.FLY_MACHINE_ID) });
     process.exit(0);
-  });
+  })();
 } else {
   main();
 }
@@ -29,8 +32,10 @@ if (process.argv.includes("--cordon")) {
 function main() {
   const secret = process.env.SKYLINE_RENDERER_SECRET ?? "";
   delete process.env.SKYLINE_RENDERER_SECRET;
-  if (process.env.SKYLINE_RENDERER_CORDON_TOKEN) log({ event: "warning", detail: "the cordon token reached the service process" });
-  delete process.env.SKYLINE_RENDERER_CORDON_TOKEN;
+  for (const name of ROOT_TOKENS) {
+    if (process.env[name]) log({ event: "warning", detail: `${name} reached the service process` });
+    delete process.env[name];
+  }
   if (secret.length < MIN_SECRET_CHARS) {
     log({ event: "fatal", error: `SKYLINE_RENDERER_SECRET needs at least ${MIN_SECRET_CHARS} characters` });
     process.exit(1);
