@@ -7,7 +7,7 @@ api="${SKYLINE_PLATFORM_SOCKET:-/.fly/api}"
 if [ -d "$data" ]; then chown -R renderer:renderer "$data" 2>/dev/null; fi
 if [ -S "$api" ]; then chmod 600 "$api" 2>/dev/null; chown root:root "$api" 2>/dev/null; fi
 
-setpriv --reuid=renderer --regid=renderer --init-groups --no-new-privs --inh-caps=-all --bounding-set=-all \
+env -u SKYLINE_RENDERER_CORDON_TOKEN -u SKYLINE_RENDERER_IPS_TOKEN setpriv --reuid=renderer --regid=renderer --init-groups --no-new-privs --inh-caps=-all --bounding-set=-all \
   node --max-old-space-size=384 /srv/renderer/server.cjs &
 child=$!
 trap 'kill -TERM "$child" 2>/dev/null' TERM INT

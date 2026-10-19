@@ -4,7 +4,7 @@ import http from "node:http";
 import net from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { cordonSelf } from "../../renderer/platform";
+import { cordonSelf, releasePublicIps } from "../../renderer/platform";
 import { createRenderer, type Renderer, type RendererConfig } from "../../renderer/service";
 import { createUsage } from "../../renderer/usage";
 import { acquire, type AcquireSources } from "../../src/lib/acquisition/acquire";
@@ -489,21 +489,64 @@ async function budget() {
   const activity = thrifty.renderer.activity();
   check("the service knows when it last worked, for stopping when idle", activity.lastRender > 0 && !activity.busy);
 
-  const socketDir = mkdtempSync(join(tmpdir(), "skyline-api-"));
-  const socketPath = join(socketDir, "api.sock");
+  const TOKEN = "FlyV1 fm2_test-cordon-token";
   const seen: string[] = [];
-  const api = http.createServer((req, res) => {
-    seen.push(`${req.method} ${req.url}`);
-    res.writeHead(200, { "content-type": "application/json" }).end('{"message":"OK"}');
-  });
-  await new Promise<void>((r) => api.listen(socketPath, r));
-  const cordoned = await cordonSelf(socketPath, "skyline-renderer-x", "m123");
-  const anonymous = await cordonSelf(socketPath, undefined, "m123");
-  const nowhere = await cordonSelf(join(socketDir, "missing.sock"), "a", "b");
-  await new Promise<void>((r) => api.close(() => r()));
-  rmSync(socketDir, { recursive: true, force: true });
-  check("at the monthly limit the machine takes itself out of the platform's routing, through the platform's own API", cordoned === "HTTP 200" && seen.join() === "POST /v1/apps/skyline-renderer-x/machines/m123/cordon", `${cordoned}; ${seen.join()}`);
-  check("and does nothing without a machine identity or a reachable API", anonymous === "no machine identity" && nowhere.startsWith("failed"), `${anonymous}; ${nowhere}`);
+  const machinesApi = async (status: number) => {
+    const api = http.createServer((req, res) => {
+      seen.push(`${status} ${req.method} ${req.url} ${req.headers.authorization}`);
+      res.writeHead(status, { "content-type": "application/json" }).end(status === 200 ? '{"ok":true}' : '{"error":"unauthorized"}');
+    });
+    await new Promise<void>((r) => api.listen(0, "127.0.0.1", r));
+    return { api, base: `http://127.0.0.1:${(api.address() as net.AddressInfo).port}` };
+  };
+  const refusing = await machinesApi(403);
+  const granting = await machinesApi(200);
+  const gone = await machinesApi(200);
+  await new Promise<void>((r) => gone.api.close(() => r()));
+  const cordoned = await cordonSelf(TOKEN, "skyline-renderer-x", "m123", [gone.base, refusing.base, granting.base]);
+  const calls = [...seen];
+  const tokenless = await cordonSelf(undefined, "skyline-renderer-x", "m123", [granting.base]);
+  const anonymous = await cordonSelf(TOKEN, undefined, "m123", [granting.base]);
+  const nowhere = await cordonSelf(TOKEN, "a", "b", [gone.base]);
+  await Promise.all([refusing, granting].map(({ api }) => new Promise<void>((r) => api.close(() => r()))));
+  check(
+    "at the monthly limit the machine takes itself out of the platform's routing, through the platform's API with its own token, trying the next address when one fails or refuses",
+    calls.join() === `403 POST /v1/apps/skyline-renderer-x/machines/m123/cordon ${TOKEN},200 POST /v1/apps/skyline-renderer-x/machines/m123/cordon ${TOKEN}` && /failed.*; .* HTTP 403; .* HTTP 200$/.test(cordoned) && !cordoned.includes("fm2_"),
+    `${cordoned}; ${calls.length} request(s)`,
+  );
+  check("and does nothing without a token or a machine identity, and says when no address answers", tokenless === "no cordon token" && anonymous === "no machine identity" && seen.length === calls.length && /failed/.test(nowhere), `${tokenless}; ${anonymous}; ${nowhere}`);
+
+  const IPS_TOKEN = "FlyV1 fm2_test-ips-token";
+  const assigned = new Set(["2001:db8::7", "192.0.2.10", "203.0.113.9"]);
+  const egress = "203.0.113.9";
+  const hits: string[] = [];
+  const addressesApi = async (behaviour: "refuse" | "flaky" | "grant") => {
+    const api = http.createServer((req, res) => {
+      hits.push(`${behaviour} ${req.method} ${decodeURIComponent(req.url ?? "")} ${req.headers.authorization}`);
+      const json = (status: number, body: unknown) => res.writeHead(status, { "content-type": "application/json" }).end(JSON.stringify(body));
+      if (behaviour === "refuse") return json(403, { error: "unauthorized" });
+      const ip = /\/ip_assignments\/(.+)$/.exec(decodeURIComponent(req.url ?? ""))?.[1];
+      if (req.method === "GET") return json(200, { ips: [...assigned].map((a) => ({ ip: a, shared: a === "192.0.2.10", egress: a === egress })) });
+      if (req.method === "DELETE" && ip && behaviour === "flaky") return json(500, { error: "try emptied" });
+      if (req.method === "DELETE" && ip && assigned.delete(ip)) return void res.writeHead(204).end();
+      json(404, { error: "ip not found on app" });
+    });
+    await new Promise<void>((r) => api.listen(0, "127.0.0.1", r));
+    return { api, base: `http://127.0.0.1:${(api.address() as net.AddressInfo).port}` };
+  };
+  const [refusingIps, flakyIps, grantingIps] = [await addressesApi("refuse"), await addressesApi("flaky"), await addressesApi("grant")];
+  const released = await releasePublicIps(IPS_TOKEN, "skyline-renderer-x", [gone.base, refusingIps.base, flakyIps.base, grantingIps.base]);
+  const left = [...assigned];
+  const emptied = await releasePublicIps(IPS_TOKEN, "skyline-renderer-x", [grantingIps.base]);
+  const withoutToken = await releasePublicIps(undefined, "skyline-renderer-x", [grantingIps.base]);
+  const withoutApp = await releasePublicIps(IPS_TOKEN, undefined, [grantingIps.base]);
+  await Promise.all([refusingIps, flakyIps, grantingIps].map(({ api }) => new Promise<void>((r) => api.close(() => r()))));
+  check(
+    "at the monthly limit the machine also gives up its public addresses with its own token, so no request from outside can reach it, trying the next address of the API when one fails, refuses or leaves some behind",
+    left.join() === egress && /failed.*; .* list HTTP 403; .* HTTP 500.* HTTP 500; .* HTTP 204, .* HTTP 204$/.test(released) && hits.every((a) => a.endsWith(IPS_TOKEN)) && hits.some((a) => a.includes("DELETE /v1/apps/skyline-renderer-x/ip_assignments/2001:db8::7")) && !released.includes("fm2_"),
+    `${released}; left ${left.join()}`,
+  );
+  check("and says when there is nothing left to give up, or no token or app to do it with", /nothing to release$/.test(emptied) && withoutToken === "no address token" && withoutApp === "no app identity", `${emptied}; ${withoutToken}; ${withoutApp}`);
 }
 
 async function lifecycle() {
@@ -611,7 +654,7 @@ async function decisions() {
 
   w = world({ still: shell });
   snap = await acquire(U, "static", {}, w.sources);
-  check("a static capture asked for by name never uses the renderer", snap.source.strategy === "static" && w.calls.live === 0);
+  check("a static capture hits for by name never uses the renderer", snap.source.strategy === "static" && w.calls.live === 0);
 
   w = world({ still: complete });
   check("an address outside the policy is refused before any capture", (await codeOf(acquire("https://169.254.169.254/", "rendered", {}, w.sources))) === "private_address" && (await codeOf(acquire("http://page.skyline-fixture.dev/", "auto", {}, w.sources))) === "unsupported_scheme" && w.calls.still + w.calls.live === 0);

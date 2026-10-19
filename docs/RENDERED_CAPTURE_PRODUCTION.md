@@ -1,8 +1,10 @@
 # Captura renderizada em produção
 
-Escrito em 13/10/2026 e revisto em 14/10/2026, na branch `capture/rendered-production`, a partir de `main` (`025b325`). A branch está no GitHub num pull request para `main`. Nada foi criado no Fly.io, nenhum segredo foi configurado e nada foi publicado.
+Escrito em 13/10/2026 e revisto em 14/10/2026 e em 19/10/2026.
 
-O código está pronto e verificado em desenvolvimento, inclusive com o serviço rodando num contêiner Linux. A publicação depende de uma escolha de hospedagem (seção 7).
+**Estado em 19/10/2026:** o renderizador foi implantado no Fly.io pela primeira vez com o teto em 0 h e está parado, em `cordon` e sem IP público. A Vercel não tem as variáveis do renderizador, e a captura renderizada continua desligada para os visitantes.
+
+No Fly, o `cordon` automático pelo socket `/.fly/api` foi recusado, e o proxy ainda ligou uma vez uma máquina que tinha acabado de entrar em `cordon`. Esta revisão troca o socket por um token restrito e acrescenta uma trava que não depende do proxy: no teto, a máquina também retira os IPs públicos do app (seção 9). A trava por IPs ainda não foi vista no Fly, e nenhum teste com captura foi feito lá.
 
 ## 1. Arquitetura
 
@@ -75,7 +77,7 @@ A correção troca seis expressões por varredores lineares e limita a expansão
 
 ## 3. Configuração para produção
 
-O host é o Fly.io, com um teto de **R$ 20 por mês** para essa infraestrutura. A configuração está em [`renderer/fly.toml`](../renderer/fly.toml); nada foi criado no Fly ainda.
+O host é o Fly.io, com um teto de **R$ 20 por mês** para essa infraestrutura. A configuração está em [`renderer/fly.toml`](../renderer/fly.toml). O que já existe no Fly e o que foi medido lá está na seção 9.
 
 **A máquina:** uma só, `performance-1x` (1 vCPU dedicada, 2 GB), em `iad`, a mesma região das funções da Vercel. Ela fica parada até chegar um pedido, liga sozinha e para sozinha:
 
@@ -93,14 +95,22 @@ Por que `performance-1x` e não `shared-cpu-2x`, que custa menos da metade:
 
 **Um volume de 1 GB** (`/data`) guarda o registro de uso do mês, para que os tetos da seção 4 sobrevivam a cada desligamento. Sem ele, a máquina volta limpa a cada partida e nenhum limite global seria possível. Ele custa cerca de R$ 0,83/mês.
 
-**O contêiner começa como root só para três coisas:** dar o volume ao usuário do serviço, fechar o socket da API de máquinas do Fly (`/.fly/api`) para esse usuário, e tirar a própria máquina do roteamento quando o teto do mês acaba. O Node e o Chromium rodam sem privilégios (`setpriv`).
+**O contêiner começa como root só para três coisas:**
+
+- dar o volume ao usuário do serviço;
+- fechar o socket da API de máquinas do Fly (`/.fly/api`) para esse usuário;
+- quando o teto do mês acaba, retirar os IPs públicos do app e tirar a própria máquina do roteamento.
+
+O Node e o Chromium rodam sem privilégios (`setpriv`). Os dois tokens do Fly são retirados do ambiente antes de o Node iniciar, então só os processos root os têm.
 
 **Serviço de renderização**
 
 | Variável | Valor |
 |---|---|
-| `SKYLINE_RENDERER_SECRET` | Obrigatória, 32 caracteres ou mais (`openssl rand -hex 32`), definida com `fly secrets set`. É o único segredo do serviço |
-| `SKYLINE_RENDERER_MONTHLY_HOURS` | 50: horas ligada por mês antes de parar de vez (seção 4). Com 0, o renderizador fica desligado: pausa e faz `cordon` assim que liga |
+| `SKYLINE_RENDERER_SECRET` | Obrigatória, 32 caracteres ou mais (`openssl rand -hex 32`), definida com `fly secrets set`. É o segredo que o app e o serviço compartilham |
+| `SKYLINE_RENDERER_IPS_TOKEN` | Segredo do Fly com o token que só libera IPs deste app (seção 7). Só o root o lê. Sem ele, o serviço ainda para no teto, mas os IPs ficam |
+| `SKYLINE_RENDERER_CORDON_TOKEN` | Segredo do Fly com o token restrito do `cordon` (seção 7). Só o root o lê. Sem ele, o serviço ainda para no teto, mas não sai do roteamento |
+| `SKYLINE_RENDERER_MONTHLY_HOURS` | 50: horas ligada por mês antes de parar de vez (seção 4). Com 0, o renderizador fica desligado: assim que liga, pausa, retira os IPs e faz `cordon` |
 | `SKYLINE_RENDERER_DAILY_CAPTURES` | 100: capturas novas por dia (UTC) antes de pausar até o dia seguinte |
 | `SKYLINE_RENDERER_IDLE_EXIT_SECONDS` | 60: segundos sem captura antes de sair |
 | `SKYLINE_RENDERER_USAGE_FILE` | `/data/usage.json`, no volume |
@@ -108,7 +118,7 @@ Por que `performance-1x` e não `shared-cpu-2x`, que custa menos da metade:
 | `PORT`, `SKYLINE_RENDERER_CONCURRENCY`, `SKYLINE_RENDERER_QUEUE` | 8080, 2 capturas simultâneas, 4 em espera |
 | `SKYLINE_RENDERER_NO_SANDBOX` | Não definir |
 
-- Imagem: `renderer/Dockerfile` (Debian 13, Chromium do repositório de segurança). O contexto de build é a raiz do repositório, e o build é local (`--local-only`), o que evita qualquer cobrança de builder.
+- Imagem: `renderer/Dockerfile` (Debian 13, Chromium do repositório de segurança). O contexto de build é a raiz do repositório, e o build é local (`--local-only`), o que evita qualquer cobrança de builder. No `fly.toml`, o `dockerfile` é relativo ao próprio `fly.toml`.
 - O Fly verifica `GET /healthz` (5 s depois de ligar, depois a cada 15 s), que responde só "ok" e não abre o navegador.
 - O nome do app deve ser difícil de adivinhar (por exemplo `skyline-renderer-` seguido de 8 letras aleatórias): a URL do serviço nunca vai para o navegador do visitante, e um nome secreto reduz quem consegue acordar a máquina.
 
@@ -121,7 +131,12 @@ Por que `performance-1x` e não `shared-cpu-2x`, que custa menos da metade:
 
 Sem as duas, ou com o serviço fora do ar ou pausado, o app se comporta como hoje para a captura padrão.
 
-**Desligar na hora, sem afetar a captura estática:** `fly machine cordon <id>`. A máquina sai do roteamento e nenhum pedido a liga mais; `fly machine uncordon <id>` desfaz. `fly scale count 0` também serve, mas apaga a máquina (o volume fica).
+**Desligar na hora, sem afetar a captura estática:**
+
+- Para cortar todo acesso de fora: `fly ips list` e `fly ips release <ip>` para cada IP. Sem IP, nenhum pedido da internet chega ao app.
+- `fly machine stop <id>` e depois `fly machine cordon <id>`. A máquina sai do roteamento: no Fly, os pedidos ficam cerca de 38 s no proxy e voltam com 503. A exceção é um `cordon` feito com a máquina ligada, depois do qual o proxy ainda a ligou uma vez (seção 9).
+- Para voltar: `fly ips allocate-v6`, `fly ips allocate-v4 --shared` e `fly machine uncordon <id>`. Os caches de DNS podem levar alguns minutos para pegar os IPs novos.
+- `fly scale count 0` também serve, mas apaga a máquina (o volume fica).
 
 ### Desligamento e retomada
 
@@ -184,15 +199,15 @@ Uma visita que pede uma captura deixa a máquina ligada cerca de 75 s: 5 s para 
 
 | Proteção | Tipo | O que garante |
 |---|---|---|
-| Teto mensal de 50 h ligada, gravado no volume | Do Skyline, persistente | Conta todo o tempo em que o processo fica de pé, qualquer que seja o motivo, inclusive tráfego de fora; grava a cada 5 s e soma 5 s por partida. Ao passar do teto, o serviço sai e o processo root tira a máquina do roteamento (`cordon`): nenhum pedido a liga de novo neste mês. Volta com `fly machine uncordon` no mês seguinte |
-| Registro ausente, ilegível ou sem gravação | Do Skyline | Sem volume, ou sem conseguir gravar: o serviço pausa e faz `cordon`. Registro ilegível: é guardado como `usage.json.unreadable-…`, o mês é tratado como gasto e o serviço volta sozinho no mês seguinte |
-| Teto diário de 100 capturas novas, gravado no volume | Do Skyline, persistente | Um dia de abuso não gasta o mês inteiro. Conta só capturas que de fato começam: respostas do cache, pedidos iguais em andamento e pedidos recusados por "ocupado" não contam. A contagem é síncrona, então pedidos simultâneos não passam do teto. Ao chegar a 100, o serviço pausa até 0h UTC e não faz `cordon` |
+| Teto mensal de 50 h ligada, gravado no volume | Do Skyline, persistente | Conta todo o tempo em que o processo fica de pé, qualquer que seja o motivo, inclusive tráfego de fora; grava a cada 5 s e soma 5 s por partida. Ao passar do teto, o serviço sai, e o processo root retira os IPs públicos do app e tira a máquina do roteamento (`cordon`), cada um com seu token restrito: nenhum pedido da internet chega a ela neste mês. Volta no mês seguinte, à mão, com IPs novos e `fly machine uncordon` |
+| Registro ausente, ilegível ou sem gravação | Do Skyline | Sem volume, ou sem conseguir gravar: o serviço pausa, retira os IPs e faz `cordon`. Registro ilegível: é guardado como `usage.json.unreadable-…`, o mês é tratado como gasto e o serviço volta sozinho no mês seguinte |
+| Teto diário de 100 capturas novas, gravado no volume | Do Skyline, persistente | Um dia de abuso não gasta o mês inteiro. Conta só capturas que de fato começam: respostas do cache, pedidos iguais em andamento e pedidos recusados por "ocupado" não contam. A contagem é síncrona, então pedidos simultâneos não passam do teto. Ao chegar a 100, o serviço pausa até 0h UTC, sem retirar os IPs nem fazer `cordon` |
 | Saída por ociosidade (60/20/30 s) | Do Skyline | Cada acordar custa segundos, não minutos |
 | Uma máquina só, sem reserva | Configuração do Fly | O teto físico é uma máquina |
 | Limite por visitante | Do Skyline, na memória | Por instância da Vercel e por partida do serviço; dificulta abuso, mas não é global |
 | Cache e uma captura para pedidos iguais | Do Skyline, na memória | Evita trabalho repetido enquanto a máquina está ligada |
 | Checagem de saúde só com cidade na tela e guardada 2 h; 30 min sem chamar depois de uma pausa | Do Skyline | Evita acordar a máquina por quem só abre a página |
-| `fly machine cordon` | Manual | Desliga na hora, sem afetar a captura estática |
+| `fly ips release` e `fly machine cordon` | Manual | Desliga na hora, sem afetar a captura estática |
 | Registros e checagem de saúde com o uso do mês | Métrica | `npm run renderer:ask` mostra horas, partidas e capturas do mês e do dia |
 | Teto de gasto no Fly | **Não existe** | A documentação do Fly não tem limite de gasto nem alerta |
 | Créditos pré-pagos do Fly | Do Fly, não confirmado | Compra mínima de US$ 25 (cerca de R$ 140). A equipe do Fly disse no fórum, há anos, que apps são suspensos quando os créditos acabam, mas outro usuário relata cobrança no cartão depois. Só vale confirmado com billing@fly.io |
@@ -202,8 +217,13 @@ Uma visita que pede uma captura deixa a máquina ligada cerca de 75 s: 5 s para 
 
 - **Uso que passa pelo Skyline:** o teto mensal limita o gasto a cerca de R$ 15, gravado em disco e independente de reinícios, deploys ou de quantas instâncias da Vercel existam.
 - **O teto é contado pelo próprio serviço.** Ele soma 5 s por partida para cobrir o que acontece antes de ele iniciar; a comparação com o painel do Fly está nos critérios.
-- **O que fica descoberto:** o `cordon` automático só funciona se, no Fly, o root da máquina alcançar `/.fly/api` e se uma máquina tirada do roteamento não for ligada pelo proxy. As duas coisas funcionaram aqui com uma API falsa, e as duas precisam ser vistas no Fly.
-- **Se não funcionarem:** depois do teto, cada pedido ainda liga a máquina por cerca de 6 s (ligar, ver que está pausada, sair). Alguém que descubra o endereço e o chame sem parar poderia mantê-la quase sempre ligada, até US$ 33/mês, cerca de R$ 180. A proteção nesse caso é o nome secreto do app e o `cordon` manual.
+- **O que já foi visto no Fly** (seção 9):
+  - a máquina faz `cordon` sozinha com o token restrito;
+  - depois de um `cordon` feito com a máquina ligada, o proxy ainda a liga uma vez, por cerca de 2,3 s, e depois respeita o `cordon`;
+  - uma máquina que já estava em `cordon` não é ligada.
+- **Por que retirar os IPs:** essa partida única não está documentada pelo Fly e pode mudar. Sem IPs, nenhum pedido de fora chega ao app, qualquer que seja o comportamento do proxy.
+- **O que fica descoberto:** a retirada dos IPs feita de dentro da máquina ainda precisa ser vista no Fly.
+- **Se as duas travas falharem:** depois do teto, cada pedido ainda liga a máquina por cerca de 2,3 s (ligar, ver que está pausada, sair). Alguém que descubra o endereço e o chame sem parar poderia mantê-la quase sempre ligada, até US$ 33/mês, cerca de R$ 180. A proteção nesse caso é o nome secreto do app e a retirada manual dos IPs.
 
 ### Limites de uso
 
@@ -275,11 +295,11 @@ Diferenças legítimas observadas:
 | Segredo do serviço | O segredo é tirado do ambiente antes de abrir o navegador, e o navegador recebe um ambiente sem variáveis de segredo | Continua no ambiente inicial do processo Node, como acontece com qualquer segredo passado por variável |
 | Falha de segurança no Chromium | Sandbox ligado, usuário sem privilégios, serviço sem segredos do app, um navegador por captura | Escape do sandbox dá acesso ao contêiner e à rede dele. A imagem precisa ser reconstruída para receber correções; o Debian publica em 2 a 6 dias depois do Chrome |
 | Host sem suporte ao sandbox | O serviço não se declara pronto se o navegador não iniciar com o sandbox | Decisão sua entre trocar de host e aceitar `--no-sandbox` |
-| Abuso e custo | Assinatura; teto mensal de horas e diário de capturas gravados no volume; `cordon` automático no teto; saída por ociosidade; uma máquina só (`--ha=false`) | O Fly não tem teto de gasto nem alerta. Se o `cordon` automático não funcionar no Fly, alguém que descubra o endereço do serviço pode mantê-lo ligado depois do teto, até cerca de R$ 180/mês (seção 4) |
+| Abuso e custo | Assinatura; teto mensal de horas e diário de capturas gravados no volume; no teto, IPs retirados e `cordon`, ambos automáticos; saída por ociosidade; uma máquina só (`--ha=false`) | O Fly não tem teto de gasto nem alerta. Se as duas travas falharem, alguém que descubra o endereço do serviço pode mantê-lo ligado depois do teto, até cerca de R$ 180/mês (seção 4) |
 | CPU compartilhada estrangulada | `performance-1x` em vez de `shared-cpu-2x` | Com uma CPU, duas capturas simultâneas dividem o núcleo; a mais pesada medida levou 11,9 s sozinha |
 | Página hostil esgota recursos | Prazo, heap limitado, tetos de pedidos, conexões, bytes e consultas de DNS, HTML medido antes de sair do navegador, memória do contêiner | O limite de heap não cobre `ArrayBuffer` nem WebAssembly: o teto real é a memória da máquina. Duas páginas no limite ao mesmo tempo podem levar a máquina de 2 GB ao limite; o sistema mata o maior processo, que é o da página |
 | Serviço indisponível | Captura padrão não depende dele; falha dita na tela; pausa de 15 s | Uma casca de SPA pode esperar até 40 s na primeira falha de um serviço que não responde. Depois de uma queda, a opção pode continuar visível por até 5 minutos numa instância da Vercel; quem clicar vê a falha dita, e a opção some |
-| API de máquinas do Fly acessível de dentro da máquina | Segundo a equipe do Fly, um socket em `/.fly/api` dá acesso à API de máquinas do app sem token. O serviço roda sem privilégios; ao iniciar, verifica se consegue escrever nesse socket, registra um aviso e informa `platformApi` na checagem de saúde | Se o usuário do serviço tiver acesso, um escape do sandbox poderia criar ou apagar máquinas do app. Ainda não verificado no Fly; é um critério de lançamento |
+| Tokens do Fly dentro da máquina | No Fly, o socket `/.fly/api` só exporta um subconjunto da API e recusou o `cordon` (403). O usuário do serviço não escreve nele (`platformApi:false`, visto no Fly). O root usa dois tokens restritos (seção 9), e o Node e o Chromium não os recebem | Com o token do `cordon`, quem tiver root na máquina pode ligar, parar e tirar o `cordon` dela, nada além. O token dos IPs não aloca nada, mas a API REST do Fly ignora a trava de origem dele: se vazar, quem o tiver pode retirar os IPs do app de qualquer lugar, o que derruba o renderizador sem custar nada. Os dois vencem em 19/10/2027 e o do `cordon` precisa ser trocado se a máquina for recriada |
 | Rede privada do Fly | O proxy de saída recusa endereços ULA e nomes `.internal`; o serviço escuta só em IPv4 (`0.0.0.0`), e a rede privada do Fly é IPv6 | Um escape do sandbox alcançaria outros apps da mesma organização no Fly. Recomendo uma organização só para o renderizador |
 | Contornar anti-bot | User agent declarado; desafio, 403 e login recusados também depois de renderizar | A recusa de desafios em JavaScript é por nome conhecido. Um desafio fora da lista pode ser resolvido pelo navegador sem que se perceba |
 | Resultado diferente do local | Mesmo código e mesmo parser nas duas vias | Fontes, conteúdo dinâmico, país e reputação do IP |
@@ -289,21 +309,29 @@ Diferenças legítimas observadas:
 
 Etapas B, C e D. Cada uma espera um sinal seu.
 
-1. **Etapa B, recursos:** criar a conta e uma organização só para o renderizador no Fly, com cartão. O primeiro deploy cria um app, uma máquina `performance-1x` e um volume de 1 GB.
-2. **Etapa C, deploy controlado:** gerar o segredo, `fly secrets set`, `fly deploy --local-only --ha=false`, e os testes de infraestrutura com `npm run renderer:ask` contra o serviço real, sem tocar na Vercel.
+1. **Etapa B, recursos:** feita em 18/10. Conta e cartão na org `personal`, que não tem outros apps; um app, uma máquina `performance-1x` e um volume de 1 GB.
+2. **Etapa C, deploy controlado:** começou em 18/10 com o teto em 0 h (seção 9). O `cordon` com token restrito já foi visto no Fly. Falta ver a retirada dos IPs no teto, com 0 h, e depois fazer os testes com captura contra o serviço real, sem tocar na Vercel.
 3. **Etapa D, ativação:** definir `SKYLINE_RENDERER_URL` e `SKYLINE_RENDERER_SECRET` na Vercel e publicar.
-4. Se o sandbox não funcionar no Fly, ou se o `cordon` automático não puder ser comprovado: decidir entre aceitar o risco descrito na seção 4 e não ativar.
+4. Se o sandbox não funcionar no Fly, ou se a retirada automática dos IPs não puder ser comprovada: decidir entre aceitar o risco descrito na seção 4 e não ativar.
 
 ### Checklist do primeiro deploy
 
 1. Instalar o `flyctl` e entrar na conta (`fly auth login`).
 2. Criar uma organização só para o renderizador e o app com nome difícil de adivinhar: `fly apps create skyline-renderer-<8 letras aleatórias> --org <org>`. O nome vai em `--app` em cada comando e não entra no repositório, que é público.
-3. Gerar o segredo (`openssl rand -hex 32`) e guardá-lo num gerenciador de senhas. Definir com `fly secrets set --app <app> --stage SKYLINE_RENDERER_SECRET=…`.
-4. `fly deploy . --config renderer/fly.toml --app <app> --local-only --ha=false`. O build local gera a imagem amd64 no Docker da máquina.
-5. Conferir que existe uma máquina só (`fly scale show`; se houver duas, `fly scale count 1`), um volume de 1 GB (`fly volumes list`) e só IPs compartilhados (`fly ips list`; se aparecer IPv4 dedicado, `fly ips release`).
-6. Rodar os critérios 2 a 8 da seção 8 com `npm run renderer:ask`, ainda sem nada na Vercel.
-7. Ensaiar o teto: `fly machine update <id> --env SKYLINE_RENDERER_MONTHLY_HOURS=0`. O serviço liga, pausa e faz `cordon`; pedidos depois disso não podem ligá-lo. Para voltar: `--env SKYLINE_RENDERER_MONTHLY_HOURS=50` e `fly machine uncordon <id>`.
-8. Só então pedir a ativação na Vercel.
+3. Gerar o segredo (`openssl rand -hex 32`) e guardá-lo num gerenciador de senhas. Definir com `fly secrets import --app <app> --stage`, lendo `SKYLINE_RENDERER_SECRET=…` da entrada padrão, para o valor não ir para o histórico do shell.
+4. Criar só o que é preciso, à mão:
+   - `fly ips allocate-v6 --app <app>` e `fly ips allocate-v4 --shared --app <app>`;
+   - `fly volumes create renderer_data --size 1 --region iad --snapshot-retention 1 --app <app>`.
+5. `fly deploy . --config renderer/fly.toml --app <app> --local-only --ha=false --no-public-ips --env SKYLINE_RENDERER_MONTHLY_HOURS=0`. O build local gera a imagem amd64 no Docker da máquina. Com 0 h, o `flyctl` dá o deploy como falho porque a máquina sai sozinha logo depois de ligar.
+6. Conferir que existe uma máquina só (`fly machine list`), um volume de 1 GB (`fly volumes list`) e só os dois IPs (`fly ips list`).
+7. Criar o token do `cordon`, que depende do ID da máquina:
+   - `fly tokens create deploy --app <app> --name skyline-renderer-cordon-base --expiry 8760h`, com a saída num arquivo 0600, nunca na tela;
+   - `fly tokens attenuate` com `[{"type":"Apps","body":{"apps":{"<id numérico do app>":"C"}}},{"type":"Machines","body":{"machines":{"<id da máquina>":"C"}}},{"type":"FromMachineSource","body":{"id":"<id da máquina>"}}]` (o ID numérico do app aparece em `fly tokens debug`);
+   - `fly secrets import --app <app> --stage` com `SKYLINE_RENDERER_CORDON_TOKEN=…`, e apagar as cópias locais.
+8. Criar o token dos IPs do mesmo jeito, com outro token de deploy (`--name skyline-renderer-ips-base`) atenuado com `[{"type":"Apps","body":{"apps":{"<id numérico do app>":"wcdC"}}},{"type":"Mutations","body":{"mutations":["releaseIpAddress"]}},{"type":"FromMachineSource","body":{"id":"<id da máquina>"}}]`, e gravado como `SKYLINE_RENDERER_IPS_TOKEN`. A liberação de IPs exige `wcdC` no app; o caveat `Mutations` é o que impede todo o resto (seção 9).
+9. Aplicar os segredos com um novo deploy em 0 h. Um deploy não liga uma máquina parada, então ligue-a uma vez com `fly machine start <id>`. Ela liga, pausa, retira os IPs e faz `cordon` sozinha: o log mostra `release_ips` com HTTP 204 para cada IP e `cordon` com HTTP 200, `fly ips list` fica vazio e a API mostra `cordoned: true`.
+10. Só então voltar a 50 h (`fly deploy` sem `--env`), alocar os IPs de novo e fazer `fly machine uncordon <id>`, e rodar os critérios 2 a 8 da seção 8 com `npm run renderer:ask`, ainda sem nada na Vercel.
+11. Só então pedir a ativação na Vercel.
 
 ## 8. Critérios de lançamento
 
@@ -314,9 +342,9 @@ Etapas B, C e D. Cada uma espera um sinal seu.
    - a primeira checagem de saúde depois disso cabe em 10 s, e a primeira captura em 40 s;
    - o uso do mês no registro sobe a cada partida.
 4. **Teto no Fly**, com o teto temporariamente em 0 h:
-   - ao atingir o teto, o serviço sai, a máquina fica `cordoned` (`fly machine status`);
-   - um pedido depois disso não a liga;
-   - `fly machine uncordon` e o teto de volta a 50 h restauram o serviço.
+   - ao atingir o teto, o serviço sai, a própria máquina retira os IPs do app e se põe em `cordon`: `fly ips list` fica vazio, e a API mostra `cordoned: true`;
+   - o endereço do app deixa de responder, e a máquina não liga mais;
+   - IPs novos, `fly machine uncordon` e o teto de volta a 50 h restauram o serviço.
 5. **Acesso privilegiado:** pelo `fly ssh console`, o usuário `renderer` não consegue usar `/.fly/api` nem ler o ambiente de outros processos, e os processos do Chromium aparecem com sandbox (seccomp ativo e namespace de usuário próprio).
 6. `npm run renderer:ask -- --compare` nas 11 páginas estáveis da seção 5: mesma leitura em pelo menos 10, e cada diferença explicada.
 7. Os endereços hostis da seção 5 enviados ao serviço publicado (literais privados, metadados, nomes que resolvem para rede privada, redirecionamentos, portas): todos recusados. A página com WebRTC, WebTransport e WebSocket do `test:egress` não abre nada fora do proxy.
@@ -328,3 +356,111 @@ Etapas B, C e D. Cada uma espera um sinal seu.
    - o Bluesky chega como "Read in a browser";
    - com a máquina em `cordon`, a captura padrão segue funcionando e o link detalhado mostra a falha.
 10. **Uma semana de observação:** as horas ligada contadas pelo serviço ficam próximas das do painel do Fly (diferença abaixo de 10%), e a projeção do mês fica abaixo de R$ 15.
+
+## 9. Primeira implantação no Fly (18 e 19/10/2026)
+
+**Recursos criados na org `personal`, que não tem outros apps:**
+
+- 1 app, cujo nome fica fora do repositório;
+- 1 máquina `performance-1x` com 2 GB em `iad`;
+- 1 volume de 1 GB, criptografado, com snapshots guardados por 1 dia;
+- 2 tokens de deploy, que só existem para originar os tokens restritos abaixo.
+
+O IPv4 compartilhado e o IPv6 foram alocados para os testes e retirados depois. Não foi criado nenhum builder remoto nem peer WireGuard.
+
+**Configuração efetiva, lida da API:** `performance`, 1 vCPU, 2048 MB; `restart` `on-failure` com 3 tentativas; autostart e autostop ligados, com mínimo 0; checagem em `/healthz`; volume em `/data`.
+
+**Tempo ligada:** 9 partidas e cerca de 20,5 s ao todo. O registro do serviço contou 54 s.
+
+### O teto e o `cordon`
+
+| | Resultado |
+|---|---|
+| Deploy com `--env SKYLINE_RENDERER_MONTHLY_HOURS=0` | O `flyctl` dá o primeiro deploy como falho ("never started or exited immediately"), porque a máquina liga, vê o teto e sai em 2,3 s. Um deploy seguinte atualiza a máquina parada sem ligá-la |
+| Teto reconhecido | `"paused":"monthly"` e `"persistent":true`, com saída pelo código 75 |
+| `cordon` pelo socket `/.fly/api` | **HTTP 403.** O socket só exporta um subconjunto da API de máquinas, e o `cordon` não faz parte dele |
+| `cordon` com o token restrito, de dentro da máquina | **HTTP 200** por `_api.internal:4280`, com o evento de `cordon` registrado enquanto a máquina ainda estava ligada e `cordoned: true` depois |
+| `platformApi` | `false`: o usuário do serviço não escreve no socket |
+| Registro de uso | Persistiu entre partidas (`boots` de 1 a 9) |
+| Checagens de saúde | Nenhuma partida provocada por elas |
+
+**O que o proxy faz com uma máquina em `cordon`.** Os pedidos públicos foram feitos por HTTPS, em IPv4 e IPv6, a `/`, `/healthz`, `/health` e `/render`:
+
+| Situação | Pedidos | Partidas pelo proxy |
+|---|---|---|
+| `cordon` feito pela CLI com a máquina parada | 14, ao longo de 15 minutos | Nenhuma: todos voltaram com 503 depois de cerca de 38 s ("could not find a good candidate") |
+| `cordon` feito entre 4 e 8 minutos antes | 8 | Nenhuma |
+| Máquina já em `cordon`, ligada à mão, que sai de novo | 6, 40 s depois | Nenhuma |
+| **`cordon` feito com a máquina ligada, logo antes de ela parar** | 6, 40 s depois | **Uma**, em três tentativas, sempre igual: o proxy força a partida (`force://… Starting machine`), um pedido é atendido em cerca de 2 s, a máquina vê o teto e sai em 2,3 s, e os outros pedidos voltam com 503 |
+| Logo depois dessa partida | 6 | Nenhuma |
+
+É justamente o caso do teto: a máquina faz `cordon` enquanto está ligada e sai. Pelo que foi visto, isso custa uma partida de cerca de 2,3 s por mês, mas o comportamento não está documentado pelo Fly e pode mudar. Por isso o teto também retira os IPs.
+
+### Os tokens restritos
+
+Os dois saem de tokens de deploy do app, atenuados com `fly tokens attenuate`, e vencem em 19/10/2027. Os testes abaixo foram feitos contra a API real, comparando com o token da conta. Os pedidos eram inválidos, inofensivos ou bloqueados por um lease, e nenhum deles mudou nada.
+
+**Token do `cordon`** (`SKYLINE_RENDERER_CORDON_TOKEN`):
+
+- `Apps`: só este app, só a ação `C`;
+- `Machines`: só esta máquina, só a ação `C`;
+- `FromMachineSource`: só pedidos feitos de dentro desta máquina.
+
+| Pedido | Token do `cordon`, antes da restrição de origem | Token da conta |
+|---|---|---|
+| `cordon` | 200 | — |
+| Ler a máquina; listar máquinas e volumes | 403 | — |
+| Criar máquina, alterar máquina e criar volume, com corpo inválido | 403 | 400: passou da permissão e parou na validação |
+| `setSecrets` com nome inválido | "Not authorized to manage this app" | Erro de validação |
+| Apagar a máquina, com e sem `force`, com lease ativo | 403 | — |
+| Ligar e parar, com lease ativo | 409 do lease: passam da permissão | 409 |
+
+Com `FromMachineSource`, o token é recusado (403) fora da máquina, inclusive para o `cordon`. Dentro dela, ele só liga, para e põe ou tira o `cordon` daquela máquina.
+
+**Token dos IPs** (`SKYLINE_RENDERER_IPS_TOKEN`):
+
+- `Apps`: só este app, com `wcdC`, porque a liberação de IP recusa qualquer conjunto menor;
+- `Mutations`: só `releaseIpAddress`;
+- `FromMachineSource`: só esta máquina.
+
+| Pedido | Token dos IPs | Token da conta |
+|---|---|---|
+| Listar os IPs (`GET /ip_assignments`) | 200 | 200 |
+| Liberar um IPv6 e um IPv4 compartilhado reais, pela GraphQL e pela REST | Liberados (`releaseIpAddress` e HTTP 204) | — |
+| Alocar um IPv6, tipo gratuito, pela REST (`POST /ip_assignments`) | HTTP 500 do Fly, **nada alocado** | 200, IP alocado e liberado em seguida |
+| `setSecrets` com nome inválido; `unsetSecrets` de um nome inexistente; alocar IP de saída para uma máquina inválida | "Not authorized to manage this app" | Passaram da permissão: erro de validação ou nada a fazer |
+| Criar máquina, alterar máquina, criar volume, `cordon`, ler ou gravar segredos pela REST | 403 | Passaram da permissão (400 com corpo inválido, 200 na leitura) |
+| Ligar, desfazer o `cordon` e apagar a máquina, com lease ativo | 403 | 409 |
+
+O caveat `Mutations` funciona como lista branca de toda a GraphQL, até das consultas, e também barra as rotas REST de máquinas, volumes e segredos. Os tipos pagos de IP nunca foram testados; a recusa vale para a operação de alocar, qualquer que seja o tipo.
+
+**Limite do token dos IPs:** a API REST de IPs **ignora a restrição de origem**. De um computador comum, fora da máquina, o token final liberou um IPv6 real (204). Pela GraphQL a restrição vale. Se esse token vazar, quem o tiver pode retirar os IPs do app de qualquer lugar: isso derruba o renderizador, mas não custa nada, porque ele não aloca.
+
+**Isolamento, num contêiner local:** só o `tini` e o `entrypoint`, que rodam como root, têm os dois tokens no ambiente. O Node, que roda como `renderer`, e o Chromium não os têm, e o usuário `renderer` não consegue ler o ambiente do `entrypoint`. Sem rede, o modo de parada registra as duas etapas, primeiro os IPs e depois o `cordon`, com o endereço e o resultado de cada tentativa, sem os tokens.
+
+**A retirada dos IPs no Fly, com 0 h** (19/10, 11:34 UTC). A máquina viu o teto, liberou o IPv6 e o IPv4 compartilhado (HTTP 204) e fez `cordon` (HTTP 200), tudo sozinha. Depois disso:
+
+- `fly ips list` ficou vazio, e a API confirmou nenhum IP;
+- o IPv4 antigo passou a ter a conexão TLS cortada pelo Fly.
+
+O endereço interno `_api.internal:4280` não atende a rota de IPs (502 depois de cerca de 8 s), e por isso a liberação passou a tentar `api.machines.dev` primeiro.
+
+O DNS do Fly continuou publicando por algum tempo um IPv6 já liberado, embora a API não mostrasse nenhum. Não foi possível testar esse endereço sem IPv6.
+
+### Testes de lançamento com 50 h (19/10/2026, 11:41 a 11:58 UTC)
+
+O teto voltou a 50 h, os IPs foram realocados e o `cordon` desfeito, ainda sem nada na Vercel.
+
+| Critério | Resultado |
+|---|---|
+| 2. Serviço publicado | `"ok":true`, `"sandbox":true`, `"platformApi":false`, Chrome 155.0.8059.39 em x86_64, registro `persistent` |
+| 3. Desligamento e retomada | O serviço sai sozinho por ociosidade (`idle`) e, quando só a checagem de saúde o acordou, 30 s depois. Numa das vezes, o desligamento automático do Fly agiu antes, cerca de 50 s depois da última captura. A checagem de saúde a frio levou 7,9 s, e a captura a frio 11,2 s de ponta a ponta. O registro subiu a cada partida (`boots` de 11 a 15) |
+| 4. Teto com 0 h | Depois de um deploy em 0 h e uma partida, a máquina liberou os dois IPs por `api.machines.dev` (204) e fez `cordon` (200) em 3,4 s. O app passou a ver o serviço como indisponível em 0,5 s |
+| 5. Acesso privilegiado | Os processos de página do Chromium têm `Seccomp: 2` e namespaces de usuário e de rede próprios. Tudo roda como `renderer`, com `NoNewPrivs` e o Node sem capacidades. O `/.fly/api` é `srw------- root`, e o usuário do serviço recebe `EACCES`. Ele também não lê o ambiente dos processos root, e o Node não tem nenhum token do Fly |
+| 6. Local × serviço | 7 de 11 com a mesma leitura. O itch.io falhou na rede local e foi lido pelo serviço. Guardian, IKEA e Spotify deram a mesma diferença em duas visitas seguidas, provavelmente por país: o serviço sai dos EUA, e a leitura local foi feita no Brasil. **Abaixo da meta de 10** |
+| 7. Endereços hostis | 18 de 18 recusados: metadados, DNS interno do Fly, `_api.internal`, loopback, a porta do próprio serviço, rede 10/8, nomes que resolvem para endereço privado, rebinding, HTTP sem TLS, portas, redirecionamentos para endereço privado e `file://`. Numa página, WebRTC e WebTransport não existiam, o WebSocket para o loopback foi bloqueado, e os 7 pedidos a endereços privados foram recusados |
+| 8. Sucesso a partir do datacenter | 11 de 11 páginas lidas pelo serviço |
+| Limites | 8 páginas de uma vez: 4 renderizadas e 4 recusadas como "ocupado". O mesmo visitante faz 4 capturas e depois recebe 429. Pedido sem assinatura, com segredo errado ou com assinatura de 5 min recebe 401. A página com laço infinito foi encerrada por prazo, e a que esgota memória não derrubou o serviço |
+| Erros | Certificado expirado: `tls_error`. Domínio reservado: recusado. Resposta 404, 403 ou 500 sem corpo: `forbidden_host` ("the page navigated away"), o que é impreciso. Uma imagem solta é lida como página |
+
+**Consumo:** cerca de 12 minutos de máquina ligada nas duas fases, em 15 partidas; o registro do serviço contou 13 min. Daqui ao fim de outubro, o custo estimado é de cerca de R$ 0,80, somando volume e disco parado. Enquanto ficar bloqueado, o custo fixo é de cerca de R$ 1,75 por mês.
