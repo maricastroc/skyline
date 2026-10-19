@@ -23,7 +23,7 @@ interface Remote {
 const READY_FOR_MS = 2 * 60 * 60_000;
 const DOWN_FOR_MS = 15_000;
 const PAUSED_FOR_MS = 30 * 60_000;
-const HEALTH_MS = 10_000;
+const HEALTH_MS = 30_000;
 const RENDER_MS = 40_000;
 const LOOPBACK = new Set(["127.0.0.1", "localhost", "[::1]"]);
 

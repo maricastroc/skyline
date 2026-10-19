@@ -286,6 +286,11 @@ async function theClient() {
   point(undefined, undefined);
   check("with nothing configured there is no renderer", !isRendererAvailable() && (await rendererReady()) === false && (await codeOf(captureRenderedPage(new URL(`${SITE}/`)))) === "renderer_unavailable");
 
+  const waking = await service({ render: async () => pageOf(SHELF), probe: async () => (await sleep(11_000), "Chrome/cold-start") });
+  point(waking.base);
+  const woke = Date.now();
+  check("a renderer woken from a stop whose browser takes more than 10 s to open is still reported as ready", (await rendererReady()) === true, `${Date.now() - woke} ms`);
+
   const sick = await service({
     render: async () => pageOf(SHELF),
     probe: async () => {
