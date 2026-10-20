@@ -28,6 +28,7 @@ export const Surf = {
   GRILLE: 18,
   SOLAR: 19,
   SLABS: 20,
+  PAVERS: 21,
 } as const;
 
 export interface Part {

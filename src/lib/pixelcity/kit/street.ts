@@ -36,7 +36,8 @@ export function streetSurfaces(kit: Kit, g: Grid, roles: StreetPlan) {
   const curb = mix(p.stone, white, 0.35);
   const asphalt = (r: StreetRole) => (r === "primary" ? (p.road.map((v) => v * 0.76) as RGB) : p.road);
   const setts = mix(p.stone, p.soilDark, 0.4);
-  const paving = mix(p.plaza, white, 0.08);
+  const pavers = mix(p.plaza, p.soilDark, 0.2);
+  const band = mix(p.plaza, white, 0.25);
   const along = (axis: "x" | "z", c: number) => (u0: number, u1: number, y0: number, y1: number, v0: number, v1: number, color: RGB, surf: number = Surf.PLAIN, extra = {}) =>
     axis === "x" ? kit.span(u0, u1, y0, y1, c + v0, c + v1, color, surf, extra) : kit.span(c + v0, c + v1, y0, y1, u0, u1, color, surf, extra);
 
@@ -50,7 +51,8 @@ export function streetSurfaces(kit: Kit, g: Grid, roles: StreetPlan) {
         const draw = along(axis, c);
         const inside = span >= 0 && span < L.length - 1;
         if (role === "pedestrian") {
-          draw(a, b, 0, SIDEWALK_H, -H, H, paving, Surf.SLABS);
+          draw(a, b, 0, SIDEWALK_H, -H, H, pavers, Surf.PAVERS);
+          for (const s of [-1, 1]) draw(a, b, SIDEWALK_H, SIDEWALK_H + 0.01, s > 0 ? H - 0.3 : -H + 0.12, s > 0 ? H - 0.12 : -H + 0.3, band);
           continue;
         }
         if (role === "lane") draw(a, b, 0, 0.04, -h, h, setts, Surf.SLABS);
@@ -75,7 +77,7 @@ export function streetSurfaces(kit: Kit, g: Grid, roles: StreetPlan) {
       const hx = Math.max(CARRIAGEWAY[roles.role("x", j, i - 1)], CARRIAGEWAY[roles.role("x", j, i)]);
       const hz = Math.max(CARRIAGEWAY[roles.role("z", i, j - 1)], CARRIAGEWAY[roles.role("z", i, j)]);
       if (role === "pedestrian") {
-        kit.span(cx - H, cx + H, 0, SIDEWALK_H, cz - H, cz + H, paving, Surf.SLABS);
+        kit.span(cx - H, cx + H, 0, SIDEWALK_H, cz - H, cz + H, pavers, Surf.PAVERS);
         continue;
       }
       kit.span(cx - H, cx + H, 0, 0.04, cz - H, cz + H, role === "lane" ? setts : mix(asphalt(role), white, 0.03), role === "lane" ? Surf.SLABS : Surf.PLAIN);
@@ -101,7 +103,7 @@ export function streetSurfaces(kit: Kit, g: Grid, roles: StreetPlan) {
           const u1 = s * H;
           const arm = (v0: number, v1: number, color: RGB, y = SIDEWALK_H, surf: number = Surf.SLABS) =>
             axis === "x" ? kit.span(cx + u0, cx + u1, 0, y, cz + v0, cz + v1, color, surf) : kit.span(cx + v0, cx + v1, 0, y, cz + u0, cz + u1, color, surf);
-          if (r === "pedestrian") arm(-wide, wide, paving);
+          if (r === "pedestrian") arm(-wide, wide, pavers, SIDEWALK_H, Surf.PAVERS);
           else
             for (const v of [-1, 1]) {
               arm(v > 0 ? a : -wide, v > 0 ? wide : -a, p.sidewalk);
