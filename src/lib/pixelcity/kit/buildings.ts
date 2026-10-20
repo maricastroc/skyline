@@ -70,6 +70,8 @@ const white: RGB = [0.97, 0.96, 0.92];
 const surfOf = (P: Program) => (P.facade === "bands" ? Surf.BANDS : P.facade === "curtain" ? Surf.GLASS : Surf.FRAMED);
 const litOf = (kit: Kit, k = 0.5) => (kit.night ? k : 0);
 const SHOP_GLASS = openingBits(SHOPFRONT);
+// Glass and doors sit just proud of the wall: a shared plane z-fights while the camera moves.
+const PROUD = 0.01;
 
 export function storefront(kit: Kit, u0: number, u1: number, g: number, P: Program, kind: "shop" | "cafe", label?: string, k = 0, door?: "left" | "right") {
   const pil = 0.12;
@@ -78,7 +80,7 @@ export function storefront(kit: Kit, u0: number, u1: number, g: number, P: Progr
   const signBg = darkOf(P.accent, 0.35);
   kit.span(u0, u0 + pil, 0, g, -0.02, 0.05, trimOf(P.wall));
   kit.span(u1 - pil, u1, 0, g, -0.02, 0.05, trimOf(P.wall));
-  kit.span(u0 + pil, u1 - pil, 0, g - fascia, -0.05, 0.0, frame, Surf.STORE, { lit: litOf(kit, 0.9), variant: SHOP_GLASS });
+  kit.span(u0 + pil, u1 - pil, 0, g - fascia, -0.05, PROUD, frame, Surf.STORE, { lit: litOf(kit, 0.9), variant: SHOP_GLASS });
   const inner = u1 - u0 - 2 * pil;
   const du = u0 + pil + ((door ? door === "left" : kit.rand(P.seed + k, 3) < 0.5) ? 0.1 : Math.max(0.1, inner - 0.42));
   kit.span(du - 0.03, du + 0.33, 0, 0.48, -0.03, 0.012, trimOf(P.wall));
@@ -134,7 +136,7 @@ export function lobby(kit: Kit, u0: number, u1: number, g: number, P: Program) {
   const trim = trimOf(P.wall);
   kit.span(u0, u0 + 0.14, 0, g, -0.02, 0.05, trim);
   kit.span(u1 - 0.14, u1, 0, g, -0.02, 0.05, trim);
-  kit.span(u0 + 0.14, u1 - 0.14, 0, g - 0.06, -0.06, 0.0, darkOf(P.wall, 0.45), Surf.STORE, { lit: litOf(kit, 0.95), variant: SHOP_GLASS });
+  kit.span(u0 + 0.14, u1 - 0.14, 0, g - 0.06, -0.06, PROUD, darkOf(P.wall, 0.45), Surf.STORE, { lit: litOf(kit, 0.95), variant: SHOP_GLASS });
   const mid = (u0 + u1) / 2;
   kit.cyl(mid, 0, 0.08, 0.42, 0.46, 0.42, mix(kit.palette.glass, white, 0.25));
   kit.box(mid, 0.46, 0.1, 0.5, 0.04, 0.5, trim);
@@ -306,7 +308,7 @@ function portal(kit: Kit, span: number, g: number, P: Program, axial: boolean, w
   const z = kit.zone;
   if (z) kit.zone = "portal";
   kit.span(mid - w / 2 - 0.08, mid + w / 2 + 0.08, 0.18, g + (axial ? 0.25 : 0.06), -0.02, 0.04, trim);
-  kit.span(mid - w / 2, mid + w / 2, 0.18, g - 0.04, -0.06, 0.0, darkOf(P.wall, 0.55), Surf.STORE, { lit: litOf(kit, 0.6), variant: SHOP_GLASS });
+  kit.span(mid - w / 2, mid + w / 2, 0.18, g - 0.04, -0.06, PROUD, darkOf(P.wall, 0.55), Surf.STORE, { lit: litOf(kit, 0.6), variant: SHOP_GLASS });
   if (axial && P.style !== "modern" && P.style !== "tech") kit.part({ mesh: "prism", node: kit.node, x: mid, y: g + 0.25, z: 0.02, w: w + 0.3, h: 0.22, d: 0.12, color: trim });
   if (P.brand || P.label) kit.sign((P.brand ?? P.label)!, mid, g + (axial ? 0.06 : 0.0), 0.05, { bg: darkOf(P.wall, 0.35), texel: 0.026, maxW: w });
   kit.zone = z;
@@ -318,7 +320,7 @@ function plainDoor(kit: Kit, span: number, g: number, P: Program) {
   const w = Math.min(0.32, span * 0.3);
   const h = Math.min(0.56, g - 0.14);
   kit.span(mid - w / 2 - 0.04, mid + w / 2 + 0.04, 0, h + 0.05, -0.02, 0.03, trimOf(P.wall));
-  kit.span(mid - w / 2, mid + w / 2, 0, h, -0.05, 0.0, darkOf(P.wall, 0.5));
+  kit.span(mid - w / 2, mid + w / 2, 0, h, -0.05, PROUD, darkOf(P.wall, 0.5));
 }
 
 function serviceDoor(kit: Kit, span: number, P: Program, at: number) {
