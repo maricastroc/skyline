@@ -552,7 +552,7 @@ function Layer({
     u.uTime.value += Math.min(dt, 0.05);
     u.uDither.value = dither;
     u.uFocus.value += (spot - u.uFocus.value) * (1 - Math.exp(-dt * 12));
-    const mode = !reveal.on || role === "solo" ? 0 : role === "incoming" ? 1 : -1;
+    const mode = role === "solo" ? 0 : role === "outgoing" ? -1 : reveal.on ? 1 : 0;
     u.uReveal.value.set(reveal.r, mode);
     if (plan) {
       if (skip && u.uTime.value < plan.done) u.uTime.value = plan.done;
