@@ -532,7 +532,7 @@ export function PixelApp({
       <div className="sk-drawer" data-mode={mode} style={{ width: drawerW }}>
         <header style={{ minHeight: Math.round(mapH * drawerScale) + 38, paddingRight: Math.round(MAP_W * drawerScale) + 36 }}>
           <span className="sk-label">{mode === "why" ? "Why this city" : reading ? "Reading the page" : `Building · ${building ? gi + 1 : groups.length}/${groups.length}`}</span>
-          <h2 className="sk-display">{name}</h2>
+          <FitTitle text={name} />
           <div className="host">{host}</div>
           {mode === "why" ? (
             <button onClick={() => openWhy(false)} aria-label="Close">
@@ -878,6 +878,31 @@ const IconSave = () => (
     <path d="M8 2.5v7.5M4.8 7l3.2 3.2L11.2 7M3 13.5h10" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
+function FitTitle({ text }: { text: string }) {
+  const ref = useRef<HTMLHeadingElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let width = -1;
+    const fit = () => {
+      if (el.clientWidth === width) return;
+      width = el.clientWidth;
+      el.style.fontSize = "";
+      const over = el.scrollWidth / Math.max(width, 1);
+      if (over > 1) el.style.fontSize = `${Math.max(16, Math.floor(parseFloat(getComputedStyle(el).fontSize) / over))}px`;
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [text]);
+  return (
+    <h2 ref={ref} className="sk-display">
+      {text}
+    </h2>
+  );
+}
+
 function FromThePage({ kit, b, t, onClose }: { kit: KitCity; b: PMBlock; t: number; onClose: () => void }) {
   const lots = kit.lots[t] ?? 0;
   const crop = useRef<HTMLDivElement>(null);
