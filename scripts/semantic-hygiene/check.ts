@@ -99,6 +99,26 @@ const mediaShare = (plan: Plan, pred: (t: Plan["territories"][number]) => boolea
 }
 
 {
+  const kinds = (snap: DomSnapshot) => {
+    const doc = normalize(snap);
+    const sem = analyzeSemantics(doc, { contentMedia: true, explicitFooter: true });
+    return sem.regions.map((r) => r.kind);
+  };
+  const hn = JSON.parse(readFileSync("docs/real-pages/snapshots/hn.json", "utf8")) as DomSnapshot;
+  const headlines = ["Show HN: A free, open-source alternative to Notion", "Startup raises $40M to build open-source chips", "Regulator fines a carmaker $1.2B over emissions"];
+  let k = 0;
+  const retitle = (n: SnapshotNode) => {
+    if (k < headlines.length && n.tag === "a" && n.own && n.own === n.sample && n.own.length > 25) n.own = n.sample = headlines[k++];
+    n.children.forEach(retitle);
+  };
+  retitle(hn.root);
+  const hk = kinds(hn);
+  check("a news feed whose headlines mention money or “free” is not a pricing table", k === headlines.length && !hk.includes("pricing") && hk.includes("feed"), hk.join(", "));
+  const shop = kinds(JSON.parse(readFileSync("docs/real-pages/snapshots/shop.json", "utf8")) as DomSnapshot);
+  check("…while a product grid with price tags still is", shop.includes("pricing"), shop.join(", "));
+}
+
+{
   const files = ["src/lib/snapshot/media.ts", "src/lib/semantics/hygiene.ts"];
   const words = /\b(building|tower|landmark|roof|city|cities|lots?|urban|visual|district)\b/i;
   const hits = files.flatMap((f) =>
