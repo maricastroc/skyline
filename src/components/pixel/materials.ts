@@ -452,6 +452,17 @@ vec3 pxLampC = vec3(0.0);
     float joint = min(step(j.x, 0.06) + step(j.y, 0.06), 1.0);
     diffuseColor.rgb *= (1.0 - 0.08 * joint) * (0.96 + 0.06 * pxHash(floor(vWorld.xz / 0.5))) * (1.0 - 0.07 * step(0.94, pxHash(floor(vWorld.xz / 0.5) + 2.3))) * (0.975 + 0.04 * pxHash(floor(vWorld.xz / 2.0) + 0.5));
   }
+  if (top && surf == 21) {
+    vec2 w = fs.x >= fs.y ? vWorld.xz : vWorld.zx;
+    float px = fs.x >= fs.y ? fPx.x : fPx.y;
+    float row = floor(w.y / 0.4);
+    float u = w.x / 0.8 + 0.5 * mod(row, 2.0);
+    vec2 cell = vec2(floor(u), row);
+    float jw = max(px, pxSnap(0.035, px));
+    float joint = min(step(fract(u) * 0.8, jw) + step(fract(w.y / 0.4) * 0.4, jw), 1.0) * smoothstep(2.5, 4.5, 0.4 / px);
+    float h = pxHash(cell + 5.1);
+    diffuseColor.rgb *= (1.0 - 0.1 * joint) * (0.965 + 0.05 * h) * (1.0 - 0.05 * step(0.93, pxHash(cell + 8.7)));
+  }
   if (surf == 11) {
     float s = side && fs.y > 1.5 ? step(0.5, fract(fc.y / 0.5)) : step(0.5, fract((fc.x) / 0.25));
     diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.95), s * 0.85);

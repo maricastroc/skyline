@@ -467,8 +467,8 @@ export function analyzeSemantics(doc: NormalizedDocument, opts: AnalyzeOptions =
       holdsAList = held >= 0.25 * n.weight;
     }
     const prices = holdsAList ? [] : collectIn(i, (m) => PRICE_RE.test(text(m)), 6);
-    const quoted = !reading || countIn(i, (m) => AMOUNT_RE.test(text(m))) > 0;
-    const pricedList = prices.length >= 2 && items.length >= 2 && quoted;
+    const priceTags = holdsAList ? 0 : countIn(i, (m) => m.children.length === 0 && AMOUNT_RE.test(text(m)) && (text(m).match(/\p{L}{3,}/gu) ?? []).length <= 3);
+    const pricedList = priceTags >= 2 && items.length >= 2;
     if (!holdsAList && (pricedList || /(^|[\s_-])(pricing|plans|tiers|price-?table)([\s_-]|$)/.test(nm) || /^(pricing|plans|choose your plan)/i.test(ht))) {
       if (prices.length >= 1) {
         add(i, "pricing", [
