@@ -518,7 +518,7 @@ export function PixelApp({
   const landed = kit ? kit.map.blocks.filter((b) => b.lots > 0) : [];
   const panel = (mode: "build" | "why") => {
     if (!kit) return null;
-    const upto = mode === "build" ? (group ? group.last : -1) : Infinity;
+    const upto = mode === "build" && building ? (group ? group.last : -1) : Infinity;
     const done = landed.filter((b) => b.t <= upto);
     const legend = [...landed].sort((a, b) => b.lots - a.lots).slice(0, 4);
     const extra = mode === "build" ? lead : linked;
@@ -531,7 +531,7 @@ export function PixelApp({
     return (
       <div className="sk-drawer" data-mode={mode} style={{ width: drawerW }}>
         <header style={{ minHeight: Math.round(mapH * drawerScale) + 38, paddingRight: Math.round(MAP_W * drawerScale) + 36 }}>
-          <span className="sk-label">{mode === "why" ? "Why this city" : reading ? "Reading the page" : `Building · ${gi + 1}/${groups.length}`}</span>
+          <span className="sk-label">{mode === "why" ? "Why this city" : reading ? "Reading the page" : `Building · ${building ? gi + 1 : groups.length}/${groups.length}`}</span>
           <h2 className="sk-display">{name}</h2>
           <div className="host">{host}</div>
           {mode === "why" ? (
